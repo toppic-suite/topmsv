@@ -16,35 +16,37 @@ function makeid(length) {
 }
 
 
-// function getFilePath(db, id, callback) {
-//     let sql = `SELECT file_path AS path
-//              FROM files
-//              WHERE file_id  = ?`;
-//     let result;
-//     db.get(sql, [id], (err, row) => {
-//             if (err) {
-//                 return console.error(err.message);
-//             }
-//             result = row.path;
-//         }, function () {
-//             callback(result);
-//         });
-// }
+function getFilePath(db, id, callback) {
+    let sql = `SELECT file_path AS path
+             FROM files
+             WHERE file_id  = ?`;
 
-function getFileName(db, id) {
+    db.get(sql, [id], (err, row) => {
+            if (err) {
+                return callback(err);
+            }
+            else {
+                 return callback(null, row.path);
+            }
+    });
+}
+
+function getFileName(db, id, callback) {
     let sql = `SELECT file_name as name,
                     file_path as path
              FROM files
              WHERE file_id  = ?`;
     db.get(sql, [id], (err, row) => {
         if (err) {
-            return console.error(err.message);
+            return callback(err);
         }
-        return row.name;
+        else {
+            return callback(null, row.name);
+        }
     });
 }
 
-function ifExists(db, base64_code) {
+function ifExists(db, base64_code, callback) {
     let sql = `SELECT file_id as id,
                     file_name as name
              FROM files
@@ -53,12 +55,13 @@ function ifExists(db, base64_code) {
     // first row only
     db.get(sql, [file_id], (err, row) => {
         if (err) {
-            return console.error(err.message);
+            return callback(err);
+        }
+        else {
+            if (row === undefined)
+            return callback(null, false);
         }
 
-        return row
-            ? true
-            : false;
     });
     // close the database connection
     // db.close();
@@ -124,36 +127,41 @@ http.createServer(function (req, res) {
             fs.rename(oldpath, newfile, function (err) {
                 if (err) throw err;
 
-                let adr =  'http://localhost:8080/data?id=';
+                var adr =  'http://localhost:8080/data?id=';
 
                 res.write('<h1>File uploaded successfully!</h1>');
                 res.write('<h2>Project Name: </h2>');
                 res.write(pname);
                 res.write('<h2>File Path: </h2>');
                 res.write(newfile);
-                let id;
+                let id = makeid(11);
                 // let db = new sqlite3.Database('./db/fileDB.db');
-                while (true) {
-                    id = makeid(11);
-                    if(!ifExists(db, id)) {
-                        insertRow(db, id, fname, newfile);
-                        adr = adr + id;
-                        // db.close();
-                        break;
+                ifExists(db, id, function (err, result) {
+                    if(err) {
+                        console.log(err);
                     }
-                }
+                    else {
+                        while (true) {
+                            console.log(result);
+                            if(!result) {
+                                insertRow(db, id, fname, newfile);
+                                message.text = adr + id;
+                                message.subject = pname + ': '+ files.filetoupload.name;
+                                message.to = emailadd;
+                                transport.sendMail(message, function(err, info) {
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log(info);
+                                    }
+                                });
+                                res.end();
+                                break;
+                            }
+                        }
+                    }
 
-                message.subject = pname + ': '+ files.filetoupload.name;
-                message.text = adr;
-                message.to = emailadd;
-                transport.sendMail(message, function(err, info) {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        console.log(info);
-                    }
-                });
-                res.end();
+                })
             });
         });
 
@@ -161,39 +169,23 @@ http.createServer(function (req, res) {
         let q = url.parse(req.url, true);
         let id = q.query.id;
         // console.log(id);
-        // let pathname = "./data/test/hello.txt" ;
-        // let pathname = getFilePath(db, id);
-        // console.log(pathname);
-        // var pathname;
-        let sql = `SELECT file_path AS path
-             FROM files
-             WHERE file_id  = ?`;
-        db.get(sql, [id], (err, row) => {
+        getFilePath(db, id, function (err, result) {
             if (err) {
-                return console.error(err.message);
+                console.log(err);
             }
-            // console.log(row);
-            console.log(row.path);
-            fs.readFile(row.path, function(err, data) {
-                if (err) {
-                    res.writeHead(404, {'Content-Type': 'text/html'});
-                    return res.end("404 Not Found");
-                }
-                res.writeHead(200, {'Content-Type': 'text/html'});
-                res.write(data);
-                return res.end();
-            });
+            else {
+                console.log(result);
+                fs.readFile(result, function(err, data) {
+                    if (err) {
+                        res.writeHead(404, {'Content-Type': 'text/html'});
+                        return res.end("404 Not Found");
+                    }
+                    res.writeHead(200, {'Content-Type': 'text/html'});
+                    res.write(data);
+                    return res.end();
+                });
+            }
         });
-        // console.log(pathname);
-        // fs.readFile(pathname, function(err, data) {
-        //     if (err) {
-        //         res.writeHead(404, {'Content-Type': 'text/html'});
-        //         return res.end("404 Not Found");
-        //     }
-        //     res.writeHead(200, {'Content-Type': 'text/html'});
-        //     res.write(data);
-        //     return res.end();
-        // });
     } else {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
