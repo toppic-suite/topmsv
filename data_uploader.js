@@ -2,7 +2,91 @@ var http = require('http');
 var formidable = require('formidable');
 var fs = require('fs');
 var nodemailer = require('nodemailer');
+const sqlite3 = require('sqlite3').verbose();
+var url = require('url');
 
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+
+// function getFilePath(db, id, callback) {
+//     let sql = `SELECT file_path AS path
+//              FROM files
+//              WHERE file_id  = ?`;
+//     let result;
+//     db.get(sql, [id], (err, row) => {
+//             if (err) {
+//                 return console.error(err.message);
+//             }
+//             result = row.path;
+//         }, function () {
+//             callback(result);
+//         });
+// }
+
+function getFileName(db, id) {
+    let sql = `SELECT file_name as name,
+                    file_path as path
+             FROM files
+             WHERE file_id  = ?`;
+    db.get(sql, [id], (err, row) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        return row.name;
+    });
+}
+
+function ifExists(db, base64_code) {
+    let sql = `SELECT file_id as id,
+                    file_name as name
+             FROM files
+             WHERE file_id  = ?`;
+    let file_id = base64_code;
+    // first row only
+    db.get(sql, [file_id], (err, row) => {
+        if (err) {
+            return console.error(err.message);
+        }
+
+        return row
+            ? true
+            : false;
+    });
+    // close the database connection
+    // db.close();
+}
+
+function insertRow(db, base64_code, file_name, file_path) {
+    // body...
+    // let db = new sqlite3.Database('./db/sample.db');
+    let sql = 'INSERT INTO files(file_id, file_name, file_path) VALUES(?,?,?)';
+    // insert one row into the langs table
+    db.run(sql, [base64_code,file_name,file_path], function(err) {
+        if (err) {
+            return console.log(err.message);
+        }
+        // get the last insert id
+        console.log(`A row has been inserted with rowid ${this.lastID}`);
+    });
+
+    // close the database connection
+    // db.close();
+}
+
+let db = new sqlite3.Database('./db/fileDB.db', (err) => {
+    if (err) {
+        console.error(err.message);
+    }
+    console.log('Connected to the fileDB.db database.');
+});
 
 var transport = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
@@ -25,8 +109,9 @@ http.createServer(function (req, res) {
         var form = new formidable.IncomingForm();
         form.parse(req, function (err, fields, files) {
             var oldpath = files.filetoupload.path;
-            var newfile = './' + fields.projectname + '/' + files.filetoupload.name;
-            var newpath = './' + fields.projectname + '/';
+            var newfile = './data/' + fields.projectname + '/' + files.filetoupload.name;
+            var newpath = './data/' + fields.projectname + '/';
+            let fname = files.filetoupload.name;
             var pname = fields.projectname;
             var emailadd = fields.emailaddress;
 
@@ -38,14 +123,28 @@ http.createServer(function (req, res) {
 
             fs.rename(oldpath, newfile, function (err) {
                 if (err) throw err;
+
+                let adr =  'http://localhost:8080/data?id=';
+
                 res.write('<h1>File uploaded successfully!</h1>');
                 res.write('<h2>Project Name: </h2>');
                 res.write(pname);
                 res.write('<h2>File Path: </h2>');
                 res.write(newfile);
-                // res.end(util.inspect({fields: fields, files: files}));
+                let id;
+                // let db = new sqlite3.Database('./db/fileDB.db');
+                while (true) {
+                    id = makeid(11);
+                    if(!ifExists(db, id)) {
+                        insertRow(db, id, fname, newfile);
+                        adr = adr + id;
+                        // db.close();
+                        break;
+                    }
+                }
+
                 message.subject = pname + ': '+ files.filetoupload.name;
-                message.text = newfile;
+                message.text = adr;
                 message.to = emailadd;
                 transport.sendMail(message, function(err, info) {
                     if (err) {
@@ -58,6 +157,43 @@ http.createServer(function (req, res) {
             });
         });
 
+    } else if (url.parse(req.url, true).pathname =='/data'){
+        let q = url.parse(req.url, true);
+        let id = q.query.id;
+        // console.log(id);
+        // let pathname = "./data/test/hello.txt" ;
+        // let pathname = getFilePath(db, id);
+        // console.log(pathname);
+        // var pathname;
+        let sql = `SELECT file_path AS path
+             FROM files
+             WHERE file_id  = ?`;
+        db.get(sql, [id], (err, row) => {
+            if (err) {
+                return console.error(err.message);
+            }
+            // console.log(row);
+            console.log(row.path);
+            fs.readFile(row.path, function(err, data) {
+                if (err) {
+                    res.writeHead(404, {'Content-Type': 'text/html'});
+                    return res.end("404 Not Found");
+                }
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.write(data);
+                return res.end();
+            });
+        });
+        // console.log(pathname);
+        // fs.readFile(pathname, function(err, data) {
+        //     if (err) {
+        //         res.writeHead(404, {'Content-Type': 'text/html'});
+        //         return res.end("404 Not Found");
+        //     }
+        //     res.writeHead(200, {'Content-Type': 'text/html'});
+        //     res.write(data);
+        //     return res.end();
+        // });
     } else {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.write('<form action="fileupload" method="post" enctype="multipart/form-data">');
