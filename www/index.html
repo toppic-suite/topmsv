@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Data Uploader</title>
+
+  <!-- Bootstrap core CSS -->
+<!--  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://use.fontawesome.com/8951fda309.js"></script>
+
+  <!-- Custom styles for this template -->
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Data Uploader</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              About
+            </a>
+            <!-- Here's the magic. Add the .animate and .slide-in classes to your .dropdown-menu and you're all set! -->
+            <div class="dropdown-menu dropdown-menu-right animate slideIn" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+<!--              <div class="dropdown-divider"></div>-->
+<!--              <a class="dropdown-item" href="#">Something else here</a>-->
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center">Submit Task</h5>
+            <form class="form-signin" action="fileupload" method="post" enctype="multipart/form-data">
+              <div class="form-label-group">
+                <input type="text" id="projectName" class="form-control" placeholder="Project name" required autofocus>
+                <label for="projectName">Project name</label>
+              </div>
+
+              <div class="form-label-group">
+                <input type="text" id="Email" class="form-control" placeholder="Email address" required>
+                <label for="Email">Email address</label>
+              </div>
+
+              <!-- Custom bootstrap upload file-->
+              <label for="fileName" class="file-upload btn btn-primary btn-block btn-facebook rounded-pill shadow"><i class="fa fa-upload mr-2"></i>Browse for data ...
+                <input id="fileName" type="file" required>
+              </label>
+<!--               End -->
+<!--              <input class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">-->
+              <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--   Bootstrap core JavaScript -->
+<!--  <script src="vendor/jquery/jquery.slim.min.js"></script>-->
+<!--  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>-->
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <!-- Popper JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>
