@@ -11,13 +11,22 @@
   <title>Data Uploader</title>
 
   <!-- Bootstrap core CSS -->
-<!--  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://use.fontawesome.com/8951fda309.js"></script>
-
+<!--  <script src="https://use.fontawesome.com/8951fda309.js"></script>-->
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <!-- Material Design Bootstrap -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/css/mdb.min.css" rel="stylesheet">
   <!-- Custom styles for this template -->
   <link href="css/style.css" rel="stylesheet">
+
+<!--  Javascript for uploading progress-->
+<!--  <script>-->
+<!--    var settings = { };-->
+<!--    $('#file').setProgressedUploader(settings);-->
+<!--  </script>-->
 </head>
 
 <body>
@@ -66,12 +75,13 @@
                 <label for="Email">Email address</label>
               </div>
 
-              <!-- Custom bootstrap upload file-->
-              <label for="fileName" class="file-upload btn btn-primary btn-block btn-facebook rounded-pill shadow"><i class="fa fa-upload mr-2"></i>Browse for data ...
-                <input id="fileName" type="file" name="filetoupload" required>
-              </label>
-<!--               End -->
-<!--              <input class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">-->
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="fileName" name="filetoupload" required
+                       aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="fileName">Choose file</label>
+              </div>
+
+
               <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Submit</button>
             </form>
           </div>
@@ -80,17 +90,16 @@
     </div>
   </div>
 
-<!--   Bootstrap core JavaScript -->
-<!--  <script src="vendor/jquery/jquery.slim.min.js"></script>-->
-<!--  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>-->
   <!-- jQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
+<!--  <script src="node_modules/jquery-progress-upload/src/jquery-progress-upload.js"></script>-->
   <!-- Popper JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 
   <!-- Latest compiled JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.10/js/mdb.min.js"></script>
 </body>
 
 </html>
