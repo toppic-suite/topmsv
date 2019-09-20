@@ -17,7 +17,7 @@
   <script src="https://use.fontawesome.com/8951fda309.js"></script>
 
   <!-- Custom styles for this template -->
-  <link href="style.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -57,18 +57,18 @@
             <h5 class="card-title text-center">Submit Task</h5>
             <form class="form-signin" action="fileupload" method="post" enctype="multipart/form-data">
               <div class="form-label-group">
-                <input type="text" id="projectName" class="form-control" placeholder="Project name" required autofocus>
+                <input type="text" id="projectName" name="projectname" class="form-control" placeholder="Project name" required autofocus>
                 <label for="projectName">Project name</label>
               </div>
 
               <div class="form-label-group">
-                <input type="text" id="Email" class="form-control" placeholder="Email address" required>
+                <input type="text" id="Email" name="emailaddress" class="form-control" placeholder="Email address" required>
                 <label for="Email">Email address</label>
               </div>
 
               <!-- Custom bootstrap upload file-->
               <label for="fileName" class="file-upload btn btn-primary btn-block btn-facebook rounded-pill shadow"><i class="fa fa-upload mr-2"></i>Browse for data ...
-                <input id="fileName" type="file" required>
+                <input id="fileName" type="file" name="filetoupload" required>
               </label>
 <!--               End -->
 <!--              <input class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">-->
