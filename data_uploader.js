@@ -6,20 +6,140 @@ var multer  = require('multer');
 var express = require('express');
 var app = express();
 var upload = multer({ dest: 'tmp/' });
+var path = require('path');
+const uuidv1 = require('uuid/v1');
 // var url = require('url');
 // var http = require('http');
-// var formidable = require('formidable');
+var formidable = require('formidable');
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(multer({ dest: '/tmp/'}).array('filetoupload'));
 
 app.get('/', function (req, res) {
-    res.sendFile( __dirname + "/public/" + "index.html" );
+    res.sendFile( __dirname + "/public/" + "progress_home.html" );
 })
 
-app.post('/fileupload',upload.single('filetoupload'),  function (req, res, next) {
+app.post('/upload', function (req, res) {
+    console.log("hello,upload");
+/*
+    console.log(req.body.projectname);
+    console.log(req.body.email);
+*/
+    var form = new formidable.IncomingForm();
+    form.encoding = 'utf-8';
+    form.uploadDir = "tmp";
+    form.keepExtensions = true;
+    // form.uploadDir = path.join(__dirname, '/uploads');
+    /*form.on('file', function(field, file) {
+        // console.log(file);
+        console.log(field.projectname);
+        console.log(field.emailaddress);
+        fs.rename(file.path, 'data/'+file.name, function (err) {
+            if (err) return res.send({ "error": 403, "message": "Save error！" });
+            // res.send({ "path": '/data/' + file.name });
+        });
+    });*/
+    // log any errors that occur
+   /* form.on('error', function(err) {
+        console.log('An error has occured: \n' + err);
+    });*/
+    // once all the files have been uploaded, send a response to the client
+    /*form.on('end', function() {
+        console.log('success!');
+    });*/
+    // parse the incoming request containing the form data
+    // form.parse(req);
+    form.parse(req, function (err, fields, files) {
+        console.log(fields.projectname);
+        console.log(fields.emailaddress);
+        console.log(files.dbfile);
+        var projectname = fields.projectname;
+        var emailtosend = fields.emailaddress;
+        var file = files.dbfile;
+        var fname = file.name; // hello.txt
+        console.log(uuidv1());
+        var folderid = uuidv1();
+        var des_path = __dirname + "/data/" + folderid + "/" + projectname + "/";
+        var des_file = __dirname + "/data/" + folderid + "/" + projectname + "/" + fname;
+        var upperpath = __dirname + "/data/" + folderid + "/";
+        console.log(des_path);
+
+        // Generate new path for file
+        if (!fs.existsSync(upperpath)) {
+            console.log('The path does not exist.');
+            fs.mkdirSync(upperpath);
+            console.log('Path created!');
+            if (!fs.existsSync(des_path)) {
+                fs.mkdirSync(des_path);
+            }
+        }
+        fs.rename(file.path, des_file, function (err) {
+            if(err) {
+                console.log(err);
+                return res.send({"error": 403, "message": "Error on saving file!"});
+            }
+            var adr =  'http://localhost:8080/data?id=';
+            // output result into screen
+
+            res.write('<h1>File uploaded successfully!</h1>');
+            res.write('<h2>Project Name: </h2>');
+            res.write(projectname);
+            res.write('<h2>File Path: </h2>');
+            res.write(des_file);
+
+            var id = makeid(11);
+
+            ifExists(db, id, function (err, result) {
+                if(err) {
+                    console.log(err);
+                }
+                while (true) {
+                    console.log(result);
+                    if(!result) {
+                        insertRow(db, id, fname, des_file);
+                        message.text = adr + id;
+                        message.subject = projectname + ': '+ fname;
+                        message.to = emailtosend;
+                        transport.sendMail(message, function(err, info) {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                console.log(info);
+                            }
+                        });
+
+                        res.write('<h2>Link: </h2>');
+                        res.write(message.text);
+
+                        res.end();
+                        break;
+                    }
+                }
+            })
+            response = {
+                message:'File uploaded successfully',
+                filename:fname
+            };
+            console.log(response);
+            res.write(JSON.stringify( response ));
+        });
+
+    })
+    /*form.parse(req, function (err, fields, files) {
+        var file = files.dbfile;
+        let picName = uuid.v1() + path.extname(file.name);
+        fs.rename(file.path, 'public\\upload\\brand\\' + picName, function (err) {
+            if (err) return res.send({ "error": 403, "message": "图片保存异常！" });
+            res.send({ "picAddr": '/upload/brand/' + picName });
+        });
+    });*/
+});
+
+/*app.post('/upload',upload.single('dbfile'),  function (req, res, next) {
     // console.log(req.file);
+    console.log(req.body.projectname);
+    console.log(req.body.emailaddress);
     const file = req.file;
     if (!file) {
         const error = new Error('Please upload a file');
@@ -38,7 +158,7 @@ app.post('/fileupload',upload.single('filetoupload'),  function (req, res, next)
         fs.mkdirSync(des_path);
         console.log('Project path created!')
     }
-    fs.readFile( req.file.path, function (err, data) {
+    fs.readFile(req.file.path, function (err, data) {
         fs.writeFile(des_file, data, function (err) {
             if( err ){
                 console.log( err );
@@ -94,7 +214,7 @@ app.post('/fileupload',upload.single('filetoupload'),  function (req, res, next)
             // res.end( JSON.stringify( response ) );
         });
     });
-})
+})*/
 
 app.get('/data', function(req, res) {
     var id = req.query.id;
@@ -216,15 +336,15 @@ let db = new sqlite3.Database('./db/fileDB.db', (err) => {
     console.log('Connected to the fileDB.db database.');
 });
 
-// mailtrap for testing
-// var transport = nodemailer.createTransport({
-//     host: "smtp.mailtrap.io",
-//     port: 2525,
-//     auth: {
-//         user: "9540ab1d87da99",
-//         pass: "133e06c63858da"
-//     }
-// });
+/*mailtrap for testing
+var transport = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+        user: "9540ab1d87da99",
+        pass: "133e06c63858da"
+    }
+});*/
 
 var transport = nodemailer.createTransport({
     host: "smtp-mail.outlook.com", // hostname
