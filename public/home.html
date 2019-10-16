@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Data Upload</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- add jquery fileupload.js -->
+    <script src="../node_modules/blueimp-file-upload/js/jquery.fileupload.js"></script>
+    <!-- blueimp Gallery styles -->
+    <link
+            rel="stylesheet"
+            href="https://blueimp.github.io/Gallery/css/blueimp-gallery.min.css"
+    />
+    <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <link rel="stylesheet" href="css/jquery.fileupload.css" />
+    <link rel="stylesheet" href="css/jquery.fileupload-ui.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Data upload</h1>
+      <blockquote class="description">
+        <p>
+          Please type in your project name, your email address and choose your data to upload.
+        </p>
+      </blockquote>
+
+      <form id="fileupload" action="fileupload" method="post" enctype="multipart/form-data">
+        <div class="row fileupload-buttonbar">
+          <div class="col-lg-7">
+            <span class="btn btn-success fileinput-button">
+              <i class="glyphicon glyphicon-plus"></i>
+              <span>Add files...</span>
+              <input type="file" name="files[]" multiple />
+            </span>
+            <button type="submit" class="btn btn-primary start">
+              <i class="glyphicon glyphicon-upload"></i>
+              <span>Start upload</span>
+            </button>
+          </div>
+        </div>
+        <!-- The table listing the files available for upload/download -->
+        <table role="presentation" class="table table-striped">
+          <tbody class="files"></tbody>
+        </table>
+      </form>
+
+
+    </div>
+    <!-- The template to display files available for upload -->
+    <script id="template-upload" type="text/x-tmpl">
+      {% for (var i=0, file; file=o.files[i]; i++) { %}
+          <tr class="template-upload fade">
+              <td>
+                  <span class="preview"></span>
+              </td>
+              <td>
+                  {% if (window.innerWidth > 480 || !o.options.loadImageFileTypes.test(file.type)) { %}
+                      <p class="name">{%=file.name%}</p>
+                  {% } %}
+                  <strong class="error text-danger"></strong>
+              </td>
+              <td>
+                  <p class="size">Processing...</p>
+                  <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
+              </td>
+              <td>
+                  {% if (!o.options.autoUpload && o.options.edit && o.options.loadImageFileTypes.test(file.type)) { %}
+                    <button class="btn btn-success edit" data-index="{%=i%}" disabled>
+                        <i class="glyphicon glyphicon-edit"></i>
+                        <span>Edit</span>
+                    </button>
+                  {% } %}
+                  {% if (!i && !o.options.autoUpload) { %}
+                      <button class="btn btn-primary start" disabled>
+                          <i class="glyphicon glyphicon-upload"></i>
+                          <span>Start</span>
+                      </button>
+                  {% } %}
+                  {% if (!i) { %}
+                      <button class="btn btn-warning cancel">
+                          <i class="glyphicon glyphicon-ban-circle"></i>
+                          <span>Cancel</span>
+                      </button>
+                  {% } %}
+              </td>
+          </tr>
+      {% } %}
+    </script>
+
+
+
+
+
+
+
+<!--
+    <div class="masthead">
+      <h1 class="muted">
+        <font color=#0099DD><strong>TopPIC</strong></font>
+      </h1>
+    </div>
+    <br>
+    &lt;!&ndash; database file &ndash;&gt;
+    <div>
+      <input type="hidden" id="upload-db-file" name="upload-db-file"
+             value="">
+      <table>
+        <tr>
+          <td><span class="btn btn-primary fileinput-button"> <i
+                  class="icon-plus icon-white"></i> <span>Select database
+                                                file...</span> <input id="dbfile" type="file" name="dbfile">
+                                    </span></td>
+          <td width="10pt"></td>
+          <td><div id="dbfilename"></div></td>
+          <td width="10pt"></td>
+          <td id="dbtd">
+            <div id="dbprogress" class="progress">
+              <div id="dbbar" class="progress-bar" role="progressbar"
+                   style="width: 0%">0%</div>
+            </div>
+          </td>
+          <td width="10pt"></td>
+          <td>
+            <div id="dbbutton"></div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <br>
+-->
+    <!-- Dependent JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<!--
+    <script src="upload.js"></script>
+-->
+    <!-- The basic File Upload plugin -->
+    <script src="js/jquery.fileupload.js"></script>
+    <!-- The File Upload validation plugin -->
+    <script src="js/jquery.fileupload-validate.js"></script>
+    <!-- The File Upload user interface plugin -->
+    <script src="js/jquery.fileupload-ui.js"></script>
+    <!-- The main application script -->
+    <script src="js/demo.js"></script>
+    <!-- The Templates plugin is included to render the upload/download listings -->
+    <script src="https://blueimp.github.io/JavaScript-Templates/js/tmpl.min.js"></script>
+  </body>
+</html>
