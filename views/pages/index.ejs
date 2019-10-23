@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+
+	<script src="js/invokeSpectrum.js" ></script>
+	<script src="js/spectrumParameters.js" ></script>
+	<script src="js/spectrumGraph.js" ></script>
+</head>
+<body class="container">
+
+	<main>
+		<div class="jumbotron">
+			<h1>Project Summary</h1>
+			<h2><ul>
+				<li>Project Name: <%= summary.ProjectName %></li>
+				<li>Project Status: <%= summary.ProjectStatus %></li>
+				<li>Email Address: <%= summary.EmailAddress %></li>
+				<li>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></li>
+				</ul></h2>
+		</div>
+		<div class="jumbotron">
+			<h2>
+				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode%>">
+				Please type in ScanID within Scan Range above: <input type="text" id="scanID" name="scanID"><br>
+				<button type="button" onclick="loadDoc()">Request</button>
+				</h2>
+<!--			<p id="demo"></p>-->
+			<svg id="spectrum"></svg>
+		</div>
+	</main>
+	<script>
+		function loadDoc() {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					//document.getElementById("demo").innerHTML = this.responseText;
+					//alert("mz: "+response[2].mz + " intensity: " + response[2].intensity);
+					var response = JSON.parse(this.responseText);
+					addSpectrum(response, []);
+				}
+			};
+			xhttp.open("GET", "peaklist?projectCode=" + document.getElementById("projectCode").value + "&scanID=" + document.getElementById("scanID").value, true);
+			xhttp.send();
+		}
+	</script>
+</body>
+</html>
