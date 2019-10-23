@@ -21,6 +21,9 @@
     "sqlite3": "^4.1.0",
     "url": "^0.11.0",
     "path": "^0.12.7",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "child_process": "^1.0.2",
+    "ejs": "^2.7.1",
+    "express-ejs-layouts": "^2.5.0"
   }
 }
