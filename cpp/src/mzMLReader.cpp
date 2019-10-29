@@ -3,6 +3,8 @@
 Range RANGE;
 sqlite3_stmt *stmtSp;
 sqlite3_stmt *stmtPeak;
+sqlite3_stmt *stmtLevelPair;
+sqlite3_stmt *stmtUpdate;
 
 std::string num2str(double num) {
   // std::cout << num << std::endl;
@@ -116,7 +118,10 @@ void mzMLReader::creatTable() {
    sql = (char*)("CREATE TABLE SPECTRA("  \
          "ID INT PRIMARY KEY      NOT NULL," \
          "SCAN           INT      NOT NULL," \
-         "RETENTIONTIME  REAL     NOT NULL);");
+         "RETENTIONTIME  REAL     NOT NULL," \
+         "SCANLEVEL      INT      NOT NULL," \
+         "NEXT           INT      NULL," \
+         "PREV           INT      NULL);");
 
    /* Execute SQL statement */
    rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
@@ -136,6 +141,23 @@ void mzMLReader::creatTable() {
          "MZ            REAL     NOT NULL," \
          "INTENSITY     REAL     NOT NULL);");
 
+   /* Execute SQL statement */
+   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+   if( rc != SQLITE_OK ){
+      // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+      std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+      sqlite3_free(zErrMsg);
+   }else{
+      // fprintf(stdout, "Table created successfully\n");
+      // std::cout << "Table PEAKS created successfully" << std::endl;
+   }
+  
+  // create a table for levelOne and levelTwo pair
+   /* Create SQL statement */
+   sql = (char*)("CREATE TABLE LevelOneTwo("  \
+         "LevelOneID     INT      NOT NULL REFERENCES SPECTRA(SCAN)," \
+         "LevelTwoID     INT      NOT NULL REFERENCES SPECTRA(SCAN)," \
+         "PRIMARY KEY (LevelOneID, LevelTwoID));");
    /* Execute SQL statement */
    rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
    if( rc != SQLITE_OK ){
@@ -319,23 +341,50 @@ void mzMLReader::synchronous() {
 };
 
 void mzMLReader::openInsertStmt() {
-  std::string sqlstr = "INSERT INTO SPECTRA (ID,SCAN,RETENTIONTIME) VALUES (? ,? ,?); ";
+  std::string sqlstr = "INSERT INTO SPECTRA (ID,SCAN,RETENTIONTIME,SCANLEVEL,NEXT,PREV) VALUES (? ,? ,?, ?, ?, ?); ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtSp, 0);
+  sqlstr = "INSERT INTO LevelOneTwo (LevelOneID,LevelTwoID) VALUES (? ,?); ";
+  sql = (char *)sqlstr.c_str();
+  sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtLevelPair, 0);
   sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY) VALUES (? ,? ,?, ?); ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtPeak, 0);
+  sqlstr = "UPDATE SPECTRA SET NEXT = ? WHERE SCAN = ?; ";
+  sql = (char *)sqlstr.c_str();
+  sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtUpdate, 0);
 };
 void mzMLReader::closeInsertStmt() {
   sqlite3_finalize(stmtSp);
   sqlite3_finalize(stmtPeak);
 };
-void mzMLReader::insertSpStmt(int scanIndex, std::string scan, double retentionTime) {
+void mzMLReader::insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, int next, int prev) {
   sqlite3_reset(stmtSp);
   sqlite3_bind_int(stmtSp,1,scanIndex);
   sqlite3_bind_int(stmtSp,2,std::stoi(scan));
   sqlite3_bind_double(stmtSp,3,retentionTime);
+  sqlite3_bind_int(stmtSp,4,scanLevel);
+  sqlite3_bind_int(stmtSp,5,next);
+  sqlite3_bind_int(stmtSp,6,prev);
   int r = sqlite3_step(stmtSp);
+  if (r != SQLITE_DONE) {
+    std::cout << sqlite3_errmsg(db) << std::endl;
+  }
+};
+void mzMLReader::insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo) {
+  sqlite3_reset(stmtLevelPair);
+  sqlite3_bind_int(stmtLevelPair,1,scanLevelOne);
+  sqlite3_bind_int(stmtLevelPair,2,scanLevelTwo);
+  int r = sqlite3_step(stmtLevelPair);
+  if (r != SQLITE_DONE) {
+    std::cout << sqlite3_errmsg(db) << std::endl;
+  }
+};
+void mzMLReader::updateSpStmt(int currentID, int prevID) {
+  sqlite3_reset(stmtUpdate);
+  sqlite3_bind_int(stmtUpdate,1,currentID);
+  sqlite3_bind_int(stmtUpdate,2,prevID);
+  int r = sqlite3_step(stmtUpdate);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db) << std::endl;
   }

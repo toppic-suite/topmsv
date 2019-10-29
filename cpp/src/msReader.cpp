@@ -174,13 +174,29 @@ void msReader::createDtabase() { //stmt
   std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.openInsertStmt();
+  int levelOneID = 0;
+  int levelTwoID = 0;
   for(int i = 0; i < spSize; i++){
     // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
       SpectrumPtr s = sl->spectrum(i, true); // read with binary data
       Scan dummy;
       Scan scan = s->scanList.scans.empty() ? dummy : s->scanList.scans[0];
       double retentionTime = scan.cvParam(MS_scan_start_time).timeInSeconds();
-      databaseReader.insertSpStmt(i, getScan(sl->spectrumIdentity(i).id), retentionTime); 
+      int scanLevel = sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>(); // check scanLevel
+      int currentScanID = std::stoi(getScan(sl->spectrumIdentity(i).id));
+      if (scanLevel == 2) {
+        databaseReader.insertSpStmt(i, getScan(sl->spectrumIdentity(i).id), retentionTime,scanLevel,0,levelTwoID);
+        // update prev's next
+        databaseReader.updateSpStmt(currentScanID,levelTwoID);
+        levelTwoID = currentScanID;
+        databaseReader.insertScanLevelPairStmt(levelOneID, levelTwoID);
+      }else if(scanLevel == 1){
+        databaseReader.insertSpStmt(i, getScan(sl->spectrumIdentity(i).id), retentionTime,scanLevel,0,levelOneID); 
+        // update prev's next
+        databaseReader.updateSpStmt(currentScanID,levelOneID);
+        levelOneID = currentScanID;
+      }
+      //databaseReader.insertSpStmt(i, getScan(sl->spectrumIdentity(i).id), retentionTime,scanLevel,0,0); 
       vector<MZIntensityPair> pairs;
       s->getMZIntensityPairs(pairs);
       for (int j=0; j<pairs.size(); j++) {
