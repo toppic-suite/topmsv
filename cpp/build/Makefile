@@ -114,17 +114,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named testreader
+# Target rules for targets named mzMLReader
 
 # Build rule for target.
-testreader: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 testreader
-.PHONY : testreader
+mzMLReader: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mzMLReader
+.PHONY : mzMLReader
 
 # fast build rule for target.
-testreader/fast:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/build
-.PHONY : testreader/fast
+mzMLReader/fast:
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/build
+.PHONY : mzMLReader/fast
 
 src/main.o: src/main.cpp.o
 
@@ -132,7 +132,7 @@ src/main.o: src/main.cpp.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/main.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -141,7 +141,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/main.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -150,7 +150,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/main.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 src/msReader.o: src/msReader.cpp.o
@@ -159,7 +159,7 @@ src/msReader.o: src/msReader.cpp.o
 
 # target to build an object file
 src/msReader.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/msReader.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/msReader.cpp.o
 .PHONY : src/msReader.cpp.o
 
 src/msReader.i: src/msReader.cpp.i
@@ -168,7 +168,7 @@ src/msReader.i: src/msReader.cpp.i
 
 # target to preprocess a source file
 src/msReader.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/msReader.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/msReader.cpp.i
 .PHONY : src/msReader.cpp.i
 
 src/msReader.s: src/msReader.cpp.s
@@ -177,7 +177,7 @@ src/msReader.s: src/msReader.cpp.s
 
 # target to generate assembly for a file
 src/msReader.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/msReader.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/msReader.cpp.s
 .PHONY : src/msReader.cpp.s
 
 src/mzMLReader.o: src/mzMLReader.cpp.o
@@ -186,7 +186,7 @@ src/mzMLReader.o: src/mzMLReader.cpp.o
 
 # target to build an object file
 src/mzMLReader.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/mzMLReader.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/mzMLReader.cpp.o
 .PHONY : src/mzMLReader.cpp.o
 
 src/mzMLReader.i: src/mzMLReader.cpp.i
@@ -195,7 +195,7 @@ src/mzMLReader.i: src/mzMLReader.cpp.i
 
 # target to preprocess a source file
 src/mzMLReader.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/mzMLReader.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/mzMLReader.cpp.i
 .PHONY : src/mzMLReader.cpp.i
 
 src/mzMLReader.s: src/mzMLReader.cpp.s
@@ -204,7 +204,7 @@ src/mzMLReader.s: src/mzMLReader.cpp.s
 
 # target to generate assembly for a file
 src/mzMLReader.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/mzMLReader.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/mzMLReader.cpp.s
 .PHONY : src/mzMLReader.cpp.s
 
 src/pwiz/data/common/CVTranslator.o: src/pwiz/data/common/CVTranslator.cpp.o
@@ -213,7 +213,7 @@ src/pwiz/data/common/CVTranslator.o: src/pwiz/data/common/CVTranslator.cpp.o
 
 # target to build an object file
 src/pwiz/data/common/CVTranslator.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/CVTranslator.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/CVTranslator.cpp.o
 .PHONY : src/pwiz/data/common/CVTranslator.cpp.o
 
 src/pwiz/data/common/CVTranslator.i: src/pwiz/data/common/CVTranslator.cpp.i
@@ -222,7 +222,7 @@ src/pwiz/data/common/CVTranslator.i: src/pwiz/data/common/CVTranslator.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/common/CVTranslator.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/CVTranslator.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/CVTranslator.cpp.i
 .PHONY : src/pwiz/data/common/CVTranslator.cpp.i
 
 src/pwiz/data/common/CVTranslator.s: src/pwiz/data/common/CVTranslator.cpp.s
@@ -231,7 +231,7 @@ src/pwiz/data/common/CVTranslator.s: src/pwiz/data/common/CVTranslator.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/common/CVTranslator.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/CVTranslator.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/CVTranslator.cpp.s
 .PHONY : src/pwiz/data/common/CVTranslator.cpp.s
 
 src/pwiz/data/common/ParamTypes.o: src/pwiz/data/common/ParamTypes.cpp.o
@@ -240,7 +240,7 @@ src/pwiz/data/common/ParamTypes.o: src/pwiz/data/common/ParamTypes.cpp.o
 
 # target to build an object file
 src/pwiz/data/common/ParamTypes.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/ParamTypes.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/ParamTypes.cpp.o
 .PHONY : src/pwiz/data/common/ParamTypes.cpp.o
 
 src/pwiz/data/common/ParamTypes.i: src/pwiz/data/common/ParamTypes.cpp.i
@@ -249,7 +249,7 @@ src/pwiz/data/common/ParamTypes.i: src/pwiz/data/common/ParamTypes.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/common/ParamTypes.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/ParamTypes.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/ParamTypes.cpp.i
 .PHONY : src/pwiz/data/common/ParamTypes.cpp.i
 
 src/pwiz/data/common/ParamTypes.s: src/pwiz/data/common/ParamTypes.cpp.s
@@ -258,7 +258,7 @@ src/pwiz/data/common/ParamTypes.s: src/pwiz/data/common/ParamTypes.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/common/ParamTypes.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/ParamTypes.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/ParamTypes.cpp.s
 .PHONY : src/pwiz/data/common/ParamTypes.cpp.s
 
 src/pwiz/data/common/cv.o: src/pwiz/data/common/cv.cpp.o
@@ -267,7 +267,7 @@ src/pwiz/data/common/cv.o: src/pwiz/data/common/cv.cpp.o
 
 # target to build an object file
 src/pwiz/data/common/cv.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/cv.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/cv.cpp.o
 .PHONY : src/pwiz/data/common/cv.cpp.o
 
 src/pwiz/data/common/cv.i: src/pwiz/data/common/cv.cpp.i
@@ -276,7 +276,7 @@ src/pwiz/data/common/cv.i: src/pwiz/data/common/cv.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/common/cv.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/cv.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/cv.cpp.i
 .PHONY : src/pwiz/data/common/cv.cpp.i
 
 src/pwiz/data/common/cv.s: src/pwiz/data/common/cv.cpp.s
@@ -285,7 +285,7 @@ src/pwiz/data/common/cv.s: src/pwiz/data/common/cv.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/common/cv.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/cv.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/cv.cpp.s
 .PHONY : src/pwiz/data/common/cv.cpp.s
 
 src/pwiz/data/common/diff_std.o: src/pwiz/data/common/diff_std.cpp.o
@@ -294,7 +294,7 @@ src/pwiz/data/common/diff_std.o: src/pwiz/data/common/diff_std.cpp.o
 
 # target to build an object file
 src/pwiz/data/common/diff_std.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/diff_std.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/diff_std.cpp.o
 .PHONY : src/pwiz/data/common/diff_std.cpp.o
 
 src/pwiz/data/common/diff_std.i: src/pwiz/data/common/diff_std.cpp.i
@@ -303,7 +303,7 @@ src/pwiz/data/common/diff_std.i: src/pwiz/data/common/diff_std.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/common/diff_std.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/diff_std.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/diff_std.cpp.i
 .PHONY : src/pwiz/data/common/diff_std.cpp.i
 
 src/pwiz/data/common/diff_std.s: src/pwiz/data/common/diff_std.cpp.s
@@ -312,7 +312,7 @@ src/pwiz/data/common/diff_std.s: src/pwiz/data/common/diff_std.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/common/diff_std.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/common/diff_std.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/common/diff_std.cpp.s
 .PHONY : src/pwiz/data/common/diff_std.cpp.s
 
 src/pwiz/data/msdata/BinaryDataEncoder.o: src/pwiz/data/msdata/BinaryDataEncoder.cpp.o
@@ -321,7 +321,7 @@ src/pwiz/data/msdata/BinaryDataEncoder.o: src/pwiz/data/msdata/BinaryDataEncoder
 
 # target to build an object file
 src/pwiz/data/msdata/BinaryDataEncoder.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/BinaryDataEncoder.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/BinaryDataEncoder.cpp.o
 .PHONY : src/pwiz/data/msdata/BinaryDataEncoder.cpp.o
 
 src/pwiz/data/msdata/BinaryDataEncoder.i: src/pwiz/data/msdata/BinaryDataEncoder.cpp.i
@@ -330,7 +330,7 @@ src/pwiz/data/msdata/BinaryDataEncoder.i: src/pwiz/data/msdata/BinaryDataEncoder
 
 # target to preprocess a source file
 src/pwiz/data/msdata/BinaryDataEncoder.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/BinaryDataEncoder.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/BinaryDataEncoder.cpp.i
 .PHONY : src/pwiz/data/msdata/BinaryDataEncoder.cpp.i
 
 src/pwiz/data/msdata/BinaryDataEncoder.s: src/pwiz/data/msdata/BinaryDataEncoder.cpp.s
@@ -339,7 +339,7 @@ src/pwiz/data/msdata/BinaryDataEncoder.s: src/pwiz/data/msdata/BinaryDataEncoder
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/BinaryDataEncoder.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/BinaryDataEncoder.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/BinaryDataEncoder.cpp.s
 .PHONY : src/pwiz/data/msdata/BinaryDataEncoder.cpp.s
 
 src/pwiz/data/msdata/ChromatogramList_mzML.o: src/pwiz/data/msdata/ChromatogramList_mzML.cpp.o
@@ -348,7 +348,7 @@ src/pwiz/data/msdata/ChromatogramList_mzML.o: src/pwiz/data/msdata/ChromatogramL
 
 # target to build an object file
 src/pwiz/data/msdata/ChromatogramList_mzML.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/ChromatogramList_mzML.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/ChromatogramList_mzML.cpp.o
 .PHONY : src/pwiz/data/msdata/ChromatogramList_mzML.cpp.o
 
 src/pwiz/data/msdata/ChromatogramList_mzML.i: src/pwiz/data/msdata/ChromatogramList_mzML.cpp.i
@@ -357,7 +357,7 @@ src/pwiz/data/msdata/ChromatogramList_mzML.i: src/pwiz/data/msdata/ChromatogramL
 
 # target to preprocess a source file
 src/pwiz/data/msdata/ChromatogramList_mzML.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/ChromatogramList_mzML.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/ChromatogramList_mzML.cpp.i
 .PHONY : src/pwiz/data/msdata/ChromatogramList_mzML.cpp.i
 
 src/pwiz/data/msdata/ChromatogramList_mzML.s: src/pwiz/data/msdata/ChromatogramList_mzML.cpp.s
@@ -366,7 +366,7 @@ src/pwiz/data/msdata/ChromatogramList_mzML.s: src/pwiz/data/msdata/ChromatogramL
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/ChromatogramList_mzML.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/ChromatogramList_mzML.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/ChromatogramList_mzML.cpp.s
 .PHONY : src/pwiz/data/msdata/ChromatogramList_mzML.cpp.s
 
 src/pwiz/data/msdata/DefaultReaderList.o: src/pwiz/data/msdata/DefaultReaderList.cpp.o
@@ -375,7 +375,7 @@ src/pwiz/data/msdata/DefaultReaderList.o: src/pwiz/data/msdata/DefaultReaderList
 
 # target to build an object file
 src/pwiz/data/msdata/DefaultReaderList.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/DefaultReaderList.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/DefaultReaderList.cpp.o
 .PHONY : src/pwiz/data/msdata/DefaultReaderList.cpp.o
 
 src/pwiz/data/msdata/DefaultReaderList.i: src/pwiz/data/msdata/DefaultReaderList.cpp.i
@@ -384,7 +384,7 @@ src/pwiz/data/msdata/DefaultReaderList.i: src/pwiz/data/msdata/DefaultReaderList
 
 # target to preprocess a source file
 src/pwiz/data/msdata/DefaultReaderList.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/DefaultReaderList.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/DefaultReaderList.cpp.i
 .PHONY : src/pwiz/data/msdata/DefaultReaderList.cpp.i
 
 src/pwiz/data/msdata/DefaultReaderList.s: src/pwiz/data/msdata/DefaultReaderList.cpp.s
@@ -393,7 +393,7 @@ src/pwiz/data/msdata/DefaultReaderList.s: src/pwiz/data/msdata/DefaultReaderList
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/DefaultReaderList.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/DefaultReaderList.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/DefaultReaderList.cpp.s
 .PHONY : src/pwiz/data/msdata/DefaultReaderList.cpp.s
 
 src/pwiz/data/msdata/IO.o: src/pwiz/data/msdata/IO.cpp.o
@@ -402,7 +402,7 @@ src/pwiz/data/msdata/IO.o: src/pwiz/data/msdata/IO.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/IO.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/IO.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/IO.cpp.o
 .PHONY : src/pwiz/data/msdata/IO.cpp.o
 
 src/pwiz/data/msdata/IO.i: src/pwiz/data/msdata/IO.cpp.i
@@ -411,7 +411,7 @@ src/pwiz/data/msdata/IO.i: src/pwiz/data/msdata/IO.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/IO.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/IO.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/IO.cpp.i
 .PHONY : src/pwiz/data/msdata/IO.cpp.i
 
 src/pwiz/data/msdata/IO.s: src/pwiz/data/msdata/IO.cpp.s
@@ -420,7 +420,7 @@ src/pwiz/data/msdata/IO.s: src/pwiz/data/msdata/IO.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/IO.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/IO.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/IO.cpp.s
 .PHONY : src/pwiz/data/msdata/IO.cpp.s
 
 src/pwiz/data/msdata/Index_mzML.o: src/pwiz/data/msdata/Index_mzML.cpp.o
@@ -429,7 +429,7 @@ src/pwiz/data/msdata/Index_mzML.o: src/pwiz/data/msdata/Index_mzML.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/Index_mzML.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Index_mzML.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Index_mzML.cpp.o
 .PHONY : src/pwiz/data/msdata/Index_mzML.cpp.o
 
 src/pwiz/data/msdata/Index_mzML.i: src/pwiz/data/msdata/Index_mzML.cpp.i
@@ -438,7 +438,7 @@ src/pwiz/data/msdata/Index_mzML.i: src/pwiz/data/msdata/Index_mzML.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/Index_mzML.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Index_mzML.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Index_mzML.cpp.i
 .PHONY : src/pwiz/data/msdata/Index_mzML.cpp.i
 
 src/pwiz/data/msdata/Index_mzML.s: src/pwiz/data/msdata/Index_mzML.cpp.s
@@ -447,7 +447,7 @@ src/pwiz/data/msdata/Index_mzML.s: src/pwiz/data/msdata/Index_mzML.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/Index_mzML.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Index_mzML.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Index_mzML.cpp.s
 .PHONY : src/pwiz/data/msdata/Index_mzML.cpp.s
 
 src/pwiz/data/msdata/LegacyAdapter.o: src/pwiz/data/msdata/LegacyAdapter.cpp.o
@@ -456,7 +456,7 @@ src/pwiz/data/msdata/LegacyAdapter.o: src/pwiz/data/msdata/LegacyAdapter.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/LegacyAdapter.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/LegacyAdapter.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/LegacyAdapter.cpp.o
 .PHONY : src/pwiz/data/msdata/LegacyAdapter.cpp.o
 
 src/pwiz/data/msdata/LegacyAdapter.i: src/pwiz/data/msdata/LegacyAdapter.cpp.i
@@ -465,7 +465,7 @@ src/pwiz/data/msdata/LegacyAdapter.i: src/pwiz/data/msdata/LegacyAdapter.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/LegacyAdapter.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/LegacyAdapter.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/LegacyAdapter.cpp.i
 .PHONY : src/pwiz/data/msdata/LegacyAdapter.cpp.i
 
 src/pwiz/data/msdata/LegacyAdapter.s: src/pwiz/data/msdata/LegacyAdapter.cpp.s
@@ -474,7 +474,7 @@ src/pwiz/data/msdata/LegacyAdapter.s: src/pwiz/data/msdata/LegacyAdapter.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/LegacyAdapter.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/LegacyAdapter.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/LegacyAdapter.cpp.s
 .PHONY : src/pwiz/data/msdata/LegacyAdapter.cpp.s
 
 src/pwiz/data/msdata/MSData.o: src/pwiz/data/msdata/MSData.cpp.o
@@ -483,7 +483,7 @@ src/pwiz/data/msdata/MSData.o: src/pwiz/data/msdata/MSData.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/MSData.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSData.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSData.cpp.o
 .PHONY : src/pwiz/data/msdata/MSData.cpp.o
 
 src/pwiz/data/msdata/MSData.i: src/pwiz/data/msdata/MSData.cpp.i
@@ -492,7 +492,7 @@ src/pwiz/data/msdata/MSData.i: src/pwiz/data/msdata/MSData.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/MSData.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSData.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSData.cpp.i
 .PHONY : src/pwiz/data/msdata/MSData.cpp.i
 
 src/pwiz/data/msdata/MSData.s: src/pwiz/data/msdata/MSData.cpp.s
@@ -501,7 +501,7 @@ src/pwiz/data/msdata/MSData.s: src/pwiz/data/msdata/MSData.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/MSData.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSData.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSData.cpp.s
 .PHONY : src/pwiz/data/msdata/MSData.cpp.s
 
 src/pwiz/data/msdata/MSDataFile.o: src/pwiz/data/msdata/MSDataFile.cpp.o
@@ -510,7 +510,7 @@ src/pwiz/data/msdata/MSDataFile.o: src/pwiz/data/msdata/MSDataFile.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/MSDataFile.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSDataFile.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSDataFile.cpp.o
 .PHONY : src/pwiz/data/msdata/MSDataFile.cpp.o
 
 src/pwiz/data/msdata/MSDataFile.i: src/pwiz/data/msdata/MSDataFile.cpp.i
@@ -519,7 +519,7 @@ src/pwiz/data/msdata/MSDataFile.i: src/pwiz/data/msdata/MSDataFile.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/MSDataFile.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSDataFile.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSDataFile.cpp.i
 .PHONY : src/pwiz/data/msdata/MSDataFile.cpp.i
 
 src/pwiz/data/msdata/MSDataFile.s: src/pwiz/data/msdata/MSDataFile.cpp.s
@@ -528,7 +528,7 @@ src/pwiz/data/msdata/MSDataFile.s: src/pwiz/data/msdata/MSDataFile.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/MSDataFile.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSDataFile.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSDataFile.cpp.s
 .PHONY : src/pwiz/data/msdata/MSDataFile.cpp.s
 
 src/pwiz/data/msdata/MSNumpress.o: src/pwiz/data/msdata/MSNumpress.cpp.o
@@ -537,7 +537,7 @@ src/pwiz/data/msdata/MSNumpress.o: src/pwiz/data/msdata/MSNumpress.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/MSNumpress.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSNumpress.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSNumpress.cpp.o
 .PHONY : src/pwiz/data/msdata/MSNumpress.cpp.o
 
 src/pwiz/data/msdata/MSNumpress.i: src/pwiz/data/msdata/MSNumpress.cpp.i
@@ -546,7 +546,7 @@ src/pwiz/data/msdata/MSNumpress.i: src/pwiz/data/msdata/MSNumpress.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/MSNumpress.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSNumpress.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSNumpress.cpp.i
 .PHONY : src/pwiz/data/msdata/MSNumpress.cpp.i
 
 src/pwiz/data/msdata/MSNumpress.s: src/pwiz/data/msdata/MSNumpress.cpp.s
@@ -555,7 +555,7 @@ src/pwiz/data/msdata/MSNumpress.s: src/pwiz/data/msdata/MSNumpress.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/MSNumpress.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/MSNumpress.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/MSNumpress.cpp.s
 .PHONY : src/pwiz/data/msdata/MSNumpress.cpp.s
 
 src/pwiz/data/msdata/Reader.o: src/pwiz/data/msdata/Reader.cpp.o
@@ -564,7 +564,7 @@ src/pwiz/data/msdata/Reader.o: src/pwiz/data/msdata/Reader.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/Reader.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Reader.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Reader.cpp.o
 .PHONY : src/pwiz/data/msdata/Reader.cpp.o
 
 src/pwiz/data/msdata/Reader.i: src/pwiz/data/msdata/Reader.cpp.i
@@ -573,7 +573,7 @@ src/pwiz/data/msdata/Reader.i: src/pwiz/data/msdata/Reader.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/Reader.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Reader.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Reader.cpp.i
 .PHONY : src/pwiz/data/msdata/Reader.cpp.i
 
 src/pwiz/data/msdata/Reader.s: src/pwiz/data/msdata/Reader.cpp.s
@@ -582,7 +582,7 @@ src/pwiz/data/msdata/Reader.s: src/pwiz/data/msdata/Reader.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/Reader.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Reader.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Reader.cpp.s
 .PHONY : src/pwiz/data/msdata/Reader.cpp.s
 
 src/pwiz/data/msdata/References.o: src/pwiz/data/msdata/References.cpp.o
@@ -591,7 +591,7 @@ src/pwiz/data/msdata/References.o: src/pwiz/data/msdata/References.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/References.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/References.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/References.cpp.o
 .PHONY : src/pwiz/data/msdata/References.cpp.o
 
 src/pwiz/data/msdata/References.i: src/pwiz/data/msdata/References.cpp.i
@@ -600,7 +600,7 @@ src/pwiz/data/msdata/References.i: src/pwiz/data/msdata/References.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/References.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/References.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/References.cpp.i
 .PHONY : src/pwiz/data/msdata/References.cpp.i
 
 src/pwiz/data/msdata/References.s: src/pwiz/data/msdata/References.cpp.s
@@ -609,7 +609,7 @@ src/pwiz/data/msdata/References.s: src/pwiz/data/msdata/References.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/References.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/References.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/References.cpp.s
 .PHONY : src/pwiz/data/msdata/References.cpp.s
 
 src/pwiz/data/msdata/Serializer_MGF.o: src/pwiz/data/msdata/Serializer_MGF.cpp.o
@@ -618,7 +618,7 @@ src/pwiz/data/msdata/Serializer_MGF.o: src/pwiz/data/msdata/Serializer_MGF.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/Serializer_MGF.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_MGF.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_MGF.cpp.o
 .PHONY : src/pwiz/data/msdata/Serializer_MGF.cpp.o
 
 src/pwiz/data/msdata/Serializer_MGF.i: src/pwiz/data/msdata/Serializer_MGF.cpp.i
@@ -627,7 +627,7 @@ src/pwiz/data/msdata/Serializer_MGF.i: src/pwiz/data/msdata/Serializer_MGF.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/Serializer_MGF.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_MGF.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_MGF.cpp.i
 .PHONY : src/pwiz/data/msdata/Serializer_MGF.cpp.i
 
 src/pwiz/data/msdata/Serializer_MGF.s: src/pwiz/data/msdata/Serializer_MGF.cpp.s
@@ -636,7 +636,7 @@ src/pwiz/data/msdata/Serializer_MGF.s: src/pwiz/data/msdata/Serializer_MGF.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/Serializer_MGF.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_MGF.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_MGF.cpp.s
 .PHONY : src/pwiz/data/msdata/Serializer_MGF.cpp.s
 
 src/pwiz/data/msdata/Serializer_MSn.o: src/pwiz/data/msdata/Serializer_MSn.cpp.o
@@ -645,7 +645,7 @@ src/pwiz/data/msdata/Serializer_MSn.o: src/pwiz/data/msdata/Serializer_MSn.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/Serializer_MSn.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_MSn.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_MSn.cpp.o
 .PHONY : src/pwiz/data/msdata/Serializer_MSn.cpp.o
 
 src/pwiz/data/msdata/Serializer_MSn.i: src/pwiz/data/msdata/Serializer_MSn.cpp.i
@@ -654,7 +654,7 @@ src/pwiz/data/msdata/Serializer_MSn.i: src/pwiz/data/msdata/Serializer_MSn.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/Serializer_MSn.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_MSn.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_MSn.cpp.i
 .PHONY : src/pwiz/data/msdata/Serializer_MSn.cpp.i
 
 src/pwiz/data/msdata/Serializer_MSn.s: src/pwiz/data/msdata/Serializer_MSn.cpp.s
@@ -663,7 +663,7 @@ src/pwiz/data/msdata/Serializer_MSn.s: src/pwiz/data/msdata/Serializer_MSn.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/Serializer_MSn.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_MSn.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_MSn.cpp.s
 .PHONY : src/pwiz/data/msdata/Serializer_MSn.cpp.s
 
 src/pwiz/data/msdata/Serializer_mzML.o: src/pwiz/data/msdata/Serializer_mzML.cpp.o
@@ -672,7 +672,7 @@ src/pwiz/data/msdata/Serializer_mzML.o: src/pwiz/data/msdata/Serializer_mzML.cpp
 
 # target to build an object file
 src/pwiz/data/msdata/Serializer_mzML.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_mzML.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_mzML.cpp.o
 .PHONY : src/pwiz/data/msdata/Serializer_mzML.cpp.o
 
 src/pwiz/data/msdata/Serializer_mzML.i: src/pwiz/data/msdata/Serializer_mzML.cpp.i
@@ -681,7 +681,7 @@ src/pwiz/data/msdata/Serializer_mzML.i: src/pwiz/data/msdata/Serializer_mzML.cpp
 
 # target to preprocess a source file
 src/pwiz/data/msdata/Serializer_mzML.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_mzML.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_mzML.cpp.i
 .PHONY : src/pwiz/data/msdata/Serializer_mzML.cpp.i
 
 src/pwiz/data/msdata/Serializer_mzML.s: src/pwiz/data/msdata/Serializer_mzML.cpp.s
@@ -690,7 +690,7 @@ src/pwiz/data/msdata/Serializer_mzML.s: src/pwiz/data/msdata/Serializer_mzML.cpp
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/Serializer_mzML.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_mzML.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_mzML.cpp.s
 .PHONY : src/pwiz/data/msdata/Serializer_mzML.cpp.s
 
 src/pwiz/data/msdata/Serializer_mzXML.o: src/pwiz/data/msdata/Serializer_mzXML.cpp.o
@@ -699,7 +699,7 @@ src/pwiz/data/msdata/Serializer_mzXML.o: src/pwiz/data/msdata/Serializer_mzXML.c
 
 # target to build an object file
 src/pwiz/data/msdata/Serializer_mzXML.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_mzXML.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_mzXML.cpp.o
 .PHONY : src/pwiz/data/msdata/Serializer_mzXML.cpp.o
 
 src/pwiz/data/msdata/Serializer_mzXML.i: src/pwiz/data/msdata/Serializer_mzXML.cpp.i
@@ -708,7 +708,7 @@ src/pwiz/data/msdata/Serializer_mzXML.i: src/pwiz/data/msdata/Serializer_mzXML.c
 
 # target to preprocess a source file
 src/pwiz/data/msdata/Serializer_mzXML.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_mzXML.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_mzXML.cpp.i
 .PHONY : src/pwiz/data/msdata/Serializer_mzXML.cpp.i
 
 src/pwiz/data/msdata/Serializer_mzXML.s: src/pwiz/data/msdata/Serializer_mzXML.cpp.s
@@ -717,7 +717,7 @@ src/pwiz/data/msdata/Serializer_mzXML.s: src/pwiz/data/msdata/Serializer_mzXML.c
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/Serializer_mzXML.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Serializer_mzXML.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Serializer_mzXML.cpp.s
 .PHONY : src/pwiz/data/msdata/Serializer_mzXML.cpp.s
 
 src/pwiz/data/msdata/SpectrumInfo.o: src/pwiz/data/msdata/SpectrumInfo.cpp.o
@@ -726,7 +726,7 @@ src/pwiz/data/msdata/SpectrumInfo.o: src/pwiz/data/msdata/SpectrumInfo.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/SpectrumInfo.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumInfo.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumInfo.cpp.o
 .PHONY : src/pwiz/data/msdata/SpectrumInfo.cpp.o
 
 src/pwiz/data/msdata/SpectrumInfo.i: src/pwiz/data/msdata/SpectrumInfo.cpp.i
@@ -735,7 +735,7 @@ src/pwiz/data/msdata/SpectrumInfo.i: src/pwiz/data/msdata/SpectrumInfo.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/SpectrumInfo.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumInfo.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumInfo.cpp.i
 .PHONY : src/pwiz/data/msdata/SpectrumInfo.cpp.i
 
 src/pwiz/data/msdata/SpectrumInfo.s: src/pwiz/data/msdata/SpectrumInfo.cpp.s
@@ -744,7 +744,7 @@ src/pwiz/data/msdata/SpectrumInfo.s: src/pwiz/data/msdata/SpectrumInfo.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/SpectrumInfo.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumInfo.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumInfo.cpp.s
 .PHONY : src/pwiz/data/msdata/SpectrumInfo.cpp.s
 
 src/pwiz/data/msdata/SpectrumList_BTDX.o: src/pwiz/data/msdata/SpectrumList_BTDX.cpp.o
@@ -753,7 +753,7 @@ src/pwiz/data/msdata/SpectrumList_BTDX.o: src/pwiz/data/msdata/SpectrumList_BTDX
 
 # target to build an object file
 src/pwiz/data/msdata/SpectrumList_BTDX.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_BTDX.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_BTDX.cpp.o
 .PHONY : src/pwiz/data/msdata/SpectrumList_BTDX.cpp.o
 
 src/pwiz/data/msdata/SpectrumList_BTDX.i: src/pwiz/data/msdata/SpectrumList_BTDX.cpp.i
@@ -762,7 +762,7 @@ src/pwiz/data/msdata/SpectrumList_BTDX.i: src/pwiz/data/msdata/SpectrumList_BTDX
 
 # target to preprocess a source file
 src/pwiz/data/msdata/SpectrumList_BTDX.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_BTDX.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_BTDX.cpp.i
 .PHONY : src/pwiz/data/msdata/SpectrumList_BTDX.cpp.i
 
 src/pwiz/data/msdata/SpectrumList_BTDX.s: src/pwiz/data/msdata/SpectrumList_BTDX.cpp.s
@@ -771,7 +771,7 @@ src/pwiz/data/msdata/SpectrumList_BTDX.s: src/pwiz/data/msdata/SpectrumList_BTDX
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/SpectrumList_BTDX.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_BTDX.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_BTDX.cpp.s
 .PHONY : src/pwiz/data/msdata/SpectrumList_BTDX.cpp.s
 
 src/pwiz/data/msdata/SpectrumList_MGF.o: src/pwiz/data/msdata/SpectrumList_MGF.cpp.o
@@ -780,7 +780,7 @@ src/pwiz/data/msdata/SpectrumList_MGF.o: src/pwiz/data/msdata/SpectrumList_MGF.c
 
 # target to build an object file
 src/pwiz/data/msdata/SpectrumList_MGF.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_MGF.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_MGF.cpp.o
 .PHONY : src/pwiz/data/msdata/SpectrumList_MGF.cpp.o
 
 src/pwiz/data/msdata/SpectrumList_MGF.i: src/pwiz/data/msdata/SpectrumList_MGF.cpp.i
@@ -789,7 +789,7 @@ src/pwiz/data/msdata/SpectrumList_MGF.i: src/pwiz/data/msdata/SpectrumList_MGF.c
 
 # target to preprocess a source file
 src/pwiz/data/msdata/SpectrumList_MGF.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_MGF.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_MGF.cpp.i
 .PHONY : src/pwiz/data/msdata/SpectrumList_MGF.cpp.i
 
 src/pwiz/data/msdata/SpectrumList_MGF.s: src/pwiz/data/msdata/SpectrumList_MGF.cpp.s
@@ -798,7 +798,7 @@ src/pwiz/data/msdata/SpectrumList_MGF.s: src/pwiz/data/msdata/SpectrumList_MGF.c
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/SpectrumList_MGF.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_MGF.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_MGF.cpp.s
 .PHONY : src/pwiz/data/msdata/SpectrumList_MGF.cpp.s
 
 src/pwiz/data/msdata/SpectrumList_MSn.o: src/pwiz/data/msdata/SpectrumList_MSn.cpp.o
@@ -807,7 +807,7 @@ src/pwiz/data/msdata/SpectrumList_MSn.o: src/pwiz/data/msdata/SpectrumList_MSn.c
 
 # target to build an object file
 src/pwiz/data/msdata/SpectrumList_MSn.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_MSn.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_MSn.cpp.o
 .PHONY : src/pwiz/data/msdata/SpectrumList_MSn.cpp.o
 
 src/pwiz/data/msdata/SpectrumList_MSn.i: src/pwiz/data/msdata/SpectrumList_MSn.cpp.i
@@ -816,7 +816,7 @@ src/pwiz/data/msdata/SpectrumList_MSn.i: src/pwiz/data/msdata/SpectrumList_MSn.c
 
 # target to preprocess a source file
 src/pwiz/data/msdata/SpectrumList_MSn.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_MSn.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_MSn.cpp.i
 .PHONY : src/pwiz/data/msdata/SpectrumList_MSn.cpp.i
 
 src/pwiz/data/msdata/SpectrumList_MSn.s: src/pwiz/data/msdata/SpectrumList_MSn.cpp.s
@@ -825,7 +825,7 @@ src/pwiz/data/msdata/SpectrumList_MSn.s: src/pwiz/data/msdata/SpectrumList_MSn.c
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/SpectrumList_MSn.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_MSn.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_MSn.cpp.s
 .PHONY : src/pwiz/data/msdata/SpectrumList_MSn.cpp.s
 
 src/pwiz/data/msdata/SpectrumList_mzML.o: src/pwiz/data/msdata/SpectrumList_mzML.cpp.o
@@ -834,7 +834,7 @@ src/pwiz/data/msdata/SpectrumList_mzML.o: src/pwiz/data/msdata/SpectrumList_mzML
 
 # target to build an object file
 src/pwiz/data/msdata/SpectrumList_mzML.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_mzML.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_mzML.cpp.o
 .PHONY : src/pwiz/data/msdata/SpectrumList_mzML.cpp.o
 
 src/pwiz/data/msdata/SpectrumList_mzML.i: src/pwiz/data/msdata/SpectrumList_mzML.cpp.i
@@ -843,7 +843,7 @@ src/pwiz/data/msdata/SpectrumList_mzML.i: src/pwiz/data/msdata/SpectrumList_mzML
 
 # target to preprocess a source file
 src/pwiz/data/msdata/SpectrumList_mzML.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_mzML.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_mzML.cpp.i
 .PHONY : src/pwiz/data/msdata/SpectrumList_mzML.cpp.i
 
 src/pwiz/data/msdata/SpectrumList_mzML.s: src/pwiz/data/msdata/SpectrumList_mzML.cpp.s
@@ -852,7 +852,7 @@ src/pwiz/data/msdata/SpectrumList_mzML.s: src/pwiz/data/msdata/SpectrumList_mzML
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/SpectrumList_mzML.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_mzML.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_mzML.cpp.s
 .PHONY : src/pwiz/data/msdata/SpectrumList_mzML.cpp.s
 
 src/pwiz/data/msdata/SpectrumList_mzXML.o: src/pwiz/data/msdata/SpectrumList_mzXML.cpp.o
@@ -861,7 +861,7 @@ src/pwiz/data/msdata/SpectrumList_mzXML.o: src/pwiz/data/msdata/SpectrumList_mzX
 
 # target to build an object file
 src/pwiz/data/msdata/SpectrumList_mzXML.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_mzXML.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_mzXML.cpp.o
 .PHONY : src/pwiz/data/msdata/SpectrumList_mzXML.cpp.o
 
 src/pwiz/data/msdata/SpectrumList_mzXML.i: src/pwiz/data/msdata/SpectrumList_mzXML.cpp.i
@@ -870,7 +870,7 @@ src/pwiz/data/msdata/SpectrumList_mzXML.i: src/pwiz/data/msdata/SpectrumList_mzX
 
 # target to preprocess a source file
 src/pwiz/data/msdata/SpectrumList_mzXML.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_mzXML.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_mzXML.cpp.i
 .PHONY : src/pwiz/data/msdata/SpectrumList_mzXML.cpp.i
 
 src/pwiz/data/msdata/SpectrumList_mzXML.s: src/pwiz/data/msdata/SpectrumList_mzXML.cpp.s
@@ -879,7 +879,7 @@ src/pwiz/data/msdata/SpectrumList_mzXML.s: src/pwiz/data/msdata/SpectrumList_mzX
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/SpectrumList_mzXML.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumList_mzXML.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumList_mzXML.cpp.s
 .PHONY : src/pwiz/data/msdata/SpectrumList_mzXML.cpp.s
 
 src/pwiz/data/msdata/SpectrumWorkerThreads.o: src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.o
@@ -888,7 +888,7 @@ src/pwiz/data/msdata/SpectrumWorkerThreads.o: src/pwiz/data/msdata/SpectrumWorke
 
 # target to build an object file
 src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.o
 .PHONY : src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.o
 
 src/pwiz/data/msdata/SpectrumWorkerThreads.i: src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.i
@@ -897,7 +897,7 @@ src/pwiz/data/msdata/SpectrumWorkerThreads.i: src/pwiz/data/msdata/SpectrumWorke
 
 # target to preprocess a source file
 src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.i
 .PHONY : src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.i
 
 src/pwiz/data/msdata/SpectrumWorkerThreads.s: src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.s
@@ -906,7 +906,7 @@ src/pwiz/data/msdata/SpectrumWorkerThreads.s: src/pwiz/data/msdata/SpectrumWorke
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.s
 .PHONY : src/pwiz/data/msdata/SpectrumWorkerThreads.cpp.s
 
 src/pwiz/data/msdata/Version.o: src/pwiz/data/msdata/Version.cpp.o
@@ -915,7 +915,7 @@ src/pwiz/data/msdata/Version.o: src/pwiz/data/msdata/Version.cpp.o
 
 # target to build an object file
 src/pwiz/data/msdata/Version.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Version.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Version.cpp.o
 .PHONY : src/pwiz/data/msdata/Version.cpp.o
 
 src/pwiz/data/msdata/Version.i: src/pwiz/data/msdata/Version.cpp.i
@@ -924,7 +924,7 @@ src/pwiz/data/msdata/Version.i: src/pwiz/data/msdata/Version.cpp.i
 
 # target to preprocess a source file
 src/pwiz/data/msdata/Version.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Version.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Version.cpp.i
 .PHONY : src/pwiz/data/msdata/Version.cpp.i
 
 src/pwiz/data/msdata/Version.s: src/pwiz/data/msdata/Version.cpp.s
@@ -933,7 +933,7 @@ src/pwiz/data/msdata/Version.s: src/pwiz/data/msdata/Version.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/data/msdata/Version.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/data/msdata/Version.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/data/msdata/Version.cpp.s
 .PHONY : src/pwiz/data/msdata/Version.cpp.s
 
 src/pwiz/utility/minimxml/SAXParser.o: src/pwiz/utility/minimxml/SAXParser.cpp.o
@@ -942,7 +942,7 @@ src/pwiz/utility/minimxml/SAXParser.o: src/pwiz/utility/minimxml/SAXParser.cpp.o
 
 # target to build an object file
 src/pwiz/utility/minimxml/SAXParser.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/minimxml/SAXParser.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/minimxml/SAXParser.cpp.o
 .PHONY : src/pwiz/utility/minimxml/SAXParser.cpp.o
 
 src/pwiz/utility/minimxml/SAXParser.i: src/pwiz/utility/minimxml/SAXParser.cpp.i
@@ -951,7 +951,7 @@ src/pwiz/utility/minimxml/SAXParser.i: src/pwiz/utility/minimxml/SAXParser.cpp.i
 
 # target to preprocess a source file
 src/pwiz/utility/minimxml/SAXParser.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/minimxml/SAXParser.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/minimxml/SAXParser.cpp.i
 .PHONY : src/pwiz/utility/minimxml/SAXParser.cpp.i
 
 src/pwiz/utility/minimxml/SAXParser.s: src/pwiz/utility/minimxml/SAXParser.cpp.s
@@ -960,7 +960,7 @@ src/pwiz/utility/minimxml/SAXParser.s: src/pwiz/utility/minimxml/SAXParser.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/utility/minimxml/SAXParser.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/minimxml/SAXParser.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/minimxml/SAXParser.cpp.s
 .PHONY : src/pwiz/utility/minimxml/SAXParser.cpp.s
 
 src/pwiz/utility/minimxml/XMLWriter.o: src/pwiz/utility/minimxml/XMLWriter.cpp.o
@@ -969,7 +969,7 @@ src/pwiz/utility/minimxml/XMLWriter.o: src/pwiz/utility/minimxml/XMLWriter.cpp.o
 
 # target to build an object file
 src/pwiz/utility/minimxml/XMLWriter.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/minimxml/XMLWriter.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/minimxml/XMLWriter.cpp.o
 .PHONY : src/pwiz/utility/minimxml/XMLWriter.cpp.o
 
 src/pwiz/utility/minimxml/XMLWriter.i: src/pwiz/utility/minimxml/XMLWriter.cpp.i
@@ -978,7 +978,7 @@ src/pwiz/utility/minimxml/XMLWriter.i: src/pwiz/utility/minimxml/XMLWriter.cpp.i
 
 # target to preprocess a source file
 src/pwiz/utility/minimxml/XMLWriter.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/minimxml/XMLWriter.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/minimxml/XMLWriter.cpp.i
 .PHONY : src/pwiz/utility/minimxml/XMLWriter.cpp.i
 
 src/pwiz/utility/minimxml/XMLWriter.s: src/pwiz/utility/minimxml/XMLWriter.cpp.s
@@ -987,7 +987,7 @@ src/pwiz/utility/minimxml/XMLWriter.s: src/pwiz/utility/minimxml/XMLWriter.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/utility/minimxml/XMLWriter.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/minimxml/XMLWriter.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/minimxml/XMLWriter.cpp.s
 .PHONY : src/pwiz/utility/minimxml/XMLWriter.cpp.s
 
 src/pwiz/utility/misc/Base64.o: src/pwiz/utility/misc/Base64.cpp.o
@@ -996,7 +996,7 @@ src/pwiz/utility/misc/Base64.o: src/pwiz/utility/misc/Base64.cpp.o
 
 # target to build an object file
 src/pwiz/utility/misc/Base64.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/Base64.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/Base64.cpp.o
 .PHONY : src/pwiz/utility/misc/Base64.cpp.o
 
 src/pwiz/utility/misc/Base64.i: src/pwiz/utility/misc/Base64.cpp.i
@@ -1005,7 +1005,7 @@ src/pwiz/utility/misc/Base64.i: src/pwiz/utility/misc/Base64.cpp.i
 
 # target to preprocess a source file
 src/pwiz/utility/misc/Base64.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/Base64.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/Base64.cpp.i
 .PHONY : src/pwiz/utility/misc/Base64.cpp.i
 
 src/pwiz/utility/misc/Base64.s: src/pwiz/utility/misc/Base64.cpp.s
@@ -1014,7 +1014,7 @@ src/pwiz/utility/misc/Base64.s: src/pwiz/utility/misc/Base64.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/utility/misc/Base64.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/Base64.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/Base64.cpp.s
 .PHONY : src/pwiz/utility/misc/Base64.cpp.s
 
 src/pwiz/utility/misc/Filesystem.o: src/pwiz/utility/misc/Filesystem.cpp.o
@@ -1023,7 +1023,7 @@ src/pwiz/utility/misc/Filesystem.o: src/pwiz/utility/misc/Filesystem.cpp.o
 
 # target to build an object file
 src/pwiz/utility/misc/Filesystem.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/Filesystem.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/Filesystem.cpp.o
 .PHONY : src/pwiz/utility/misc/Filesystem.cpp.o
 
 src/pwiz/utility/misc/Filesystem.i: src/pwiz/utility/misc/Filesystem.cpp.i
@@ -1032,7 +1032,7 @@ src/pwiz/utility/misc/Filesystem.i: src/pwiz/utility/misc/Filesystem.cpp.i
 
 # target to preprocess a source file
 src/pwiz/utility/misc/Filesystem.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/Filesystem.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/Filesystem.cpp.i
 .PHONY : src/pwiz/utility/misc/Filesystem.cpp.i
 
 src/pwiz/utility/misc/Filesystem.s: src/pwiz/utility/misc/Filesystem.cpp.s
@@ -1041,7 +1041,7 @@ src/pwiz/utility/misc/Filesystem.s: src/pwiz/utility/misc/Filesystem.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/utility/misc/Filesystem.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/Filesystem.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/Filesystem.cpp.s
 .PHONY : src/pwiz/utility/misc/Filesystem.cpp.s
 
 src/pwiz/utility/misc/IntegerSet.o: src/pwiz/utility/misc/IntegerSet.cpp.o
@@ -1050,7 +1050,7 @@ src/pwiz/utility/misc/IntegerSet.o: src/pwiz/utility/misc/IntegerSet.cpp.o
 
 # target to build an object file
 src/pwiz/utility/misc/IntegerSet.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/IntegerSet.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/IntegerSet.cpp.o
 .PHONY : src/pwiz/utility/misc/IntegerSet.cpp.o
 
 src/pwiz/utility/misc/IntegerSet.i: src/pwiz/utility/misc/IntegerSet.cpp.i
@@ -1059,7 +1059,7 @@ src/pwiz/utility/misc/IntegerSet.i: src/pwiz/utility/misc/IntegerSet.cpp.i
 
 # target to preprocess a source file
 src/pwiz/utility/misc/IntegerSet.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/IntegerSet.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/IntegerSet.cpp.i
 .PHONY : src/pwiz/utility/misc/IntegerSet.cpp.i
 
 src/pwiz/utility/misc/IntegerSet.s: src/pwiz/utility/misc/IntegerSet.cpp.s
@@ -1068,7 +1068,7 @@ src/pwiz/utility/misc/IntegerSet.s: src/pwiz/utility/misc/IntegerSet.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/utility/misc/IntegerSet.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/IntegerSet.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/IntegerSet.cpp.s
 .PHONY : src/pwiz/utility/misc/IntegerSet.cpp.s
 
 src/pwiz/utility/misc/IterationListener.o: src/pwiz/utility/misc/IterationListener.cpp.o
@@ -1077,7 +1077,7 @@ src/pwiz/utility/misc/IterationListener.o: src/pwiz/utility/misc/IterationListen
 
 # target to build an object file
 src/pwiz/utility/misc/IterationListener.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/IterationListener.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/IterationListener.cpp.o
 .PHONY : src/pwiz/utility/misc/IterationListener.cpp.o
 
 src/pwiz/utility/misc/IterationListener.i: src/pwiz/utility/misc/IterationListener.cpp.i
@@ -1086,7 +1086,7 @@ src/pwiz/utility/misc/IterationListener.i: src/pwiz/utility/misc/IterationListen
 
 # target to preprocess a source file
 src/pwiz/utility/misc/IterationListener.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/IterationListener.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/IterationListener.cpp.i
 .PHONY : src/pwiz/utility/misc/IterationListener.cpp.i
 
 src/pwiz/utility/misc/IterationListener.s: src/pwiz/utility/misc/IterationListener.cpp.s
@@ -1095,7 +1095,7 @@ src/pwiz/utility/misc/IterationListener.s: src/pwiz/utility/misc/IterationListen
 
 # target to generate assembly for a file
 src/pwiz/utility/misc/IterationListener.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/IterationListener.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/IterationListener.cpp.s
 .PHONY : src/pwiz/utility/misc/IterationListener.cpp.s
 
 src/pwiz/utility/misc/SHA1.o: src/pwiz/utility/misc/SHA1.cpp.o
@@ -1104,7 +1104,7 @@ src/pwiz/utility/misc/SHA1.o: src/pwiz/utility/misc/SHA1.cpp.o
 
 # target to build an object file
 src/pwiz/utility/misc/SHA1.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/SHA1.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/SHA1.cpp.o
 .PHONY : src/pwiz/utility/misc/SHA1.cpp.o
 
 src/pwiz/utility/misc/SHA1.i: src/pwiz/utility/misc/SHA1.cpp.i
@@ -1113,7 +1113,7 @@ src/pwiz/utility/misc/SHA1.i: src/pwiz/utility/misc/SHA1.cpp.i
 
 # target to preprocess a source file
 src/pwiz/utility/misc/SHA1.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/SHA1.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/SHA1.cpp.i
 .PHONY : src/pwiz/utility/misc/SHA1.cpp.i
 
 src/pwiz/utility/misc/SHA1.s: src/pwiz/utility/misc/SHA1.cpp.s
@@ -1122,7 +1122,7 @@ src/pwiz/utility/misc/SHA1.s: src/pwiz/utility/misc/SHA1.cpp.s
 
 # target to generate assembly for a file
 src/pwiz/utility/misc/SHA1.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/SHA1.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/SHA1.cpp.s
 .PHONY : src/pwiz/utility/misc/SHA1.cpp.s
 
 src/pwiz/utility/misc/SHA1Calculator.o: src/pwiz/utility/misc/SHA1Calculator.cpp.o
@@ -1131,7 +1131,7 @@ src/pwiz/utility/misc/SHA1Calculator.o: src/pwiz/utility/misc/SHA1Calculator.cpp
 
 # target to build an object file
 src/pwiz/utility/misc/SHA1Calculator.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/SHA1Calculator.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/SHA1Calculator.cpp.o
 .PHONY : src/pwiz/utility/misc/SHA1Calculator.cpp.o
 
 src/pwiz/utility/misc/SHA1Calculator.i: src/pwiz/utility/misc/SHA1Calculator.cpp.i
@@ -1140,7 +1140,7 @@ src/pwiz/utility/misc/SHA1Calculator.i: src/pwiz/utility/misc/SHA1Calculator.cpp
 
 # target to preprocess a source file
 src/pwiz/utility/misc/SHA1Calculator.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/SHA1Calculator.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/SHA1Calculator.cpp.i
 .PHONY : src/pwiz/utility/misc/SHA1Calculator.cpp.i
 
 src/pwiz/utility/misc/SHA1Calculator.s: src/pwiz/utility/misc/SHA1Calculator.cpp.s
@@ -1149,7 +1149,7 @@ src/pwiz/utility/misc/SHA1Calculator.s: src/pwiz/utility/misc/SHA1Calculator.cpp
 
 # target to generate assembly for a file
 src/pwiz/utility/misc/SHA1Calculator.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/SHA1Calculator.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/SHA1Calculator.cpp.s
 .PHONY : src/pwiz/utility/misc/SHA1Calculator.cpp.s
 
 src/pwiz/utility/misc/random_access_compressed_ifstream.o: src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.o
@@ -1158,7 +1158,7 @@ src/pwiz/utility/misc/random_access_compressed_ifstream.o: src/pwiz/utility/misc
 
 # target to build an object file
 src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.o
 .PHONY : src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.o
 
 src/pwiz/utility/misc/random_access_compressed_ifstream.i: src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.i
@@ -1167,7 +1167,7 @@ src/pwiz/utility/misc/random_access_compressed_ifstream.i: src/pwiz/utility/misc
 
 # target to preprocess a source file
 src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.i
 .PHONY : src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.i
 
 src/pwiz/utility/misc/random_access_compressed_ifstream.s: src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.s
@@ -1176,7 +1176,7 @@ src/pwiz/utility/misc/random_access_compressed_ifstream.s: src/pwiz/utility/misc
 
 # target to generate assembly for a file
 src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.s
 .PHONY : src/pwiz/utility/misc/random_access_compressed_ifstream.cpp.s
 
 src/sqlite/sqlite3.o: src/sqlite/sqlite3.c.o
@@ -1185,7 +1185,7 @@ src/sqlite/sqlite3.o: src/sqlite/sqlite3.c.o
 
 # target to build an object file
 src/sqlite/sqlite3.c.o:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/sqlite/sqlite3.c.o
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/sqlite/sqlite3.c.o
 .PHONY : src/sqlite/sqlite3.c.o
 
 src/sqlite/sqlite3.i: src/sqlite/sqlite3.c.i
@@ -1194,7 +1194,7 @@ src/sqlite/sqlite3.i: src/sqlite/sqlite3.c.i
 
 # target to preprocess a source file
 src/sqlite/sqlite3.c.i:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/sqlite/sqlite3.c.i
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/sqlite/sqlite3.c.i
 .PHONY : src/sqlite/sqlite3.c.i
 
 src/sqlite/sqlite3.s: src/sqlite/sqlite3.c.s
@@ -1203,7 +1203,7 @@ src/sqlite/sqlite3.s: src/sqlite/sqlite3.c.s
 
 # target to generate assembly for a file
 src/sqlite/sqlite3.c.s:
-	$(MAKE) -f CMakeFiles/testreader.dir/build.make CMakeFiles/testreader.dir/src/sqlite/sqlite3.c.s
+	$(MAKE) -f CMakeFiles/mzMLReader.dir/build.make CMakeFiles/mzMLReader.dir/src/sqlite/sqlite3.c.s
 .PHONY : src/sqlite/sqlite3.c.s
 
 # Help Target
@@ -1213,7 +1213,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... testreader"
+	@echo "... mzMLReader"
 	@echo "... edit_cache"
 	@echo "... src/main.o"
 	@echo "... src/main.i"

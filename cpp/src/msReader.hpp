@@ -11,6 +11,7 @@
 #include "mzMLReader.hpp" 
 
 #include "pwiz/data/msdata/SpectrumList_mzML.hpp"
+#include "pwiz/data/msdata/SpectrumInfo.hpp"
 #include "pwiz/utility/misc/Std.hpp"
 #include <time.h>
 using namespace pwiz::msdata;

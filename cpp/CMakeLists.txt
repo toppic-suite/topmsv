@@ -1,7 +1,7 @@
 #Specify the version being used as well as the language
 cmake_minimum_required(VERSION 3.1)
 #Nmae your project here
-PROJECT(testreader)
+PROJECT(mzMLReader)
 
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -15,7 +15,7 @@ message(STATUS "system name " ${CMAKE_SYSTEM_NAME})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,./testreader_resources/lib")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,./mzMLReader_resources/lib")
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
@@ -34,16 +34,16 @@ file(GLOB PWIZ_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/pwiz/utility/minimxml/*.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/src/pwiz/data/common/*.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/src/pwiz/data/msdata/*.cpp)
 
-# testreader
-file(GLOB TESTREADER_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+# mzMLReader
+file(GLOB MZMLREADER_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 # msReader
 file(GLOB MSREADER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/msReader.cpp
                        ${CMAKE_CURRENT_SOURCE_DIR}/src/mzMLReader.cpp)
 
-add_executable(testreader ${TESTREADER_MAIN_SRCS} ${MSREADER_SRC} ${PWIZ_SRC} ${SQLITE3})
+add_executable(mzMLReader ${MZMLREADER_MAIN_SRCS} ${MSREADER_SRC} ${PWIZ_SRC} ${SQLITE3})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  target_link_libraries(testreader dl xalan-c xerces-c boost_program_options
+  target_link_libraries(mzMLReader dl xalan-c xerces-c boost_program_options
         boost_filesystem boost_system boost_thread boost_iostreams boost_chrono pthread z)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 

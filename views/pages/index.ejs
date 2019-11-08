@@ -24,36 +24,200 @@
 		<div class="jumbotron">
 			<h2>
 				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode%>">
+				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir%>">
 				Please type in ScanID within Scan Range above: <input type="text" id="scanID" name="scanID"><br>
-				<button type="button" onclick="loadDoc()">Request</button>
+				<button type="submit" id="request">Request</button>
 				</h2>
 <!--			<p id="demo"></p>-->
 			<!--<svg id="spectrum"></svg>-->
 		</div>
 		<div class="jumbotron">
 			<h2>
-				<p>ScanID</p>
-				<p>ScanLevel</p>
-				<button type="button">Previous</button>
-				<button type="button">Next</button>
+				<p><strong>ScanLevel One</strong></p>
+				<p>ScanID: <span id="scanID1"></span></p>
+				<p id="scanLevel1"></p>
+				<button type="submit" id="prev1">Previous</button>
+				<button type="submit" id="next1">Next</button>
 			</h2>
-			<svg id="spectrum"></svg>
+			<svg id="spectrum1"></svg>
+		</div>
+		<div class="jumbotron">
+			<h2>
+				<p><strong>ScanLevel Two</strong></p>
+				<p>ScanID: <span id="scanID2"></span></p>
+				<p id="scanLevel2"></p>
+				<p>Precursor m/z value: <span id="prec_mz"></span></p>
+				<button type="submit" id="prev2">Previous</button>
+				<button type="submit" id="next2">Next</button>
+			</h2>
+			<svg id="spectrum2"></svg>
 		</div>
 	</main>
 	<script>
-		function loadDoc() {
+		function getRelatedScan1(scanID) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
-					//document.getElementById("demo").innerHTML = this.responseText;
-					//alert("mz: "+response[2].mz + " intensity: " + response[2].intensity);
-					var response = JSON.parse(this.responseText);
-					addSpectrum(response, []);
+					var response = this.responseText;
+					loadPeakList2(response);
+					getPrecMZ(response);
 				}
 			};
-			xhttp.open("GET", "peaklist?projectCode=" + document.getElementById("projectCode").value + "&scanID=" + document.getElementById("scanID").value, true);
+			xhttp.open("GET", "relatedScan1?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
 			xhttp.send();
 		}
+		function getRelatedScan2(scanID) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var response = this.responseText;
+					loadPeakList1(response);
+					//getPrecMZ(scanID);
+				}
+			};
+			xhttp.open("GET", "relatedScan2?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+			xhttp.send();
+		}
+		function getScanLevel(scanID) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var response = this.responseText;
+					if (response == 1) {
+						loadPeakList1(scanID);
+						//getPrecMZ(scanID);
+						getRelatedScan1(scanID);
+					}else {
+						loadPeakList2(scanID);
+						getPrecMZ(scanID);
+						getRelatedScan2(scanID);
+					}
+				}
+			};
+			xhttp.open("GET", "scanlevel?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+			xhttp.send();
+		}
+		function getScanID(ID) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var response = this.responseText;
+                    getScanLevel(response);
+                }
+            };
+            xhttp.open("GET", "scanID?projectDir=" + document.getElementById("projectDir").value + "&ID=" + ID, true);
+            xhttp.send();
+        }
+        function getPrecMZ(scanID) {
+			if (scanID !== '0') {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						var response = this.responseText;
+						document.getElementById("prec_mz").innerText = response;
+					}
+				};
+				xhttp.open("GET", "precMZ?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+				xhttp.send();
+			}
+		}
+		function loadPeakList1(scanID) {
+			if (scanID !== '0') {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						var t3 = performance.now();
+						console.log("Call to fetch peaklist1 data from server took " + (t3 - t2) + " milliseconds.");
+						var response = JSON.parse(this.responseText);
+						document.getElementById("scanID1").innerText = scanID;
+						var t0 = performance.now();
+						addSpectrum1(response, []);
+						var t1 = performance.now();
+						console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
+					}
+				};
+				var t2 = performance.now();
+				xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+				xhttp.send();
+			}else{
+				alert("NULL");
+			}
+		}
+		function loadPeakList2(scanID) {
+			if(scanID !== '0') {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						var t5 = performance.now();
+						console.log("Call to fetch peaklist2 data from server took " + (t5 - t4) + " milliseconds.");
+						var response = JSON.parse(this.responseText);
+						document.getElementById("scanID2").innerText = scanID;
+						//getPrecMZ(scanID);
+						var t6 = performance.now();
+						addSpectrum2(response, []);
+						var t7 = performance.now();
+						console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
+					}
+				};
+				var t4 = performance.now();
+				xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+				xhttp.send();
+			}else{
+				alert("NULL");
+			}
+		}
+		function prev(scanID) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					//console.log("Call to fetch prev id from server took " + (t5 - t4) + " milliseconds.");
+					var response = this.responseText;
+					if(response !== '0'){
+						getScanID(response);
+					}else {
+						alert("NULL");
+					}
+				}
+			};
+			xhttp.open("GET", "prev?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+			xhttp.send();
+		}
+		function next(scanID) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					//console.log("Call to fetch next id from server took " + (t7 - t6) + " milliseconds.");
+					var response = this.responseText;
+					if(response !== '0') {
+						getScanID(response);
+					}else {
+						alert("NULL");
+					}
+				}
+			};
+			xhttp.open("GET", "next?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+			xhttp.send();
+		}
+		var requestButton = document.getElementById('request');
+		requestButton.addEventListener('click', function () {
+			getScanLevel(document.getElementById("scanID").value);
+		},false)
+		var prev1 = document.getElementById('prev1');
+		prev1.addEventListener('click', function () {
+			prev(document.getElementById("scanID1").innerHTML);
+		},false)
+		var next1 = document.getElementById('next1');
+		next1.addEventListener('click', function () {
+			next(document.getElementById("scanID1").innerHTML);
+		},false)
+		var prev2 = document.getElementById('prev2');
+		prev2.addEventListener('click', function () {
+			prev(document.getElementById("scanID2").innerHTML);
+		},false)
+		var next2 = document.getElementById('next2');
+		next2.addEventListener('click', function () {
+			next(document.getElementById("scanID2").innerHTML);
+		},false)
 	</script>
 </body>
 </html>
