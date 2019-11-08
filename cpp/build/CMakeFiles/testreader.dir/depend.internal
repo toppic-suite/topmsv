@@ -26,6 +26,7 @@ CMakeFiles/testreader.dir/src/main.cpp.o
  /home/jiangtia/Work/data_uploader/cpp/src/mzMLReader.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/Index_mzML.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/MSData.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumInfo.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumListBase.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumList_mzML.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/utility/misc/Std.hpp
@@ -53,6 +54,7 @@ CMakeFiles/testreader.dir/src/msReader.cpp.o
  /home/jiangtia/Work/data_uploader/cpp/src/mzMLReader.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/Index_mzML.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/MSData.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumInfo.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumListBase.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumList_mzML.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/utility/misc/Std.hpp

@@ -529,6 +529,8 @@ mzMLReader.hpp
 /home/jiangtia/Work/data_uploader/cpp/src/mzMLReader.hpp
 pwiz/data/msdata/SpectrumList_mzML.hpp
 /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumList_mzML.hpp
+pwiz/data/msdata/SpectrumInfo.hpp
+/home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumInfo.hpp
 pwiz/utility/misc/Std.hpp
 /home/jiangtia/Work/data_uploader/cpp/src/pwiz/utility/misc/Std.hpp
 time.h

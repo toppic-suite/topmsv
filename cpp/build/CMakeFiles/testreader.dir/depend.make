@@ -25,6 +25,7 @@ CMakeFiles/testreader.dir/src/main.cpp.o: ../src/msReader.hpp
 CMakeFiles/testreader.dir/src/main.cpp.o: ../src/mzMLReader.hpp
 CMakeFiles/testreader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/Index_mzML.hpp
 CMakeFiles/testreader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/MSData.hpp
+CMakeFiles/testreader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/SpectrumInfo.hpp
 CMakeFiles/testreader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/SpectrumListBase.hpp
 CMakeFiles/testreader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/SpectrumList_mzML.hpp
 CMakeFiles/testreader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/Std.hpp
@@ -52,6 +53,7 @@ CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/msReader.hpp
 CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/mzMLReader.hpp
 CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/Index_mzML.hpp
 CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/MSData.hpp
+CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/SpectrumInfo.hpp
 CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/SpectrumListBase.hpp
 CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/SpectrumList_mzML.hpp
 CMakeFiles/testreader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/Std.hpp
