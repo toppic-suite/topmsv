@@ -527,6 +527,10 @@ vector
 -
 mzMLReader.hpp
 /home/jiangtia/Work/data_uploader/cpp/src/mzMLReader.hpp
+pwiz/data/msdata/DefaultReaderList.hpp
+/home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/DefaultReaderList.hpp
+pwiz/data/msdata/MSDataFile.hpp
+/home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/MSDataFile.hpp
 pwiz/data/msdata/SpectrumList_mzML.hpp
 /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumList_mzML.hpp
 pwiz/data/msdata/SpectrumInfo.hpp

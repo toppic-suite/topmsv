@@ -17,6 +17,7 @@ CMakeFiles/mzMLReader.dir/src/main.cpp.o
  ../src/pwiz/utility/misc/Exception.hpp
  ../src/pwiz/utility/misc/Export.hpp
  ../src/pwiz/utility/misc/IntegerSet.hpp
+ ../src/pwiz/utility/misc/IterationListener.hpp
  ../src/pwiz/utility/misc/Singleton.hpp
  ../src/pwiz/utility/misc/Stream.hpp
  ../src/pwiz/utility/misc/String.hpp
@@ -24,8 +25,12 @@ CMakeFiles/mzMLReader.dir/src/main.cpp.o
  /home/jiangtia/Work/data_uploader/cpp/src/main.cpp
  /home/jiangtia/Work/data_uploader/cpp/src/msReader.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/mzMLReader.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/BinaryDataEncoder.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/DefaultReaderList.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/Index_mzML.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/MSData.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/MSDataFile.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/Reader.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumInfo.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumListBase.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumList_mzML.hpp
@@ -45,6 +50,7 @@ CMakeFiles/mzMLReader.dir/src/msReader.cpp.o
  ../src/pwiz/utility/misc/Exception.hpp
  ../src/pwiz/utility/misc/Export.hpp
  ../src/pwiz/utility/misc/IntegerSet.hpp
+ ../src/pwiz/utility/misc/IterationListener.hpp
  ../src/pwiz/utility/misc/Singleton.hpp
  ../src/pwiz/utility/misc/Stream.hpp
  ../src/pwiz/utility/misc/String.hpp
@@ -52,8 +58,12 @@ CMakeFiles/mzMLReader.dir/src/msReader.cpp.o
  /home/jiangtia/Work/data_uploader/cpp/src/msReader.cpp
  /home/jiangtia/Work/data_uploader/cpp/src/msReader.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/mzMLReader.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/BinaryDataEncoder.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/DefaultReaderList.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/Index_mzML.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/MSData.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/MSDataFile.hpp
+ /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/Reader.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumInfo.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumListBase.hpp
  /home/jiangtia/Work/data_uploader/cpp/src/pwiz/data/msdata/SpectrumList_mzML.hpp
