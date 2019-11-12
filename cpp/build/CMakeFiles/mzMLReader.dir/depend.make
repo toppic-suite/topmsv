@@ -16,6 +16,7 @@ CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/Environment.h
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/Exception.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/Export.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/IntegerSet.hpp
+CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/IterationListener.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/Singleton.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/Stream.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/String.hpp
@@ -23,8 +24,12 @@ CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/utility/misc/optimized_lex
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/main.cpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/msReader.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/mzMLReader.hpp
+CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/BinaryDataEncoder.hpp
+CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/DefaultReaderList.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/Index_mzML.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/MSData.hpp
+CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/MSDataFile.hpp
+CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/Reader.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/SpectrumInfo.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/SpectrumListBase.hpp
 CMakeFiles/mzMLReader.dir/src/main.cpp.o: ../src/pwiz/data/msdata/SpectrumList_mzML.hpp
@@ -44,6 +49,7 @@ CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/Environme
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/Exception.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/Export.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/IntegerSet.hpp
+CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/IterationListener.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/Singleton.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/Stream.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/String.hpp
@@ -51,8 +57,12 @@ CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/utility/misc/optimized
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/msReader.cpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/msReader.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/mzMLReader.hpp
+CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/BinaryDataEncoder.hpp
+CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/DefaultReaderList.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/Index_mzML.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/MSData.hpp
+CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/MSDataFile.hpp
+CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/Reader.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/SpectrumInfo.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/SpectrumListBase.hpp
 CMakeFiles/mzMLReader.dir/src/msReader.cpp.o: ../src/pwiz/data/msdata/SpectrumList_mzML.hpp

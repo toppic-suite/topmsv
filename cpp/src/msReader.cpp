@@ -23,9 +23,13 @@ void getMax(double &max, double v) {
 
 msReader::msReader(std::string filename) {
 	file_name = filename;
-  is = boost::shared_ptr<std::istream>(new std::ifstream(filename));
-  index = Index_mzML_Ptr(new Index_mzML(is, test_msdata));
-  sl = SpectrumList_mzML::create(is, test_msdata, index);
+
+  msd_ptr_ = std::make_shared<pwiz::msdata::MSDataFile>(file_name, &readers_);
+  spec_list_ptr_ =  msd_ptr_->run.spectrumListPtr;
+  sl = spec_list_ptr_;
+  // is = boost::shared_ptr<std::istream>(new std::ifstream(filename));
+  // index = Index_mzML_Ptr(new Index_mzML(is, test_msdata));
+  // sl = SpectrumList_mzML::create(is, test_msdata, index);
   RANGE.MZMIN = 0;
   RANGE.MZMAX = 0;
   RANGE.RTMIN = 0;
@@ -100,7 +104,6 @@ void msReader::getAllPeaks(double mzmin, double mzmax, double rtmin, double rtma
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
-  // std::cout << "Break4" <<std::endl;
   std::vector<Point> pointsList;
   for(int i = 0; i < spSize; i++){
     if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
@@ -180,10 +183,8 @@ void msReader::createDtabase() { //stmt
   int levelTwoScanID = 0;
   for(int i = 0; i < spSize; i++){
     // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
-      std::cout << "break point1" << std::endl;
       SpectrumPtr s = sl->spectrum(i, true); // read with binary data
       if (s == nullptr) {std::cout << "null"<<endl;}
-      std::cout << "break point2" << std::endl;
       pwiz::msdata::SpectrumInfo spec_info(*s);
       Scan dummy;
       Scan scan = s->scanList.scans.empty() ? dummy : s->scanList.scans[0];
