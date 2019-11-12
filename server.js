@@ -236,6 +236,16 @@ app.get('/precMZ', function (req, res) {
         res.end();
     })
 });
+app.get('/scanTwoList', function (req, res) {
+    console.log("Hello, scanTwoList!");
+    var projectDir = req.query.projectDir;
+    var scanID = req.query.scanID;
+    getScanLevelTwoList(projectDir, scanID, function (err, rows) {
+        res.write(JSON.stringify(rows));
+        console.log(rows);
+        res.end();
+    })
+});
 // app.use( function(req, res){
 //     console.log('404 handler..');
 //     res.sendFile( __dirname + "/public/" + "404.html" );
@@ -300,6 +310,25 @@ function getProjectSummary(db, id, callback) {
             return callback(null, row);
         }
     });
+}
+function getScanLevelTwoList(dir, scanID, callback) {
+    let sql = `SELECT LevelTwoScanID AS scanID,
+                    PREC_MZ AS prec_mz
+           FROM ScanPairs INNER JOIN SPECTRA ON ScanPairs.LevelTwoScanID = SPECTRA.SCAN
+           WHERE LevelOneScanID = ?`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+    });
+    resultDb.all(sql, [scanID], (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        return callback(null, rows);
+    });
+    resultDb.close();
 }
 function getScanRange(dir, callback) {
     let sql = `SELECT MIN(SCAN) AS minScan, MAX(SCAN) AS maxScan

@@ -180,7 +180,10 @@ void msReader::createDtabase() { //stmt
   int levelTwoScanID = 0;
   for(int i = 0; i < spSize; i++){
     // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
+      std::cout << "break point1" << std::endl;
       SpectrumPtr s = sl->spectrum(i, true); // read with binary data
+      if (s == nullptr) {std::cout << "null"<<endl;}
+      std::cout << "break point2" << std::endl;
       pwiz::msdata::SpectrumInfo spec_info(*s);
       Scan dummy;
       Scan scan = s->scanList.scans.empty() ? dummy : s->scanList.scans[0];
