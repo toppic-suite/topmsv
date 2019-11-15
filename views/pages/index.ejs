@@ -17,7 +17,7 @@
 			<h1>Project Summary</h1>
 			<h2><ul>
 				<li>Project Name: <%= summary.ProjectName %></li>
-				<li>Project Status: <%= summary.ProjectStatus %></li>
+<!--				<li>Project Status: <%= summary.ProjectStatus %></li>-->
 				<li>Email Address: <%= summary.EmailAddress %></li>
 				<li>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></li>
 				</ul></h2>
@@ -26,7 +26,9 @@
 			<h2>
 				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode%>">
 				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir%>">
-				Please type in ScanID within Scan Range above: <input type="text" id="scanID" name="scanID"><br>
+				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
+				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
+				Please type in ScanID within Scan Range above: <input type="number" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>><br>
 				<button type="submit" id="request">Request</button>
 				</h2>
 <!--			<p id="demo"></p>-->
@@ -42,7 +44,7 @@
 			</h2>
 			<svg id="spectrum1"></svg>
 		</div>
-		<div class="jumbotron">
+		<!--<div class="jumbotron">
 			<h2>
 				<p><strong>ScanLevel Two</strong></p>
 				<p>ScanID: <span id="scanID2"></span></p>
@@ -52,9 +54,10 @@
 				<button type="submit" id="next2">Next</button>
 			</h2>
 			<svg id="spectrum2"></svg>
-		</div>
-		<div id="tabs">
-			<ul>
+		</div>-->
+		<div class="jumbotron" id="tabs">
+			<p><strong>ScanLevel Two</strong></p>
+			<ul id="tabList">
 <!--				<li><a href="#tabs-1">Nunc tincidunt</a></li>-->
 <!--				<li><a href="#tabs-2">Proin dolor</a></li>-->
 <!--				<li><a href="#tabs-3">Aenean lacinia</a></li>-->
@@ -66,25 +69,30 @@
 		</div>
 	</main>
 	<script>
-		var scanTwolist = [];
+/*		var scanTwolist = [];
 		function getRelatedScan1(scanID) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
 					var response = this.responseText;
-					loadPeakList2(response);
-					getPrecMZ(response);
+					if(response !== "0") {
+						loadPeakList2(response);
+						getPrecMZ(response);
+					}else {
+						// Empty Tabs
+					}
 				}
 			};
 			xhttp.open("GET", "relatedScan1?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
 			xhttp.send();
-		}
+		}*/
 		function getRelatedScan2(scanID) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
 					var response = this.responseText;
 					loadPeakList1(response);
+					getScanLevelTwoList(response,scanID);
 					//getPrecMZ(scanID);
 				}
 			};
@@ -96,13 +104,14 @@
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
 					var response = this.responseText;
-					if (response == 1) {
+					if (response === "1") {
 						loadPeakList1(scanID);
 						//getPrecMZ(scanID);
-						getRelatedScan1(scanID);
+						getScanLevelTwoList(scanID, (parseInt(scanID)+1).toString());
+						// getRelatedScan1(scanID);
 					}else {
-						loadPeakList2(scanID);
-						getPrecMZ(scanID);
+						// loadPeakList2(scanID);
+						//getPrecMZ(scanID);
 						getRelatedScan2(scanID);
 					}
 				}
@@ -121,7 +130,7 @@
             xhttp.open("GET", "scanID?projectDir=" + document.getElementById("projectDir").value + "&ID=" + ID, true);
             xhttp.send();
         }
-        function getPrecMZ(scanID) {
+/*        function getPrecMZ(scanID) {
 			if (scanID !== '0') {
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function () {
@@ -136,7 +145,7 @@
 				xhttp.open("GET", "precMZ?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, false);
 				xhttp.send();
 			}
-		}
+		}*/
 		function loadPeakList1(scanID) {
 			if (scanID !== '0') {
 				var xhttp = new XMLHttpRequest();
@@ -159,7 +168,7 @@
 				alert("NULL");
 			}
 		}
-		function loadPeakList2(scanID) {
+/*		function loadPeakList2(scanID) {
 			if(scanID !== '0') {
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function () {
@@ -181,7 +190,7 @@
 			}else{
 				alert("NULL");
 			}
-		}
+		}*/
 		function loadPeakList3(scanID) {
 			if(scanID !== '0') {
 				var xhttp = new XMLHttpRequest();
@@ -214,6 +223,9 @@
 					if(response !== '0'){
 						getScanID(response);
 					}else {
+						$( "#spectrum1" ).empty();
+						$( "#spectrum3" ).empty();
+						$("#scanID1").empty();
 						alert("NULL");
 					}
 				}
@@ -230,6 +242,9 @@
 					if(response !== '0') {
 						getScanID(response);
 					}else {
+						$("#spectrum1" ).empty();
+						$("#spectrum3" ).empty();
+						$("#scanID1").empty();
 						alert("NULL");
 					}
 				}
@@ -237,23 +252,38 @@
 			xhttp.open("GET", "next?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
 			xhttp.send();
 		}
-		function getScanLevelTwoList(scanID) {
+		function getScanLevelTwoList(scanID,target) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function () {
 				if (this.readyState == 4 && this.status == 200) {
 					var response = JSON.parse(this.responseText);
 					console.log(response);
-					$("#tabs ul").empty();
-					$( function() {
-						$( "#tabs" ).tabs();
-					} );
+					// $("#tabs li").remove();
+					$( "#tabs" ).tabs();
+					$("#tabs li").remove();
+					$( "#tabs" ).tabs("destroy");
+					// var tabs = $( "#tabs" ).tabs();
+					// var ul = tabs.find( "ul" );
 					response.forEach(function (item) {
 						//console.log(item.scanID);
 						//getPrecMZ(item.scanID);
 						var scanTwoNum = item.scanID;
-						$("#tabs ul").append('<li><a href="#tabs-2" onclick="loadPeakList3('+scanTwoNum+')">'+ item.prec_mz + '</a></li>');
+						$("#tabs ul").append('<li><a href="#spectrum3"' + ' id='+ scanTwoNum + ' onclick="loadPeakList3(' + scanTwoNum+')">'+ item.prec_mz + '</a></li>');
+						// $( '<li><a href="#spectrum3" class="ui-icon ui-icon-close role=\'presentation\'" onclick="loadPeakList3(' + scanTwoNum + ')">'+ item.prec_mz + '</a></li>' ).appendTo( ul );
 					});
-
+					$( "#tabs" ).tabs();
+/*
+					console.log(scanID);
+					console.log(document.getElementById(scanID));
+*/
+					console.log(target);
+/*
+					var showID = (parseInt(scanID) + 1).toString(10);
+					console.log(showID);
+					console.log(document.getElementById(showID));
+*/
+					document.getElementById(target).click();
+					// $( "#tabs" ).tabs( "load", 0 );
 					// var i = 0;
 					// scanTwolist.forEach(function (scan) {
 					// 	$("#tabs ul").append('<li><a href="#tabs-2" onclick="loadPeakList3(response[i].scanID)">'+ scan + '</a></li>');
@@ -269,25 +299,47 @@
 		}
 		var requestButton = document.getElementById('request');
 		requestButton.addEventListener('click', function () {
-			getScanLevel(document.getElementById("scanID").value);
-			getScanLevelTwoList(document.getElementById("scanID").value);
+			$( "#spectrum3" ).empty();
+			var requestID = document.getElementById("scanID").value;
+			var min = document.getElementById("rangeMin").value;
+			var max = document.getElementById("rangeMax").value;
+			if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
+				//console.log("Yes");
+				getScanLevel(document.getElementById("scanID").value);
+				$("#scanID").val("");
+			}else {
+				//console.log("No");
+				alert("Please type in one scanID within range!")
+			}
+
+			// getScanLevelTwoList(document.getElementById("scanID").value);
 		},false)
 		var prev1 = document.getElementById('prev1');
 		prev1.addEventListener('click', function () {
-			prev(document.getElementById("scanID1").innerHTML);
+			$( "#spectrum3" ).empty();
+			$("#tabList").empty();
+			var scanID1 = document.getElementById("scanID1").innerHTML;
+			if (scanID1 !== '') {
+				prev(document.getElementById("scanID1").innerHTML);
+			}
 		},false)
 		var next1 = document.getElementById('next1');
 		next1.addEventListener('click', function () {
-			next(document.getElementById("scanID1").innerHTML);
+			$( "#spectrum3" ).empty();
+			$("#tabList").empty();
+			var scanID1 = document.getElementById("scanID1").innerHTML;
+			if (scanID1 !== '') {
+				next(document.getElementById("scanID1").innerHTML);
+			}
 		},false)
-		var prev2 = document.getElementById('prev2');
+/*		var prev2 = document.getElementById('prev2');
 		prev2.addEventListener('click', function () {
 			prev(document.getElementById("scanID2").innerHTML);
 		},false)
 		var next2 = document.getElementById('next2');
 		next2.addEventListener('click', function () {
 			next(document.getElementById("scanID2").innerHTML);
-		},false)
+		},false)*/
 	</script>
 </body>
 </html>
