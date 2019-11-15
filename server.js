@@ -73,7 +73,7 @@ app.post('/upload', function (req, res) {
                     // console.log(result);
                     if(!result) {
                         insertRow(db, id, projectname, fname,des_file,0, emailtosend);
-                        message.text = "Link: " + adr + id + "\nProject Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing";
+                        message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                         message.subject = "Your data has been uploaded, please wait for processing";
                         message.to = emailtosend;
                         transport.sendMail(message, function(err, info) {
@@ -105,12 +105,27 @@ app.post('/upload', function (req, res) {
 
             execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
                 if(err) {
-                    console.log(err);
-                    return;
+                    setTimeout(function () {
+                        processFailure(db,id, function (err) {
+                            console.log("Process failed!");
+                            message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                            message.subject = "Your data processing failed";
+                            message.to = emailtosend;
+                            transport.sendMail(message, function(err, info) {
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    console.log(info);
+                                }
+                            });
+                        });
+                        console.log(err);
+                        return;
+                    }, 60000);
                 }
                 console.log(`stdout: ${stdout}`);
                 updateProjectStatus(db, id, function (err) {
-                    message.text = "Link: " + adr + id + '\nStatus: Done';
+                    message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
                     message.subject = "Your data processing is done";
                     message.to = emailtosend;
                     transport.sendMail(message, function(err, info) {
@@ -135,24 +150,46 @@ app.get('/data', function(req, res) {
         if (err) {
             console.log(err);
         } else {
-            summary = {
-                ProjectName: row.projectName,
-                ProjectStatus: row.projectStatus,
-                EmailAddress: row.email
-            };
-            //console.log(summary);
-            let projectDir = row.projectDir;
-            //res.write(JSON.stringify(summary));
-            console.log(row.projectDir);
-            getScanRange(projectDir, function (err, row) {
-                let scanRange = {
-                    MIN: row.minScan,
-                    MAX: row.maxScan
-                };
-                //res.write(JSON.stringify(scanRange));
-                console.log(projectDir);
-                res.render('pages/index', {summary, scanRange, projectCode, projectDir});
-            })
+            // console.log(row.projectStatus);
+            if(row === undefined) {
+                res.send("No such project, please check your link.");
+                res.end;
+            } else {
+                // console.log(row);
+                if (row.projectStatus === 1) {
+                    summary = {
+                        ProjectName: row.projectName,
+                        ProjectStatus: row.projectStatus,
+                        EmailAddress: row.email
+                    };
+                    //console.log(summary);
+                    let projectDir = row.projectDir;
+                    //res.write(JSON.stringify(summary));
+                    console.log(row.projectDir);
+                    getScanRange(projectDir, function (err, row) {
+                        let scanRange = {
+                            MIN: row.minScan,
+                            MAX: row.maxScan
+                        };
+                        //res.write(JSON.stringify(scanRange));
+                        console.log(projectDir);
+                        res.render('pages/index', {
+                            summary,
+                            scanRange: scanRange,
+                            projectCode: projectCode,
+                            projectDir: projectDir
+                        });
+                    })
+                } else if (row.projectStatus === 0) {
+                    console.log("Project status: 0");
+                    res.send("Your project is processing, please wait for result.");
+                    res.end;
+                } else {
+                    console.log("Project status: 2");
+                    res.send("Your project failed. Please check your data.");
+                    res.end;
+                }
+            }
         }
     });
 });
@@ -211,9 +248,14 @@ app.get('/relatedScan1', function (req, res) {
     var projectDir = req.query.projectDir;
     var scanID = req.query.scanID;
     getRelatedScan1(projectDir, scanID, function (err, row) {
-        let levelTwoScanID = row.LevelTwoScanID.toString();
-        res.write(levelTwoScanID);
-        res.end();
+        if(row !== undefined) {
+            let levelTwoScanID = row.LevelTwoScanID.toString();
+            res.write(levelTwoScanID);
+            res.end();
+        }else {
+            res.write("0");
+            res.end();
+        }
     })
 });
 app.get('/relatedScan2', function (req, res) {
@@ -280,6 +322,17 @@ function updateProjectStatus(db, id,callback) {
         return callback(null);
     });
 }
+function processFailure(db, id, callback) {
+    let sql = `UPDATE Projects
+                SET ProjectStatus = 2
+                WHERE ProjectCode = ?`;
+    db.run(sql, [id], function (err) {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(`Row(s) updated: ${this.changes}`);
+        return callback(null);
+    });}
 function getFilePath(db, id, callback) {
     let sql = `SELECT ProjectDir AS dir
              FROM Projects

@@ -16,17 +16,41 @@
     function chooseFile(event) {
         dbfilename.innerHTML = file.files[0].name;
     }
+    /**
+     * @return {boolean}
+     */
+    function ValidateEmail(inputText)
+    {
+        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if(inputText.match(mailformat))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     // 点击上传
     function uploadFile(event) {
-        var formData = new FormData();
-        formData.append('dbfile', file.files[0]);
-        formData.append('projectname', project.value);
-        formData.append('emailaddress', email.value);
+        //console.log(ValidateEmail(email.value));
+        if (project.value === '' || email.value ==='' || file.files[0] === undefined) {
+            alert("Please fill in all information above!");
+        }else if(!file.files[0].name.match(/.(mzML)$/i)){
+            alert('Please upload a mzML file!');
+        }else if (!ValidateEmail(email.value)){
+            alert("You have entered an invalid email address!")
+        } else {
+            var formData = new FormData();
+            formData.append('dbfile', file.files[0]);
+            formData.append('projectname', project.value);
+            formData.append('emailaddress', email.value);
 
-        xhr.onload = uploadSuccess;
-        xhr.upload.onprogress = setProgress;
-        xhr.open('post', '/upload', true);
-        xhr.send(formData);
+            xhr.onload = uploadSuccess;
+            xhr.upload.onprogress = setProgress;
+            xhr.open('post', '/upload', true);
+            xhr.send(formData);
+        }
     }
 
     // 成功上传
