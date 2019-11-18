@@ -284,10 +284,11 @@ app.get('/scanTwoList', function (req, res) {
     var scanID = req.query.scanID;
     getScanLevelTwoList(projectDir, scanID, function (err, rows) {
         res.write(JSON.stringify(rows));
-        console.log(rows);
+        // console.log(rows);
         res.end();
     })
 });
+
 // app.use( function(req, res){
 //     console.log('404 handler..');
 //     res.sendFile( __dirname + "/public/" + "404.html" );
@@ -332,7 +333,8 @@ function processFailure(db, id, callback) {
         }
         console.log(`Row(s) updated: ${this.changes}`);
         return callback(null);
-    });}
+    });
+}
 function getFilePath(db, id, callback) {
     let sql = `SELECT ProjectDir AS dir
              FROM Projects
@@ -400,6 +402,7 @@ function getScanRange(dir, callback) {
         //console.log(row);
         return callback(null, row);
     });
+    resultDb.close();
 }
 function openDB(dir, callback) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
@@ -410,6 +413,7 @@ function openDB(dir, callback) {
         //console.log('Connected to the result database.' + dbDir);
     });
 }
+
 function getPeakList(dir, scanID, callback) {
     let sql = `SELECT MZ AS mz,
                   INTENSITY AS intensity
@@ -450,6 +454,7 @@ function getScanID(dir, id, callback) {
         }
         return callback(null, row);
     });
+    resultDb.close();
 }
 function getPrecMZ(dir, scanID, callback) {
     let sql = `SELECT PREC_MZ AS precMZ
@@ -468,6 +473,7 @@ function getPrecMZ(dir, scanID, callback) {
         }
         return callback(null, row);
     });
+    resultDb.close();
 }
 function getPrev(dir, scanID, callback) {
     let sql = `SELECT PREV AS prev
@@ -486,6 +492,7 @@ function getPrev(dir, scanID, callback) {
         }
         return callback(null, row);
     });
+    resultDb.close();
 }
 function getNext(dir, scanID, callback) {
     let sql = `SELECT NEXT AS next
@@ -504,6 +511,7 @@ function getNext(dir, scanID, callback) {
         }
         return callback(null, row);
     });
+    resultDb.close();
 }
 function getScanLevel(dir, scanID, callback) {
     let sql = `SELECT SCANLEVEL AS scanLevel
@@ -522,6 +530,7 @@ function getScanLevel(dir, scanID, callback) {
         }
         return callback(null, row);
     });
+    resultDb.close();
 }
 function getRelatedScan1(dir, scanID, callback) {
     let sql = `SELECT LevelTwoScanID
@@ -541,6 +550,7 @@ function getRelatedScan1(dir, scanID, callback) {
         }
         return callback(null, row);
     });
+    resultDb.close();
 }
 function getRelatedScan2(dir, scanID, callback) {
     let sql = `SELECT LevelOneScanID
@@ -560,6 +570,7 @@ function getRelatedScan2(dir, scanID, callback) {
         }
         return callback(null, row);
     });
+    resultDb.close();
 }
 function getFileName(db, id, callback) {
     let sql = `SELECT file_name as name,
@@ -602,21 +613,35 @@ function insertRow(db, ProjectCode, ProjectName, FileName, ProjectDir, ProjectSt
         // get the last insert id
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
-}
+};
 
-let db = new sqlite3.Database('./db/projectDB.db', (err) => {
+let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, PRIMARY KEY(`ProjectID`) )";
+    db.run(sqlToCreateTable, function (err) {
+        if (err) {
+            return console.log(err.message);
+        }
+        console.log("Table for project is ready!");
+        var sqlToCreateIndex = "CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectID`, `ProjectCode` )";
+        db.run(sqlToCreateIndex, function (err) {
+            if (err) {
+                return console.log(err.message);
+            }
+            console.log("Index for project is ready!");
+        })
+    });
 });
 
-let testDb = new sqlite3.Database('./data/8ad65410-ffe0-11e9-bc47-83c5c03c7280/CPTAC_Intact_rep3_15Jan15_Bane_C2-14-08-02RZ_7000-7300.db', (err) => {
+/*let testDb = new sqlite3.Database('./data/8ad65410-ffe0-11e9-bc47-83c5c03c7280/CPTAC_Intact_rep3_15Jan15_Bane_C2-14-08-02RZ_7000-7300.db', (err) => {
     if (err) {
         console.error(err.message);
     }
     console.log('Connected to the testDB.db database.');
-});
+});*/
 
 /*mailtrap for testing
 var transport = nodemailer.createTransport({
