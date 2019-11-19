@@ -56,7 +56,7 @@
     // 成功上传
     function uploadSuccess(event) {
         if (xhr.readyState === 4) {
-            setTimeout(function(){ if(!alert("Data uploaded successfully!"))window.location.reload();}, 100)
+            setTimeout(function(){ if(!alert("Data uploaded successfully!\nPlease check your email inbox for more information!"))window.location.reload();}, 100)
         }
     }
 

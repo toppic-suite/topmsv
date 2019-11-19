@@ -17,15 +17,17 @@
 			<h1>Project Summary</h1>
 			<h2><ul>
 				<li>Project Name: <%= summary.ProjectName %></li>
+				<li>File Name: <%= fileName %></li>
 <!--				<li>Project Status: <%= summary.ProjectStatus %></li>-->
 				<li>Email Address: <%= summary.EmailAddress %></li>
+
 				<li>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></li>
 				</ul></h2>
 		</div>
 		<div class="jumbotron">
 			<h2>
-				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode%>">
-				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir%>">
+				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
 				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
 				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
 				Please type in ScanID within Scan Range above: <input type="number" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>><br>
@@ -62,9 +64,13 @@
 <!--				<li><a href="#tabs-2">Proin dolor</a></li>-->
 <!--				<li><a href="#tabs-3">Aenean lacinia</a></li>-->
 			</ul>
-			<div id="tabs-2">
-<!--				<p>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur tortor et purus.</p>-->
-				<svg id="spectrum3"></svg>
+			<div>
+				<svg id="spectrum2"></svg>
+				<p>ScanID: <span id="scanID2"></span></p>
+				<p>Precursor MZ: <span id="prec_mz"></span></p>
+				<p>Precursor Charge: <span id="prec_charge"></span></p>
+				<p>Precursor Intensity: <span id="prec_inte"></span></p>
+				<p>RetentionTime: <span id="rt"></span></p>
 			</div>
 		</div>
 	</main>
@@ -154,7 +160,11 @@
 						var t3 = performance.now();
 						console.log("Call to fetch peaklist1 data from server took " + (t3 - t2) + " milliseconds.");
 						var response = JSON.parse(this.responseText);
+						console.log(response);
+						//console.log(typeof response[0].intensity);
 						document.getElementById("scanID1").innerText = scanID;
+						//response.sort(compare);
+						//console.log(response);
 						var t0 = performance.now();
 						addSpectrum1(response, []);
 						var t1 = performance.now();
@@ -168,6 +178,7 @@
 				alert("NULL");
 			}
 		}
+
 /*		function loadPeakList2(scanID) {
 			if(scanID !== '0') {
 				var xhttp = new XMLHttpRequest();
@@ -191,7 +202,7 @@
 				alert("NULL");
 			}
 		}*/
-		function loadPeakList3(scanID) {
+		function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt) {
 			if(scanID !== '0') {
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function () {
@@ -202,9 +213,14 @@
 						// document.getElementById("scanID2").innerText = scanID;
 						//getPrecMZ(scanID);
 						var t6 = performance.now();
-						addSpectrum3(response, []);
+						addSpectrum2(response, []);
 						var t7 = performance.now();
 						console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
+						document.getElementById("scanID2").innerHTML = scanID;
+						document.getElementById("prec_mz").innerHTML = prec_mz;
+						document.getElementById("prec_charge").innerHTML = prec_charge;
+						document.getElementById("prec_inte").innerHTML = prec_inte;
+						document.getElementById("rt").innerHTML = rt;
 					}
 				};
 				var t4 = performance.now();
@@ -224,8 +240,9 @@
 						getScanID(response);
 					}else {
 						$( "#spectrum1" ).empty();
-						$( "#spectrum3" ).empty();
+						$( "#spectrum2" ).empty();
 						$("#scanID1").empty();
+						cleanInfo();
 						alert("NULL");
 					}
 				}
@@ -243,8 +260,9 @@
 						getScanID(response);
 					}else {
 						$("#spectrum1" ).empty();
-						$("#spectrum3" ).empty();
+						$("#spectrum2" ).empty();
 						$("#scanID1").empty();
+						cleanInfo();
 						alert("NULL");
 					}
 				}
@@ -252,6 +270,19 @@
 			xhttp.open("GET", "next?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
 			xhttp.send();
 		}
+		function cleanInfo() {
+			$("#scanID2").empty();
+			$("#prec_mz").empty();
+			$("#prec_charge").empty();
+			$("#prec_inte").empty();
+			$("#rt").empty();
+		}
+		function compare(a, b){
+			var a_inte = a.intenstiy;
+			var b_inte = b.intensity;
+			return a_inte - b_inte;
+		}
+
 		function getScanLevelTwoList(scanID,target) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function () {
@@ -268,8 +299,8 @@
 						//console.log(item.scanID);
 						//getPrecMZ(item.scanID);
 						var scanTwoNum = item.scanID;
-						$("#tabs ul").append('<li><a href="#spectrum3"' + ' id='+ scanTwoNum + ' onclick="loadPeakList3(' + scanTwoNum+')">'+ item.prec_mz + '</a></li>');
-						// $( '<li><a href="#spectrum3" class="ui-icon ui-icon-close role=\'presentation\'" onclick="loadPeakList3(' + scanTwoNum + ')">'+ item.prec_mz + '</a></li>' ).appendTo( ul );
+						$("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + item.rt + ')">'+ item.prec_mz + '</a></li>');
+						// $( '<li><a href="#spectrum2" class="ui-icon ui-icon-close role=\'presentation\'" onclick="loadPeakList3(' + scanTwoNum + ')">'+ item.prec_mz + '</a></li>' ).appendTo( ul );
 					});
 					$( "#tabs" ).tabs();
 /*
@@ -299,7 +330,7 @@
 		}
 		var requestButton = document.getElementById('request');
 		requestButton.addEventListener('click', function () {
-			$( "#spectrum3" ).empty();
+			$( "#spectrum2" ).empty();
 			var requestID = document.getElementById("scanID").value;
 			var min = document.getElementById("rangeMin").value;
 			var max = document.getElementById("rangeMax").value;
@@ -316,7 +347,7 @@
 		},false)
 		var prev1 = document.getElementById('prev1');
 		prev1.addEventListener('click', function () {
-			$( "#spectrum3" ).empty();
+			$( "#spectrum2" ).empty();
 			$("#tabList").empty();
 			var scanID1 = document.getElementById("scanID1").innerHTML;
 			if (scanID1 !== '') {
@@ -325,7 +356,7 @@
 		},false)
 		var next1 = document.getElementById('next1');
 		next1.addEventListener('click', function () {
-			$( "#spectrum3" ).empty();
+			$( "#spectrum2" ).empty();
 			$("#tabList").empty();
 			var scanID1 = document.getElementById("scanID1").innerHTML;
 			if (scanID1 !== '') {
