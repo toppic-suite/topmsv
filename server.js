@@ -164,20 +164,22 @@ app.get('/data', function(req, res) {
                     };
                     //console.log(summary);
                     let projectDir = row.projectDir;
+                    var fileName = row.fileName;
                     //res.write(JSON.stringify(summary));
-                    console.log(row.projectDir);
+                    //console.log(row.projectDir);
                     getScanRange(projectDir, function (err, row) {
                         let scanRange = {
                             MIN: row.minScan,
                             MAX: row.maxScan
                         };
                         //res.write(JSON.stringify(scanRange));
-                        console.log(projectDir);
+                        //console.log(projectDir);
                         res.render('pages/index', {
                             summary,
-                            scanRange: scanRange,
-                            projectCode: projectCode,
-                            projectDir: projectDir
+                            scanRange,
+                            projectCode,
+                            projectDir,
+                            fileName
                         });
                     })
                 } else if (row.projectStatus === 0) {
@@ -353,7 +355,8 @@ function getProjectSummary(db, id, callback) {
     let sql = `SELECT ProjectName AS projectName,
                     ProjectStatus AS projectStatus,
                     Email AS email,
-                    ProjectDir AS projectDir
+                    ProjectDir AS projectDir,
+                    FileName AS fileName
                 FROM Projects
                 WHERE ProjectCode = ?`;
     db.get(sql, [id], (err, row) => {
@@ -368,7 +371,10 @@ function getProjectSummary(db, id, callback) {
 }
 function getScanLevelTwoList(dir, scanID, callback) {
     let sql = `SELECT LevelTwoScanID AS scanID,
-                    PREC_MZ AS prec_mz
+                    PREC_MZ AS prec_mz,
+                    PREC_CHARGE AS prec_charge,
+                    PREC_INTE AS prec_inte,
+                    RETENTIONTIME AS rt
            FROM ScanPairs INNER JOIN SPECTRA ON ScanPairs.LevelTwoScanID = SPECTRA.SCAN
            WHERE LevelOneScanID = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
@@ -418,7 +424,9 @@ function getPeakList(dir, scanID, callback) {
     let sql = `SELECT MZ AS mz,
                   INTENSITY AS intensity
            FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID=SPECTRA.ID
-           WHERE SCAN = ?`;
+           WHERE SCAN = ?
+           ORDER BY INTENSITY DESC
+           LIMIT 1000`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
