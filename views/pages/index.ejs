@@ -14,38 +14,18 @@
 
 	<main>
 		<div class="jumbotron">
-			<h1>Project Summary</h1>
-			<h2><ul>
+			<h2><strong>Project Summary</strong></h2>
+			<ul id="projectsummary">
 				<li>Project Name: <%= summary.ProjectName %></li>
 				<li>File Name: <%= fileName %></li>
 <!--				<li>Project Status: <%= summary.ProjectStatus %></li>-->
 				<li>Email Address: <%= summary.EmailAddress %></li>
 
 				<li>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></li>
-				</ul></h2>
+			</ul>
+
 		</div>
-		<div class="jumbotron">
-			<h2>
-				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
-				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
-				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
-				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
-				Please type in ScanID within Scan Range above: <input type="number" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>><br>
-				<button type="submit" id="request">Request</button>
-				</h2>
-<!--			<p id="demo"></p>-->
-			<!--<svg id="spectrum"></svg>-->
-		</div>
-		<div class="jumbotron">
-			<h2>
-				<p><strong>ScanLevel One</strong></p>
-				<p>ScanID: <span id="scanID1"></span></p>
-				<p id="scanLevel1"></p>
-				<button type="submit" id="prev1">Previous</button>
-				<button type="submit" id="next1">Next</button>
-			</h2>
-			<svg id="spectrum1"></svg>
-		</div>
+
 		<!--<div class="jumbotron">
 			<h2>
 				<p><strong>ScanLevel Two</strong></p>
@@ -57,20 +37,43 @@
 			</h2>
 			<svg id="spectrum2"></svg>
 		</div>-->
-		<div class="jumbotron" id="tabs">
-			<p><strong>ScanLevel Two</strong></p>
-			<ul id="tabList">
-<!--				<li><a href="#tabs-1">Nunc tincidunt</a></li>-->
-<!--				<li><a href="#tabs-2">Proin dolor</a></li>-->
-<!--				<li><a href="#tabs-3">Aenean lacinia</a></li>-->
-			</ul>
-			<div>
-				<svg id="spectrum2"></svg>
-				<p>ScanID: <span id="scanID2"></span></p>
-				<p>Precursor MZ: <span id="prec_mz"></span></p>
-				<p>Precursor Charge: <span id="prec_charge"></span></p>
-				<p>Precursor Intensity: <span id="prec_inte"></span></p>
-				<p>RetentionTime: <span id="rt"></span></p>
+		<div class="jumbotron">
+			<div id="input">
+				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
+				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
+				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
+				<label for="scanID">Scan Number within Scan Range:&nbsp;&nbsp;</label>
+				<input type="number" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+				<button type="submit" id="request">Request</button>
+			</div>
+			<hr />
+
+			<div id="scanLevelOne">
+				<p class="scanleveltitle"><b>Scan Level One</b></p>
+				<p id="scanid1">Scan Number: <span id="scanID1"></span>
+				</p>
+				<br />
+				<svg id="spectrum1"></svg><br />
+				<button type="submit" id="prev1">Previous</button>
+				<button type="submit" id="next1">Next</button>
+
+			</div>
+			<hr />
+			<div id="scanLevelTwo">
+				<p class="scanleveltitle"><b>Scan Level Two</b></p>
+				<p id="scanid2">Scan Number: <span id="scanID2"></span></p>
+				<p id="info">Precursor MZ: <span id="prec_mz"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					Precursor Charge: <span id="prec_charge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					Precursor Intensity: <span id="prec_inte"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					RetentionTime: <span id="rt"></span></p>
+				<div id="tabs">
+
+					<ul id="tabList">
+					</ul>
+					<svg id="spectrum2"></svg>
+				</div>
+
 			</div>
 		</div>
 	</main>
@@ -217,10 +220,10 @@
 						var t7 = performance.now();
 						console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
 						document.getElementById("scanID2").innerHTML = scanID;
-						document.getElementById("prec_mz").innerHTML = prec_mz;
+						document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(3);
 						document.getElementById("prec_charge").innerHTML = prec_charge;
-						document.getElementById("prec_inte").innerHTML = prec_inte;
-						document.getElementById("rt").innerHTML = rt;
+						document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(3);
+						document.getElementById("rt").innerHTML = rt.toFixed(3);
 					}
 				};
 				var t4 = performance.now();
@@ -239,10 +242,10 @@
 					if(response !== '0'){
 						getScanID(response);
 					}else {
-						$( "#spectrum1" ).empty();
+						/*$( "#spectrum1" ).empty();
 						$( "#spectrum2" ).empty();
 						$("#scanID1").empty();
-						cleanInfo();
+						cleanInfo();*/
 						alert("NULL");
 					}
 				}
@@ -259,10 +262,10 @@
 					if(response !== '0') {
 						getScanID(response);
 					}else {
-						$("#spectrum1" ).empty();
+						/*$("#spectrum1" ).empty();
 						$("#spectrum2" ).empty();
 						$("#scanID1").empty();
-						cleanInfo();
+						cleanInfo();*/
 						alert("NULL");
 					}
 				}
@@ -299,7 +302,7 @@
 						//console.log(item.scanID);
 						//getPrecMZ(item.scanID);
 						var scanTwoNum = item.scanID;
-						$("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + item.rt + ')">'+ item.prec_mz + '</a></li>');
+						$("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + item.rt + ')">'+ item.prec_mz.toFixed(3) + '</a></li>');
 						// $( '<li><a href="#spectrum2" class="ui-icon ui-icon-close role=\'presentation\'" onclick="loadPeakList3(' + scanTwoNum + ')">'+ item.prec_mz + '</a></li>' ).appendTo( ul );
 					});
 					$( "#tabs" ).tabs();
@@ -330,7 +333,7 @@
 		}
 		var requestButton = document.getElementById('request');
 		requestButton.addEventListener('click', function () {
-			$( "#spectrum2" ).empty();
+			// $( "#spectrum2" ).empty();
 			var requestID = document.getElementById("scanID").value;
 			var min = document.getElementById("rangeMin").value;
 			var max = document.getElementById("rangeMax").value;
@@ -347,8 +350,8 @@
 		},false)
 		var prev1 = document.getElementById('prev1');
 		prev1.addEventListener('click', function () {
-			$( "#spectrum2" ).empty();
-			$("#tabList").empty();
+			/*$( "#spectrum2" ).empty();
+			$("#tabList").empty();*/
 			var scanID1 = document.getElementById("scanID1").innerHTML;
 			if (scanID1 !== '') {
 				prev(document.getElementById("scanID1").innerHTML);
@@ -356,13 +359,22 @@
 		},false)
 		var next1 = document.getElementById('next1');
 		next1.addEventListener('click', function () {
-			$( "#spectrum2" ).empty();
-			$("#tabList").empty();
+			/*$( "#spectrum2" ).empty();
+			$("#tabList").empty();*/
 			var scanID1 = document.getElementById("scanID1").innerHTML;
 			if (scanID1 !== '') {
 				next(document.getElementById("scanID1").innerHTML);
 			}
 		},false)
+		$( document ).ready(function() {
+			var min = document.getElementById("rangeMin").value;
+			getScanLevel(min);
+		});
+		$("#scanID").keyup(function(event) {
+			if (event.keyCode === 13) {
+				$("#request").click();
+			}
+		});
 /*		var prev2 = document.getElementById('prev2');
 		prev2.addEventListener('click', function () {
 			prev(document.getElementById("scanID2").innerHTML);
