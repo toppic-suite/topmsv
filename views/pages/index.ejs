@@ -5,26 +5,21 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>
 	<script src="https://d3js.org/d3.v5.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-	<script src="js/invokeSpectrum.js" ></script>
-	<script src="js/spectrumParameters.js" ></script>
-	<script src="js/spectrumGraph.js" ></script>
+	<script src="js/spectrum_graph/invokespectrum.js" ></script>
+	<script src="js/spectrum_graph/spectrumparameters.js" ></script>
+	<script src="js/spectrum_graph/spectrumgraph.js" ></script>
+	<script src="js/spectrum_graph/spectrumdownload.js" ></script>
+	<script src="js/download/FileSaver.js"></script>
+	<script src="js/download/saveImage.js"></script>
 	<link rel="stylesheet" href="css/jquery-ui.min.css">
 </head>
 <body class="container">
 
 	<main>
-		<div class="jumbotron">
-			<h2><strong>Project Summary</strong></h2>
-			<ul id="projectsummary">
-				<li>Project Name: <%= summary.ProjectName %></li>
-				<li>File Name: <%= fileName %></li>
-<!--				<li>Project Status: <%= summary.ProjectStatus %></li>-->
-				<li>Email Address: <%= summary.EmailAddress %></li>
+<!--		<div class="jumbotron">-->
 
-				<li>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></li>
-			</ul>
 
-		</div>
+<!--		</div>-->
 
 		<!--<div class="jumbotron">
 			<h2>
@@ -38,16 +33,28 @@
 			<svg id="spectrum2"></svg>
 		</div>-->
 		<div class="jumbotron">
+			<div>
+				<h2><strong>Project Summary</strong></h2>
+				<ul id="projectsummary">
+					<li>Project Name: <%= summary.ProjectName %></li>
+					<li>File Name: <%= fileName %></li>
+					<!--				<li>Project Status: <%= summary.ProjectStatus %></li>-->
+					<!--				<li>Email Address: <%= summary.EmailAddress %></li>-->
+
+					<!--				<li>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></li>-->
+				</ul>
+			</div>
+			<hr />
 			<div id="input">
+				<p><strong>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="scanID">Scan Number within Scan Range:&nbsp;&nbsp;</label>
+					<input type="number" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+					<button type="submit" id="request">Request</button></p>
 				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
 				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
 				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
 				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
-				<label for="scanID">Scan Number within Scan Range:&nbsp;&nbsp;</label>
-				<input type="number" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
-				<button type="submit" id="request">Request</button>
+
 			</div>
-			<hr />
 
 			<div id="scanLevelOne">
 				<p class="scanleveltitle"><b>Scan Level One</b></p>
@@ -62,8 +69,7 @@
 			<hr />
 			<div id="scanLevelTwo">
 				<p class="scanleveltitle"><b>Scan Level Two</b></p>
-				<p id="scanid2">Scan Number: <span id="scanID2"></span></p>
-				<p id="info">Precursor MZ: <span id="prec_mz"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<p id="scanid2">Scan Number: <span id="scanID2"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Precursor MZ: <span id="prec_mz"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					Precursor Charge: <span id="prec_charge"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					Precursor Intensity: <span id="prec_inte"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					RetentionTime: <span id="rt"></span></p>
@@ -220,10 +226,10 @@
 						var t7 = performance.now();
 						console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
 						document.getElementById("scanID2").innerHTML = scanID;
-						document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(3);
+						document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
 						document.getElementById("prec_charge").innerHTML = prec_charge;
-						document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(3);
-						document.getElementById("rt").innerHTML = rt.toFixed(3);
+						document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
+						document.getElementById("rt").innerHTML = rt.toFixed(4);
 					}
 				};
 				var t4 = performance.now();
@@ -302,7 +308,7 @@
 						//console.log(item.scanID);
 						//getPrecMZ(item.scanID);
 						var scanTwoNum = item.scanID;
-						$("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + item.rt + ')">'+ item.prec_mz.toFixed(3) + '</a></li>');
+						$("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + item.rt + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
 						// $( '<li><a href="#spectrum2" class="ui-icon ui-icon-close role=\'presentation\'" onclick="loadPeakList3(' + scanTwoNum + ')">'+ item.prec_mz + '</a></li>' ).appendTo( ul );
 					});
 					$( "#tabs" ).tabs();

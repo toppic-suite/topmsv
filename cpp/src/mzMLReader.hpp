@@ -63,9 +63,10 @@ public:
 	void synchronous();
 	void openInsertStmt();
 	void closeInsertStmt();
-	void insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, int next, int prev);
+	void insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, double peaksInteSum, int next, int prev);
 	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
 	void updateSpStmt(int currentID, int prevID);
+	void updateSpSumStmt(int currentID, double peaksInteSum);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz);
 	void createIndex();
 

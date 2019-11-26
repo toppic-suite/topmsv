@@ -5,6 +5,7 @@ sqlite3_stmt *stmtSp;
 sqlite3_stmt *stmtPeak;
 sqlite3_stmt *stmtLevelPair;
 sqlite3_stmt *stmtUpdate;
+sqlite3_stmt *stmtSpSumUpdate;
 
 std::string num2str(double num) {
   // std::cout << num << std::endl;
@@ -123,6 +124,7 @@ void mzMLReader::creatTable() {
          "PREC_MZ        REAL     NULL," \
          "PREC_CHARGE    INT      NULL," \
          "PREC_INTE      REAL     NULL," \
+         "PEAKSINTESUM   REAL     NULL," \
          "NEXT           INT      NULL," \
          "PREV           INT      NULL);");
 
@@ -140,7 +142,7 @@ void mzMLReader::creatTable() {
    /* Create SQL statement */
    sql = (char*)("CREATE TABLE PEAKS("  \
          "ID INT PRIMARY KEY     NOT NULL," \
-         "SPECTRAID     INT      NOT NULL," \
+         "SPECTRAID     INT      NOT NULL REFERENCES SPEACTRA(ID)," \
          "MZ            REAL     NOT NULL," \
          "INTENSITY     REAL     NOT NULL);");
 
@@ -344,24 +346,33 @@ void mzMLReader::synchronous() {
 };
 
 void mzMLReader::openInsertStmt() {
-  std::string sqlstr = "INSERT INTO SPECTRA (ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,NEXT,PREV) VALUES (? ,? ,?, ?, ?, ?, ?, ?, ?); ";
+  std::string sqlstr = "INSERT INTO SPECTRA (ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES (? ,? ,?, ?, ?, ?, ?, ?, ?, ?); ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtSp, 0);
+
   sqlstr = "INSERT INTO ScanPairs (LevelOneScanID,LevelTwoScanID) VALUES (? ,?); ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtLevelPair, 0);
+
   sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY) VALUES (? ,? ,?, ?); ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtPeak, 0);
+
   sqlstr = "UPDATE SPECTRA SET NEXT = ? WHERE ID = ?; ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtUpdate, 0);
+
+  sqlstr = "UPDATE SPECTRA SET PEAKSINTESUM = ? WHERE ID = ?; ";
+  sql = (char *)sqlstr.c_str();
+  sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtSpSumUpdate, 0);
 };
 void mzMLReader::closeInsertStmt() {
   sqlite3_finalize(stmtSp);
   sqlite3_finalize(stmtPeak);
+  sqlite3_finalize(stmtLevelPair);
+  sqlite3_finalize(stmtSpSumUpdate);
 };
-void mzMLReader::insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, int next, int prev) {
+void mzMLReader::insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, double peaksInteSum, int next, int prev) {
   sqlite3_reset(stmtSp);
   sqlite3_bind_int(stmtSp,1,scanIndex);
   sqlite3_bind_int(stmtSp,2,std::stoi(scan));
@@ -370,8 +381,9 @@ void mzMLReader::insertSpStmt(int scanIndex, std::string scan, double retentionT
   sqlite3_bind_double(stmtSp,5,prec_mz);
   sqlite3_bind_int(stmtSp,6,prec_charge);
   sqlite3_bind_double(stmtSp,7,prec_inte);
-  sqlite3_bind_int(stmtSp,8,next);
-  sqlite3_bind_int(stmtSp,9,prev);
+  sqlite3_bind_double(stmtSp,8,peaksInteSum);
+  sqlite3_bind_int(stmtSp,9,next);
+  sqlite3_bind_int(stmtSp,10,prev);
   int r = sqlite3_step(stmtSp);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db) << std::endl;
@@ -395,6 +407,15 @@ void mzMLReader::updateSpStmt(int currentID, int prevID) {
     std::cout << sqlite3_errmsg(db) << std::endl;
   }
 };
+void mzMLReader::updateSpSumStmt(int currentID, double peaksInteSum) {
+  sqlite3_reset(stmtSpSumUpdate);
+  sqlite3_bind_double(stmtSpSumUpdate,1,peaksInteSum);
+  sqlite3_bind_int(stmtSpSumUpdate,2,currentID);
+  int r = sqlite3_step(stmtSpSumUpdate);
+  if (r != SQLITE_DONE) {
+    std::cout << sqlite3_errmsg(db) << std::endl;
+  }
+}
 void mzMLReader::insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz) {
   // std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std::endl;
   sqlite3_reset(stmtPeak);
@@ -409,7 +430,7 @@ void mzMLReader::insertPeakStmt(int peakIndex, int scanIndex, double intensity, 
 };
 
 void mzMLReader::createIndex() {
-  std::string sqlstr = "CREATE INDEX intensity_index ON PEAKS (SPECTRAID,MZ,INTENSITY);";
+  std::string sqlstr = "CREATE INDEX intensity_index ON PEAKS (SPECTRAID);";
   sql = (char *)sqlstr.c_str();
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
