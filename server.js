@@ -424,9 +424,9 @@ function getPeakList(dir, scanID, callback) {
     let sql = `SELECT MZ AS mz,
                   INTENSITY AS intensity
            FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID=SPECTRA.ID
-           WHERE SCAN = ?
-           ORDER BY INTENSITY DESC
-           LIMIT 1000`;
+           WHERE SCAN = ?`;
+           //ORDER BY INTENSITY DESC`;
+            //LIMIT 1000`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
