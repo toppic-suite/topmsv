@@ -290,7 +290,24 @@ app.get('/scanTwoList', function (req, res) {
         res.end();
     })
 });
-
+app.get('/getInteSumList', function (req, res) {
+    console.log("Hello, getInteSumList!");
+    var projectDir = req.query.projectDir;
+    getSumList(projectDir, function (err, rows) {
+        res.write(JSON.stringify(rows));
+        // console.log(rows);
+        res.end();
+    })
+});
+app.get('/getRT', function (req, res) {
+    console.log("Hello, getRT!");
+    var projectDir = req.query.projectDir;
+    var scanNum = req.query.scanID;
+    getRT(projectDir, scanNum, function (err, row) {
+        res.write(row.rt.toString());
+        res.end();
+    })
+});
 // app.use( function(req, res){
 //     console.log('404 handler..');
 //     res.sendFile( __dirname + "/public/" + "404.html" );
@@ -369,6 +386,26 @@ function getProjectSummary(db, id, callback) {
         }
     });
 }
+function getRT(dir, scanNum, callback) {
+    let sql = `SELECT RETENTIONTIME AS rt
+                FROM SPECTRA
+                WHERE SCAN = ?`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.get(sql,[scanNum], (err, row) => {
+        if (err) {
+            console.error(err.message);
+        }
+        //console.log(row);
+        return callback(null, row);
+    });
+    resultDb.close();
+};
 function getScanLevelTwoList(dir, scanID, callback) {
     let sql = `SELECT LevelTwoScanID AS scanID,
                     PREC_MZ AS prec_mz,
@@ -435,6 +472,32 @@ function getPeakList(dir, scanID, callback) {
         //console.log('Connected to the result database.' + dbDir);
     });
     resultDb.all(sql, [scanID], (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        return callback(null, rows);
+        //console.log(`${row.MZ} - ${row.INTENSITY}`);
+        // var data = JSON.stringify(rows);
+        // fs.writeFileSync('result.json', data);
+    });
+    resultDb.close();
+}
+function getSumList(dir, callback) {
+    let sql = `SELECT RETENTIONTIME AS rt,
+                PEAKSINTESUM AS inteSum,
+                SCAN AS scanNum
+                FROM SPECTRA
+                WHERE SCANLEVEL = 1`;
+    //ORDER BY INTENSITY DESC`;
+    //LIMIT 1000`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        //console.log('Connected to the result database.' + dbDir);
+    });
+    resultDb.all(sql, (err, rows) => {
         if (err) {
             throw err;
         }
