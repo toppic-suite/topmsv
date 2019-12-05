@@ -32,7 +32,7 @@ SpectrumParameters = function(peakdata) {
 	
   this.tickWidthList = [350,300,250,200,150,100,50,20,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
   this.tickHeightList = [25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001];
-  this.onClickMassAdjacentRange = 3;
+  this.onClickMassAdjacentRange = 10;
   this.mouseOverPadding = {head:20,middle:14};
 	
 /* number of ticks on x and y axis*/
