@@ -1,12 +1,33 @@
-ul#projectsummary {
-    font-size: 150%;
+.projectsummary {
+    font-size: 16px;
+}
+h2 {
+    font-size: 18px;
 }
 body {
-    padding-top:50px;
+    padding-top:10px;
+    padding-bottom: 2px;
     font-family: Arial, serif;
+}
+body.container{
+    padding-bottom: 5px;
 }
 div#input {
     font-size: 100%;
+}
+.jumbotron p{
+    margin-bottom: 5px;
+}
+.jumbotron {
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+input#scanID {
+    width: 8%;
+}
+hr {
+    margin-bottom: 7px;
+    margin-top: 0px;
 }
 button#request {
     position: relative;
@@ -14,14 +35,14 @@ button#request {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 4px 10px;
+    padding: 2px 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
 }
 
-div#scanLevelOne>button#next1 {
-    font-size: 120%;
+button#next1 {
+    font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
@@ -31,8 +52,9 @@ div#scanLevelOne>button#next1 {
     display: inline-block;
     /*float: right;*/
 }
-div#scanLevelOne>button#prev1 {
-    font-size: 120%;
+button#prev1 {
+    left: 100px;
+    font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
@@ -45,14 +67,14 @@ div#scanLevelOne>button#prev1 {
 /*div#scanLevelOne {*/
 /*    font-size: 150%;*/
 /*}*/
-p#scanid1{
+span#scanid1{
     font-size: 100%;
 }
 p#scanid2 {
     font-size: 100%;
 }
 p.scanleveltitle{
-    font-size: 120%;
+    font-size: 14px;
 }
 .ui-widget-content {
     background: #eee !important;

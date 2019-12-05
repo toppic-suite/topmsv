@@ -258,13 +258,13 @@ addLabels = function(svg, spectrumParameters){
 						.attr("transform","translate(" + (spectrumParameters.svgWidth/2) + "," + (spectrumParameters.svgHeight-spectrumParameters.padding.head) + ")")
 					.attr("fill","black")
 					    .attr("font-family","Helvetica Neue,Helvetica,Arial,sans-serif")
-					    .attr("font-size","16px")
+					    .attr("font-size","14px")
 					    .text("m/z");
 	svg.append("text").attr("id","label")
 					.attr("transform", "translate("+ spectrumParameters.padding.left/3 +","+spectrumParameters.svgHeight/2+")rotate(-90)")
 					.attr("fill","black")
 					    .attr("font-family","Helvetica Neue,Helvetica,Arial,sans-serif")
-					    .attr("font-size","16px")
+					    .attr("font-size","14px")
 					    .text("Intensity");
 }
 onMouseOverPeak = function(this_element,svg,peak,spectrumParameters)
