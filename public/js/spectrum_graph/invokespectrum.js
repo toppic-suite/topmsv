@@ -1,5 +1,5 @@
 /*	Spectrum start point */
-addSpectrum1 = function(peakList,envelopeList){
+addSpectrum1 = function(peakList,envelopeList,monoMZ){
 	let specParameters = new SpectrumParameters();
 	peakList.sort(function(x,y){
 		return d3.ascending(x.mz, y.mz);
@@ -16,6 +16,23 @@ addSpectrum1 = function(peakList,envelopeList){
 	let currminMz = minMzData ;
 	let currmaxMz = maxMzData ;
 	let currentMaxIntensity = maxIntensity ;
+	if(monoMZ != null)
+	{
+		currentMaxIntensity = 0 ;
+		monoMZ = parseInt(monoMZ);
+		currminMz = monoMZ - specParameters.onClickMassAdjacentRange ;
+		currmaxMz = monoMZ + specParameters.onClickMassAdjacentRange ;
+		for(let i = 0; i<listSize ; i++)
+		{
+			if(peakList[i].mz > currminMz && peakList[i].mz < currmaxMz)
+			{
+				if(peakList[i].intensity > currentMaxIntensity)
+				{
+					currentMaxIntensity = peakList[i].intensity;
+				}
+			}
+		}
+	}
 	specParameters.initScale(currminMz,currmaxMz,maxIntensity,minIntensity,minMzData,maxMzData,currentMaxIntensity);
 	let peakData = {};
 	peakList.sort(function(x,y){
@@ -29,7 +46,7 @@ addSpectrum1 = function(peakList,envelopeList){
 }
 
 /*	Spectrum start point */
-addSpectrum2 = function(peakList,envelopeList){
+addSpectrum2 = function(peakList,envelopeList,monoMZ){
 	let specParameters = new SpectrumParameters();
 	peakList.sort(function(x,y){
 		return d3.ascending(x.mz, y.mz);
@@ -46,6 +63,23 @@ addSpectrum2 = function(peakList,envelopeList){
 	let currminMz = minMzData ;
 	let currmaxMz = maxMzData ;
 	let currentMaxIntensity = maxIntensity ;
+	if(monoMZ != null)
+	{
+		currentMaxIntensity = 0 ;
+		monoMZ = parseInt(monoMZ);
+		currminMz = monoMZ - specParameters.onClickMassAdjacentRange ;
+		currmaxMz = monoMZ + specParameters.onClickMassAdjacentRange ;
+		for(let i = 0; i<listSize ; i++)
+		{
+			if(peakList[i].mz > currminMz && peakList[i].mz < currmaxMz)
+			{
+				if(peakList[i].intensity > currentMaxIntensity)
+				{
+					currentMaxIntensity = peakList[i].intensity;
+				}
+			}
+		}
+	}
 	specParameters.initScale(currminMz,currmaxMz,maxIntensity,minIntensity,minMzData,maxMzData,currentMaxIntensity);
 	let peakData = {};
 	peakList.sort(function(x,y){
