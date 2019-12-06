@@ -70,7 +70,7 @@
 			</div>
 			<hr>
 			<div id="scanLevelTwo">
-				<p class="scanleveltitle">
+				<p class="scanleveltitle" id="scanLevelTwoInfo">
 					<b>Scan Level 2</b>&nbsp;&nbsp;&nbsp;&nbsp;
 					Scan:<span id="scanID2"></span>&nbsp;&nbsp;&nbsp;&nbsp;
 					Precursor_MZ:<span id="prec_mz"></span>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -78,9 +78,10 @@
 					Precursor_Intensity:<span id="prec_inte"></span>&nbsp;&nbsp;&nbsp;&nbsp;
 					RetentionTime:<span id="rt"></span>
 				</p>
-				<p id="scanid2"></p>
+				<p class="scanleveltitle">
+					<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
+				</p>
 				<div id="tabs">
-
 					<ul id="tabList">
 					</ul>
 					<svg id="spectrum2"></svg>
@@ -102,15 +103,26 @@
 			xhttp.open("GET", "relatedScan2?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
 			xhttp.send();
 		}
-		function getScanLevel(scanID) {
+		function getScanLevel(scanID,nextScan) {
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 200) {
 					var response = this.responseText;
 					if (response === "1") {
-						//loadPeakList1(scanID);
-						getScanLevelTwoList(scanID, (parseInt(scanID)+1).toString());
-					}else {
+						if (nextScan - scanID === 1) {
+							$('#scanLevelTwoInfo').show();
+							$("#tabs").show();
+							$("#noScanLevelTwo").hide();
+							getScanLevelTwoList(scanID, nextScan);
+						} else {
+							loadPeakList1(scanID, null);
+							// cleanInfo();
+							$("#noScanLevelTwo").show();
+							$("#tabs").hide();
+							$('#scanLevelTwoInfo').hide();
+						}
+					}
+					else {
 						getRelatedScan2(scanID);
 					}
 				}
@@ -123,7 +135,7 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var response = this.responseText;
-                    getScanLevel(response);
+					findNextLevelOneScan(response);
                 }
             };
             xhttp.open("GET", "scanID?projectDir=" + document.getElementById("projectDir").value + "&ID=" + ID, true);
@@ -138,7 +150,7 @@
 						var t3 = performance.now();
 						console.log("Call to fetch peaklist1 data from server took " + (t3 - t2) + " milliseconds.");
 						var response = JSON.parse(this.responseText);
-						console.log(response);
+						//console.log(response);
 						//console.log(typeof response[0].intensity);
 						document.getElementById("scanID1").innerText = scanID;
 						//response.sort(compare);
@@ -167,6 +179,18 @@
 			};
 			xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
 			xhttpRT.send();
+		}
+
+		function findNextLevelOneScan(scan) {
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					var nextScan = parseInt(this.responseText);
+					getScanLevel(scan,nextScan);
+				}
+			};
+			xhttp.open("GET", "findNextLevelOneScan?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan, true);
+			xhttp.send();
 		}
 
 		function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
@@ -371,11 +395,11 @@
 					var d1 = dataset[i];
 					// work out which date value is closest to the mouse
 					var d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
-					getScanLevel(d.scanNum);
+					findNextLevelOneScan(d.scanNum);
 				} else if (i === dataset.length && mouse_x -padding.left<= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
 				{
 					var d = dataset[i-1];
-					getScanLevel(d.scanNum);
+					findNextLevelOneScan(d.scanNum);
 				}
 			}
 			function hoverMouseOn() {
@@ -475,6 +499,9 @@
 			$("#prec_charge").empty();
 			$("#prec_inte").empty();
 			$("#rt").empty();
+			//$("#tabs").empty();
+			$("#spectrum2").empty();
+			$("#tabList").empty();
 		}
 		function compare(a, b){
 			var a_inte = a.intenstiy;
@@ -527,7 +554,7 @@
 			var max = document.getElementById("rangeMax").value;
 			if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
 				//console.log("Yes");
-				getScanLevel(document.getElementById("scanID").value);
+				findNextLevelOneScan(document.getElementById("scanID").value);
 				$("#scanID").val("");
 			}else {
 				//console.log("No");
@@ -538,8 +565,7 @@
 		},false)
 		var prev1 = document.getElementById('prev1');
 		prev1.addEventListener('click', function () {
-			/*$( "#spectrum2" ).empty();
-			$("#tabList").empty();*/
+
 			var scanID1 = document.getElementById("scanID1").innerHTML;
 			if (scanID1 !== '') {
 				prev(document.getElementById("scanID1").innerHTML);
@@ -547,8 +573,7 @@
 		},false)
 		var next1 = document.getElementById('next1');
 		next1.addEventListener('click', function () {
-			/*$( "#spectrum2" ).empty();
-			$("#tabList").empty();*/
+
 			var scanID1 = document.getElementById("scanID1").innerHTML;
 			if (scanID1 !== '') {
 				next(document.getElementById("scanID1").innerHTML);
@@ -556,7 +581,7 @@
 		},false)
 		$( document ).ready(function() {
 			var min = document.getElementById("rangeMin").value;
-			getScanLevel(min);
+			findNextLevelOneScan(min);
 			loadInteSumList();
 		});
 		$("#scanID").keyup(function(event) {
