@@ -18,11 +18,10 @@ sudo apt-get install npm
 sudo npm install
 
 # building
-cd cpp
-mkdir build
-cd build
+cd cpp/build
 cmake ..
 make
+cd ..
 cd ..
 
 # set up server port
