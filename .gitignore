@@ -33,9 +33,10 @@ bower_components
 build/Release
 
 # Dependency directories
-#node_modules/
-#jspm_packages/
-
+node_modules/
+jspm_packages/
+cpp/build
+cpp/bin
 # TypeScript v1 declaration files
 typings/
 
@@ -69,6 +70,9 @@ typings/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.db
 
 # ignore Webstorm Folder
 .idea
+
+.vscode
