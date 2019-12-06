@@ -15,7 +15,7 @@ sudo apt-get install zlib1g-dev libboost-filesystem-dev \
                        libxalan-c-dev
 sudo apt-get install nodejs
 sudo apt-get install npm
-sudo npm install
+npm install
 
 # building
 cd cpp/build
