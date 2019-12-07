@@ -156,7 +156,7 @@
 						//response.sort(compare);
 						//console.log(response);
 						var t0 = performance.now();
-						addSpectrum1(response, [],prec_mz);
+						addSpectrum("spectrum1",response, [],prec_mz);
 						var t1 = performance.now();
 						console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
 					}
@@ -204,7 +204,7 @@
 						// document.getElementById("scanID2").innerText = scanID;
 						//getPrecMZ(scanID);
 						var t6 = performance.now();
-						addSpectrum2(response, [],null);
+						addSpectrum("spectrum2",response, [],null);
 						var t7 = performance.now();
 						console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
 						document.getElementById("scanID2").innerHTML = scanID;
