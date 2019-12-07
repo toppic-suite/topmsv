@@ -30,14 +30,15 @@ SpectrumParameters = function(peakdata) {
   this.minRadius = 2;
   this.maxRadius = 5;
 	
-  this.tickWidthList = [350,300,250,200,150,100,50,20,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
-  this.tickHeightList = [25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001];
-  this.onClickMassAdjacentRange = 10;
+  this.tickWidthList = [10000,8000,6000,5000,4000,3000,2000,1000,800,700,600,500,450,400,350,300,250,200,150,100,50,20,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
+  this.tickHeightList = [50,40,30,25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001];
+  this.onClickMassAdjacentRange = 5;
   this.mouseOverPadding = {head:20,middle:14};
 	
 /* number of ticks on x and y axis*/
 	this.xTicks = 10;
-	this.yTicks = 5 ;
+  this.yTicks = 5 ;
+  //Height/size of the tick
 	this.ticklength = 7 ;
 
   this.initScale = function(currminMz, currmaxMz, dataMaxInte,dataMinInte,minMzData,maxMzData,currentMaxIntensity) {
@@ -45,25 +46,26 @@ SpectrumParameters = function(peakdata) {
     this.dataMaxMz = maxMzData + (0.10 * maxMzData);
     this.minMz = currminMz;
     this.maxMz = currmaxMz;
-	if(currminMz == minMzData && currmaxMz == maxMzData)
-	{
-		 this.minMz = 0;
-		this.maxMz = this.maxMz + (0.10*this.maxMz);
-	}
+    if(currminMz == minMzData && currmaxMz == maxMzData)
+    {
+      this.minMz = 0;
+      this.maxMz = this.maxMz + (0.10*this.maxMz);
+    }
     this.centerMz = (this.minMz + this.maxMz)/2.0;
     this.xScale = this.specWidth/(this.maxMz - this.minMz);
 
-	/* add 1/4th of max intensity to keep the max point at 3/4 of the y axis*/
+    /* add 1/4th of max intensity to keep the max point at 3/4 of the y axis*/
     this.dataMaxInte = dataMaxInte + 0.25*dataMaxInte;
-	this.dataMinInte = dataMinInte ;
-    //this.maxInte = dataMaxInte;
-	this.maxInte = currentMaxIntensity;
-	/* add 1/4th of max intensity to keep the max point at 3/4 of the y axis*/
-	//dataMaxInte = dataMaxInte + 0.25*dataMaxInte ;
-	currentMaxIntensity = currentMaxIntensity + 0.25*currentMaxIntensity ;
-    this.yScale = this.specHeight/currentMaxIntensity;
-	// adding tick widths to the list dynamically 
-	this.tickWidthList = this.getTickWidthList();
+    this.dataMinInte = dataMinInte ;
+      //this.maxInte = dataMaxInte;
+    this.maxInte = currentMaxIntensity;
+    /* add 1/4th of max intensity to keep the max point at 3/4 of the y axis*/
+    //dataMaxInte = dataMaxInte + 0.25*dataMaxInte ;
+    currentMaxIntensity = currentMaxIntensity + 0.25*currentMaxIntensity ;
+
+      this.yScale = this.specHeight/currentMaxIntensity;
+    // adding tick widths to the list dynamically 
+    
   }
 
   this.getPeakXPos = function (mz) {
@@ -73,7 +75,7 @@ SpectrumParameters = function(peakdata) {
 
   this.getPeakYPos = function (intensity) {
     //peakY = intensity * this.yScale + this.padding.bottom;
-	peakY = this.svgHeight - intensity * this.yScale - this.padding.bottom;
+	  peakY = this.svgHeight - intensity * this.yScale - this.padding.bottom;
     return peakY;
   }
 
@@ -88,6 +90,7 @@ SpectrumParameters = function(peakdata) {
     return radius;
   }
 	this.getTickWidthList = function(){
+    let tempDiff = this.maxMz - this.minMz;
 		let i = this.dataMaxMz/this.xTicks * 2 ;
 		let maxTickWidth = this.tickWidthList[0]
 		if(i > maxTickWidth)
@@ -105,8 +108,8 @@ SpectrumParameters = function(peakdata) {
 		return this.tickWidthList ;
   }
   this.getTickWidth = function(){
-	let tempDiff = this.maxMz - this.minMz;
-	let tickWidth = parseInt(this.tickWidthList[0]) ;
+  let tempDiff = this.maxMz - this.minMz;
+  let tickWidth = parseInt(this.tickWidthList[0]) ;
 	for(let i = 0; i < this.tickWidthList.length; i++)
 	{
 		if(tempDiff/this.xTicks <= parseFloat(this.tickWidthList[i]) && tempDiff/this.xTicks > parseFloat(this.tickWidthList[i+1]))
@@ -114,12 +117,12 @@ SpectrumParameters = function(peakdata) {
 			tickWidth = parseFloat(this.tickWidthList[i]);
 			break ;
 		}
-	}
+  }
 	return 	tickWidth ;
   }
   this.getTickHeight = function(){
-		let tickheight = parseInt(this.tickHeightList[0]) ;
-		let maxIntPercent = this.maxInte/this.dataMaxInte * 100;
+    let tickheight = parseInt(this.tickHeightList[0]) ;
+    let maxIntPercent = this.maxInte/this.dataMaxInte * 100;
 		for(let i = 0; i < this.tickHeightList.length; i++)
 		{
 			if(maxIntPercent/this.yTicks <= parseFloat(this.tickHeightList[i]) && maxIntPercent/this.yTicks > parseFloat(this.tickHeightList[i+1]))
@@ -127,7 +130,7 @@ SpectrumParameters = function(peakdata) {
 				tickheight = parseFloat(this.tickHeightList[i]);
 				break ;
 			}
-		}
+    }
 	return tickheight ;
   }
 
@@ -143,13 +146,18 @@ SpectrumParameters = function(peakdata) {
   }
 
   this.yZoom = function (ratio) {
-    if ((ratio > 1.0 && this.maxInte >= this.dataMinInte) || (ratio < 1.0 && this.maxInte <= this.dataMaxInte)) {
+    //Reducing zoom factor to smoothenup and remove gliches
+    if(ratio > 1 ) ratio = 1.4;
+    else if(ratio < 1) ratio = 0.9;
+    if (((ratio > 1.0 && this.maxInte >= this.dataMinInte ) || (ratio < 1.0 && this.maxInte <= this.dataMaxInte)) ) {
       this.yScale = this.yScale * ratio;
       this.maxInte = this.specHeight / this.yScale;
     }
   }
 
   this.zoom = function(mouseSvgX, mouseSvgY, ratio) {
+    if(ratio > 1 ) ratio = 1.4;
+    else if(ratio < 1) ratio = 0.9;
     if (mouseSvgY > this.svgHeight - this.padding.bottom) {
       this.xZoom(mouseSvgX, ratio);
     }

@@ -6,17 +6,17 @@ SpectrumGraph = function(svgId,spectrumParameters,peakData){
   this.zoomed = function () {
     let transform = d3.event.transform;
     let distance = transform.x - spectrumParameters.specX;
-    let ratio = transform.k / spectrumParameters.specScale;
+	let ratio = transform.k / spectrumParameters.specScale;
     spectrumParameters.specX = transform.x;
     spectrumParameters.specScale = transform.k;
     let mousePos = d3.mouse(this);
     if (ratio == 1) 
     {
-      spectrumParameters.drag(distance);
+      	spectrumParameters.drag(distance);
     }
     else 
     {
-      spectrumParameters.zoom(mousePos[0], mousePos[1], ratio);
+		spectrumParameters.zoom(mousePos[0], mousePos[1], ratio);
     }
 	drawSpectrum(svgId,spectrumParameters,peakData);
   }
@@ -36,7 +36,7 @@ drawTicks = function(svg,spectrumParameters,spectrumgraph){
 	
 	this.addXTicks = svg.append("g").attr("id","ticks");
 	
-	for(let i=0; i <= spectrumParameters.xTicks ; i++)
+	for(let i=1; i <= spectrumParameters.xTicks ; i++)
 	{
 		let tickWidth = spectrumParameters.getTickWidth();
 		if(tickWidth < 1 && tickWidth != 0)
@@ -62,7 +62,7 @@ drawTicks = function(svg,spectrumParameters,spectrumgraph){
 	}
 	this.addYTicks = svg.append("g").attr("id","ticks");
 	
-	for(let i=0; i <= spectrumParameters.yTicks ; i++)
+	for(let i=1; i <= spectrumParameters.yTicks ; i++)
 	{
 		let tickHeight = spectrumParameters.getTickHeight();
 		tickHeight = i*tickHeight * spectrumParameters.dataMaxInte /100;
@@ -102,7 +102,6 @@ drawAxis = function(svg,spectrumParameters,spectrumgraph){
 }
 
 addDatatoAxis = function(svg,spectrumParameters){
-	//console.log("In addDatatoAxis  ");
 	//let currentMinPeakVal;
 	//let currentMaxPeakVal;
 	let maxMz = spectrumParameters.maxMz;
@@ -124,7 +123,6 @@ addDatatoAxis = function(svg,spectrumParameters){
 		}
 		x = spectrumParameters.getPeakXPos(tickWidth);
 		let l_tickWidth = tickWidth;
-		//console.log("l_tickWidth : ", l_tickWidth);
 		if(x >= spectrumParameters.padding.left - 0.2 && 
 				x <= (spectrumParameters.svgWidth - spectrumParameters.padding.right))
 		{
@@ -166,7 +164,6 @@ addDatatoAxis = function(svg,spectrumParameters){
 						.text(data + "%")
 						.style("font-size","14px")
 	}
-	//console.log("val : ", currentMinXTickVal,currentMaxXTickVal);
 	//return [currentMinPeakVal,currentMaxPeakVal];
 }
 drawPeaks = function(svg,spectrumParameters,peakdata){
@@ -174,8 +171,6 @@ drawPeaks = function(svg,spectrumParameters,peakdata){
     				.attr("id", "peaks");
       let max = 0 ;
 	  var len = peakdata.peak_list.length;
-	  //console.log("peakdata.peak_list : ", peakdata.peak_list);
-	  console.log("size : ", len);
 	  for(let i =0;i<len;i++)
 	  {
 		let peak = peakdata.peak_list[i];
@@ -209,15 +204,12 @@ drawPeaks = function(svg,spectrumParameters,peakdata){
 			max = max+1;
 		}
 	  }
-  
-	console.log("max : ", max);
 }
 addCircles = function(svg,spectrumParameters,peakData){
 	let circles = svg.append("g").attr("id", "circles");
 	let minPercentage = 0.5;
 	let maxIntensity = spectrumParameters.dataMaxInte ;
 	let max = 0 ;
-	//console.log("peakData.envelope_list : ", peakData.envelope_list);
 	peakData.envelope_list.forEach(function(envelope_list,i){
 		envelope_list.env_peaks.forEach(function(env_peaks,index){
 			//Show only envelopes with minimum of 0.5% 
@@ -331,23 +323,26 @@ onMouseOut = function(){
 	d3.selectAll("#MyTextMassCharge").remove();
 }
 function drawSpectrum(svgId, spectrumParameters, peakData){
-  let svg = d3.select("body").select(svgId);
-	svg.selectAll("#xtext").remove();
-	svg.selectAll("#ticks").remove();
-	svg.selectAll("#peaks").remove();
-	svg.selectAll("#axisPoints").remove();
-	svg.selectAll("#axis").remove();
-	svg.selectAll("#circles").remove();
-	svg.selectAll("#label").remove();
-  /*call onMouseOut everytime to fix onHover bug adding multiple data when mouseover and zoomed up*/
-  
-  onMouseOut();
-  drawTicks(svg, spectrumParameters, peakData);
-  drawAxis(svg,spectrumParameters)
-  addDatatoAxis(svg,spectrumParameters);
-  drawPeaks(svg, spectrumParameters, peakData);
-  addCircles(svg,spectrumParameters,peakData);
-  addLabels(svg, spectrumParameters);
-  //SpectrumDownload.addDownloadRect(svgId, spectrumParameters);
+	// if(spectrumParameters.minMz > -500 )
+	// {
+		let svg = d3.select("body").select(svgId);
+		svg.selectAll("#xtext").remove();
+		svg.selectAll("#ticks").remove();
+		svg.selectAll("#peaks").remove();
+		svg.selectAll("#axisPoints").remove();
+		svg.selectAll("#axis").remove();
+		svg.selectAll("#circles").remove();
+		svg.selectAll("#label").remove();
+	/*call onMouseOut everytime to fix onHover bug adding multiple data when mouseover and zoomed up*/
+	
+		onMouseOut();
+		drawTicks(svg, spectrumParameters, peakData);
+		drawAxis(svg,spectrumParameters)
+		addDatatoAxis(svg,spectrumParameters);
+		drawPeaks(svg, spectrumParameters, peakData);
+		addCircles(svg,spectrumParameters,peakData);
+		addLabels(svg, spectrumParameters);
+		//SpectrumDownload.addDownloadRect(svgId, spectrumParameters);
+	// }
 //   addDownloadRect(svgId, spectrumParameters);
 }

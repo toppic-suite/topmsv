@@ -30,7 +30,7 @@ class SpectrumDownload {
              .attr('y', 0)//top most point in svg
              .attr('width', SpectrumDownload.downloadButtonWidth)
              .attr('height', SpectrumDownload.downloadButtonHeight)
-             .attr("xlink:href", "js/spectrum_graph/images/download.png")
+             .attr("xlink:href", "../shared_scripts/spectrum_graph/images/download.png")	
     
         d3.selectAll("#g_spectrum_button").on('mouseover',function(){
                 d3.select(this).style("cursor", "pointer"); 
@@ -54,7 +54,7 @@ class SpectrumDownload {
             .attr('y', SpectrumDownload.buttonOne_Y)
             .attr('width', SpectrumDownload.buttonWidth)
             .attr('height', SpectrumDownload.buttonHeight)
-            .attr("xlink:href", "js/spectrum_graph/images/svg.png");
+            .attr("xlink:href", "../shared_scripts/spectrum_graph/images/svg.png");
         
         group.append("svg:image").attr("id",SpectrumDownload.SPECDOWNLOADPNG)
             .attr("class","downloadgraph_button")
@@ -62,7 +62,7 @@ class SpectrumDownload {
             .attr('y', SpectrumDownload.buttonTwo_Y)
             .attr('width', SpectrumDownload.buttonWidth)
             .attr('height', SpectrumDownload.buttonHeight)
-            .attr("xlink:href", "js/spectrum_graph/images/png.png");
+            .attr("xlink:href", "../shared_scripts/spectrum_graph/images/png.png");
         SpectrumDownload.download(svgId,spectrumParameters);
     }
     /**
