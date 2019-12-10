@@ -12,7 +12,29 @@ const uuidv1 = require('uuid/v1');
 // var http = require('http');
 var formidable = require('formidable');
 const { execFile, execFileSync } = require('child_process');
+const CronJob = require('cron').CronJob;
 
+const job = new CronJob('00 00 00 * * *', function() {
+    const d = new Date();
+    console.log('Check expired projects:', d);
+    checkExpiredProj(db, function (err, rows) {
+        rows.forEach(element => {
+            fs.unlink(element.dir, (err) => {
+                if (err) throw err;
+                console.log(`${element.fileName} was deleted`);
+            });
+            let dbDir = element.dir.substr(0, element.dir.lastIndexOf(".")) + ".db";
+            fs.unlink(dbDir, (err) => {
+                if (err) throw err;
+                console.log(`${dbDir} was deleted`);
+            });
+            updateProjectStatus(db, 3, element.pcode,function(err){
+                console.log(`${element.pcode} status has been updated`);
+            });
+        });
+    });
+});
+job.start();
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
@@ -124,7 +146,7 @@ app.post('/upload', function (req, res) {
                     }, 60000);
                 }
                 console.log(`stdout: ${stdout}`);
-                updateProjectStatus(db, id, function (err) {
+                updateProjectStatus(db,1, id, function (err) {
                     message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
                     message.subject = "Your data processing is done";
                     message.to = emailtosend;
@@ -328,7 +350,7 @@ app.get('/findNextLevelOneScan', function (req, res) {
 //     console.log('404 handler..');
 //     res.sendFile( __dirname + "/public/" + "404.html" );
 // });
-
+// checkExpiredProj(db);
 var server = app.listen(8080, function () {
 
     // var host = server.address().address;
@@ -346,11 +368,11 @@ function makeid(length) {
     }
     return result;
 }
-function updateProjectStatus(db, id,callback) {
+function updateProjectStatus(db, status,id,callback) {
     let sql = `UPDATE Projects
-                SET ProjectStatus = 1
+                SET ProjectStatus = ?
                 WHERE ProjectCode = ?`;
-    db.run(sql, [id], function (err) {
+    db.run(sql, [status,id], function (err) {
         if (err) {
             return console.error(err.message);
         }
@@ -712,6 +734,35 @@ function ifExists(db, base64_code, callback) {
     });
 }
 
+function checkExpiredProj(db, callback) {
+    var sql = `SELECT projectCode AS pcode,
+            projectDir AS dir,
+            fileName AS fileName
+            FROM Projects
+            WHERE datetime(Date, 'localtime') <= datetime('now', '-1 month') AND ProjectStatus != 3`;
+
+    db.all(sql,(err, rows) => {
+        if (err) {
+            throw err;
+        }
+        else {
+            return callback(null, rows);
+        }
+    });
+
+/*    db.each(sql,(err,row) => {
+        if (err) {
+            throw err;
+        }
+        else {
+            fs.unlink(row.dir, (err) => {
+                if (err) throw err;
+                console.log(`${row.fileName} was deleted!`);
+            });
+        }
+    });*/
+}
+
 function insertRow(db, ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email) {
     let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email) VALUES(?,?,?,?,?,?)';
     db.run(sql, [ProjectCode,ProjectName,FileName,ProjectDir,ProjectStatus,Email], function(err) {
@@ -728,7 +779,7 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, PRIMARY KEY(`ProjectID`) )";
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(`ProjectID`) )";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);
@@ -782,7 +833,8 @@ const message = {
 };
 
 process.on('SIGINT', () => {
-    console.log('Close database and server!')
     db.close();
+    console.log("Database closed!");
     server.close();
+    console.log('Server closed!');
 });
