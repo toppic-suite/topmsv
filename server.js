@@ -208,9 +208,13 @@ app.get('/data', function(req, res) {
                     console.log("Project status: 0");
                     res.send("Your project is processing, please wait for result.");
                     res.end;
-                } else {
+                } else if (row.projectStatus === 2) {
                     console.log("Project status: 2");
                     res.send("Your project failed. Please check your data.");
+                    res.end;
+                } else if (row.projectStatus === 3) {
+                    console.log("Project status: 3");
+                    res.send("Your project has been removed, because it has been one month since you uploaded it.");
                     res.end;
                 }
             }
