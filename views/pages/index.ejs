@@ -148,21 +148,39 @@
 				xhttp.onreadystatechange = function () {
 					if (this.readyState == 4 && this.status == 200) {
 						getRT(scanID);
+/*
 						var t3 = performance.now();
 						console.log("Call to fetch peaklist1 data from server took " + (t3 - t2) + " milliseconds.");
+*/
 						var response = JSON.parse(this.responseText);
-						//console.log(response);
-						//console.log(typeof response[0].intensity);
+						// addSpectrum("spectrum1",response, [],prec_mz);
+
+						var xhttp2 = new XMLHttpRequest();
+						xhttp2.onreadystatechange = function () {
+							if (this.readyState == 4 && this.status == 200) {
+								var envList = JSON.parse(this.responseText);
+								if (envList !== 0){
+									addSpectrum("spectrum1",response, envList,prec_mz);
+								}else {
+									addSpectrum("spectrum1",response, [],prec_mz);
+								}
+							}
+						}
+						xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+						xhttp2.send();
+
+
+
 						document.getElementById("scanID1").innerText = scanID;
-						//response.sort(compare);
-						//console.log(response);
-						var t0 = performance.now();
-						addSpectrum("spectrum1",response, [],prec_mz);
+						// var t0 = performance.now();
+
+/*
 						var t1 = performance.now();
 						console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
+*/
 					}
 				};
-				var t2 = performance.now();
+				// var t2 = performance.now();
 				xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
 				xhttp.send();
 
@@ -199,24 +217,40 @@
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function () {
 					if (this.readyState == 4 && this.status == 200) {
+/*
 						var t5 = performance.now();
 						console.log("Call to fetch peaklist2 data from server took " + (t5 - t4) + " milliseconds.");
+*/
 						var response = JSON.parse(this.responseText);
 						// document.getElementById("scanID2").innerText = scanID;
 						//getPrecMZ(scanID);
-						var t6 = performance.now();
-						addSpectrum("spectrum2",response, [],null);
-						var t7 = performance.now();
-						console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
-						document.getElementById("scanID2").innerHTML = scanID;
-						document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
-						loadPeakList1(levelOneScan, prec_mz);
-						document.getElementById("prec_charge").innerHTML = prec_charge;
-						document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
-						document.getElementById("rt").innerHTML = (rt/60).toFixed(4);
+						// var t6 = performance.now();
+						var xhttp2 = new XMLHttpRequest();
+						xhttp2.onreadystatechange = function () {
+							if (this.readyState == 4 && this.status == 200) {
+								var envList = JSON.parse(this.responseText);
+								console.log(envList);
+								if (envList !== 0){
+									addSpectrum("spectrum2",response, envList,null);
+								}else {
+									addSpectrum("spectrum2",response, [],null);
+								}
+								// var t7 = performance.now();
+								// console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
+								document.getElementById("scanID2").innerHTML = scanID;
+								document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
+								loadPeakList1(levelOneScan, prec_mz);
+								document.getElementById("prec_charge").innerHTML = prec_charge;
+								document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
+								document.getElementById("rt").innerHTML = (rt/60).toFixed(4);
+							}
+
+						};
+						xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+						xhttp2.send();
 					}
 				};
-				var t4 = performance.now();
+				// var t4 = performance.now();
 				xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
 				xhttp.send();
 			}else{
@@ -416,7 +450,7 @@
 					// work out which date value is closest to the mouse
 					var d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
 
-					document.getElementById("rt-hover").innerHTML = Math.round(d.rt * 10000)/10000;
+					document.getElementById("rt-hover").innerHTML = Math.round(d.rt * 100)/100;
 					document.getElementById("intensity-hover").innerHTML = d.inteSum.toExponential(2);
 					document.getElementById("scan-hover").innerHTML = d.scanNum;
 
@@ -434,7 +468,7 @@
 				} else if (i === dataset.length&& mouse_x-padding.left <= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
 				{
 					var d = dataset[i-1];
-					document.getElementById("rt-hover").innerHTML = Math.round(d.rt * 10000)/10000;
+					document.getElementById("rt-hover").innerHTML = Math.round(d.rt * 100)/100;
 					document.getElementById("intensity-hover").innerHTML = d.inteSum.toExponential(2);
 					document.getElementById("scan-hover").innerHTML = d.scanNum;
 

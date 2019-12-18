@@ -210,6 +210,7 @@ addCircles = function(svg,spectrumParameters,peakData){
 	let minPercentage = 0.5;
 	let maxIntensity = spectrumParameters.dataMaxInte ;
 	let max = 0 ;
+	//console.log("spectrumParameters : ", spectrumParameters);
 	peakData.envelope_list.forEach(function(envelope_list,i){
 		envelope_list.env_peaks.forEach(function(env_peaks,index){
 			//Show only envelopes with minimum of 0.5% 
@@ -217,6 +218,8 @@ addCircles = function(svg,spectrumParameters,peakData){
 			
 			if(env_peaks.mz > spectrumParameters.minMz && env_peaks.mz <= spectrumParameters.maxMz && percentInte >= minPercentage)
 			{
+				//console.log("percentInte : ", percentInte);
+
 				circles.append("circle")
 				.attr("id","circles")
 				.attr("cx",function(d,i){
