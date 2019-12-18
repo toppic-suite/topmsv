@@ -64,10 +64,33 @@ SpectrumParameters = function(peakdata) {
     currentMaxIntensity = currentMaxIntensity + 0.25*currentMaxIntensity ;
 
       this.yScale = this.specHeight/currentMaxIntensity;
-    // adding tick widths to the list dynamically 
-    
+    // adding tick widths to the list dynamically
+      //console.log("this.datamaxInte : ", this.dataMaxInte);
+      //console.log("this.yScale : ", this.yScale);
   }
+    this.setColorToEnvelops = function(envelopes){
 
+        envelopes.sort(function(x,y){
+
+            return d3.ascending(x.env_peaks[0].mz, y.env_peaks[0].mz);
+
+        })
+
+        let colorListsize = this.spectrumColorArray.length;
+
+        let i = envelopes.length ;
+
+        while(i--)
+
+        {
+
+            envelopes[i].color = this.spectrumColorArray[i%colorListsize];
+
+        }
+
+        return envelopes;
+
+    }
   this.getPeakXPos = function (mz) {
     let peakX = (mz - this.minMz) * this.xScale + this.padding.left;
     return peakX;

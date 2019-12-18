@@ -350,6 +350,20 @@ app.get('/findNextLevelOneScan', function (req, res) {
 
     })
 });
+app.get('/envlist', function(req, res) {
+    console.log("Hello, envlist!");
+    let projectDir = req.query.projectDir;
+    let scanid = req.query.scanID;
+    //console.log(scanid);
+    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    showData(resultDb,scanid,res);
+});
 // app.use( function(req, res){
 //     console.log('404 handler..');
 //     res.sendFile( __dirname + "/public/" + "404.html" );
@@ -362,6 +376,8 @@ var server = app.listen(8080, function () {
     console.log("Started on PORT %s", port)
 
 });
+
+
 
 function makeid(length) {
     var result           = '';
@@ -425,6 +441,79 @@ function getProjectSummary(db, id, callback) {
         else {
             //console.log(row);
             return callback(null, row);
+        }
+    });
+}
+function getEnvNum(resultDB, scanid,callback) {
+    let sql = `SELECT envelope_id AS id,THEO_MONO_MASS AS mono_mass, CHARGE AS charge
+                FROM envelope
+                WHERE scan_id = ?`;
+    resultDB.all(sql, [scanid], (err, rows) => {
+        if(err) {
+            throw err;
+        }
+        return callback(null, rows);
+    });
+}
+function getEnvPeakList(resultDB, envelope_id, callback) {
+    let sql = `SELECT mz, intensity
+                FROM env_peak
+                WHERE envelope_id = ?`;
+    resultDB.all(sql, [envelope_id], (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        return callback(null,rows);
+    });
+    //db.close();
+}
+function getEnvCharge(resultDB, envelope_id, callback) {
+    let sql = `SELECT THEO_MONO_MASS AS mono_mass, CHARGE AS charge
+                FROM envelope
+                WHERE envelope_id = ?`;
+    resultDB.get(sql, [envelope_id], (err, row) => {
+        if(err) {
+            throw err;
+        }
+        return callback(null, row);
+    });
+    //db.close();
+}
+let times = 0;
+let result=[];
+function showData(resultDB,scan_id,res) {
+    getEnvNum(resultDB, scan_id, function (err, rows) {
+        //console.log(rows.length);
+        //console.log(typeof rows);
+        let max = rows.length;
+        if (rows.length === 0){
+            //console.log("Empty rows!");
+            res.write("0");
+            res.end();
+            resultDB.close();
+        }
+        else {
+            rows.forEach(envelope => {
+                let id = envelope.id;
+                let charge = envelope.charge;
+                let mono_mass = envelope.mono_mass;
+                let oneEnvelope = {};
+                oneEnvelope.mono_mass = mono_mass;
+                oneEnvelope.charge = charge;
+                getEnvPeakList(resultDB,id, function(err, rows) {
+                    oneEnvelope.env_peaks=rows;
+                    result.push(oneEnvelope);
+                    ++times;
+                    if(times === max){
+                        //console.log(JSON.stringify(result));
+                        res.write(JSON.stringify(result));
+                        res.end();
+                        times = 0;
+                        result = [];
+                        resultDB.close();
+                    }
+                });
+            });
         }
     });
 }
