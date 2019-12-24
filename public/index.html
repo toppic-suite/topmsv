@@ -24,7 +24,7 @@
             </h1>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading">Data Information</div>
+<!--            <div class="panel-heading">Data Information</div>-->
             <div class="panel-body">
 <!--
                 <form &lt;!&ndash;action="upload"&ndash;&gt; method="post" enctype="multipart/form-data">
@@ -43,15 +43,49 @@
                     </div>
                     <br>
                     <div>
-                        <table>
+                        <div>
+                            <span class="btn btn-primary fileinput-button"> <i
+                                    class="icon-plus icon-white"></i> <span>Select mzML file...</span>
+                                    <input class="form-control" id="dbfile" type="file" name="dbfile">
+                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dbfilename"></span>
+                        </div>
+                        <br>
+                        <div>
+                            <span class="btn btn-primary fileinput-button"> <i
+                                    class="icon-plus icon-white"></i> <span>Select ms1 env file...</span>
+                                    <input class="form-control" id="envfile1" type="file" name="envfile1">
+                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="envfilename1"></span>
+                        </div>
+                        <br>
+                        <div>
+                            <span class="btn btn-primary fileinput-button"> <i
+                                    class="icon-plus icon-white"></i> <span>Select ms2 env file...</span>
+                                    <input class="form-control" id="envfile2" type="file" name="envfile2">
+                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="envfilename2"></span>
+                        </div>
+                        <br>
+                        <!--<table>
                             <tr>
                                 <td><span class="btn btn-primary fileinput-button"> <i
-                                        class="icon-plus icon-white"></i> <span>Select file...</span>
+                                        class="icon-plus icon-white"></i> <span>Select mzML file...</span>
                                     <input class="form-control" id="dbfile" type="file" name="dbfile">
                                             </span></td>
                                 <td width="10pt"></td>
-                                <td><div id="dbfilename"></div></td>
+                                <td><span id="dbfilename"></span></td>
                                 <td width="10pt"></td>
+
+
+
+                            </tr>
+                            <tr>
+                                <td><span class="btn btn-primary fileinput-button"> <i
+                                        class="icon-plus icon-white"></i> <span>Select env file...</span>
+                                    <input class="form-control" id="envfile" type="file" name="envfile">
+                                            </span></td>
+                                <td width="10pt"></td>
+                                <td><div id="envfilename"></div></td>
+                            </tr>
+                            <tr>
                                 <td id="dbtd" style="width: 300pt">
                                     <div id="dbprogress" class="progress">
                                         <div id="dbbar" class="progress-bar progress-bar-striped" role="progressbar"
@@ -59,20 +93,24 @@
                                     </div>
                                 </td>
                                 <td width="10pt"></td>
-<!--
-                                <td>
-                                    <div id="dbbutton"></div>
+                            </tr>
+                        </table>-->
+<!--                        <div id="dbbutton">-->
+                        <table>
+                            <tr>
+                                <td><button id="uploadbutton" class="btn btn-primary">Upload</button></td>
+                                <td width="40pt"></td>
+                                <td id="dbtd" style="width: 300pt">
+                                    <div id="dbprogress" class="progress">
+                                        <div id="dbbar" class="progress-bar progress-bar-striped" role="progressbar"
+                                             style="width: 0%">0%</div>
+                                    </div>
                                 </td>
--->
                             </tr>
                         </table>
-                        <br>
-<!--                        <div id="dbbutton">-->
-                        <button id="uploadbutton" class="btn btn-primary">Upload</button>
 <!--                        </div>-->
 
                     </div>
-                    <br>
 <!--                    <div class="input-group">-->
                         <!--<input type="hidden" id="finalsubmit" name="finalsubmit"
                                value=true>-->
