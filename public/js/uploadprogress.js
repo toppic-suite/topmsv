@@ -2,20 +2,33 @@
     'use strict';
 
     var file = document.querySelector('#dbfile');
+    var envfile1 = document.querySelector('#envfile1');
+    var envfile2 = document.querySelector('#envfile2');
     var project = document.getElementById('projectName');
     var email = document.getElementById('emailAddress');
     var dbfilename = document.getElementById('dbfilename');
-    var choosename = document.getElementById('dbfilename');
+    var envfilename1 = document.getElementById('envfilename1');
+    var envfilename2 = document.getElementById('envfilename2');
+    //var choosename = document.getElementById('dbfilename');
     var upload = document.querySelector('#uploadbutton');
     var progress = document.querySelector('#dbbar');
     var xhr = new XMLHttpRequest();
 
     upload.addEventListener('click', uploadFile, false);
     file.addEventListener('change', chooseFile, false);
+    envfile1.addEventListener('change', chooseEnvFile1, false);
+    envfile2.addEventListener('change', chooseEnvFile2, false);
 
     function chooseFile(event) {
         dbfilename.innerHTML = file.files[0].name;
     }
+    function chooseEnvFile1(event) {
+        envfilename1.innerHTML = envfile1.files[0].name;
+    }
+    function chooseEnvFile2(event) {
+        envfilename2.innerHTML = envfile2.files[0].name;
+    }
+
     /**
      * @return {boolean}
      */
@@ -38,11 +51,17 @@
             alert("Please fill in all information above!");
         }else if(!file.files[0].name.match(/.(mzML)$/i)){
             alert('Please upload a mzML file!');
+        }else if(envfile1.files[0] !== undefined && !envfile1.files[0].name.match(/.(env)$/i)){
+            alert('Please upload an env file for ms1!');
+        }else if(envfile2.files[0] !== undefined && !envfile2.files[0].name.match(/.(env)$/i)){
+            alert('Please upload an env file for ms2!');
         }else if (!ValidateEmail(email.value)){
             alert("You have entered an invalid email address!")
         } else {
             var formData = new FormData();
             formData.append('dbfile', file.files[0]);
+            formData.append('envfile1', envfile1.files[0]);
+            formData.append('envfile2', envfile2.files[0]);
             formData.append('projectname', project.value);
             formData.append('emailaddress', email.value);
 
