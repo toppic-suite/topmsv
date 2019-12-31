@@ -19,6 +19,7 @@
     "child_process": "^1.0.2",
     "ejs": "^2.7.1",
     "express-ejs-layouts": "^2.5.0",
-    "cron": "^1.7.2"
+    "cron": "^1.7.2",
+    "better-sqlite3": "^5.4.3"
   }
 }
