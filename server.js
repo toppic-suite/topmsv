@@ -61,26 +61,21 @@ app.post('/upload', function (req, res) {
         var file = files.dbfile;
         var fname = file.name; // hello.txt
         var envFile1 = files.envfile1;
-        var envFile2 = files.envfile2;
+        // var envFile2 = files.envfile2;
         var folderid = uuidv1();
         var des_path = __dirname + "/data/" + folderid + "/";
         var des_file = __dirname + "/data/" + folderid + "/" + fname;
         var des_envFile1 = __dirname + "/data/" + folderid + "/" + "ms1.env";
         var des_envFile2 = __dirname + "/data/" + folderid + "/" + "ms2.env";
         console.log(envFile1);
-        console.log(envFile2);
         // Generate new path for file
         if (!fs.existsSync(des_path)) {
             console.log('The path does not exist.');
             fs.mkdirSync(des_path);
             console.log('Path created: ',des_path);
         }
-        fs.rename(envFile1.path, des_envFile1, function (err) {
-            if(err) {
-                console.log(err);
-                return res.send({"error": 403, "message": "Error on saving file!"});
-            }
-            fs.rename(envFile2.path, des_envFile2, function (err) {
+        if(envFile1 !== undefined) {
+            fs.rename(envFile1.path, des_envFile1, function (err) {
                 if (err) {
                     console.log(err);
                     return res.send({"error": 403, "message": "Error on saving file!"});
@@ -108,7 +103,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRow(db, id, projectname, fname,des_file,0, emailtosend);
+                                insertRow(db, id, projectname, fname,des_file,0, emailtosend,1);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -181,11 +176,90 @@ app.post('/upload', function (req, res) {
                                     return;
                                 }, 60000);
                             }
-                            console.log(`stdout: ${stdout}`);
+                            //console.log(`stdout: ${stdout}`);
                             //console.log(data.toString());
-                            updateProjectStatus(db,1, id, function (err) {
-                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
-                                message.subject = "Your data processing is done";
+                            else {
+                                updateProjectStatus(db,1, id, function (err) {
+                                    message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
+                                    message.subject = "Your data processing is done";
+                                    message.to = emailtosend;
+                                    transport.sendMail(message, function(err, info) {
+                                        if (err) {
+                                            console.log(err)
+                                        } else {
+                                            console.log(info);
+                                        }
+                                    });
+                                });
+
+                            }
+                        }));
+                    });
+                });
+            })
+        } else {
+            fs.rename(file.path, des_file, function (err) {
+                if(err) {
+                    console.log(err);
+                    return res.send({"error": 403, "message": "Error on saving file!"});
+                }
+                var adr =  'http://149.166.112.7:8080/data?id=';
+                // output result into screen
+
+                res.write('<h1>File uploaded successfully!</h1>');
+                res.write('<h2>Project Name: </h2>');
+                res.write(projectname);
+                res.write('<h2>File Path: </h2>');
+                res.write(des_file);
+
+                var id = makeid(11);
+
+                ifExists(db, id, function (err, result) {
+                    if(err) {
+                        console.log(err);
+                    }
+                    while (true) {
+                        // console.log(result);
+                        if(!result) {
+                            insertRow(db, id, projectname, fname,des_file,0, emailtosend,0);
+                            message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
+                            message.subject = "Your data has been uploaded, please wait for processing";
+                            message.to = emailtosend;
+                            transport.sendMail(message, function(err, info) {
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    console.log(info);
+                                }
+                            });
+
+                            res.write('<h2>Link: </h2>');
+                            res.write(message.text);
+
+                            res.end();
+                            break;
+                        }
+                    }
+                });
+
+                response = {
+                    message:'File uploaded successfully',
+                    filename:fname,
+                    projectname:projectname,
+                    link:message.text,
+                    email: emailtosend
+                };
+
+                console.log(response);
+                res.write(JSON.stringify( response ));
+
+                execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
+                    if(err) {
+                        setTimeout(function () {
+                            processFailure(db,id, function (err) {
+                                console.log("Process failed!");
+                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                                message.subject = "Your data processing failed";
                                 message.to = emailtosend;
                                 transport.sendMail(message, function(err, info) {
                                     if (err) {
@@ -195,11 +269,26 @@ app.post('/upload', function (req, res) {
                                     }
                                 });
                             });
-                        }));
-                    });
+                            console.log(err);
+                            return;
+                        }, 60000);
+                    }else{
+                        updateProjectStatus(db,1, id, function (err) {
+                            message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
+                            message.subject = "Your data processing is done";
+                            message.to = emailtosend;
+                            transport.sendMail(message, function(err, info) {
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    console.log(info);
+                                }
+                            });
+                        });
+                    }
                 });
-            })
-        })
+            });
+        }
     })
 });
 
@@ -393,6 +482,7 @@ app.get('/envlist', function(req, res) {
     console.log("Hello, envlist!");
     let projectDir = req.query.projectDir;
     let scanid = req.query.scanID;
+    let projectCode = req.query.projectCode;
     //console.log(scanid);
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
@@ -401,7 +491,14 @@ app.get('/envlist', function(req, res) {
         }
         // console.log('Connected to the result database.');
     });
-    showData(resultDb,scanid,res);
+    ifEnvExists(db, projectCode,(err, row)=> {
+        if(row.EnvelopeStatus === 1) {
+            showData(resultDb,scanid,res);
+        }else {
+            res.write('0');
+            res.end();
+        }
+    })
 });
 // app.use( function(req, res){
 //     console.log('404 handler..');
@@ -428,6 +525,18 @@ function makeid(length) {
 function updateProjectStatus(db, status,id,callback) {
     let sql = `UPDATE Projects
                 SET ProjectStatus = ?
+                WHERE ProjectCode = ?`;
+    db.run(sql, [status,id], function (err) {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(`Row(s) updated: ${this.changes}`);
+        return callback(null);
+    });
+}
+function updateEnvStatus(db, status,id,callback) {
+    let sql = `UPDATE Projects
+                SET EnvelopeStatus = ?
                 WHERE ProjectCode = ?`;
     db.run(sql, [status,id], function (err) {
         if (err) {
@@ -864,6 +973,20 @@ function ifExists(db, base64_code, callback) {
     });
 }
 
+function ifEnvExists(db,ProjectCode, callback) {
+    let sql = `SELECT EnvelopeStatus
+             FROM Projects
+             WHERE ProjectCode  = ?`;
+    db.get(sql, [ProjectCode], (err, row) => {
+        if (err) {
+            return callback(err);
+        }
+        else {
+            return callback(null, row);
+        }
+    });
+}
+
 function checkExpiredProj(db, callback) {
     var sql = `SELECT projectCode AS pcode,
             projectDir AS dir,
@@ -893,9 +1016,9 @@ function checkExpiredProj(db, callback) {
     });*/
 }
 
-function insertRow(db, ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email) {
-    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email) VALUES(?,?,?,?,?,?)';
-    db.run(sql, [ProjectCode,ProjectName,FileName,ProjectDir,ProjectStatus,Email], function(err) {
+function insertRow(db, ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvStatus) {
+    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvelopeStatus) VALUES(?,?,?,?,?,?,?)';
+    db.run(sql, [ProjectCode,ProjectName,FileName,ProjectDir,ProjectStatus,Email,EnvStatus], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -909,13 +1032,13 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(`ProjectID`) )";
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, PRIMARY KEY(`ProjectID`) )";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);
         }
         console.log("Table for project is ready!");
-        var sqlToCreateIndex = "CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectID`, `ProjectCode` )";
+        var sqlToCreateIndex = "CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectCode` )";
         db.run(sqlToCreateIndex, function (err) {
             if (err) {
                 return console.log(err.message);

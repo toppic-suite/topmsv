@@ -441,7 +441,7 @@ void mzMLReader::createIndex() {
     // fprintf(stdout, "Records created successfully\n");
     std::cout << "Intensity_index created successfully" << std::endl;
   }
-  sqlstr = "CREATE INDEX scan_index ON SPECTRA (ID,SCAN);";
+  sqlstr = "CREATE INDEX scan_index ON SPECTRA (SCAN);";
   sql = (char *)sqlstr.c_str();
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
