@@ -499,9 +499,10 @@ requestButton.addEventListener('click', function () {
     var requestID = document.getElementById("scanID").value;
     var min = document.getElementById("rangeMin").value;
     var max = document.getElementById("rangeMax").value;
+    // console.log(parseInt(requestID));
     if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
         //console.log("Yes");
-        findNextLevelOneScan(document.getElementById("scanID").value);
+        findNextLevelOneScan(parseInt(requestID));
         $("#scanID").val("");
     }else {
         //console.log("No");

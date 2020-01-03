@@ -23,15 +23,26 @@ div#input {
     padding-bottom: 5px;
 }
 input#scanID {
-    width: 8%;
+    width: 4%;
+    position: absolute;
+    right: 28%;
 }
 hr {
     margin-bottom: 7px;
     margin-top: 0px;
 }
-button#request {
+span.fileName{
     position: relative;
-    left: 20px;
+    left: 10%
+}
+#scanRange {
+    position: absolute;
+    right: 33%;
+}
+button#request {
+    position: absolute;
+    right: 23%;
+    /*left: 51%;*/
     background-color: #555555;
     color: white;
     border: none;
@@ -42,18 +53,23 @@ button#request {
 }
 
 button#next1 {
+    position: absolute;
+    right: 23%;
+    /*left: 50%;*/
     font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: 2px 22px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     /*float: right;*/
 }
 button#prev1 {
-    left: 100px;
+    position: absolute;
+    right: 28%;
+    /*left: 48%;*/
     font-size: 100%;
     background-color: #555555;
     color: white;
