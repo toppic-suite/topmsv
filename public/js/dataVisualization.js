@@ -185,8 +185,8 @@ function loadInteSumList() {
 function addFigure(dataset) {
 
     var width = 1100;
-    var height = 160;
-    var padding = { top: 10, right: 150, bottom: 50, left: 50 };
+    var height = 120; //160
+    var padding = { top: 10, right: 110, bottom: 50, left: 80 }; //left:50 right:150
 
     // var dataset = [{rt:1, inteSum:224}, {rt:2, inteSum:528}, {rt:3, inteSum:756}, {rt:4, inteSum:632}];
 
@@ -247,7 +247,7 @@ function addFigure(dataset) {
         // .attr("fill", "black")//set the fill here
         .attr("transform",
             "translate(" + ((width+padding.left-padding.right)/2) + " ," +
-            (height - padding.bottom + 40) + ")")
+            (height - padding.bottom + 35) + ")")
         .style("text-anchor", "middle")
         .text("Retention Time (mins)");
 
@@ -258,8 +258,8 @@ function addFigure(dataset) {
     // text label for the y axis
     svg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0)
-        .attr("x",0 - (height / 2))
+        .attr("y", 20)
+        .attr("x",0 - (height / 2) + 20)
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Intensity");
