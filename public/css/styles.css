@@ -79,6 +79,15 @@ p#scanid2 {
 p.scanleveltitle{
     font-size: 14px;
 }
+svg#spectrum1{
+    padding-left: 5px;
+    width: 99% !important;
+    height: 100% !important;
+}
+svg#spectrum2{
+    padding: 0 !important;
+    padding-top: 10px !important;
+}
 .ui-widget-content {
     background: #eee !important;
 }
