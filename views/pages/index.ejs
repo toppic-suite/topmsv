@@ -19,10 +19,10 @@
 		<div class="jumbotron">
 			<div>
 				<span class="projectsummary">
-					<span class="projectsummary">
-						<strong>Project Name:</strong> <%= summary.ProjectName %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span class="projectName">
+						<strong>Project Name:</strong> <%= summary.ProjectName %>
 					</span>
-					<span class="projectsummary">
+					<span class="fileName">
 						<strong>File Name:</strong> <%= fileName %>
 					</span>
 				</span>
@@ -37,7 +37,7 @@
 			<hr>
 
 			<div id="input">
-				<p class="scanleveltitle"><strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="scanID">Scan within Scan Range:&nbsp;&nbsp;</label>
+				<p class="scanleveltitle"><strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong> <label for="scanID" id="scanRange">Scan within Scan Range:</label>
 					<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
 					<button type="submit" id="request">Request</button></p>
 				<p class="scanleveltitle">RT:<span id="rt-hover">0</span>&nbsp;&nbsp;&nbsp;&nbsp;Intensity:<span id="intensity-hover">0</span>&nbsp;&nbsp;&nbsp;&nbsp;Scan:<span id="scan-hover">0</span></p>
@@ -57,7 +57,7 @@
 					<span id="scanid1">
 						Scan:
 						<span id="scanID1"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						Retention Time: <span id="scan1RT"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						Retention Time: <span id="scan1RT"></span>
 						<button type="submit" id="prev1">Previous</button>
 						<button type="submit" id="next1">Next</button>
 					</span>
