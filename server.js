@@ -1090,8 +1090,14 @@ const message = {
 };
 
 process.on('SIGINT', () => {
-    db.close();
-    console.log("Database closed!");
-    server.close();
-    console.log('Server closed!');
+    db.close((err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Close the database connection.');
+    });
+    server.close(()=> {
+        console.log('Server closed!');
+        process.exit(0);
+    });
 });
