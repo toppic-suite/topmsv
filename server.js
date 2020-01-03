@@ -59,6 +59,10 @@ app.post('/upload', function (req, res) {
         var projectname = fields.projectname;
         var emailtosend = fields.emailaddress;
         var file = files.dbfile;
+        if (file === undefined) {
+            console.log("Upload files failed!");
+            return;
+        }
         var fname = file.name; // hello.txt
         var envFile1 = files.envfile1;
         // var envFile2 = files.envfile2;
