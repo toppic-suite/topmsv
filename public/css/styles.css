@@ -80,6 +80,18 @@ button#prev1 {
     display: inline-block;
     /*margin-right: 20%;*/
 }
+button#hide{
+    position: absolute;
+    right: 23%;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 /*div#scanLevelOne {*/
 /*    font-size: 150%;*/
 /*}*/

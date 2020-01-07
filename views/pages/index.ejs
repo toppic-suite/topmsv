@@ -11,6 +11,8 @@
 	<script src="js/spectrum_graph/spectrumdownload.js" ></script>
 	<script src="js/download/FileSaver.js"></script>
 	<script src="js/download/saveImage.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 	<link rel="stylesheet" href="css/jquery-ui.min.css">
 </head>
 <body class="container">
@@ -87,6 +89,36 @@
 					<svg id="spectrum2"></svg>
 				</div>
 
+			</div>
+			<br>
+			<hr>
+			<div>
+				<p class="scanleveltitle" id="scanLevelTwoInfo">
+					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
+					Scan: <span id="envScan"></span>
+					<button id="hide">Hide</button>
+				</p>
+				<br>
+				<div id="datatable">
+				<table id="envTable" class="display" style="width:100%">
+					<thead>
+					<tr>
+						<th>Envelope ID</th>
+						<th>Scan</th>
+						<th>Charge</th>
+						<th>Theo Mono Mass</th>
+					</tr>
+					</thead>
+					<tfoot>
+					<tr>
+						<th>Envelope ID</th>
+						<th>Scan</th>
+						<th>Charge</th>
+						<th>Theo Mono Mass</th>
+					</tr>
+					</tfoot>
+				</table>
+				</div>
 			</div>
 		</div>
 	</main>

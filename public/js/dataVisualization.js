@@ -37,6 +37,7 @@ function getScanLevel(scanID,nextScan) {
     xhttp.open("GET", "scanlevel?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
     xhttp.send();
 }
+// get scanNum by ID
 function getScanID(ID) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -159,6 +160,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
         // var t4 = performance.now();
         xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
         xhttp.send();
+        showEnvTable(scanID);
     }else{
         alert("NULL");
     }
@@ -493,6 +495,23 @@ function getScanLevelTwoList(scanID,target) {
     xhttp.open("GET", "scanTwoList?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
     xhttp.send();
 }
+function showEnvTable(scan) {
+    $('#envScan').text(scan);
+    $('#envTable').DataTable( {
+        destroy: true,
+        "ajax": {
+            url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan,
+            dataSrc: '',
+            type: "GET"
+        },
+        "columns": [
+            { "data": "envelope_id" },
+            { "data": "scan_id" },
+            { "data": "CHARGE" },
+            { "data": "THEO_MONO_MASS" }
+        ]
+    } );
+}
 var requestButton = document.getElementById('request');
 requestButton.addEventListener('click', function () {
     // $( "#spectrum2" ).empty();
@@ -503,6 +522,7 @@ requestButton.addEventListener('click', function () {
     if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
         //console.log("Yes");
         findNextLevelOneScan(parseInt(requestID));
+        showEnvTable(parseInt(requestID));
         $("#scanID").val("");
     }else {
         //console.log("No");
@@ -529,6 +549,7 @@ next1.addEventListener('click', function () {
 },false)
 $( document ).ready(function() {
     var min = document.getElementById("rangeMin").value;
+    showEnvTable(min);
     findNextLevelOneScan(min);
     loadInteSumList();
 });
@@ -537,3 +558,27 @@ $("#scanID").keyup(function(event) {
         $("#request").click();
     }
 });
+$( "#hide" ).click(function() {
+    if($("#hide").text() === 'Hide') {
+        $("#hide").text('Show')
+        $("#datatable").hide();
+    }else {
+        $("#hide").text('Hide')
+        $("#datatable").show();
+    }
+});
+/*
+$(document).ready(function() {
+    $('#envTable').DataTable( {
+        "ajax": {
+            url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + 1482,
+            dataSrc: '',
+            type: "GET"
+        },
+        "columns": [
+            { "data": "envelope_id" },
+            { "data": "CHARGE" },
+            { "data": "THEO_MONO_MASS" }
+        ]
+    } );
+} );*/
