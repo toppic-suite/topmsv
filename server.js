@@ -479,8 +479,7 @@ app.get('/findNextLevelOneScan', function (req, res) {
             res.write("0");
             res.end();
         }
-
-    })
+    });
 });
 app.get('/envlist', function(req, res) {
     console.log("Hello, envlist!");
@@ -504,6 +503,29 @@ app.get('/envlist', function(req, res) {
         }
     })
 });
+app.get('/envtable', function (req, res) {
+    console.log("Hello, envtable!");
+    let projectDir = req.query.projectDir;
+    let scanNum = req.query.scanID;
+    /*getScanID(projectDir,scanNum,function (err, row) {
+        let scanID;
+        if(row !== undefined) {
+            scanID = row.scanID;
+        }
+
+    })*/
+    getEnvTable(projectDir, scanNum, function (err, rows) {
+        //console.log("Env Table rows:", rows);
+        if (rows !== undefined) {
+            res.json(rows);
+            //res.write(JSON.stringify(rows));
+            res.end();
+        }else {
+            res.write("0");
+            res.end();
+        }
+    });
+})
 // app.use( function(req, res){
 //     console.log('404 handler..');
 //     res.sendFile( __dirname + "/public/" + "404.html" );
@@ -684,6 +706,26 @@ function getRT(dir, scanNum, callback) {
         }
         //console.log(row);
         return callback(null, row);
+    });
+    resultDb.close();
+}
+function getEnvTable(dir, scanID, callback){
+    let sql = `SELECT envelope_id,scan_id, CHARGE, THEO_MONO_MASS
+                FROM envelope
+                WHERE scan_id = ?`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.all(sql,[scanID], (err, rows) => {
+        if (err) {
+            console.error(err.message);
+        }
+        //console.log(row);
+        return callback(null, rows);
     });
     resultDb.close();
 }
