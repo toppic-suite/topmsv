@@ -118,7 +118,8 @@ function findNextLevelOneScan(scan) {
     xhttp.open("GET", "findNextLevelOneScan?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan, true);
     xhttp.send();
 }
-
+let response_g;
+let envList_g;
 function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
     if(scanID !== '0') {
         var xhttp = new XMLHttpRequest();
@@ -128,19 +129,19 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                                         var t5 = performance.now();
                                         console.log("Call to fetch peaklist2 data from server took " + (t5 - t4) + " milliseconds.");
                 */
-                var response = JSON.parse(this.responseText);
+                response_g = JSON.parse(this.responseText);
                 // document.getElementById("scanID2").innerText = scanID;
                 //getPrecMZ(scanID);
                 // var t6 = performance.now();
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
-                        var envList = JSON.parse(this.responseText);
-                        console.log(envList);
-                        if (envList !== 0){
-                            addSpectrum("spectrum2",response, envList,null);
+                        envList_g = JSON.parse(this.responseText);
+                        console.log(envList_g);
+                        if (envList_g !== 0){
+                            addSpectrum("spectrum2",response_g, envList_g,null);
                         }else {
-                            addSpectrum("spectrum2",response, [],null);
+                            addSpectrum("spectrum2",response_g, [],null);
                         }
                         // var t7 = performance.now();
                         // console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
@@ -483,7 +484,7 @@ function getScanLevelTwoList(scanID,target) {
                                 console.log(scanID);
                                 console.log(document.getElementById(scanID));
             */
-            console.log(target);
+            //console.log(target);
             /*
                                 var showID = (parseInt(scanID) + 1).toString(10);
                                 console.log(showID);
@@ -497,20 +498,118 @@ function getScanLevelTwoList(scanID,target) {
 }
 function showEnvTable(scan) {
     $('#envScan').text(scan);
+    /*editor = new $.fn.dataTable.Editor( {
+        ajax: "/",
+        table: "#envTable",
+        fields: [ {
+            label: "Scan:",
+            name: "scan_id"
+        }, {
+            label: "Charge:",
+            name: "CHARGE"
+        }, {
+            label: "Theo mono mass:",
+            name: "THEO_MONO_MASS"
+        }
+        ]
+    } );*/
     $('#envTable').DataTable( {
         destroy: true,
+        paging: false,
+        searching: false,
+        dom: 'Bfrtip',
+        scrollY: 370,
+        scroller: true,
+        altEditor: true,
+        select: 'single',
+        responsive: true,
+        buttons: [
+            {
+                extend: 'csv',
+                text: 'Export CSV',
+                className: 'export-button',
+                filename: 'envelope_data'
+            },
+            {
+                text: 'Add',
+                name: 'add'        // do not change name
+            },
+            {
+                extend: 'selected', // Bind to Selected row
+                text: 'Edit',
+                name: 'edit'        // do not change name
+            },
+            {
+                extend: 'selected', // Bind to Selected row
+                text: 'Delete',
+                name: 'delete'      // do not change name
+            },
+            {
+                text: 'Refresh',
+                name: 'refresh'      // do not change name
+            }
+        ],
         "ajax": {
             url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan,
             dataSrc: '',
             type: "GET"
         },
         "columns": [
-            { "data": "envelope_id" },
-            { "data": "scan_id" },
+            /*{
+                data: null,
+                defaultContent: '',
+                className: 'select-checkbox',
+                orderable: false
+            },*/
+            { "data": "envelope_id", "visible": false, type: "hidden"},
+            { "data": "scan_id", readonly: 'true'},
             { "data": "CHARGE" },
-            { "data": "THEO_MONO_MASS" }
-        ]
+            { "data": "THEO_MONO_MASS" },
+            {
+                "data": "mono_mz",
+                render: function (data, type, row ) {
+                    let mono_mz =  (( row.THEO_MONO_MASS / row.CHARGE ) + 1).toFixed(2);
+                    row.mono_mz = mono_mz; // set mono_mz value
+                    return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
+                    //return mono_mz;
+                },type: "readonly"
+            }
+        ],
+        onAddRow: function(datatable, rowdata, success, error) {
+            console.log(rowdata);
+            $.ajax({
+                // a tipycal url would be / with type='PUT'
+                url: "/addrow?projectDir=" + document.getElementById("projectDir").value,
+                type: 'GET',
+                data: rowdata,
+                success: success,
+                error: error
+            });
+        },
+        onDeleteRow: function(datatable, rowdata, success, error) {
+            $.ajax({
+                // a tipycal url would be /{id} with type='DELETE'
+                url: "/deleterow?projectDir=" + document.getElementById("projectDir").value,
+                type: 'GET',
+                data: rowdata,
+                success: success,
+                error: error
+            });
+        },
+        onEditRow: function(datatable, rowdata, success, error) {
+            $.ajax({
+                // a tipycal url would be /{id} with type='POST'
+                url: "/editrow?projectDir=" + document.getElementById("projectDir").value,
+                type: 'GET',
+                data: rowdata,
+                success: success,
+                error: error
+            });
+        }
     } );
+}
+function relocSpet2 (mono_mz) {
+    addSpectrum("spectrum2", response_g, envList_g, mono_mz);
 }
 var requestButton = document.getElementById('request');
 requestButton.addEventListener('click', function () {
