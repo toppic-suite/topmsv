@@ -13,6 +13,14 @@ const uuidv1 = require('uuid/v1');
 var formidable = require('formidable');
 const { execFile, execFileSync } = require('child_process');
 const CronJob = require('cron').CronJob;
+let {
+    Editor,
+    Field,
+    Validate,
+    Format,
+    Options
+} = require('datatables.net-editor-server');
+let knex = require('knex');
 
 const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
@@ -69,7 +77,7 @@ app.post('/upload', function (req, res) {
         var folderid = uuidv1();
         var des_path = __dirname + "/data/" + folderid + "/";
         var des_file = __dirname + "/data/" + folderid + "/" + fname;
-        var des_envFile1 = __dirname + "/data/" + folderid + "/" + "ms1.env";
+        // var des_envFile1 = __dirname + "/data/" + folderid + "/" + "ms1.env";
         var des_envFile2 = __dirname + "/data/" + folderid + "/" + "ms2.env";
         console.log(envFile1);
         // Generate new path for file
@@ -79,6 +87,7 @@ app.post('/upload', function (req, res) {
             console.log('Path created: ',des_path);
         }
         if(envFile1 !== undefined) {
+            let des_envFile1 = __dirname + "/data/" + folderid + "/" + envFile1.name;
             fs.rename(envFile1.path, des_envFile1, function (err) {
                 if (err) {
                     console.log(err);
@@ -107,7 +116,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRow(db, id, projectname, fname,des_file,0, emailtosend,1);
+                                insertRow(db, id, projectname, fname,des_file,0, emailtosend,1,envFile1.name);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -225,7 +234,7 @@ app.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRow(db, id, projectname, fname,des_file,0, emailtosend,0);
+                            insertRow(db, id, projectname, fname,des_file,0, emailtosend,0,0);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -307,14 +316,15 @@ app.get('/data', function(req, res) {
             // console.log(row.projectStatus);
             if(row === undefined) {
                 res.send("No such project, please check your link.");
-                res.end;
+                res.end();
             } else {
                 // console.log(row);
                 if (row.projectStatus === 1) {
                     summary = {
                         ProjectName: row.projectName,
                         ProjectStatus: row.projectStatus,
-                        EmailAddress: row.email
+                        EmailAddress: row.email,
+                        MS1_envelope_file: row.ms1_envelope_file
                     };
                     //console.log(summary);
                     let projectDir = row.projectDir;
@@ -352,6 +362,47 @@ app.get('/data', function(req, res) {
             }
         }
     });
+});
+app.get('/deleterow', function (req,res) {
+    //res.send('Got a DELETE request at /deleterow');
+    console.log("Hello, deleterow!");
+    let projectDir = req.query.projectDir;
+    let envID = req.query.envelope_id;
+    deleteEnv(projectDir, envID, function (err) {
+        res.end();
+    });
+
+});
+app.get('/addrow', function (req,res) {
+    console.log("Hello, addrow!");
+    let projectDir = req.query.projectDir;
+    //let envID = req.query.envelope_id;
+    let scan = req.query.scan_id;
+    let charge = req.query.CHARGE;
+    let monoMass = req.query.THEO_MONO_MASS;
+    getEnvMax(projectDir,function (envID) {
+        //console.log(envID);
+        ++envID;
+        addEnv(projectDir,envID,scan,charge,monoMass,function () {
+            getEnv(projectDir,envID,function (row) {
+                res.json(row);
+                res.end();
+            })
+        })
+    })
+});
+app.get('/editrow', function (req,res) {
+    console.log("Hello, editrow!");
+    let projectDir = req.query.projectDir;
+    let envID = req.query.envelope_id;
+    let charge = req.query.CHARGE;
+    let monoMass = req.query.THEO_MONO_MASS;
+    editEnv(projectDir,envID,charge,monoMass,function () {
+        getEnv(projectDir,envID,function (row) {
+            res.json(row);
+            res.end();
+        })
+    })
 });
 app.get('/peaklist', function(req, res) {
     console.log("Hello, peaklist!");
@@ -603,7 +654,9 @@ function getProjectSummary(db, id, callback) {
                     ProjectStatus AS projectStatus,
                     Email AS email,
                     ProjectDir AS projectDir,
-                    FileName AS fileName
+                    FileName AS fileName,
+                    EnvelopeStatus AS envelopeStatus,
+                    MS1_envelope_file AS ms1_envelope_file
                 FROM Projects
                 WHERE ProjectCode = ?`;
     db.get(sql, [id], (err, row) => {
@@ -688,6 +741,108 @@ function showData(resultDB,scan_id,res) {
             });
         }
     });
+}
+function deleteEnv(dir, envID, callback) {
+    let sql = `DELETE FROM envelope
+                WHERE envelope_id = ?`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.run(sql,envID, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        // console.log(this);
+        // console.log(`Row(s) deleted ${this.changes}`);
+        return callback(err);
+    });
+    resultDb.close();
+}
+function editEnv(dir, envID, charge, monoMass,callback) {
+    let sql = `UPDATE envelope
+                SET CHARGE = ?,
+                THEO_MONO_MASS = ?
+                WHERE envelope_id = ?;`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.run(sql,[charge, monoMass, envID], (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        //console.log(this);
+        // console.log(`Row(s) edited: ${this.changes}`);
+        return callback();
+    });
+    resultDb.close();
+}
+function addEnv(dir, envID, scan, charge, monoMass,callback) {
+    let sql = `INSERT INTO envelope
+                VALUES(?,?,?,?);`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.run(sql,[envID,scan,charge,monoMass], (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        //console.log(this);
+        // console.log(`Row(s) edited: ${this.changes}`);
+        return callback();
+    });
+    resultDb.close();
+}
+function getEnvMax(dir, callback){
+    let sql = `SELECT MAX(envelope_id) AS maxID
+                FROM envelope`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.get(sql,(err,row) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        //console.log(this);
+        // console.log(`Row(s) edited: ${this.changes}`);
+        return callback(row.maxID);
+    });
+    resultDb.close();
+}
+
+function getEnv(dir, envID,callback) {
+    let sql = `SELECT *
+                FROM envelope
+                WHERE envelope_id = ?;`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.get(sql,envID, (err,row) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        return callback(row);
+    });
+    resultDb.close();
 }
 function getRT(dir, scanNum, callback) {
     let sql = `SELECT RETENTIONTIME AS rt
@@ -1062,9 +1217,9 @@ function checkExpiredProj(db, callback) {
     });*/
 }
 
-function insertRow(db, ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvStatus) {
-    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvelopeStatus) VALUES(?,?,?,?,?,?,?)';
-    db.run(sql, [ProjectCode,ProjectName,FileName,ProjectDir,ProjectStatus,Email,EnvStatus], function(err) {
+function insertRow(db, ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvStatus, ms1EnvFile) {
+    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvelopeStatus, MS1_envelope_file) VALUES(?,?,?,?,?,?,?,?)';
+    db.run(sql, [ProjectCode,ProjectName,FileName,ProjectDir,ProjectStatus,Email,EnvStatus,ms1EnvFile], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -1078,7 +1233,7 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, PRIMARY KEY(`ProjectID`) )";
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, PRIMARY KEY(`ProjectID`) )";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);

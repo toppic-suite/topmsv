@@ -2,17 +2,38 @@
 <html lang="en">
 <head>
 	<% include ../partials/head %>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>
+<!--	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>-->
+	<script src="https://code.jquery.com/jquery-1.12.4.js" ></script>
+	<script
+			src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+			integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+			crossorigin="anonymous"></script>
 	<script src="https://d3js.org/d3.v5.min.js"></script>
-	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="js/spectrum_graph/invokespectrum.js" ></script>
 	<script src="js/spectrum_graph/spectrumparameters.js" ></script>
 	<script src="js/spectrum_graph/spectrumgraph.js" ></script>
 	<script src="js/spectrum_graph/spectrumdownload.js" ></script>
 	<script src="js/download/FileSaver.js"></script>
 	<script src="js/download/saveImage.js"></script>
+
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+
+<!--
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/sc-2.0.1/sl-1.3.1/datatables.min.css"/>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/sc-2.0.1/sl-1.3.1/datatables.min.js"></script>
+-->
 	<link rel="stylesheet" href="css/jquery-ui.min.css">
 </head>
 <body class="container">
@@ -24,9 +45,14 @@
 					<span class="projectName">
 						<strong>Project Name:</strong> <%= summary.ProjectName %>
 					</span>
+					<div>
 					<span class="fileName">
-						<strong>File Name:</strong> <%= fileName %>
+						<strong>mzML File:</strong> <%= fileName %>
 					</span>
+					<span class="ms1EnvFile">
+						<strong>MS2 Envelope File:</strong> <%= summary.MS1_envelope_file %>
+					</span>
+					</div>
 				</span>
 				<ul id="projectsummary">
 					<!--				<li>Project Status: <%= summary.ProjectStatus %></li>-->
@@ -98,30 +124,37 @@
 					Scan: <span id="envScan"></span>
 					<button id="hide">Hide</button>
 				</p>
-				<br>
 				<div id="datatable">
 				<table id="envTable" class="display" style="width:100%">
 					<thead>
 					<tr>
+<!--						<th></th>-->
 						<th>Envelope ID</th>
 						<th>Scan</th>
 						<th>Charge</th>
 						<th>Theo Mono Mass</th>
+						<th>Mono M/Z</th>
 					</tr>
 					</thead>
-					<tfoot>
+					<!--<tfoot>
 					<tr>
-						<th>Envelope ID</th>
 						<th>Scan</th>
 						<th>Charge</th>
 						<th>Theo Mono Mass</th>
+						<th>Mono M/Z</th>
 					</tr>
-					</tfoot>
+					</tfoot>-->
 				</table>
 				</div>
 			</div>
 		</div>
 	</main>
+	<!--<script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js" ></script>
+	<script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.js" ></script>
+	<script src="https://cdn.datatables.net/select/1.1.2/js/dataTables.select.js" ></script>
+	<script src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.js" ></script>-->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js" ></script>
 	<script type="text/javascript" src="js/dataVisualization.js"></script>
+	<script src="js/dataTables.altEditor.free.js"></script>
 </body>
 </html>

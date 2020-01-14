@@ -32,8 +32,11 @@ hr {
     margin-top: 0px;
 }
 span.fileName{
+
+}
+span.ms1EnvFile{
     position: relative;
-    left: 10%
+    left: 20%;
 }
 #scanRange {
     position: absolute;
@@ -87,7 +90,7 @@ button#hide{
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 22px;
+    padding: 2px 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -95,8 +98,30 @@ button#hide{
 /*div#scanLevelOne {*/
 /*    font-size: 150%;*/
 /*}*/
+button.export-button {
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+}
+button.dt-button{
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+}
+button#close{
+    visibility: hidden;!important;
+}
 span#scanid1{
     font-size: 100%;
+}
+span.select-item{
+    padding-left: 7px;
 }
 #noScanLevelTwo{
     display: none;
