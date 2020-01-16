@@ -61,7 +61,6 @@ function loadPeakList1(scanID, prec_mz) {
                 */
                 var response = JSON.parse(this.responseText);
                 // addSpectrum("spectrum1",response, [],prec_mz);
-
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
@@ -118,8 +117,8 @@ function findNextLevelOneScan(scan) {
     xhttp.open("GET", "findNextLevelOneScan?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan, true);
     xhttp.send();
 }
-let response_g;
-let envList_g;
+let peakList2_g;
+let envList2_g;
 function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
     if(scanID !== '0') {
         var xhttp = new XMLHttpRequest();
@@ -129,19 +128,19 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                                         var t5 = performance.now();
                                         console.log("Call to fetch peaklist2 data from server took " + (t5 - t4) + " milliseconds.");
                 */
-                response_g = JSON.parse(this.responseText);
+                peakList2_g = JSON.parse(this.responseText);
                 // document.getElementById("scanID2").innerText = scanID;
                 //getPrecMZ(scanID);
                 // var t6 = performance.now();
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
-                        envList_g = JSON.parse(this.responseText);
-                        console.log(envList_g);
-                        if (envList_g !== 0){
-                            addSpectrum("spectrum2",response_g, envList_g,null);
+                        envList2_g = JSON.parse(this.responseText);
+                        //console.log(envList2_g);
+                        if (envList2_g !== 0){
+                            addSpectrum("spectrum2",peakList2_g, envList2_g,null);
                         }else {
-                            addSpectrum("spectrum2",response_g, [],null);
+                            addSpectrum("spectrum2",peakList2_g, [],null);
                         }
                         // var t7 = performance.now();
                         // console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
@@ -561,10 +560,11 @@ function showEnvTable(scan) {
                 className: 'select-checkbox',
                 orderable: false
             },*/
-            { "data": "envelope_id", "visible": false, type: "hidden"},
-            { "data": "scan_id", readonly: 'true'},
+            { "data": "envelope_id", readonly: 'true'},
+            { "data": "scan_id", "visible": false, type:"hidden"},
             { "data": "CHARGE" },
             { "data": "THEO_MONO_MASS" },
+            { "data": "THEO_INTE_SUM"},
             {
                 "data": "mono_mz",
                 render: function (data, type, row ) {
@@ -609,7 +609,7 @@ function showEnvTable(scan) {
     } );
 }
 function relocSpet2 (mono_mz) {
-    addSpectrum("spectrum2", response_g, envList_g, mono_mz);
+    addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5);
 }
 var requestButton = document.getElementById('request');
 requestButton.addEventListener('click', function () {
