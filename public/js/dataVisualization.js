@@ -160,7 +160,9 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
         // var t4 = performance.now();
         xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
         xhttp.send();
+        // show envelope table for MS2
         showEnvTable(scanID);
+        $("#switch").text('MS1');
     }else{
         alert("NULL");
     }
@@ -497,21 +499,6 @@ function getScanLevelTwoList(scanID,target) {
 }
 function showEnvTable(scan) {
     $('#envScan').text(scan);
-    /*editor = new $.fn.dataTable.Editor( {
-        ajax: "/",
-        table: "#envTable",
-        fields: [ {
-            label: "Scan:",
-            name: "scan_id"
-        }, {
-            label: "Charge:",
-            name: "CHARGE"
-        }, {
-            label: "Theo mono mass:",
-            name: "THEO_MONO_MASS"
-        }
-        ]
-    } );*/
     $('#envTable').DataTable( {
         destroy: true,
         paging: false,
@@ -659,11 +646,20 @@ $("#scanID").keyup(function(event) {
 });
 $( "#hide" ).click(function() {
     if($("#hide").text() === 'Hide') {
-        $("#hide").text('Show')
+        $("#hide").text('Show');
         $("#datatable").hide();
     }else {
-        $("#hide").text('Hide')
+        $("#hide").text('Hide');
         $("#datatable").show();
+    }
+});
+$("#switch").click(function () {
+    if($("#switch").text() === 'MS1') {
+        showEnvTable($("#scanID1").text());
+        $("#switch").text('MS2');
+    }else {
+        showEnvTable($("#scanID2").text());
+        $("#switch").text('MS1');
     }
 });
 /*
