@@ -507,7 +507,7 @@ function showEnvTable(scan) {
         scrollY: 370,
         scroller: true,
         altEditor: true,
-        select: 'single',
+        select: 'multi',
         responsive: true,
         buttons: [
             {
