@@ -549,9 +549,9 @@ function showEnvTable(scan) {
             },*/
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": false, type:"hidden"},
-            { "data": "CHARGE" },
-            { "data": "THEO_MONO_MASS" },
-            { "data": "THEO_INTE_SUM"},
+            { "data": "CHARGE", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "THEO_MONO_MASS",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "THEO_INTE_SUM",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             {
                 "data": "mono_mz",
                 render: function (data, type, row ) {
