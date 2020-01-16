@@ -20,7 +20,11 @@ let {
     Format,
     Options
 } = require('datatables.net-editor-server');
-let knex = require('knex');
+const molecularFormulae = require('./distribution_calc/molecularformulae');
+const calcDistrubution = new molecularFormulae();
+const BetterDB = require('better-sqlite3');
+
+
 
 const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
@@ -368,7 +372,7 @@ app.get('/deleterow', function (req,res) {
     console.log("Hello, deleterow!");
     let projectDir = req.query.projectDir;
     let envID = req.query.envelope_id;
-    deleteEnv(projectDir, envID, function (err) {
+    deleteEnv(projectDir, envID, function () {
         res.end();
     });
 
@@ -377,31 +381,38 @@ app.get('/addrow', function (req,res) {
     console.log("Hello, addrow!");
     let projectDir = req.query.projectDir;
     //let envID = req.query.envelope_id;
-    let scan = req.query.scan_id;
+    let scan_id = req.query.scan_id;
     let charge = req.query.CHARGE;
     let monoMass = req.query.THEO_MONO_MASS;
+    let theoInteSum = req.query.THEO_INTE_SUM;
     getEnvMax(projectDir,function (envID) {
         //console.log(envID);
         ++envID;
-        addEnv(projectDir,envID,scan,charge,monoMass,function () {
-            getEnv(projectDir,envID,function (row) {
-                res.json(row);
-                res.end();
-            })
-        })
+        addEnv(projectDir,envID,scan_id,charge,monoMass,theoInteSum,function () {
+            addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
+                getEnv(projectDir,envID,function (row) {
+                    res.json(row);
+                    res.end();
+                });
+            });
+        });
     })
 });
 app.get('/editrow', function (req,res) {
     console.log("Hello, editrow!");
     let projectDir = req.query.projectDir;
+    let scan_id = req.query.scan_id;
     let envID = req.query.envelope_id;
     let charge = req.query.CHARGE;
     let monoMass = req.query.THEO_MONO_MASS;
-    editEnv(projectDir,envID,charge,monoMass,function () {
-        getEnv(projectDir,envID,function (row) {
-            res.json(row);
-            res.end();
-        })
+    let theoInteSum = req.query.THEO_INTE_SUM;
+    editEnv(projectDir,envID,charge,monoMass,theoInteSum,function () {
+        addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
+            getEnv(projectDir,envID,function (row) {
+                res.json(row);
+                res.end();
+            });
+        });
     })
 });
 app.get('/peaklist', function(req, res) {
@@ -410,6 +421,7 @@ app.get('/peaklist', function(req, res) {
     var projectDir = req.query.projectDir;
     var scanID = req.query.scanID;
     getPeakList(projectDir, scanID, function (err, rows) {
+        //console.log('test', calcDistrubution.emass(2654,2,rows));
         res.write(JSON.stringify(rows));
         res.end();
     })
@@ -607,6 +619,7 @@ function updateProjectStatus(db, status,id,callback) {
         if (err) {
             return console.error(err.message);
         }
+        console.log(this);
         console.log(`Row(s) updated: ${this.changes}`);
         return callback(null);
     });
@@ -752,20 +765,20 @@ function deleteEnv(dir, envID, callback) {
         }
         // console.log('Connected to the result database.');
     });
-    resultDb.run(sql,envID, (err) => {
+    resultDb.run(sql,[envID], function(err) {
         if (err) {
             return console.error(err.message);
         }
-        // console.log(this);
-        // console.log(`Row(s) deleted ${this.changes}`);
-        return callback(err);
+        console.log(`Row(s) deleted: ${this.changes}`);
+        return callback();
     });
     resultDb.close();
 }
-function editEnv(dir, envID, charge, monoMass,callback) {
+function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
     let sql = `UPDATE envelope
                 SET CHARGE = ?,
-                THEO_MONO_MASS = ?
+                THEO_MONO_MASS = ?,
+                THEO_INTE_SUM = ?
                 WHERE envelope_id = ?;`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
@@ -774,19 +787,19 @@ function editEnv(dir, envID, charge, monoMass,callback) {
         }
         // console.log('Connected to the result database.');
     });
-    resultDb.run(sql,[charge, monoMass, envID], (err) => {
+    resultDb.run(sql,[charge, monoMass,theoInteSum,envID], function(err) {
         if (err) {
             return console.error(err.message);
         }
         //console.log(this);
-        // console.log(`Row(s) edited: ${this.changes}`);
+        console.log(`Row(s) edited: ${this.changes}`);
         return callback();
     });
     resultDb.close();
 }
-function addEnv(dir, envID, scan, charge, monoMass,callback) {
-    let sql = `INSERT INTO envelope
-                VALUES(?,?,?,?);`;
+function addEnv(dir, envID, scan, charge, monoMass,theoInteSum,callback) {
+    let sql = `INSERT INTO envelope(envelope_id, scan_id, CHARGE, THEO_MONO_MASS,THEO_INTE_SUM)
+                VALUES(?,?,?,?,?);`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
@@ -794,13 +807,95 @@ function addEnv(dir, envID, scan, charge, monoMass,callback) {
         }
         // console.log('Connected to the result database.');
     });
-    resultDb.run(sql,[envID,scan,charge,monoMass], (err) => {
+    resultDb.run(sql,[envID,scan,charge,monoMass,theoInteSum], function(err) {
+        if (err) {
+            return console.error(err.message);
+        }
+        //console.log(this);
+        console.log(`Row(s) added: ${this.changes}`);
+        return callback();
+    });
+    resultDb.close();
+}
+function addEnvPeak(dir, charge, theo_mono_mass, scan_id, envelope_id, callback) {
+    getPeakListByScanID(dir,scan_id,function (rows) {
+        let peakList = calcDistrubution.emass(theo_mono_mass,charge,rows);
+        //console.log(peakList);
+        getEnvPeakMax(dir,function (maxID) {
+            let envPeakID = maxID + 1;
+
+            let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+            let resultDb = new BetterDB(dbDir);
+
+            let stmt = resultDb.prepare(`INSERT INTO env_peak(env_peak_id, envelope_id, mz, intensity)
+                VALUES(?,?,?,?)`);
+            let insertMany = resultDb.transaction((peakList,envPeakID) => {
+                peakList.forEach(peak => {
+                    stmt.run(envPeakID,envelope_id,peak.mz,peak.intensity);
+                    envPeakID++;
+                })
+            });
+            insertMany(peakList,envPeakID);
+            resultDb.close();
+            return callback();
+        })
+    })
+}
+function insertEnvPeak(dir, envPeakID, envID, mz, intensity) {
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new betterDB(dbDir);
+
+    let stmt = resultDb.prepare(`INSERT INTO env_peak(env_peak_id, envelope_id, mz, intensity)
+                VALUES(?,?,?,?)`);
+    const insertMany = db.transaction((cats) => {
+        for (const cat of cats) stmt.run(envPeakID,envelope_id,peak.mz,peak.intensity);
+    });
+    resultDb.run(sql,[envPeakID,envID,mz,intensity], function(err) {
+        if (err) {
+            return console.error(err.message);
+        }
+        //console.log(this);
+        console.log(`Row(s) added: ${this.changes}`);
+    });
+    resultDb.close();
+}
+function getPeakListByScanID(dir,scan_id,callback) {
+    let sql = `SELECT MZ AS mz,
+                INTENSITY AS intensity
+                FROM PEAKS
+                WHERE SPECTRAID = ?;`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        //console.log('Connected to the result database.' + dbDir);
+    });
+    resultDb.all(sql, [scan_id], (err, rows) => {
+        if (err) {
+            throw err;
+        }
+        return callback(rows);
+    });
+    resultDb.close();
+}
+function getEnvPeakMax(dir,callback) {
+    let sql = `SELECT MAX(env_peak_id) AS maxID
+                FROM env_peak`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new sqlite3.Database(dbDir, (err) => {
+        if (err) {
+            console.error(err.message);
+        }
+        // console.log('Connected to the result database.');
+    });
+    resultDb.get(sql,(err,row) => {
         if (err) {
             return console.error(err.message);
         }
         //console.log(this);
         // console.log(`Row(s) edited: ${this.changes}`);
-        return callback();
+        return callback(row.maxID);
     });
     resultDb.close();
 }
@@ -865,7 +960,7 @@ function getRT(dir, scanNum, callback) {
     resultDb.close();
 }
 function getEnvTable(dir, scanID, callback){
-    let sql = `SELECT envelope_id,scan_id, CHARGE, THEO_MONO_MASS
+    let sql = `SELECT envelope_id,scan_id, CHARGE, THEO_MONO_MASS, THEO_INTE_SUM
                 FROM envelope
                 WHERE scan_id = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
@@ -956,7 +1051,7 @@ function openDB(dir, callback) {
     });
 }
 
-function getPeakList(dir, scanID, callback) {
+function getPeakList(dir, scan, callback) {
     let sql = `SELECT MZ AS mz,
                   INTENSITY AS intensity
            FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID=SPECTRA.ID
@@ -970,7 +1065,7 @@ function getPeakList(dir, scanID, callback) {
         }
         //console.log('Connected to the result database.' + dbDir);
     });
-    resultDb.all(sql, [scanID], (err, rows) => {
+    resultDb.all(sql, [scan], (err, rows) => {
         if (err) {
             throw err;
         }

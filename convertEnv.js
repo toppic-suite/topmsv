@@ -6,7 +6,8 @@ const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope
     '    envelope_id INTEGER PRIMARY KEY,\n' +
     '    scan_id INTEGER NOT NULL,\n' +
     '    CHARGE REAL NOT NULL,\n' +
-    '\tTHEO_MONO_MASS REAL NOT NULL,\n' +
+    '    THEO_MONO_MASS REAL NOT NULL,\n' +
+    '    THEO_INTE_SUM REAL NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
     '       REFERENCES SPECTRA (ID)\n' +
     ');');
@@ -18,6 +19,7 @@ const stmtCreatePeakTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS env_pea
     '    intensity REAL NOT NULL,\n' +
     '    FOREIGN KEY (envelope_id)\n' +
     '       REFERENCES envelope (envelope_id)\n' +
+    '       ON DELETE CASCADE\n' +
     ');');
 stmtCreatePeakTable.run();
 fs.readFile(myArgs[1], ((err, data) => {
@@ -35,7 +37,7 @@ const insertMany = betterDB.transaction(importData);
 
 function importData(database,data) {
     var stmtPeak = database.prepare('INSERT INTO env_peak(env_peak_id,envelope_id, mz, intensity) VALUES(?,?,?,?)');
-    var stmtEnv = database.prepare('INSERT INTO envelope(envelope_id,scan_id,CHARGE,THEO_MONO_MASS) VALUES(?,?,?,?)');
+    var stmtEnv = database.prepare('INSERT INTO envelope(envelope_id,scan_id,CHARGE,THEO_MONO_MASS,THEO_INTE_SUM) VALUES(?,?,?,?,?)');
 
     var stmtFindScanID = database.prepare('SELECT ID AS id\n' +
         'FROM SPECTRA\n' +
@@ -49,7 +51,8 @@ function importData(database,data) {
         var scan_id = stmtFindScanID.get(scan).id;
         var CHARGE=findInfo("CHARGE",data);
         var THEO_MONO_MASS=findInfo("THEO_MONO_MASS",data);
-        stmtEnv.run(env_id,scan_id,CHARGE,THEO_MONO_MASS);
+        var THEO_INTE_SUM=findInfo("THEO_INTE_SUM",data);
+        stmtEnv.run(env_id,scan_id,CHARGE,THEO_MONO_MASS,THEO_INTE_SUM);
         findPeaks(data, function (lines) {
             lines.forEach(element => {
                 var mz = parseFloat(element.split(" ")[0]);
