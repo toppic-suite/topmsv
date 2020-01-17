@@ -12,6 +12,9 @@ body {
 body.container{
     padding-bottom: 5px;
 }
+div.modal-header {
+    padding-bottom: 25px;
+}
 div#input {
     font-size: 100%;
 }

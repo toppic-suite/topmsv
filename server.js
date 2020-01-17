@@ -368,14 +368,12 @@ app.get('/data', function(req, res) {
     });
 });
 app.get('/deleterow', function (req,res) {
-    //res.send('Got a DELETE request at /deleterow');
     console.log("Hello, deleterow!");
     let projectDir = req.query.projectDir;
-    let envID = req.query.envelope_id;
-    deleteEnv(projectDir, envID, function () {
+    let envelopeIDs = req.query.envList;
+    deleteMultiEnvs(projectDir,envelopeIDs,function () {
         res.end();
     });
-
 });
 app.get('/addrow', function (req,res) {
     console.log("Hello, addrow!");
@@ -840,6 +838,20 @@ function addEnvPeak(dir, charge, theo_mono_mass, scan_id, envelope_id, callback)
             return callback();
         })
     })
+}
+function deleteMultiEnvs(dir, envList,callback) {
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+
+    let stmt = resultDb.prepare(`DELETE FROM envelope WHERE envelope_id = ?`);
+    let deleteMany = resultDb.transaction((envList) => {
+        envList.forEach(env => {
+            stmt.run(env.envelope_id);
+        })
+    });
+    deleteMany(envList);
+    resultDb.close();
+    return callback();
 }
 function insertEnvPeak(dir, envPeakID, envID, mz, intensity) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
@@ -1387,9 +1399,9 @@ process.on('SIGINT', () => {
             return console.error(err.message);
         }
         console.log('Close the database connection.');
-    });
-    server.close(()=> {
-        console.log('Server closed!');
-        process.exit(0);
+        server.close(()=> {
+            console.log('Server closed!');
+            process.exit(0);
+        });
     });
 });

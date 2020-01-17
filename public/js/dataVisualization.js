@@ -574,6 +574,8 @@ function showEnvTable(scan) {
             });
         },
         onDeleteRow: function(datatable, rowdata, success, error) {
+            console.log(rowdata);
+            //rowdata=JSON.stringify(rowdata);
             $.ajax({
                 // a tipycal url would be /{id} with type='DELETE'
                 url: "/deleterow?projectDir=" + document.getElementById("projectDir").value,
