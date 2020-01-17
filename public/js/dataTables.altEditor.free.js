@@ -284,7 +284,11 @@
                 var adata = dt.rows({
                     selected: true
                 });
-                
+                // only support edit one row
+                if(adata.data().length > 1) {
+                    alert("Please select only one envelope to edit!");
+                    return;
+                }
                 var columnDefs = this.completeColumnDefs();
                 columnDefs = columnDefs.slice(0,-1); // From second one to last second one
                 var data = this.createDialog(columnDefs, this.language.edit.title, this.language.edit.button,
