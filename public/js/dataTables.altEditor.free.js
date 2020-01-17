@@ -379,6 +379,9 @@
                     }
                 }
 
+                // for multi delete
+                data = "<div style='margin-left: initial;margin-right: initial;' class='form-group row'><span>&nbsp;&nbsp;Are you sure that you want to delete all selected envelopes?</span></div>";
+
                 var selector = this.modal_selector;
                 $(selector).on('show.bs.modal', function () {
                     var btns = '<button type="button" data-content="remove" class="btn btn-default" data-dismiss="modal">' + that.language.modalClose + '</button>' +
@@ -408,19 +411,27 @@
                 var dt = this.s.dt;
 
                 var jsonDataArray = {};
+                var envList = [];
 
                 var adata = dt.rows({
                     selected: true
                 });
-
+                // console.log("adata:",adata.data());
                 // Getting the IDs and Values of the tablerow
-                for (var i = 0; i < dt.context[0].aoColumns.length; i++) {
-                    // .data is the attribute name, if any; .idx is the column index, so it should always exists 
-                    var name = dt.context[0].aoColumns[i].data ? dt.context[0].aoColumns[i].data :
+                for (var j = 0; j < adata.data().length; j++) {
+                    let env = {};
+                    env.envelope_id = adata.data()[j].envelope_id;
+                    envList.push(env);
+/*                    for (var i = 0; i < dt.context[0].aoColumns.length; i++) {
+                        // .data is the attribute name, if any; .idx is the column index, so it should always exists
+                        var name = dt.context[0].aoColumns[i].data ? dt.context[0].aoColumns[i].data :
                             dt.context[0].aoColumns[i].mData ? dt.context[0].aoColumns[i].mData :
-                            dt.context[0].aoColumns[i].idx;
-                    jsonDataArray[name] = adata.data()[0][name];
+                                dt.context[0].aoColumns[i].idx;
+                        console.log(name);
+                        //jsonDataArray[name] = adata.data()[0][name];
+                    }*/
                 }
+                jsonDataArray.envList = envList;
                 that.onDeleteRow(that,
                     jsonDataArray,
                     function(data){ that._deleteRowCallback(data); },
@@ -621,7 +632,7 @@
                     rowDataArray[$(this).attr('id')] = $(this).val();
                 });
 
-//console.log(rowDataArray); //DEBUG
+                // console.log(rowDataArray); //DEBUG
 
                 that.onAddRow(that,
                     rowDataArray,
@@ -643,8 +654,8 @@
                         '<strong>' + this.language.success + '</strong>' +
                         '</div>';
                     $(selector + ' .modal-body').append(message);
-
-                    this.s.dt.row({
+                    // row => rows, to delete multi rows
+                    this.s.dt.rows({
                         selected : true
                     }).remove();
                     this.s.dt.draw();
