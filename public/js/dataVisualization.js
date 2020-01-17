@@ -49,44 +49,31 @@ function getScanID(ID) {
     xhttp.open("GET", "scanID?projectDir=" + document.getElementById("projectDir").value + "&ID=" + ID, true);
     xhttp.send();
 }
+let peakList1_g;
+let envList1_g;
 function loadPeakList1(scanID, prec_mz) {
     if (scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 getRT(scanID);
-                /*
-                                        var t3 = performance.now();
-                                        console.log("Call to fetch peaklist1 data from server took " + (t3 - t2) + " milliseconds.");
-                */
-                var response = JSON.parse(this.responseText);
-                // addSpectrum("spectrum1",response, [],prec_mz);
+                peakList1_g = JSON.parse(this.responseText);
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
-                        var envList = JSON.parse(this.responseText);
-                        if (envList !== 0){
-                            addSpectrum("spectrum1",response, envList,prec_mz);
+                        envList1_g = JSON.parse(this.responseText);
+                        if (envList1_g !== 0){
+                            addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                         }else {
-                            addSpectrum("spectrum1",response, [],prec_mz);
+                            addSpectrum("spectrum1",peakList1_g, [],prec_mz);
                         }
                     }
-                }
+                };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
                 xhttp2.send();
-
-
-
                 document.getElementById("scanID1").innerText = scanID;
-                // var t0 = performance.now();
-
-                /*
-                                        var t1 = performance.now();
-                                        console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
-                */
             }
         };
-        // var t2 = performance.now();
         xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
         xhttp.send();
 
@@ -499,6 +486,11 @@ function getScanLevelTwoList(scanID,target) {
 }
 function showEnvTable(scan) {
     $('#envScan').text(scan);
+    if(scan === $('#scanID1').text()) {
+        $('#msType').text('MS1');
+    } else {
+        $('#msType').text('MS2');
+    }
     $('#envTable').DataTable( {
         destroy: true,
         paging: false,
@@ -557,7 +549,11 @@ function showEnvTable(scan) {
                 render: function (data, type, row ) {
                     let mono_mz =  (( row.THEO_MONO_MASS / row.CHARGE ) + 1).toFixed(2);
                     row.mono_mz = mono_mz; // set mono_mz value
-                    return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
+                    if($('#msType').text() === 'MS2'){
+                        return `<a href="#!" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
+                    } else {
+                        return `<a href="#!" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
+                    }
                     //return mono_mz;
                 },type: "readonly"
             }
@@ -596,6 +592,9 @@ function showEnvTable(scan) {
             });
         }
     } );
+}
+function relocSpet1 (mono_mz) {
+    addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5);
 }
 function relocSpet2 (mono_mz) {
     addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5);
