@@ -51,7 +51,7 @@
 						<strong>mzML File:</strong> <%= fileName %>
 					</span>
 					<span class="ms1EnvFile">
-						<strong>MS2 Envelope File:</strong> <%= summary.MS1_envelope_file %>
+						<strong>MS2 Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
 					</span>
 					</div>
 				</span>
@@ -119,7 +119,7 @@
 			</div>
 			<br>
 			<hr>
-			<div>
+			<div id="envInfo">
 				<p class="scanleveltitle" id="scanLevelTwoInfo">
 					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
 					<span id="msType"></span> Scan: <span id="envScan"></span>
