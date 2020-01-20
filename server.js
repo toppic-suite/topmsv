@@ -2,9 +2,11 @@ var fs = require('fs');
 var nodemailer = require('nodemailer');
 const sqlite3 = require('sqlite3').verbose();
 var bodyParser = require('body-parser');
+var compression = require('compression');
 //var multer  = require('multer');
 var express = require('express');
 var app = express();
+app.use(compression());
 //var upload = multer({ dest: 'tmp/' });
 //var path = require('path');
 const uuidv1 = require('uuid/v1');
@@ -13,13 +15,6 @@ const uuidv1 = require('uuid/v1');
 var formidable = require('formidable');
 const { execFile, execFileSync } = require('child_process');
 const CronJob = require('cron').CronJob;
-let {
-    Editor,
-    Field,
-    Validate,
-    Format,
-    Options
-} = require('datatables.net-editor-server');
 const molecularFormulae = require('./distribution_calc/molecularformulae');
 const calcDistrubution = new molecularFormulae();
 const BetterDB = require('better-sqlite3');
