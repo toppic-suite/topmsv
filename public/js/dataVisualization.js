@@ -491,6 +491,9 @@ function showEnvTable(scan) {
     } else {
         $('#msType').text('MS2');
     }
+    if($('#envelopeFile').text() === "0"){
+        return;
+    }
     $('#envTable').DataTable( {
         destroy: true,
         paging: false,
@@ -636,6 +639,9 @@ next1.addEventListener('click', function () {
 },false)
 $( document ).ready(function() {
     var min = document.getElementById("rangeMin").value;
+    if($('#envelopeFile').text() === "0"){
+        $("#envInfo").hide();
+    }
     showEnvTable(min);
     findNextLevelOneScan(min);
     loadInteSumList();
