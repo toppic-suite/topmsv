@@ -20,6 +20,7 @@
     "ejs": "^2.7.1",
     "express-ejs-layouts": "^2.5.0",
     "cron": "^1.7.2",
-    "better-sqlite3": "^5.4.3"
+    "better-sqlite3": "^5.4.3",
+    "compression": "^1.7.4"
   }
 }
