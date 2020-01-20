@@ -3,10 +3,12 @@ var nodemailer = require('nodemailer');
 const sqlite3 = require('sqlite3').verbose();
 var bodyParser = require('body-parser');
 var compression = require('compression');
+var helmet = require('helmet');
 //var multer  = require('multer');
 var express = require('express');
 var app = express();
-app.use(compression());
+app.use(helmet());
+
 //var upload = multer({ dest: 'tmp/' });
 //var path = require('path');
 const uuidv1 = require('uuid/v1');
@@ -44,6 +46,7 @@ const job = new CronJob('00 00 00 * * *', function() {
 job.start();
 // set the view engine to ejs
 app.set('view engine', 'ejs');
+app.use(compression());
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
