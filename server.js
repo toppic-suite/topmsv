@@ -100,7 +100,7 @@ app.post('/upload', function (req, res) {
                         console.log(err);
                         return res.send({"error": 403, "message": "Error on saving file!"});
                     }
-                    var adr =  'http://149.166.112.7:8080/data?id=';
+                    var adr =  'http://134.68.246.114:8080/data?id=';
                     // output result into screen
 
                     res.write('<h1>File uploaded successfully!</h1>');
@@ -218,7 +218,7 @@ app.post('/upload', function (req, res) {
                     console.log(err);
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
-                var adr =  'http://149.166.112.7:8080/data?id=';
+                var adr =  'http://134.68.246.114:8080/data?id=';
                 // output result into screen
 
                 res.write('<h1>File uploaded successfully!</h1>');
