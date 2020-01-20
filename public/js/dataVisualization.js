@@ -550,9 +550,9 @@ function showEnvTable(scan) {
                     let mono_mz =  (( row.THEO_MONO_MASS / row.CHARGE ) + 1).toFixed(2);
                     row.mono_mz = mono_mz; // set mono_mz value
                     if($('#msType').text() === 'MS2'){
-                        return `<a href="#!" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
+                        return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
                     } else {
-                        return `<a href="#!" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
+                        return `<a href="#spectrum1" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
                     }
                     //return mono_mz;
                 },type: "readonly"
