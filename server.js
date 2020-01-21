@@ -100,7 +100,7 @@ app.post('/upload', function (req, res) {
                         console.log(err);
                         return res.send({"error": 403, "message": "Error on saving file!"});
                     }
-                    var adr =  'http://134.68.246.114:8080/data?id=';
+                    var adr =  'https://toppic.soic.iupui.edu/data?id=';
                     // output result into screen
 
                     res.write('<h1>File uploaded successfully!</h1>');
@@ -218,7 +218,7 @@ app.post('/upload', function (req, res) {
                     console.log(err);
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
-                var adr =  'http://134.68.246.114:8080/data?id=';
+                var adr =  'https://toppic.soic.iupui.edu/data?id=';
                 // output result into screen
 
                 res.write('<h1>File uploaded successfully!</h1>');
@@ -590,7 +590,7 @@ app.get('/envtable', function (req, res) {
 //     res.sendFile( __dirname + "/public/" + "404.html" );
 // });
 // checkExpiredProj(db);
-var server = app.listen(8080, function () {
+var server = app.listen(8443, function () {
 
     // var host = server.address().address;
     var port = server.address().port;
