@@ -1,5 +1,5 @@
-# Spectra Dataset upload and process
-
+# Top View
+A cloud-based process and visualization Nodejs app
 ## Linux (Ubuntu):
 ```sh
 # install compiling tools
@@ -15,21 +15,21 @@ sudo apt-get install zlib1g-dev libboost-filesystem-dev \
                        libxalan-c-dev
 sudo apt-get install nodejs
 sudo apt-get install npm
+
+# install pm2 and set it as a daemon on system startup
+sudo npm install -g pm2
+sudo pm2 startup systemd
+
+# install npm dependencies
 npm install
 
-# building
+# building cpp program and back to app root folder
 cd cpp/build
 cmake ..
 make
 cd ..
 cd ..
 
-# set up server port
-sudo iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
-sudo service network-manager restart
-
-# start server
-node server.js
+# start server by pm2
+pm2 start ecosystem.config.js --env production
 ```
-
-Open http://localhost:8080/ to upload files

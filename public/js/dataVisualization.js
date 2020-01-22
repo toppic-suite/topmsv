@@ -640,7 +640,9 @@ next1.addEventListener('click', function () {
 $( document ).ready(function() {
     var min = document.getElementById("rangeMin").value;
     if($('#envelopeFile').text() === "0"){
+        $('#brhr').hide();
         $("#envInfo").hide();
+        $('#envFileInfo').hide();
     }
     showEnvTable(min);
     findNextLevelOneScan(min);
