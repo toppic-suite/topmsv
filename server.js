@@ -365,6 +365,17 @@ app.get('/data', function(req, res) {
         }
     });
 });
+app.get('/projects', function (req,res) {
+    getProjects(db,function (rows) {
+        rows.forEach(row=>{
+            if(row.envelopeFile === '0') row.envelopeFile = 'Null';
+            row.projectLink = 'http://localhost:8443/data?id=' + row.projectCode;
+        });
+        res.render('pages/projects', {
+            projects: rows
+        });
+    });
+});
 app.get('/deleterow', function (req,res) {
     console.log("Hello, deleterow!");
     let projectDir = req.query.projectDir;
@@ -1258,6 +1269,19 @@ function getFileName(db, id, callback) {
         }
         else {
             return callback(null, row.name);
+        }
+    });
+}
+
+function getProjects(db, callback) {
+    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
+                FROM Projects
+                WHERE ProjectStatus = 1;`;
+    db.all(sql,[], (err, rows) => {
+        if(err) {
+            return callback(err);
+        }else {
+            return callback(rows);
         }
     });
 }
