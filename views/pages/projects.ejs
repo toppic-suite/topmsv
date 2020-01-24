@@ -27,6 +27,7 @@
             <th scope="col">ID</th>
             <th scope="col">Project Name</th>
             <th scope="col">File Name</th>
+            <th scope="col">Description</th>
             <th scope="col">Project Link</th>
             <th scope="col">Upload Time</th>
             <th scope="col">Envelope File</th>
@@ -40,6 +41,7 @@
                 <td scope="row"><%= i+1%></td>
                 <td><%= projects[i].projectName %></td>
                 <td><%= projects[i].fileName %></td>
+                <td><%= projects[i].description %></td>
                 <td><a href="<%= projects[i].projectLink %>">Link</a> </td>
                 <td><%= projects[i].uploadTime %></td>
                 <td><%= projects[i].envelopeFile %></td>

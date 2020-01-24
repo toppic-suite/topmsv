@@ -48,19 +48,13 @@
 					</span>
 					<div>
 					<span class="fileName">
-						<strong>mzML File:</strong> <%= fileName %>
+						<strong>mzML File:</strong> <a href="/download?id=<%= projectCode %>" download><%= fileName %></a>
 					</span>
 					<span class="ms1EnvFile" id="envFileInfo">
 						<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
 					</span>
 					</div>
 				</span>
-				<ul id="projectsummary">
-					<!--				<li>Project Status: <%= summary.ProjectStatus %></li>-->
-					<!--				<li>Email Address: <%= summary.EmailAddress %></li>-->
-
-					<!--				<li>Scan Range: <%= scanRange.MIN %> - <%= scanRange.MAX %></li>-->
-				</ul>
 			</div>
 
 			<hr>
