@@ -44,6 +44,9 @@ const job = new CronJob('00 00 00 * * *', function() {
     });
 });
 job.start();
+
+const serverUrl = 'http://localhost:8443/'; //https://toppic.soic.iupui.edu/
+
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 app.use(compression());
@@ -53,7 +56,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', function (req, res) {
     res.sendFile( __dirname + "/public/" + "index.html" );
-})
+});
 
 app.post('/upload', function (req, res) {
     console.log("hello,upload");
@@ -68,6 +71,7 @@ app.post('/upload', function (req, res) {
         //console.log(files.dbfile);
         var projectname = fields.projectname;
         var emailtosend = fields.emailaddress;
+        var description = fields.description;
         var file = files.dbfile;
         if (file === undefined) {
             console.log("Upload files failed!");
@@ -81,7 +85,7 @@ app.post('/upload', function (req, res) {
         var des_file = __dirname + "/data/" + folderid + "/" + fname;
         // var des_envFile1 = __dirname + "/data/" + folderid + "/" + "ms1.env";
         var des_envFile2 = __dirname + "/data/" + folderid + "/" + "ms2.env";
-        console.log(envFile1);
+        //console.log(envFile1);
         // Generate new path for file
         if (!fs.existsSync(des_path)) {
             console.log('The path does not exist.');
@@ -118,7 +122,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRow(db, id, projectname, fname,des_file,0, emailtosend,1,envFile1.name);
+                                insertRow(db, id, projectname, fname, description,des_file,0, emailtosend,1,envFile1.name);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -146,7 +150,7 @@ app.post('/upload', function (req, res) {
                         link:message.text,
                         email: emailtosend
                     };
-                    console.log(response);
+                    //console.log(response);
                     res.write(JSON.stringify( response ));
 
                     execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
@@ -236,7 +240,7 @@ app.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRow(db, id, projectname, fname,des_file,0, emailtosend,0,0);
+                            insertRow(db, id, projectname, fname,description,des_file,0, emailtosend,0,0);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -265,7 +269,7 @@ app.post('/upload', function (req, res) {
                     email: emailtosend
                 };
 
-                console.log(response);
+                //console.log(response);
                 res.write(JSON.stringify( response ));
 
                 execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
@@ -368,13 +372,22 @@ app.get('/data', function(req, res) {
 app.get('/projects', function (req,res) {
     getProjects(db,function (rows) {
         rows.forEach(row=>{
-            if(row.envelopeFile === '0') row.envelopeFile = 'Null';
-            row.projectLink = 'http://localhost:8443/data?id=' + row.projectCode;
+            if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
+            if(row.description === '') row.description = 'N/A';
+            row.projectLink = serverUrl + 'data?id=' + row.projectCode;
         });
         res.render('pages/projects', {
             projects: rows
         });
     });
+});
+app.get('/download', function (req,res) {
+    let projectCode = req.query.id;
+    getProjectSummary(db, projectCode, function (err,row) {
+        let projectDir = row.projectDir;
+        res.download(projectDir);
+    })
+
 });
 app.get('/deleterow', function (req,res) {
     console.log("Hello, deleterow!");
@@ -626,7 +639,6 @@ function updateProjectStatus(db, status,id,callback) {
         if (err) {
             return console.error(err.message);
         }
-        console.log(this);
         console.log(`Row(s) updated: ${this.changes}`);
         return callback(null);
     });
@@ -1274,7 +1286,7 @@ function getFileName(db, id, callback) {
 }
 
 function getProjects(db, callback) {
-    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
+    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
                 WHERE ProjectStatus = 1;`;
     db.all(sql,[], (err, rows) => {
@@ -1346,9 +1358,9 @@ function checkExpiredProj(db, callback) {
     });*/
 }
 
-function insertRow(db, ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvStatus, ms1EnvFile) {
-    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, ProjectDir, ProjectStatus, Email, EnvelopeStatus, MS1_envelope_file) VALUES(?,?,?,?,?,?,?,?)';
-    db.run(sql, [ProjectCode,ProjectName,FileName,ProjectDir,ProjectStatus,Email,EnvStatus,ms1EnvFile], function(err) {
+function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, ms1EnvFile) {
+    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, MS1_envelope_file) VALUES(?,?,?,?,?,?,?,?,?)';
+    db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,ms1EnvFile], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -1362,7 +1374,7 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, PRIMARY KEY(`ProjectID`) )";
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, PRIMARY KEY(`ProjectID`) )";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);

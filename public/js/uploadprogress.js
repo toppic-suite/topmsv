@@ -6,6 +6,7 @@
     // var envfile2 = document.querySelector('#envfile2');
     var project = document.getElementById('projectName');
     var email = document.getElementById('emailAddress');
+    var description = document.getElementById('description');
     var dbfilename = document.getElementById('dbfilename');
     var envfilename1 = document.getElementById('envfilename1');
     // var envfilename2 = document.getElementById('envfilename2');
@@ -64,7 +65,7 @@
             // formData.append('envfile2', envfile2.files[0]);
             formData.append('projectname', project.value);
             formData.append('emailaddress', email.value);
-
+            formData.append('description', description.value);
             xhr.onload = uploadSuccess;
             xhr.upload.onprogress = setProgress;
             xhr.open('post', '/upload', true);
