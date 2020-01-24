@@ -86,6 +86,7 @@ function getRT(scanNum) {
     xhttpRT.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var rt = parseFloat(this.responseText);
+            moveLine(rt/60);
             document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
         }
     };
@@ -173,12 +174,15 @@ function loadInteSumList() {
     xhttp.open("GET", "getInteSumList?projectDir=" + document.getElementById("projectDir").value, true);
     xhttp.send();
 }
+var xScale_g;
+var padding_g;
+var fixedLine_g;
 function addFigure(dataset) {
 
     var width = 1100;
     var height = 120; //160
     var padding = { top: 10, right: 110, bottom: 50, left: 80 }; //left:50 right:150
-
+    padding_g = padding;
     // var dataset = [{rt:1, inteSum:224}, {rt:2, inteSum:528}, {rt:3, inteSum:756}, {rt:4, inteSum:632}];
 
     var maxInte = d3.max(dataset, function(d) {
@@ -206,11 +210,10 @@ function addFigure(dataset) {
     var maxRT = d3.max(dataset, function(d) {
         return d.rt;
     })
-
     var xScale = d3.scaleLinear()
         .domain([0, maxRT+5])
         .range([0, width - padding.left - padding.right]);
-
+    xScale_g = xScale;
     var yScale = d3.scaleLinear()
         .domain([0, max])
         .range([height - padding.top - padding.bottom, 0]);
@@ -277,7 +280,12 @@ function addFigure(dataset) {
         .attr("stroke", "#f00")
         .attr("x1", padding.left).attr("x2", padding.left)
         .attr("y1", padding.top).attr("y2", height-padding.bottom);
-
+    var fixedLine = hoverLineGroup
+        .append("line")
+        .attr("stroke", "#ff8000")
+        .attr("x1", padding.left).attr("x2", padding.left)
+        .attr("y1", padding.top).attr("y2", height-padding.bottom);
+    fixedLine_g = fixedLine;
     /*			var hoverTT = hoverLineGroup.append('text')
                         .attr("class", "hover-text capo")
                         .style('fill', 'red')
@@ -293,8 +301,7 @@ function addFigure(dataset) {
                         .style('fill', 'red')
                         .attr('dy', "0.45em");*/
 
-    hoverLineGroup.style("opacity", 1e-6);
-
+    hoverLine.style("opacity", 1e-6);
     /*
                 var rectHover = vis.append("rect")
                         .data(dataset)
@@ -323,18 +330,24 @@ function addFigure(dataset) {
             var d1 = dataset[i];
             // work out which date value is closest to the mouse
             var d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
+            fixedLine.attr("x1", mouse_x).attr("x2", mouse_x);
+            fixedLine.style("opacity", 1);
             findNextLevelOneScan(d.scanNum);
         } else if (i === dataset.length && mouse_x -padding.left<= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
         {
             var d = dataset[i-1];
+            fixedLine.attr("x1", mouse_x).attr("x2", mouse_x);
+            fixedLine.style("opacity", 1);
             findNextLevelOneScan(d.scanNum);
+        } else {
+            //fixedLine.style("opacity", 1e-6);
         }
     }
     function hoverMouseOn() {
         var mouse_x = d3.mouse(this)[0];
         var mouse_y = d3.mouse(this)[1];
         var maxMouse = xScale(maxRT);
-        hoverLine.attr("x1", mouse_x).attr("x2", mouse_x)
+        hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);
         hoverLine.style("opacity", 1);
         var graph_y = yScale.invert(mouse_y);
         var graph_x = xScale.invert(mouse_x-padding.left);
@@ -361,7 +374,7 @@ function addFigure(dataset) {
                     .attr('x', mouse_x)
                     .attr('y', yScale(d.intePercentage) + 42);
             hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*/
-            hoverLineGroup.style("opacity", 1);
+            hoverLine.style("opacity", 1);
         } else if (i === dataset.length&& mouse_x-padding.left <= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
         {
             var d = dataset[i-1];
@@ -379,17 +392,22 @@ function addFigure(dataset) {
                     .attr('x', mouse_x)
                     .attr('y', yScale(d.intePercentage) + 42);
             hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*/
-            hoverLineGroup.style("opacity", 1);
+            hoverLine.style("opacity", 1);
         } else {
             document.getElementById("rt-hover").innerHTML = 0;
             document.getElementById("intensity-hover").innerHTML = 0;
             document.getElementById("scan-hover").innerHTML = 0;
-            hoverLineGroup.style("opacity", 0);
+            hoverLine.style("opacity", 0);
         }
     }
     function hoverMouseOff() {
-        hoverLineGroup.style("opacity", 1e-6);
+        hoverLine.style("opacity", 1e-6);
     }
+}
+function moveLine(rt) {
+    var newX = xScale_g(rt) + padding_g.left;
+    fixedLine_g.attr("x1", newX).attr("x2", newX);
+    fixedLine_g.style("opacity", 1);
 }
 function prev(scanID) {
     var xhttp = new XMLHttpRequest();
