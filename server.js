@@ -45,7 +45,7 @@ const job = new CronJob('00 00 00 * * *', function() {
 });
 job.start();
 
-const serverUrl = 'http://localhost:8443/'; //https://toppic.soic.iupui.edu/
+const serverUrl = 'https://toppic.soic.iupui.edu/'; //https://toppic.soic.iupui.edu/
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
