@@ -4,24 +4,28 @@ const sqlite3 = require('sqlite3').verbose();
 var bodyParser = require('body-parser');
 var compression = require('compression');
 var helmet = require('helmet');
-//var multer  = require('multer');
 var express = require('express');
+var cookieParser = require('cookie-parser');
+var cookieSession = require('cookie-session');
+var passport = require('passport');
+const auth = require('./auth');
 var app = express();
 app.use(helmet());
+app.use(cookieSession({
+    name:'session',
+    keys:['4324']
+}));
+app.use(cookieParser());
+auth(passport);
+app.use(passport.initialize());
 
-//var upload = multer({ dest: 'tmp/' });
-//var path = require('path');
 const uuidv1 = require('uuid/v1');
-// var url = require('url');
-// var http = require('http');
 var formidable = require('formidable');
 const { execFile, execFileSync } = require('child_process');
 const CronJob = require('cron').CronJob;
 const molecularFormulae = require('./distribution_calc/molecularformulae');
 const calcDistrubution = new molecularFormulae();
 const BetterDB = require('better-sqlite3');
-
-
 
 const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
@@ -45,21 +49,45 @@ const job = new CronJob('00 00 00 * * *', function() {
 });
 job.start();
 
-const serverUrl = 'https://toppic.soic.iupui.edu/'; //https://toppic.soic.iupui.edu/
-
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 app.use(compression());
 
-app.use(express.static(__dirname + '/public'));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', function (req, res) {
-    res.sendFile( __dirname + "/public/" + "index.html" );
+    if (req.session.token) {
+        res.cookie('token', req.session.token);
+    }else {
+        res.cookie('token', '');
+    }
+    getProjectsGuest(db,function (rows) {
+        rows.forEach(row=>{
+            if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
+            if(row.description === '') row.description = 'N/A';
+            row.projectLink = '/data?id=' + row.projectCode;
+        });
+        res.render('pages/home', {
+            projects: rows
+        });
+    });
 });
 
+app.use(express.static(__dirname + '/public'));
+
+app.get('/submit', function (req, res) {
+    res.sendFile( __dirname + "/public/" + "index.html" );
+});
+app.get('/logout',(req, res)=> {
+    req.logout();
+    //req.session.destroy();
+    req.session = null;
+    res.redirect('/');
+});
 app.post('/upload', function (req, res) {
     console.log("hello,upload");
+    let uid = req.session.passport.user.profile.id;
     var form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
@@ -72,6 +100,7 @@ app.post('/upload', function (req, res) {
         var projectname = fields.projectname;
         var emailtosend = fields.emailaddress;
         var description = fields.description;
+        var public = fields.public;
         var file = files.dbfile;
         if (file === undefined) {
             console.log("Upload files failed!");
@@ -122,7 +151,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRow(db, id, projectname, fname, description,des_file,0, emailtosend,1,envFile1.name);
+                                insertRow(db, id, projectname, fname, description,des_file,0, emailtosend,1,envFile1.name,uid,public);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -240,7 +269,7 @@ app.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRow(db, id, projectname, fname,description,des_file,0, emailtosend,0,0);
+                            insertRow(db, id, projectname, fname,description,des_file,0, emailtosend,0,0,uid,public);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -369,17 +398,41 @@ app.get('/data', function(req, res) {
         }
     });
 });
-app.get('/projects', function (req,res) {
-    getProjects(db,function (rows) {
-        rows.forEach(row=>{
-            if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
-            if(row.description === '') row.description = 'N/A';
-            row.projectLink = serverUrl + 'data?id=' + row.projectCode;
-        });
-        res.render('pages/projects', {
-            projects: rows
-        });
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/' }),
+    function(req, res) {
+        //console.log('req.user.token',req.user.profile);
+        let profile = req.user.profile;
+        req.session.token = req.user.token;
+        insertUser(db, profile.id, profile.emails[0].value,profile.name.givenName, profile.name.familyName, profile.displayName);
+        res.redirect('/');
     });
+app.get('/projects', function (req,res) {
+    //console.log('Cookies: ', req.cookies);
+    //console.log('Session:', req.session);
+    //console.log(req.session.passport.user.profile);
+    //console.log(req.session);
+    //let uid = req.session.passport.user.profile.uid;
+    if (req.session.passport === undefined)
+        res.render('pages/projects', {
+            projects: []
+        });
+    else {
+        //console.log(req.session.passport.user.profile);
+        let uid = req.session.passport.user.profile.id;
+        //console.log(uid);
+        getProjects(db,uid,function (rows) {
+            rows.forEach(row=>{
+                if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
+                if(row.description === '') row.description = 'N/A';
+                row.projectLink = '/data?id=' + row.projectCode;
+            });
+            res.render('pages/projects', {
+                projects: rows
+            });
+        });
+    }
+
 });
 app.get('/download', function (req,res) {
     let projectCode = req.query.id;
@@ -608,18 +661,20 @@ app.get('/envtable', function (req, res) {
             res.end();
         }
     });
-})
-// app.use( function(req, res){
-//     console.log('404 handler..');
-//     res.sendFile( __dirname + "/public/" + "404.html" );
-// });
-// checkExpiredProj(db);
-var server = app.listen(8443, function () {
+});
+app.get('/auth/google', passport.authenticate('google', {
+    scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']
+}));
 
+app.use('/*', function(req, res){
+    console.log('404 handler..');
+    res.sendFile( __dirname + "/public/" + "404.html" );
+});
+
+var server = app.listen(8443, function () {
     // var host = server.address().address;
     var port = server.address().port;
     console.log("Started on PORT %s", port)
-
 });
 
 function makeid(length) {
@@ -1083,7 +1138,35 @@ function openDB(dir, callback) {
         //console.log('Connected to the result database.' + dbDir);
     });
 }
-
+function authGoogleSignUp(token, callback) {
+    async function verify() {
+        let ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+            // Or, if multiple clients access the backend:
+            //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+        });
+        let payload = ticket.getPayload();
+        let uid = payload.sub;
+        let email;
+        if (payload.email_verified) {
+            email = payload.email;
+        } else {
+            email = null;
+        }
+        let firstName = payload.given_name;
+        let lastName = payload.family_name;
+        let fullName = payload.name;
+        console.log(payload);
+        console.log(uid, email, firstName, lastName, fullName);
+        console.log(typeof uid);
+        insertUser(db, uid, email, firstName, lastName, fullName);
+        callback(uid);
+        // If request specified a G Suite domain:
+        //const domain = payload['hd'];
+    }
+    verify().catch(console.error);
+}
 function getPeakList(dir, scan, callback) {
     let sql = `SELECT MZ AS mz,
                   INTENSITY AS intensity
@@ -1285,11 +1368,11 @@ function getFileName(db, id, callback) {
     });
 }
 
-function getProjects(db, callback) {
+function getProjects(db, uid,callback) {
     let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
-                WHERE ProjectStatus = 1;`;
-    db.all(sql,[], (err, rows) => {
+                WHERE ProjectStatus = 1 AND uid = ?;`;
+    db.all(sql,[uid], (err, rows) => {
         if(err) {
             return callback(err);
         }else {
@@ -1298,6 +1381,18 @@ function getProjects(db, callback) {
     });
 }
 
+function getProjectsGuest(db,callback) {
+    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
+                FROM Projects
+                WHERE ProjectStatus = 1 AND public = 'true';`;
+    db.all(sql,[], (err, rows) => {
+        if(err) {
+            return callback(err);
+        }else {
+            return callback(rows);
+        }
+    });
+}
 function ifExists(db, base64_code, callback) {
     let sql = `SELECT ProjectID as id
              FROM Projects
@@ -1344,37 +1439,34 @@ function checkExpiredProj(db, callback) {
             return callback(null, rows);
         }
     });
-
-/*    db.each(sql,(err,row) => {
-        if (err) {
-            throw err;
-        }
-        else {
-            fs.unlink(row.dir, (err) => {
-                if (err) throw err;
-                console.log(`${row.fileName} was deleted!`);
-            });
-        }
-    });*/
 }
 
-function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, ms1EnvFile) {
-    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, MS1_envelope_file) VALUES(?,?,?,?,?,?,?,?,?)';
-    db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,ms1EnvFile], function(err) {
+function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, ms1EnvFile,uid,public) {
+    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, MS1_envelope_file, uid,public) VALUES(?,?,?,?,?,?,?,?,?,?,?)';
+    db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,ms1EnvFile,uid,public], function(err) {
         if (err) {
             return console.log(err.message);
         }
         // get the last insert id
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
-};
-
+}
+function insertUser(db, uid, email, firstname, lastname, fullname){
+    let sql = 'INSERT INTO Users(uid, email, firstname, lastname, fullname) VALUES(?,?,?,?,?)';
+    db.run(sql, [uid, email, firstname, lastname, fullname], function(err) {
+        if (err) {
+            return console.log(err.message);
+        }
+        // get the last insert id
+        console.log(`A row has been inserted with rowid ${this.lastID}`);
+    });
+}
 let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, PRIMARY KEY(`ProjectID`) )";
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);
@@ -1386,26 +1478,25 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
                 return console.log(err.message);
             }
             console.log("Index for project is ready!");
+        });
+
+        var sqlToUserTable = "CREATE TABLE IF NOT EXISTS \"Users\" ( `uid` TEXT NOT NULL, `email` TEXT NULL, `firstname` TEXT NULL, `lastname` TEXT NULL, `fullname` TEXT NULL, PRIMARY KEY(`uid`) )";
+        db.run(sqlToUserTable, function (err) {
+            if (err) {
+                return console.log(err.message);
+            }
+            console.log("Table for Users is ready!");
+            var sqlToUserIndex = "CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )";
+            db.run(sqlToUserIndex, function (err) {
+                if (err) {
+                    return console.log(err.message);
+                }
+                console.log("Index for Users is ready!");
+            });
         })
+
     });
 });
-
-/*let testDb = new sqlite3.Database('./data/8ad65410-ffe0-11e9-bc47-83c5c03c7280/CPTAC_Intact_rep3_15Jan15_Bane_C2-14-08-02RZ_7000-7300.db', (err) => {
-    if (err) {
-        console.error(err.message);
-    }
-    console.log('Connected to the testDB.db database.');
-});*/
-
-/*mailtrap for testing
-var transport = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-        user: "9540ab1d87da99",
-        pass: "133e06c63858da"
-    }
-});*/
 
 var transport = nodemailer.createTransport({
     host: "smtp-mail.outlook.com", // hostname
