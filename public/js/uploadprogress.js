@@ -7,6 +7,8 @@
     var project = document.getElementById('projectName');
     var email = document.getElementById('emailAddress');
     var description = document.getElementById('description');
+    var pub = document.getElementById('public');
+    console.log(pub.checked);
     var dbfilename = document.getElementById('dbfilename');
     var envfilename1 = document.getElementById('envfilename1');
     // var envfilename2 = document.getElementById('envfilename2');
@@ -66,6 +68,7 @@
             formData.append('projectname', project.value);
             formData.append('emailaddress', email.value);
             formData.append('description', description.value);
+            formData.append('public', pub.checked);
             xhr.onload = uploadSuccess;
             xhr.upload.onprogress = setProgress;
             xhr.open('post', '/upload', true);
@@ -93,93 +96,30 @@
     }
 })();
 
-/*
-$('#uploadbutton').on('click', function (){
-    $('#dbfile').click();
-    $('#dbbar').text('0%');
-    $('#dbbar').width('0%');
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+$( document ).ready(function() {
+    if(getCookie('token')===''){
+        alert('Please sign in to upload your projects!');
+        window.location.href = '/';
+    } else {
+        $('#signIn').text('Log out');
+        $('#signIn').attr('href', '/logout');
+        $("body").fadeIn(20);
+    }
 });
 
-$('#dbfile').on('change', function(){
-    var formData = new FormData();
-    formData.append('dbfile', file.files[0]);
-    formData.append('projectname', project.value);
-    formData.append('emailaddress', email.value);
-    $.ajax({
-        url: '/upload',
-        type: 'POST',
-        data: formData,
-        cache: false,
-        processData: false,
-        contentType: false,
-        success: function(data){
-            console.log('upload successful!\n' + data);
-        },
-        xhr: function() {
-            // create an XMLHttpRequest
-            var xhr = new XMLHttpRequest();
-            // listen to the 'progress' event
-            xhr.upload.addEventListener('progress', function(evt) {
-                if (evt.lengthComputable) {
-                    /!*var complete = Number.parseInt(evt.loaded / evt.total * 100);
-                    progress.style.width = complete + '%';
-                    progress.innerHTML = complete + '%';*!/
-                    // calculate the percentage of upload completed
-                    var percentComplete = evt.loaded / evt.total;
-                    percentComplete = parseInt(percentComplete * 100);
-                    // update the Bootstrap progress bar with the new percentage
-                    $('#dbbar').text(percentComplete + '%');
-                    $('#dbbar').width(percentComplete + '%');
-                    // once the upload reaches 100%, set the progress bar text to done
-                    if (percentComplete === 100) {
-                        $('#dbbar').html('Done');
-                    }
-                }
-            }, false);
-            return xhr;
-        }
-    });
-/!*
-    if (files.length > 0){
-        // create a FormData object which will be sent as the data payload in the
-        // AJAX request
-        var formData = new FormData();
-        // loop through all the selected files and add them to the formData object
-        for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            // add the files to formData object for the data payload
-            formData.append('uploads[]', file, file.name);
-        }
-        $.ajax({
-            url: '/upload',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(data){
-                console.log('upload successful!\n' + data);
-            },
-            xhr: function() {
-                // create an XMLHttpRequest
-                var xhr = new XMLHttpRequest();
-                // listen to the 'progress' event
-                xhr.upload.addEventListener('progress', function(evt) {
-                    if (evt.lengthComputable) {
-                        // calculate the percentage of upload completed
-                        var percentComplete = evt.loaded / evt.total;
-                        percentComplete = parseInt(percentComplete * 100);
-                        // update the Bootstrap progress bar with the new percentage
-                        $('.progress-bar').text(percentComplete + '%');
-                        $('.progress-bar').width(percentComplete + '%');
-                        // once the upload reaches 100%, set the progress bar text to done
-                        if (percentComplete === 100) {
-                            $('.progress-bar').html('Done');
-                        }
-                    }
-                }, false);
-                return xhr;
-            }
-        });
-    }
-*!/
-});*/

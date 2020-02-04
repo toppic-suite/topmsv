@@ -19,11 +19,20 @@
 </head>
 <body>
     <div class="container">
-        <div class="masthead">
+        <div>
+            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        </div>
+        <ul class="nav nav-tabs">
+            <li role="presentation"><a href="/">Home</a></li>
+            <li role="presentation" class="active"><a href="/submit">Upload</a></li>
+            <li role="presentation"><a href="/projects">My projects</a></li>
+        </ul>
+        <!--<div class="masthead">
             <h1 class="muted">
                 <span style="color: #0099DD; "><strong>Top View</strong></span>
             </h1>
-        </div>
+        </div>-->
+        <a href="/auth/google" id="signIn">Sign In with Google</a>
         <div class="panel panel-default">
 <!--            <div class="panel-heading">Data Information</div>-->
             <div class="panel-body">
@@ -47,6 +56,11 @@
                         <span class="input-group-addon">Description:</span>
                         <textarea class="form-control" id="description"
                                   name="description" required></textarea>
+                    </div>
+                    <br>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="public">
+                        <label class="form-check-label" for="public">Public</label>
                     </div>
                     <br>
                     <div>

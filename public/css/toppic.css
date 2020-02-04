@@ -1,9 +1,15 @@
 body{
-  padding-top: 20px;
+  	padding-top: 0px;
+	display: none;
 }
-
+a#signIn {
+	position: absolute;
+	top: 10px;
+	right: 20%;
+}
 .panel {
   padding: 20px 20px 20px 20px;
+	border-top-width: 0px;
 }
 
 div.panel-heading {
