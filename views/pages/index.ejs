@@ -3,11 +3,25 @@
 <head>
 	<% include ../partials/head %>
 <!--	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" ></script>-->
-	<script src="https://code.jquery.com/jquery-1.12.4.js" ></script>
+<!--	<script src="https://code.jquery.com/jquery-1.12.4.js" ></script>-->
+	<!-- Remember to include jQuery :) -->
+	<script
+			src="https://code.jquery.com/jquery-3.4.1.min.js"
+			integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			crossorigin="anonymous"></script>
 	<script
 			src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
 			integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
 			crossorigin="anonymous"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
 	<script src="https://d3js.org/d3.v5.min.js"></script>
 	<script src="js/spectrum_graph/invokespectrum.js" ></script>
 	<script src="js/spectrum_graph/spectrumparameters.js" ></script>
@@ -28,6 +42,7 @@
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
 
+
 <!--
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.20/b-1.6.1/b-html5-1.6.1/sc-2.0.1/sl-1.3.1/datatables.min.css"/>
 
@@ -40,12 +55,36 @@
 <body class="container">
 
 	<main>
+		<!-- Modal -->
+		<div id="myModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Modal Header</h4>
+					</div>
+					<div class="modal-body">
+						<input type="file" id="MS1_msalign">
+						<input type="file" id="MS2_msalign">
+						<button id="uploadMsalign">Upload</button>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
 		<div class="jumbotron">
 			<div>
 				<span class="projectsummary">
 					<span class="projectName">
 						<strong>Project Name:</strong> <%= summary.ProjectName %>
 					</span>
+					<button id="uploadMsalign" type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Msalign File</button>
+
 					<div>
 					<span class="fileName">
 						<strong>mzML File:</strong> <a href="/download?id=<%= projectCode %>" download><%= fileName %></a>
@@ -68,6 +107,9 @@
 				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
 				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
 				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
+				<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
+				<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
+				<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
 
 			</div>
 			<div id="rt-sum">
@@ -76,20 +118,20 @@
 			<hr>
 			<div id="scanLevelOne">
 				<p class="scanleveltitle">
-					<b>Scan Level 1</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<span id="scanid1">
-						Scan:
-						<span id="scanID1"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						Retention Time: <span id="scan1RT"></span>
+					<div class="flex-column">
+						<b>Scan Level 1</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<span id="scanid1">
+							Scan:
+							<span id="scanID1"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							Retention Time: <span id="scan1RT"></span>
+						</span>
+					</div>
+					<div class="flex-column">
 						<button type="submit" id="prev1">Previous</button>
 						<button type="submit" id="next1">Next</button>
-					</span>
+					</div>
 				</p>
-				<p class="scanleveltitle">
-				</p>
-				<br />
 				<svg id="spectrum1"></svg><br />
-
 			</div>
 			<hr>
 			<div id="scanLevelTwo">
@@ -109,29 +151,29 @@
 					</ul>
 					<svg id="spectrum2"></svg>
 				</div>
-
 			</div>
-			<div id="brhr">
-				<br>
-				<hr>
-			</div>
+			<br>
+			<hr>
 			<div id="envInfo">
 				<p class="scanleveltitle" id="scanLevelTwoInfo">
 					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
 					<span id="msType"></span> Scan: <span id="envScan"></span>
+				</p>
+				<div>
+					<button id="inspect">Inspect</button>
 					<button id="switch">MS1</button>
 					<button id="hide">Hide</button>
-				</p>
+				</div>
+
 				<div id="datatable">
 				<table id="envTable" class="display" style="width:100%">
 					<thead>
 					<tr>
-<!--						<th></th>-->
 						<th>Envelope ID</th>
 						<th>Scan</th>
 						<th>Charge</th>
-						<th>Theo Mono Mass</th>
-						<th>Theo Inte Sum</th>
+						<th>Mono Mass</th>
+						<th>Intensity</th>
 						<th>Mono M/Z</th>
 					</tr>
 					</thead>
@@ -148,11 +190,6 @@
 			</div>
 		</div>
 	</main>
-	<!--<script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.js" ></script>
-	<script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.js" ></script>
-	<script src="https://cdn.datatables.net/select/1.1.2/js/dataTables.select.js" ></script>
-	<script src="https://cdn.datatables.net/responsive/2.0.2/js/dataTables.responsive.js" ></script>-->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.js" ></script>
 	<script type="text/javascript" src="js/dataVisualization.js"></script>
 	<script src="js/dataTables.altEditor.free.js"></script>
 </body>

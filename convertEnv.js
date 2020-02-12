@@ -5,9 +5,9 @@ const betterDB = new Database(myArgs[0]);
 const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope (\n' +
     '    envelope_id INTEGER PRIMARY KEY,\n' +
     '    scan_id INTEGER NOT NULL,\n' +
-    '    CHARGE REAL NOT NULL,\n' +
-    '    THEO_MONO_MASS REAL NOT NULL,\n' +
-    '    THEO_INTE_SUM REAL NULL,\n' +
+    '    charge REAL NOT NULL,\n' +
+    '    mono_mass REAL NOT NULL,\n' +
+    '    intensity REAL NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
     '       REFERENCES SPECTRA (ID)\n' +
     ');');
@@ -37,7 +37,7 @@ const insertMany = betterDB.transaction(importData);
 
 function importData(database,data) {
     var stmtPeak = database.prepare('INSERT INTO env_peak(env_peak_id,envelope_id, mz, intensity) VALUES(?,?,?,?)');
-    var stmtEnv = database.prepare('INSERT INTO envelope(envelope_id,scan_id,CHARGE,THEO_MONO_MASS,THEO_INTE_SUM) VALUES(?,?,?,?,?)');
+    var stmtEnv = database.prepare('INSERT INTO envelope(envelope_id,scan_id,charge,mono_mass,intensity) VALUES(?,?,?,?,?)');
 
     var stmtFindScanID = database.prepare('SELECT ID AS id\n' +
         'FROM SPECTRA\n' +

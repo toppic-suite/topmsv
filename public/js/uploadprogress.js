@@ -8,7 +8,7 @@
     var email = document.getElementById('emailAddress');
     var description = document.getElementById('description');
     var pub = document.getElementById('public');
-    console.log(pub.checked);
+    //console.log(pub.checked);
     var dbfilename = document.getElementById('dbfilename');
     var envfilename1 = document.getElementById('envfilename1');
     // var envfilename2 = document.getElementById('envfilename2');
