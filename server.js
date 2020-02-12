@@ -66,6 +66,20 @@ app.get('/', function (req, res) {
         rows.forEach(row=>{
             if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
             if(row.description === '') row.description = 'N/A';
+            if(row.projectStatus === 0) {
+                row.projectStatus = 'Projecessing';
+            } else if(row.projectStatus === 1) {
+                row.projectStatus = 'Success';
+            } else if(row.projectStatus === 2) {
+                row.projectStatus = 'Failed';
+            } else if(row.projectStatus === 3) {
+                row.projectStatus = 'Removed';
+            }
+            if(row.envStatus === 1) {
+                row.envStatus = 'Yes';
+            } else {
+                row.envStatus = 'No';
+            }
             row.projectLink = '/data?id=' + row.projectCode;
         });
         res.render('pages/home', {
@@ -359,7 +373,8 @@ app.get('/data', function(req, res) {
                         ProjectName: row.projectName,
                         ProjectStatus: row.projectStatus,
                         EmailAddress: row.email,
-                        MS1_envelope_file: row.ms1_envelope_file
+                        MS1_envelope_file: row.ms1_envelope_file,
+                        envStatus: row.envelopeStatus
                     };
                     //console.log(summary);
                     let projectDir = row.projectDir;
@@ -398,6 +413,57 @@ app.get('/data', function(req, res) {
         }
     });
 });
+app.post('/msalign', function (req, res) {
+    var form = new formidable.IncomingForm();
+    form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
+    form.encoding = 'utf-8';
+    form.uploadDir = "tmp";
+    form.keepExtensions = true;
+    form.parse(req, function (err, fields, files) {
+        var ms1 = files.ms1file;
+        var ms2 = files.ms2file;
+        var dbDir = fields.projectDir;
+        var projectName = fields.projectName;
+        var projectCode = fields.projectCode;
+        var email = fields.email;
+        dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
+        var des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms1.name;
+        var des_ms2 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms2.name;
+        if (ms1 === undefined || ms2 === undefined) {
+            console.log("Upload files failed!");
+            sendFailureMess(db, projectName, projectCode, email);
+            return;
+        }
+        fs.rename(ms1.path, des_ms1, function (err) {
+            if (err) {
+                console.log(err);
+                return res.send({"error": 403, "message": "Error on saving file!"});
+            }
+            fs.rename(ms2.path, des_ms2, function (err) {
+                if (err) {
+                    console.log(err);
+                    return res.send({"error": 403, "message": "Error on saving file!"});
+                }
+                updateProjectStatus(db,0, fields.projectCode, function () {
+                    res.end();
+                    execFile('node',[__dirname + '/convertMS1Msalign.js',dbDir,des_ms1],((err, stdout, stderr) => {
+                        if(err) {
+                            sendFailureMess(db, projectName, projectCode, email);
+                        }
+                        execFile('node',[__dirname + '/convertMS2Msalign.js',dbDir,des_ms2],((err, stdout, stderr) => {
+                            if(err) {
+                                sendFailureMess(db, projectName, projectCode, email);
+                            } else {
+                                sendSuccessMess(db, projectName, projectCode, email);
+                                console.log('msalign file processing is done!');
+                            }
+                        }));
+                    }));
+                });
+            })
+        })
+    })
+});
 app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     function(req, res) {
@@ -425,6 +491,20 @@ app.get('/projects', function (req,res) {
             rows.forEach(row=>{
                 if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
                 if(row.description === '') row.description = 'N/A';
+                if(row.projectStatus === 0) {
+                    row.projectStatus = 'Projecessing';
+                } else if(row.projectStatus === 1) {
+                    row.projectStatus = 'Success';
+                } else if(row.projectStatus === 2) {
+                    row.projectStatus = 'Failed';
+                } else if(row.projectStatus === 3) {
+                    row.projectStatus = 'Removed';
+                }
+                if(row.envStatus === 1) {
+                    row.envStatus = 'Yes';
+                } else {
+                    row.envStatus = 'No';
+                }
                 row.projectLink = '/data?id=' + row.projectCode;
             });
             res.render('pages/projects', {
@@ -455,9 +535,9 @@ app.get('/addrow', function (req,res) {
     let projectDir = req.query.projectDir;
     //let envID = req.query.envelope_id;
     let scan_id = req.query.scan_id;
-    let charge = req.query.CHARGE;
-    let monoMass = req.query.THEO_MONO_MASS;
-    let theoInteSum = req.query.THEO_INTE_SUM;
+    let charge = req.query.charge;
+    let monoMass = req.query.mono_mass;
+    let theoInteSum = req.query.intensity;
     getEnvMax(projectDir,function (envID) {
         //console.log(envID);
         ++envID;
@@ -476,9 +556,9 @@ app.get('/editrow', function (req,res) {
     let projectDir = req.query.projectDir;
     let scan_id = req.query.scan_id;
     let envID = req.query.envelope_id;
-    let charge = req.query.CHARGE;
-    let monoMass = req.query.THEO_MONO_MASS;
-    let theoInteSum = req.query.THEO_INTE_SUM;
+    let charge = req.query.charge;
+    let monoMass = req.query.mono_mass;
+    let theoInteSum = req.query.intensity;
     editEnv(projectDir,envID,charge,monoMass,theoInteSum,function () {
         addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
             getEnv(projectDir,envID,function (row) {
@@ -653,6 +733,8 @@ app.get('/envtable', function (req, res) {
     getEnvTable(projectDir, scanNum, function (err, rows) {
         //console.log("Env Table rows:", rows);
         if (rows !== undefined) {
+            //console.log(scanNum);
+            //console.log(rows);
             res.json(rows);
             //res.write(JSON.stringify(rows));
             res.end();
@@ -710,6 +792,39 @@ function updateEnvStatus(db, status,id,callback) {
         return callback(null);
     });
 }
+function sendFailureMess(db, projectName,projectCode,email) {
+    setTimeout(function () {
+        processFailure(db,projectCode, function (err) {
+            console.log("Process failed!");
+            message.text = "Project Name: " + projectName + '\nProject Status: Cannot process your dataset, please check your data.';
+            message.subject = "Your data processing failed";
+            message.to = email;
+            transport.sendMail(message, function(err, info) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(info);
+                }
+            });
+        });
+    }, 60000);
+}
+function sendSuccessMess(db, projectName,projectCode,email) {
+    updateProjectStatus(db,1, projectCode, function (err) {
+        updateEnvStatus(db, 1, projectCode, function (err) {
+            message.text = "Project Name: " + projectName + '\nStatus: Done' + '\nPlease go to project center to check your result.';
+            message.subject = "Your data processing is done";
+            message.to = email;
+            transport.sendMail(message, function(err, info) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(info);
+                }
+            });
+        });
+    });
+}
 function processFailure(db, id, callback) {
     let sql = `UPDATE Projects
                 SET ProjectStatus = 2
@@ -757,7 +872,7 @@ function getProjectSummary(db, id, callback) {
     });
 }
 function getEnvNum(resultDB, scanid,callback) {
-    let sql = `SELECT envelope_id AS id,THEO_MONO_MASS AS mono_mass, CHARGE AS charge
+    let sql = `SELECT envelope_id AS id,mono_mass AS mono_mass, charge AS charge
                 FROM envelope
                 WHERE scan_id = ?`;
     resultDB.all(sql, [scanid], (err, rows) => {
@@ -780,7 +895,7 @@ function getEnvPeakList(resultDB, envelope_id, callback) {
     //db.close();
 }
 function getEnvCharge(resultDB, envelope_id, callback) {
-    let sql = `SELECT THEO_MONO_MASS AS mono_mass, CHARGE AS charge
+    let sql = `SELECT mono_mass AS mono_mass, charge AS charge
                 FROM envelope
                 WHERE envelope_id = ?`;
     resultDB.get(sql, [envelope_id], (err, row) => {
@@ -850,9 +965,9 @@ function deleteEnv(dir, envID, callback) {
 }
 function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
     let sql = `UPDATE envelope
-                SET CHARGE = ?,
-                THEO_MONO_MASS = ?,
-                THEO_INTE_SUM = ?
+                SET charge = ?,
+                mono_mass = ?,
+                intensity = ?
                 WHERE envelope_id = ?;`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
@@ -872,7 +987,7 @@ function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
     resultDb.close();
 }
 function addEnv(dir, envID, scan, charge, monoMass,theoInteSum,callback) {
-    let sql = `INSERT INTO envelope(envelope_id, scan_id, CHARGE, THEO_MONO_MASS,THEO_INTE_SUM)
+    let sql = `INSERT INTO envelope(envelope_id, scan_id, charge, mono_mass,intensity)
                 VALUES(?,?,?,?,?);`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
@@ -1048,7 +1163,7 @@ function getRT(dir, scanNum, callback) {
     resultDb.close();
 }
 function getEnvTable(dir, scanID, callback){
-    let sql = `SELECT envelope_id,scan_id, CHARGE, THEO_MONO_MASS, THEO_INTE_SUM
+    let sql = `SELECT envelope_id,scan_id, charge, mono_mass, intensity
                 FROM envelope
                 WHERE scan_id = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
@@ -1369,9 +1484,9 @@ function getFileName(db, id, callback) {
 }
 
 function getProjects(db, uid,callback) {
-    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
+    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
-                WHERE ProjectStatus = 1 AND uid = ?;`;
+                WHERE (ProjectStatus = 1 OR ProjectStatus = 0) AND uid = ?;`;
     db.all(sql,[uid], (err, rows) => {
         if(err) {
             return callback(err);
@@ -1382,9 +1497,9 @@ function getProjects(db, uid,callback) {
 }
 
 function getProjectsGuest(db,callback) {
-    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
+    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
-                WHERE ProjectStatus = 1 AND public = 'true';`;
+                WHERE ProjectStatus = 1 AND public = 'true'`;
     db.all(sql,[], (err, rows) => {
         if(err) {
             return callback(err);

@@ -509,7 +509,7 @@ function showEnvTable(scan) {
     } else {
         $('#msType').text('MS2');
     }
-    if($('#envelopeFile').text() === "0"){
+    if($('#envStatus').val() === "0"){
         return;
     }
     $('#envTable').DataTable( {
@@ -562,13 +562,13 @@ function showEnvTable(scan) {
             },*/
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": false, type:"hidden"},
-            { "data": "CHARGE", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "THEO_MONO_MASS",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "THEO_INTE_SUM",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             {
                 "data": "mono_mz",
                 render: function (data, type, row ) {
-                    let mono_mz =  (( row.THEO_MONO_MASS / row.CHARGE ) + 1).toFixed(2);
+                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(2);
                     row.mono_mz = mono_mz; // set mono_mz value
                     if($('#msType').text() === 'MS2'){
                         return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
@@ -657,11 +657,12 @@ next1.addEventListener('click', function () {
 },false)
 $( document ).ready(function() {
     var min = document.getElementById("rangeMin").value;
-    if($('#envelopeFile').text() === "0"){
+    if($('#envStatus').val() === "0"){
         $('#brhr').hide();
         $("#envInfo").hide();
         $('#envFileInfo').hide();
     }
+    $('#envFileInfo').hide();
     showEnvTable(min);
     findNextLevelOneScan(min);
     loadInteSumList();
@@ -689,18 +690,63 @@ $("#switch").click(function () {
         $("#switch").text('MS1');
     }
 });
-/*
-$(document).ready(function() {
-    $('#envTable').DataTable( {
-        "ajax": {
-            url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + 1482,
-            dataSrc: '',
-            type: "GET"
-        },
-        "columns": [
-            { "data": "envelope_id" },
-            { "data": "CHARGE" },
-            { "data": "THEO_MONO_MASS" }
-        ]
-    } );
-} );*/
+
+$("#inspect").click(function () {
+    let peaklist;
+    let masslistID = $('#envScan').text();
+    if($("#switch").text() === 'MS1') {
+        peaklist = peakList2_g;
+    }else {
+        peaklist = peakList1_g;
+    }
+    let peakAndIntensityList = "";
+    peaklist.forEach(peak => {
+        peakAndIntensityList = peakAndIntensityList + peak.mz + ' ' + peak.intensity+'\n';
+    });
+    peakAndIntensityList = peakAndIntensityList.slice(0,-1);
+    window.localStorage.setItem('peakAndIntensityList', peakAndIntensityList);
+
+    $.ajax({
+        url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + masslistID,
+        type: "get",
+        dataType: 'json',
+        success: function (res) {
+            let massAndIntensityList = "";
+            res.forEach(mass => {
+                massAndIntensityList = massAndIntensityList + mass.mono_mass + ' ' + mass.intensity + ' ' + mass.charge + '\n';
+            });
+            massAndIntensityList = massAndIntensityList.slice(0, -1);
+            window.localStorage.setItem('massAndIntensityList', massAndIntensityList);
+            window.localStorage.setItem('ionType', 'Y,B');
+            window.open('/resources/topview/inspect/spectrum.html', '_blank');
+            //console.log(res);
+        }
+    });
+    //window.localStorage.setItem('mass&inte', JSON)
+});
+
+var ms1file = document.querySelector('#MS1_msalign');
+var ms2file = document.querySelector('#MS2_msalign');
+var upload = document.querySelector('#uploadMsalign');
+var xhr = new XMLHttpRequest();
+upload.addEventListener('click', uploadFile, false);
+
+function uploadFile() {
+    var formData = new FormData();
+    formData.append('ms1file', ms1file.files[0]);
+    formData.append('ms2file', ms2file.files[0]);
+    formData.append('projectDir', document.getElementById('projectDir').value);
+    formData.append('projectCode',document.getElementById("projectCode").value);
+    formData.append('projectName', document.getElementById("projectName").value);
+    formData.append('email', document.getElementById("email").value);
+    xhr.onload = uploadSuccess;
+    xhr.open('post', '/msalign', true);
+    xhr.send(formData);
+
+}
+function uploadSuccess(event) {
+    if (xhr.readyState === 4) {
+        alert("Upload success!");
+        window.location.replace("/projects");
+    }
+}
