@@ -526,25 +526,29 @@ function showEnvTable(scan) {
             {
                 extend: 'csv',
                 text: 'Export CSV',
-                className: 'export-button',
+                className: 'btn',
                 filename: 'envelope_data'
             },
             {
                 text: 'Add',
+                className: 'btn',
                 name: 'add'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Edit',
+                className: 'btn',
                 name: 'edit'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Delete',
+                className: 'btn',
                 name: 'delete'      // do not change name
             },
             {
                 text: 'Refresh',
+                className: 'btn',
                 name: 'refresh'      // do not change name
             }
         ],
@@ -727,7 +731,8 @@ $("#inspect").click(function () {
 
 var ms1file = document.querySelector('#MS1_msalign');
 var ms2file = document.querySelector('#MS2_msalign');
-var upload = document.querySelector('#uploadMsalign');
+var upload = document.querySelector('#modalUpload');
+var progress = document.querySelector('#progressbar');
 var xhr = new XMLHttpRequest();
 upload.addEventListener('click', uploadFile, false);
 
@@ -750,6 +755,7 @@ function uploadFile() {
     formData.append('projectName', document.getElementById("projectName").value);
     formData.append('email', document.getElementById("email").value);
     xhr.onload = uploadSuccess;
+    xhr.upload.onprogress = setProgress;
     xhr.open('post', '/msalign', true);
     xhr.send(formData);
 
@@ -758,5 +764,15 @@ function uploadSuccess(event) {
     if (xhr.readyState === 4) {
         alert("Upload success!");
         window.location.replace("/projects");
+    }
+}
+function setProgress(event) {
+    if (event.lengthComputable) {
+        var complete = Number.parseInt(event.loaded / event.total * 100);
+        progress.style.width = complete + '%';
+        progress.innerHTML = complete + '%';
+        if (complete == 100) {
+            progress.innerHTML = 'Done!';
+        }
     }
 }
