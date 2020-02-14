@@ -762,7 +762,7 @@ function uploadFile() {
 }
 function uploadSuccess(event) {
     if (xhr.readyState === 4) {
-        alert("Upload success!");
+        alert("Upload successfully! Please wait for data processing, you will get an email when it's done");
         window.location.replace("/projects");
     }
 }
