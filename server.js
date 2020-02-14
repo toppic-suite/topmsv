@@ -559,6 +559,7 @@ app.get('/editrow', function (req,res) {
     let charge = req.query.charge;
     let monoMass = req.query.mono_mass;
     let theoInteSum = req.query.intensity;
+
     editEnv(projectDir,envID,charge,monoMass,theoInteSum,function () {
         addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
             getEnv(projectDir,envID,function (row) {
@@ -969,6 +970,7 @@ function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
                 mono_mass = ?,
                 intensity = ?
                 WHERE envelope_id = ?;`;
+    let sqlDelete = `DELETE FROM env_peak WHERE envelope_id = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
@@ -980,9 +982,11 @@ function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
         if (err) {
             return console.error(err.message);
         }
-        //console.log(this);
-        console.log(`Row(s) edited: ${this.changes}`);
-        return callback();
+        resultDb.run(sqlDelete,[envID], function (err) {
+            //console.log(this);
+            console.log(`Row(s) edited: ${this.changes}`);
+            return callback();
+        });
     });
     resultDb.close();
 }
@@ -1029,6 +1033,15 @@ function addEnvPeak(dir, charge, theo_mono_mass, scan_id, envelope_id, callback)
             return callback();
         })
     })
+}
+function deleteSingleEnv(dir, envID, callback) {
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+
+    let stmt = resultDb.prepare(`DELETE FROM envelope WHERE envelope_id = ?`);
+    stmt.run(envID);
+    resultDb.close();
+    return callback();
 }
 function deleteMultiEnvs(dir, envList,callback) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
