@@ -333,7 +333,8 @@
 
                 that.onEditRow(that,
                     rowDataArray,
-                    function(data,b,c,d,e){ that._editRowCallback(data,b,c,d,e); },
+                    function(data,b,c,d,e){ that._editRowCallback(data,b,c,d,e); findNextLevelOneScan($('#envScan').text());
+                    },
                     function(data){ that._errorCallback(data);
                 });
             },
@@ -438,7 +439,7 @@
                 jsonDataArray.envList = envList;
                 that.onDeleteRow(that,
                     jsonDataArray,
-                    function(data){ that._deleteRowCallback(data); },
+                    function(data){ that._deleteRowCallback(data); findNextLevelOneScan($('#envScan').text());},
                     function(data){ that._errorCallback(data);
                 });
             },
@@ -640,7 +641,7 @@
 
                 that.onAddRow(that,
                     rowDataArray,
-                    function(data){ that._addRowCallback(data); },
+                    function(data){ that._addRowCallback(data); findNextLevelOneScan($('#envScan').text());},
                     function(data){ that._errorCallback(data);
                 });
 
