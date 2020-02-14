@@ -729,6 +729,18 @@ $("#inspect").click(function () {
     //window.localStorage.setItem('mass&inte', JSON)
 });
 
+$("#deleteMsalign").click(function () {
+    $.ajax({
+        url:"deleteMsalign?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+        type: "get",
+        // dataType: 'json',
+        success: function (res) {
+            alert('Your previous msalign data has been removed.')
+        }
+    });
+});
+
+
 var ms1file = document.querySelector('#MS1_msalign');
 var ms2file = document.querySelector('#MS2_msalign');
 var upload = document.querySelector('#modalUpload');
@@ -758,7 +770,6 @@ function uploadFile() {
     xhr.upload.onprogress = setProgress;
     xhr.open('post', '/msalign', true);
     xhr.send(formData);
-
 }
 function uploadSuccess(event) {
     if (xhr.readyState === 4) {
