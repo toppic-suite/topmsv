@@ -514,6 +514,19 @@ app.get('/projects', function (req,res) {
     }
 
 });
+app.get('/deleteMsalign', function (req,res) {
+    let projectDir = req.query.projectDir;
+    let projectCode = req.query.projectCode;
+    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+
+    let stmt = resultDb.prepare(`DROP TABLE IF EXISTS env_peak;`);
+    stmt.run();
+    resultDb.close();
+    updateEnvStatus(db,0,projectCode, function () {
+        res.end();
+    });
+});
 app.get('/download', function (req,res) {
     let projectCode = req.query.id;
     getProjectSummary(db, projectCode, function (err,row) {
