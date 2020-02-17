@@ -709,7 +709,7 @@ $("#inspect").click(function () {
     });
     peakAndIntensityList = peakAndIntensityList.slice(0,-1);
     window.localStorage.setItem('peakAndIntensityList', peakAndIntensityList);
-
+    window.localStorage.setItem('scan', masslistID);
     $.ajax({
         url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + masslistID,
         type: "get",
