@@ -55,10 +55,15 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Upload Msalign files</h4>
+						<h4 class="modal-title">Msalign files</h4>
 					</div>
 					<div class="modal-body">
-						<p>Please upload both MS1 msalign file and MS2 msalign file below.
+						<p>
+							If you want to delete current existing msalign file for envelope peaks, please click the button below.
+						</p>
+						<button class="btn" id="deleteMsalign">Delete existing msalign</button>
+						<br>
+						<p>If you want to upload new msalign files for envelope peaks, please upload both MS1 msalign file and MS2 msalign file below.
 							Once you upload files successfully, please wait our server to process data. When everything is done, we will send an email to you.</p>
 						<label for="MS1_msalign">MS1 msalign file</label>
 						<input class="form-control-file" type="file" id="MS1_msalign">
@@ -69,7 +74,6 @@
 						<table>
 							<tr>
 								<td><button class="btn" id="modalUpload">Upload</button></td>
-								<td><button class="btn" id="deleteMsalign">Delete existing msalign</button></td>
 								<td width="40pt"></td>
 								<td style="width: 300pt">
 									<div id="dbprogress" class="progress">

@@ -425,43 +425,46 @@ app.post('/msalign', function (req, res) {
         var dbDir = fields.projectDir;
         var projectName = fields.projectName;
         var projectCode = fields.projectCode;
-        var email = fields.email;
-        dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
-        var des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms1.name;
-        var des_ms2 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms2.name;
-        if (ms1 === undefined || ms2 === undefined) {
-            console.log("Upload files failed!");
-            sendFailureMess(db, projectName, projectCode, email);
-            return;
-        }
-        fs.rename(ms1.path, des_ms1, function (err) {
-            if (err) {
-                console.log(err);
-                return res.send({"error": 403, "message": "Error on saving file!"});
+        deleteEnvPeak(dbDir, projectCode, function () {
+            console.log('Deleted previous Envelope Peaks!');
+            var email = fields.email;
+            dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
+            var des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms1.name;
+            var des_ms2 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms2.name;
+            if (ms1 === undefined || ms2 === undefined) {
+                console.log("Upload files failed!");
+                sendFailureMess(db, projectName, projectCode, email);
+                return;
             }
-            fs.rename(ms2.path, des_ms2, function (err) {
+            fs.rename(ms1.path, des_ms1, function (err) {
                 if (err) {
                     console.log(err);
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
-                updateProjectStatus(db,0, fields.projectCode, function () {
-                    res.end();
-                    execFile('node',[__dirname + '/convertMS1Msalign.js',dbDir,des_ms1],((err, stdout, stderr) => {
-                        if(err) {
-                            sendFailureMess(db, projectName, projectCode, email);
-                        }
-                        execFile('node',[__dirname + '/convertMS2Msalign.js',dbDir,des_ms2],((err, stdout, stderr) => {
+                fs.rename(ms2.path, des_ms2, function (err) {
+                    if (err) {
+                        console.log(err);
+                        return res.send({"error": 403, "message": "Error on saving file!"});
+                    }
+                    updateProjectStatus(db,0, fields.projectCode, function () {
+                        res.end();
+                        execFile('node',[__dirname + '/convertMS1Msalign.js',dbDir,des_ms1],((err, stdout, stderr) => {
                             if(err) {
                                 sendFailureMess(db, projectName, projectCode, email);
-                            } else {
-                                sendSuccessMess(db, projectName, projectCode, email);
-                                console.log('msalign file processing is done!');
                             }
+                            execFile('node',[__dirname + '/convertMS2Msalign.js',dbDir,des_ms2],((err, stdout, stderr) => {
+                                if(err) {
+                                    sendFailureMess(db, projectName, projectCode, email);
+                                } else {
+                                    sendSuccessMess(db, projectName, projectCode, email);
+                                    console.log('msalign file processing is done!');
+                                }
+                            }));
                         }));
-                    }));
-                });
+                    });
+                })
             })
-        })
+        });
     })
 });
 app.get('/auth/google/callback',
@@ -517,13 +520,7 @@ app.get('/projects', function (req,res) {
 app.get('/deleteMsalign', function (req,res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
-    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
-    let resultDb = new BetterDB(dbDir);
-
-    let stmt = resultDb.prepare(`DROP TABLE IF EXISTS env_peak;`);
-    stmt.run();
-    resultDb.close();
-    updateEnvStatus(db,0,projectCode, function () {
+    deleteEnvPeak(projectDir, projectCode, function () {
         res.end();
     });
 });
@@ -976,6 +973,19 @@ function deleteEnv(dir, envID, callback) {
         return callback();
     });
     resultDb.close();
+}
+function deleteEnvPeak(projectDir, projectCode, callback) {
+    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+
+    let stmt = resultDb.prepare(`DROP TABLE IF EXISTS env_peak;`);
+    stmt.run();
+    stmt = resultDb.prepare(`DROP TABLE IF EXISTS envelope;`);
+    stmt.run();
+    resultDb.close();
+    updateEnvStatus(db,0,projectCode, function () {
+        callback();
+    });
 }
 function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
     let sql = `UPDATE envelope

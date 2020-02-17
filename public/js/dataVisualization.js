@@ -735,7 +735,8 @@ $("#deleteMsalign").click(function () {
         type: "get",
         // dataType: 'json',
         success: function (res) {
-            alert('Your previous msalign data has been removed.')
+            alert('Your previous msalign data has been removed.');
+            location.reload();
         }
     });
 });
