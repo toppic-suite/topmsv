@@ -44,7 +44,7 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ){
 	peakData.peak_list = peakList ;
 	peakData.envelope_list = specParameters.setColorToEnvelops(envelopeList) ;
 
-	console.log(peakData);
+	//console.log(peakData);
 	id = "#"+id;
 	let spectrumgraph = new SpectrumGraph(id,specParameters,peakData);
 	 return spectrumgraph;
