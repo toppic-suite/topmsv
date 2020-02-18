@@ -72,8 +72,8 @@ button#deleteMsalign {
     margin-bottom: 10px;
 }
 button#home {
-    position: relative;
-    left: 52%;
+    position: absolute;
+    left: 67%;
     /*left: 51%;*/
     font-size: 95%;
     background-color: #555555;
@@ -125,8 +125,8 @@ button#prev1 {
     float: left;
 }
 button#uploadMsalign {
-    position: relative;
-    left: 69%;
+    position: absolute;
+    left: 71%;
     /*left: 51%;*/
     font-size: 95%;
     background-color: #555555;
