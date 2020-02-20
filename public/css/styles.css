@@ -26,10 +26,10 @@ div#input {
     padding-top: 10px;
     padding-bottom: 5px;
 }
-input#scanID {
-    width: 6%;
+#scanID {
+    width: 120%;
     position: relative;
-    left: 53%;
+    /*left: 53%;*/
 }
 hr {
     margin-bottom: 7px;
@@ -45,10 +45,21 @@ span.ms1EnvFile{
 }
 #scanRange {
     position: relative;
-    left: 52%;
+    left: 50%;
 }
 
 button#modalUpload {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#seqUpload {
     position: relative;
     font-size: 100%;
     background-color: #555555;
@@ -72,26 +83,25 @@ button#deleteMsalign {
     margin-bottom: 10px;
 }
 button#home {
-    position: absolute;
-    left: 67%;
+    position: relative;
     /*left: 51%;*/
-    font-size: 95%;
+    /*font-size: 95%;*/
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: 2px 15px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
 }
-button#request {
+#request {
     position: relative;
-    left: 54.5%;
-    font-size: 100%;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: 2px 8px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -125,14 +135,25 @@ button#prev1 {
     float: left;
 }
 button#uploadMsalign {
-    position: absolute;
-    left: 71%;
-    /*left: 51%;*/
-    font-size: 95%;
+    position: relative;
+    /*left: 71%;*/
+    /*font-size: 95%;*/
     background-color: #555555;
     color: white;
     border: none;
     padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#uploadSequence {
+    position: relative;
+    /*left: 60%;*/
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 3px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -205,8 +226,12 @@ span.select-item{
 p#scanid2 {
     font-size: 100%;
 }
-p.scanleveltitle{
+.scanleveltitle{
     font-size: 14px;
+}
+div#shiftRight{
+    position: relative;
+    left: 15%;
 }
 svg#spectrum1{
     padding-left: 5px;

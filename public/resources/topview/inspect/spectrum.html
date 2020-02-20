@@ -78,9 +78,11 @@
 	let pList = window.localStorage.getItem('peakAndIntensityList');
 	let mList = window.localStorage.getItem('massAndIntensityList');
 	let scan = window.localStorage.getItem('scan');
+	let proteoform = window.localStorage.getItem('proteoform');
 	$('#peakdata').text(pList);
 	$('#data').text(mList);
 	$('#scan').text(scan);
+	$('#sequencedata').text(proteoform);
 	 if(peakAndIntensityList != null && massAndIntensityList != null
 		&& sequence != null)
 	{	

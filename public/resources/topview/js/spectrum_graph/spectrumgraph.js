@@ -373,6 +373,7 @@ function drawSpectrum(svgId, spectrumParameters, peakData){
 		addCircles(svg,spectrumParameters,peakData);
 		addLabels(svg, spectrumParameters);
 		SpectrumDownload.addDownloadRect(svgId, spectrumParameters);
+
 	// }
 //   addDownloadRect(svgId, spectrumParameters);
 }
