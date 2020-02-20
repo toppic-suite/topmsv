@@ -512,6 +512,23 @@ function showEnvTable(scan) {
     if($('#envStatus').val() === "0"){
         return;
     }
+
+    $.ajax( {
+        url:'seqQuery?projectDir=' + document.getElementById("projectDir").value + "&scanID=" + $('#envScan').text(),
+        type: "get",
+        success: function (res) {
+            //console.log(res);
+            if(res!== '0') {
+                let sequence = preprocessSeq(res);
+                $('#proteoform').text(sequence);
+                window.localStorage.setItem('proteoform', sequence);
+            } else {
+                $('#proteoform').text('N/A');
+                window.localStorage.setItem('proteoform', '');
+            }
+        }
+    });
+
     $('#envTable').DataTable( {
         destroy: true,
         paging: false,
@@ -726,7 +743,6 @@ $("#inspect").click(function () {
             //console.log(res);
         }
     });
-    //window.localStorage.setItem('mass&inte', JSON)
 });
 
 $("#deleteMsalign").click(function () {
@@ -741,6 +757,46 @@ $("#deleteMsalign").click(function () {
     });
 });
 
+$("#seqUpload").click(function () {
+    var seqFile = document.querySelector('#seqFile');
+    var seqProgress = document.querySelector('#seqProgressbar');
+    var xhr = new XMLHttpRequest();
+    if(seqFile.files[0] === undefined) {
+        alert("Please choose a file!");
+        return;
+    } else if (!seqFile.files[0].name.match(/.(csv)$/i)) {
+        alert('Please upload a csv file!');
+        return;
+    }
+    var formData = new FormData();
+    formData.append('seqFile', seqFile.files[0]);
+    formData.append('projectDir', document.getElementById('projectDir').value);
+    formData.append('projectCode',document.getElementById("projectCode").value);
+    formData.append('projectName', document.getElementById("projectName").value);
+    formData.append('email', document.getElementById("email").value);
+    xhr.upload.onprogress = seqSetProgress;
+    xhr.onload = seqUploadSuccess;
+    xhr.open('post', '/sequence', true);
+    xhr.send(formData);
+
+    function seqUploadSuccess(event) {
+        if (xhr.readyState === 4) {
+            alert("Upload successfully!");
+            window.location.replace("/projects");
+        }
+    }
+
+    function seqSetProgress(event) {
+        if (event.lengthComputable) {
+            var complete = Number.parseInt(event.loaded / event.total * 100);
+            seqProgress.style.width = complete + '%';
+            seqProgress.innerHTML = complete + '%';
+            if (complete == 100) {
+                seqProgress.innerHTML = 'Done!';
+            }
+        }
+    }
+});
 
 var ms1file = document.querySelector('#MS1_msalign');
 var ms2file = document.querySelector('#MS2_msalign');
@@ -778,6 +834,7 @@ function uploadSuccess(event) {
         window.location.replace("/projects");
     }
 }
+
 function setProgress(event) {
     if (event.lengthComputable) {
         var complete = Number.parseInt(event.loaded / event.total * 100);
@@ -787,4 +844,15 @@ function setProgress(event) {
             progress.innerHTML = 'Done!';
         }
     }
+}
+
+function preprocessSeq(seq) {
+    var firstDotIndex = seq.indexOf('.');
+    var lastDotIndex = seq.lastIndexOf('.');
+    seq = seq.slice(firstDotIndex+1,lastDotIndex);
+    seq = seq.replace(/\(/g,'');
+    seq = seq.replace(/\)/g, '');
+    seq = seq.replace(/\[[A-z]*\]/g, '');
+    return seq;
+    //console.log(seq);
 }

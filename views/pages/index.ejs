@@ -48,7 +48,7 @@
 
 	<main>
 		<!-- Modal -->
-		<div id="myModal" class="modal fade" role="dialog">
+		<div id="msalignModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 
 				<!-- Modal content-->
@@ -88,24 +88,69 @@
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					</div>
 				</div>
+			</div>
+		</div>
+		<!-- Sequence Modal -->
+		<div id="seqModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
 
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Upload sequence file</h4>
+					</div>
+					<div class="modal-body">
+						<label for="sequenceFile">Sequence file</label>
+						<input class="form-control-file" type="file" id="seqFile">
+						<br>
+						<table>
+							<tr>
+								<td><button class="btn" id="seqUpload">Upload</button></td>
+								<td width="40pt"></td>
+								<td style="width: 300pt">
+									<div id="seqProgress" class="progress">
+										<div id="seqProgressbar" class="progress-bar progress-bar-striped" role="progressbar"
+											 style="width: 0%">0%</div>
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="jumbotron">
 			<div>
 				<span class="projectsummary">
-					<span class="projectName">
+					<div class="row">
+						<div class="projectName col-sm-9">
 						<strong>Project Name:</strong> <%= summary.ProjectName %>
-					</span>
-					<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#myModal">Msalign File</button>
-					 <button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
-					<div>
-					<span class="fileName">
-						<strong>mzML File:</strong> <a href="/download?id=<%= projectCode %>" download><%= fileName %></a>
-					</span>
-					<span class="ms1EnvFile" id="envFileInfo">
-						<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
-					</span>
+						</div>
+						<div class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-4">
+								<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
+								</div>
+								<div class="col-sm-4">
+									<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#msalignModal">Msalign</button>
+								</div>
+								<div class="col-sm-4">
+									<button id="uploadSequence" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Sequence</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="fileName col-sm-6">
+							<strong>mzML File:</strong> <a href="/download?id=<%= projectCode %>" download><%= fileName %></a>
+						</div>
+						<div class="ms1EnvFile col-sm-6" id="envFileInfo">
+							<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
+						</div>
 					</div>
 				</span>
 			</div>
@@ -113,10 +158,43 @@
 			<hr>
 
 			<div id="input">
-				<p class="scanleveltitle"><strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong> <label for="scanID" id="scanRange">Scan within Scan Range:</label>
-					<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
-					<button class="btn" type="submit" id="request">Request</button></p>
-				<p class="scanleveltitle">RT:<span id="rt-hover">0</span>&nbsp;&nbsp;&nbsp;&nbsp;Intensity:<span id="intensity-hover">0</span>&nbsp;&nbsp;&nbsp;&nbsp;Scan:<span id="scan-hover">0</span></p>
+				<div class="scanleveltitle row">
+					<div class="col-sm-9">
+						<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
+					</div>
+					<div class="col-sm-3">
+						<div class="row">
+							<div class="col-sm-4">
+								<label for="scanID" id="scanRange">Scan:</label>
+							</div>
+							<div class="col-sm-4">
+								<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="request">Request</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="scanleveltitle row">
+					<div class="col-sm-4">
+						<div class="row">
+							<div class="col-sm-3">
+								RT:<span id="rt-hover">0</span>
+							</div>
+							<div class="col-sm-6">
+								<div id="shiftRight">
+									Intensity:<span id="intensity-hover">0</span>
+								</div>
+							</div>
+							<div class="col-sm-3">
+								Scan:<span id="scan-hover">0</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
 				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
 				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
@@ -126,9 +204,11 @@
 				<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
 
 			</div>
-			<div id="rt-sum">
-
+			<div class="row">
+				<div id="rt-sum" class="col-sm-12">
+				</div>
 			</div>
+
 			<hr>
 			<div id="scanLevelOne">
 				<p class="scanleveltitle">
@@ -172,6 +252,9 @@
 				<p class="scanleveltitle" id="scanLevelTwoInfo">
 					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
 					<span id="msType"></span> Scan: <span id="envScan"></span>
+				<div>
+					Proteoform: <span id="proteoform"></span>
+				</div>
 				</p>
 				<div>
 					<button class="btn" id="inspect">Inspect</button>
