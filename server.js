@@ -2,6 +2,7 @@ var fs = require('fs');
 var nodemailer = require('nodemailer');
 const sqlite3 = require('sqlite3').verbose();
 var bodyParser = require('body-parser');
+var Papa = require('papaparse');
 var compression = require('compression');
 var helmet = require('helmet');
 var express = require('express');
@@ -412,6 +413,62 @@ app.get('/data', function(req, res) {
             }
         }
     });
+});
+app.post('/sequence', function (req,res) {
+    console.log('Hello, sequence!');
+    var form = new formidable.IncomingForm();
+    form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
+    form.encoding = 'utf-8';
+    form.uploadDir = "tmp";
+    form.keepExtensions = true;
+    form.parse(req, function (err, fields, files) {
+        var seqFile = files.seqFile;
+        var email = fields.email;
+        var projectDir = fields.projectDir;
+        var projectName = fields.projectName;
+        var projectCode = fields.projectCode;
+        var dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
+        var des_seq = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqFile.name;
+        if (seqFile === undefined) {
+            console.log("Upload files failed!");
+            sendFailureMess(db, projectName, projectCode, email);
+            return;
+        }
+        fs.rename(seqFile.path, des_seq, function (err) {
+            if (err) {
+                console.log(err);
+                return res.send({"error": 403, "message": "Error on saving file!"});
+            }
+            deleteSeq(projectDir, projectCode, function () {
+                updateProjectStatus(db, 0, projectCode, function () {
+                    res.end();
+                    execFile('node',[__dirname + '/sequenceParse.js',dbDir,des_seq],((err, stdout, stderr) => {
+                        if(err) {
+                            console.log('Processing sequence file failed!');
+                            sendFailureMess(db, projectName, projectCode, email);
+                            return;
+                        }
+                        updateProjectStatus(db, 1, projectCode, function () {
+                            console.log('Sequence process is done!');
+                        });
+                    }))
+                })
+            })
+        })
+    })
+});
+app.get('/seqQuery', function (req, res) {
+    let projectDir = req.query.projectDir;
+    let scanNum = req.query.scanID;
+    let proteoform = getProteoform(projectDir, scanNum);
+    //console.log(proteoform);
+    if (proteoform !== 0) {
+        res.write(proteoform);
+        res.end();
+    } else {
+        res.write('0');
+        res.end();
+    }
 });
 app.post('/msalign', function (req, res) {
     var form = new formidable.IncomingForm();
@@ -987,6 +1044,15 @@ function deleteEnvPeak(projectDir, projectCode, callback) {
         callback();
     });
 }
+function deleteSeq(projectDir, projectCode, callback) {
+    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+
+    let stmt = resultDb.prepare(`DROP TABLE IF EXISTS sequence;`);
+    stmt.run();
+    resultDb.close();
+    callback();
+}
 function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
     let sql = `UPDATE envelope
                 SET charge = ?,
@@ -1238,6 +1304,21 @@ function getNextLevelOneScan(dir, scanNum, callback) {
         return callback(null, row);
     });
     resultDb.close();
+}
+function getProteoform(dir, scanNum) {
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+    let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform
+                FROM SPECTRA INNER JOIN sequence ON SPECTRA.ID = sequence.scan_id
+                WHERE SPECTRA.SCAN = ?`);
+    if(stmt.get(scanNum)) {
+        let proteoform = stmt.get(scanNum).proteoform;
+        resultDb.close();
+        return proteoform;
+    } else {
+        resultDb.close();
+        return 0;
+    }
 }
 function getScanLevelTwoList(dir, scanID, callback) {
     let sql = `SELECT LevelTwoScanID AS scanID,
