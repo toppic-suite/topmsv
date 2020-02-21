@@ -211,35 +211,56 @@
 
 			<hr>
 			<div id="scanLevelOne">
-				<p class="scanleveltitle">
-					<div class="flex-column">
-						<b>Scan Level 1</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<span id="scanid1">
-							Scan:
-							<span id="scanID1"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							Retention Time: <span id="scan1RT"></span>
-						</span>
+				<div class="row scanleveltitle">
+					<div class="col-sm-7">
+						<div class="row">
+							<div class="col-sm-3">
+								<b>Scan Level 1</b>
+							</div>
+							<div class="col-sm-2">
+								Scan: <span id="scanID1"></span>
+							</div>
+							<div class="col-sm-7">
+								Retention Time: <span id="scan1RT"></span>
+							</div>
+						</div>
 					</div>
-					<div class="flex-column">
-						<button class="btn" type="submit" id="prev1">Previous</button>
-						<button class="btn" type="submit" id="next1">Next</button>
+					<div class="col-sm-2">
 					</div>
-				</p>
+					<div class="col-sm-3">
+						<div class="row">
+							<div class="col-sm-4">
+
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="prev1">Previous</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="next1">Next</button>
+							</div>
+						</div>
+					</div>
+				</div>
 				<svg id="spectrum1"></svg><br />
 			</div>
 			<hr>
 			<div id="scanLevelTwo">
-				<p class="scanleveltitle" id="scanLevelTwoInfo">
+				<div class="scanleveltitle row" id="scanLevelTwoInfo">
+
+
+
+
+
 					<b>Scan Level 2</b>&nbsp;&nbsp;&nbsp;&nbsp;
 					Scan:<span id="scanID2"></span>&nbsp;&nbsp;&nbsp;&nbsp;
 					Precursor MZ:<span id="prec_mz"></span>&nbsp;&nbsp;&nbsp;&nbsp;
 					Precursor Charge:<span id="prec_charge"></span>&nbsp;&nbsp;&nbsp;&nbsp;
 					Precursor Intensity:<span id="prec_inte"></span>&nbsp;&nbsp;&nbsp;&nbsp;
 					Retention Time:<span id="rt"></span>
-				</p>
-				<p class="scanleveltitle">
+				</div>
+				<div class="scanleveltitle">
 					<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
-				</p>
+				</div>
 				<div id="tabs">
 					<ul id="tabList">
 					</ul>
@@ -249,17 +270,26 @@
 			<br>
 			<hr>
 			<div id="envInfo">
-				<p class="scanleveltitle" id="scanLevelTwoInfo">
+				<div class="scanleveltitle" id="scanLevelTwoInfo">
 					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
 					<span id="msType"></span> Scan: <span id="envScan"></span>
-				<div>
-					Proteoform: <span id="proteoform"></span>
+					<!--<div>
+						Proteoform: <span id="proteoform"></span>
+					</div>-->
 				</div>
-				</p>
-				<div>
-					<button class="btn" id="inspect">Inspect</button>
-					<button class="btn" id="switch">MS1</button>
-					<button class="btn" id="hide">Hide</button>
+				<div class="row">
+					<div class="col-sm-9">
+						Proteoform: <span id="proteoform"></span>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="inspect">Inspect</button>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="switch">MS1</button>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="hide">Hide</button>
+					</div>
 				</div>
 
 				<div id="datatable">
