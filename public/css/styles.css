@@ -109,26 +109,24 @@ button#home {
 
 button#next1 {
     position: relative;
-    left: 84%;
-    /*left: 50%;*/
+    /*left: 84%;*/
     font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 22px;
+    padding: 2px 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
 }
 button#prev1 {
     position: relative;
-    left: 82%;
-    /*left: 48%;*/
+    /*left: 82%;*/
     font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: 2px 8px;
     text-align: center;
     text-decoration: none;
     display: block;
@@ -160,36 +158,36 @@ button#uploadSequence {
 }
 button#inspect {
     position: relative;
-    left: 82%;
+    /*left: 82%;*/
     font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: 2px 12px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
 }
 button#hide{
     position: relative;
-    left: 84%;
+    /*left: 84%;*/
     font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: 2px 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
 }
 button#switch {
     position: relative;
-    left: 83%;
+    /*left: 83%;*/
     font-size: 100%;
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: 2px 20px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
