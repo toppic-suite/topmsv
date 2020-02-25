@@ -582,7 +582,7 @@ function showEnvTable(scan) {
                 orderable: false
             },*/
             { "data": "envelope_id", readonly: 'true'},
-            { "data": "scan_id", "visible": false, type:"hidden"},
+            { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
@@ -687,6 +687,15 @@ $( document ).ready(function() {
     showEnvTable(min);
     findNextLevelOneScan(min);
     loadInteSumList();
+
+    let scanRef = window.localStorage.getItem('scan');
+    if(scanRef) {
+        console.log(scanRef);
+        $('#scanID').val(scanRef);
+        $('#request').click();
+        localStorage.clear();
+    }
+
 });
 $("#scanID").keyup(function(event) {
     if (event.keyCode === 13) {
