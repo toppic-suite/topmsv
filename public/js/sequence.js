@@ -38,13 +38,19 @@ function inspect(scanID) {
                                 $('#proteoform').text('N/A');
                                 window.localStorage.setItem('proteoform', '');
                             }
-                            window.open('/resources/topview/inspect/spectrum.html', '_blank');
+                            window.open('/resources/topview/inspect/spectrum.html', '_self');
                         }
                     })
                 }
             });
         }
     })
+}
+
+function jumpBack(scan) {
+    window.localStorage.setItem('scan', scan);
+    let url = '/data?id=' + document.getElementById('projectCode').value;
+    window.location.replace(url);
 }
 
 function preprocessSeq(seq) {

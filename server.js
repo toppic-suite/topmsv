@@ -543,6 +543,7 @@ app.get('/seqResults', function (req,res) {
             let results = getAllSeq(projectDir);
             res.render('pages/sequence', {
                 projectDir: projectDir,
+                projectCode: projectCode,
                 results: results
             });
         } else {
@@ -570,7 +571,7 @@ app.get('/projects', function (req,res) {
                 if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
                 if(row.description === '') row.description = 'N/A';
                 if(row.projectStatus === 0) {
-                    row.projectStatus = 'Projecessing';
+                    row.projectStatus = 'Processing';
                 } else if(row.projectStatus === 1) {
                     row.projectStatus = 'Success';
                 } else if(row.projectStatus === 2) {
