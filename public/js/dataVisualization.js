@@ -756,7 +756,9 @@ $("#deleteMsalign").click(function () {
         }
     });
 });
-
+$('#seqResult').click(function () {
+    window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_blank');
+});
 $("#seqUpload").click(function () {
     var seqFile = document.querySelector('#seqFile');
     var seqProgress = document.querySelector('#seqProgressbar');

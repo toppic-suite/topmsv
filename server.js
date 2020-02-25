@@ -533,6 +533,24 @@ app.get('/auth/google/callback',
         insertUser(db, profile.id, profile.emails[0].value,profile.name.givenName, profile.name.familyName, profile.displayName);
         res.redirect('/');
     });
+app.get('/seqResults', function (req,res) {
+    console.log('Hello, seqResults');
+    let projectCode = req.query.projectCode;
+    getProjectSummary(db, projectCode, function (err,row) {
+        let projectDir = row.projectDir;
+        let envStatus = row.envelopeStatus;
+        if (envStatus === 1){
+            let results = getAllSeq(projectDir);
+            res.render('pages/sequence', {
+                projectDir: projectDir,
+                results: results
+            });
+        } else {
+            res.write("You haven't upload envelope file, please upload envelope file first to check your sequence result!");
+            res.end();
+        }
+    })
+});
 app.get('/projects', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
@@ -1305,6 +1323,22 @@ function getNextLevelOneScan(dir, scanNum, callback) {
     });
     resultDb.close();
 }
+
+function getAllSeq(dir) {
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+    let stmt = resultDb.prepare(`SELECT SPECTRA.ID AS scanID, SPECTRA.SCAN AS scan, sequence.protein_accession AS protein_accession, sequence.proteoform AS proteoform
+                                FROM sequence INNER JOIN SPECTRA ON sequence.scan_id = SPECTRA.ID`);
+    if(stmt.all()) {
+        let seqResult = stmt.all();
+        resultDb.close();
+        return seqResult;
+    } else {
+        resultDb.close();
+        return 0;
+    }
+}
+
 function getProteoform(dir, scanNum) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);

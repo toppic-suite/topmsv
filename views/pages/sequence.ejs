@@ -31,51 +31,45 @@
 <body class="container">
 
 <main>
-    <div>
+<!--    <div>
         <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+    </div>-->
+    <div>
+        <h2 style="color: #0099DD;"><strong>Sequence Result</strong></h2>
     </div>
-    <ul class="nav nav-tabs">
+    <!--<ul class="nav nav-tabs">
         <li role="presentation"><a href="/">Home</a></li>
         <li role="presentation"><a href="/submit">Upload</a></li>
         <li role="presentation" class="active"><a href="/projects">My projects</a></li>
-    </ul>
-    <a href="/auth/google" id="signIn">Sign In with Google</a>
+    </ul>-->
+<!--    <a href="/auth/google" id="signIn">Sign In with Google</a>-->
     <br>
+    <div>
+        <input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
+    </div>
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
             <tr>
                 <th scope="col">ID</th>
-                <th scope="col">Project Name</th>
-                <th scope="col">File Name</th>
-                <th scope="col">Project Status</th>
-                <th scope="col">Envelope Status</th>
-                <th scope="col">Description</th>
-                <th scope="col">Project Link</th>
-                <th scope="col">Upload Time</th>
-                <th scope="col">Envelope File</th>
+                <th scope="col">Scan</th>
+                <th scope="col">Protein Accession</th>
+                <th scope="col">Proteoform</th>
             </tr>
             </thead>
 
-
-
-            <% for (var i = 0; i < projects.length; i++) { %>
+            <% for (var i = 0; i < results.length; i++) { %>
                 <tr>
                     <td scope="row"><%= i+1%></td>
-                    <td><%= projects[i].projectName %></td>
-                    <td><%= projects[i].fileName %></td>
-                    <td><%= projects[i].projectStatus %></td>
-                    <td><%= projects[i].envStatus %></td>
-                    <td><%= projects[i].description %></td>
-                    <td><a href="<%= projects[i].projectLink %>">Link</a> </td>
-                    <td><%= projects[i].uploadTime %></td>
-                    <td><%= projects[i].envelopeFile %></td>
+                    <td><a href="#!" onclick="inspect(<%= results[i].scanID %>)"><%= results[i].scan %></a> </td>
+                    <td><%= results[i].protein_accession %></td>
+                    <td><%= results[i].proteoform %></td>
                 </tr>
             <% } %>
 
         </table>
     </div>
 </main>
-<script type="text/javascript" src="js/projects.js"></script>
+<script type="text/javascript" src="js/sequence.js"></script>
 </body>
 </html>
