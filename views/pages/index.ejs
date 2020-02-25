@@ -98,10 +98,19 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Upload sequence file</h4>
+						<h4 class="modal-title">Sequence file</h4>
 					</div>
 					<div class="modal-body">
-						<label for="sequenceFile">Sequence file</label>
+						<div>
+							<p>
+								Click the button below to check all of your sequence results.
+							</p>
+							<div>
+								<button class="btn bwButton" id="seqResult">Results</button>
+							</div>
+						</div>
+						<br><br/>
+						<label for="sequenceFile">New sequence file</label>
 						<input class="form-control-file" type="file" id="seqFile">
 						<br>
 						<table>
@@ -245,21 +254,34 @@
 			</div>
 			<hr>
 			<div id="scanLevelTwo">
-				<div class="scanleveltitle row" id="scanLevelTwoInfo">
-
-
-
-
-
-					<b>Scan Level 2</b>&nbsp;&nbsp;&nbsp;&nbsp;
-					Scan:<span id="scanID2"></span>&nbsp;&nbsp;&nbsp;&nbsp;
-					Precursor MZ:<span id="prec_mz"></span>&nbsp;&nbsp;&nbsp;&nbsp;
-					Precursor Charge:<span id="prec_charge"></span>&nbsp;&nbsp;&nbsp;&nbsp;
-					Precursor Intensity:<span id="prec_inte"></span>&nbsp;&nbsp;&nbsp;&nbsp;
-					Retention Time:<span id="rt"></span>
+				<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
+					<div class="col-sm-2" style="padding-right: 5px">
+						<b>Scan Level 2</b>
+					</div>
+					<div class="col-sm-1" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+						Scan:<span id="scanID2"></span>
+					</div>
+					<div class="col-sm-9">
+						<div class="row">
+							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px">
+								Precursor MZ:<span id="prec_mz"></span>
+							</div>
+							<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+								Precursor Charge:<span id="prec_charge"></span>
+							</div>
+							<div class="col-sm-4" style="padding-left: 0px; padding-right: 0px; position: relative; left: 2%">
+								Precursor Intensity:<span id="prec_inte"></span>
+							</div>
+							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+								Retention Time:<span id="rt"></span>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="scanleveltitle">
-					<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
+				<div class="scanleveltitle row">
+					<div class="col-sm-12">
+						<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
+					</div>
 				</div>
 				<div id="tabs">
 					<ul id="tabList">
