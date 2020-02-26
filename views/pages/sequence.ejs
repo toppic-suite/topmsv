@@ -64,7 +64,7 @@
                     <td scope="row"><%= i+1%></td>
                     <td><a href="#!" onclick="jumpBack(<%= results[i].scan %>)"><%= results[i].scan %></a> </td>
                     <td><%= results[i].protein_accession %></td>
-                    <td><a href="#!" onclick="inspect(<%= results[i].scanID %>)"><%= results[i].proteoform %></a></td>
+                    <td><a href="#!" onclick="inspect(<%= results[i].scanID %>,<%= results[i].scan %>)"><%= results[i].proteoform %></a></td>
                 </tr>
             <% } %>
 
