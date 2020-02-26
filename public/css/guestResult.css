@@ -1,0 +1,277 @@
+.projectsummary {
+    font-size: 16px;
+}
+h2 {
+    font-size: 18px;
+}
+body {
+    padding-top:10px;
+    padding-bottom: 2px;
+    font-family: Arial, serif;
+}
+body.container{
+    padding-bottom: 5px;
+}
+div.modal-header {
+    padding-bottom: 10px;
+}
+div#input {
+    font-size: 100%;
+}
+
+.jumbotron p{
+    margin-bottom: 5px;
+}
+.jumbotron {
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+#scanID {
+    width: 120%;
+    position: relative;
+    /*left: 53%;*/
+}
+hr {
+    margin-bottom: 7px;
+    margin-top: 0px;
+}
+
+span.fileName{
+
+}
+span.ms1EnvFile{
+    position: relative;
+    left: 20%;
+}
+#scanRange {
+    position: relative;
+    left: 50%;
+}
+
+button#modalUpload {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#seqUpload {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button.bwButton {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#deleteMsalign {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+button#home {
+    position: relative;
+    /*left: 51%;*/
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+#request {
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+button#next1 {
+    position: relative;
+    /*left: 84%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#prev1 {
+    position: relative;
+    /*left: 82%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    float: left;
+}
+button#uploadMsalign {
+    position: relative;
+    /*left: 71%;*/
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#seqResult {
+    position: relative;
+    /*left: 60%;*/
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 3px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#inspect {
+    position: relative;
+    /*left: 82%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#hide{
+    position: relative;
+    /*left: 84%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#switch {
+    position: relative;
+    /*left: 83%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+button.export-button {
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+}
+button.dt-button{
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+}
+button#close{
+    visibility: hidden;!important;
+}
+span#scanid1{
+    font-size: 100%;
+}
+span.select-item{
+    padding-left: 7px;
+}
+#noScanLevelTwo{
+    display: none;
+}
+p#scanid2 {
+    font-size: 100%;
+}
+.scanleveltitle{
+    font-size: 14px;
+}
+div#shiftRight{
+    position: relative;
+    left: 15%;
+}
+svg#spectrum1{
+    padding-left: 5px;
+    width: 99% !important;
+    height: 100% !important;
+}
+svg#spectrum2{
+    padding: 0 !important;
+    padding-top: 10px !important;
+}
+.ui-widget-content {
+    background: #eee !important;
+}
+.ui-state-active {
+    background: #5e5e5e !important;
+    border: #5e5e5e !important;
+}
+
+/*upload progress*/
+.progress {
+    margin-bottom:0px;
+}
+
+.progress .progress-bar {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+.table th {
+    text-align: center;
+}
