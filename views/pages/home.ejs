@@ -31,28 +31,19 @@
 <body class="container">
 
 <main>
-    <!--<nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">Top View</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="/submit">Upload</a></li>
-                <li><a href="#">Page 2</a></li>
-                <li><a href="#">Page 3</a></li>
-            </ul>
+    <div class="row">
+        <div class="col-sm-11">
+            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
         </div>
-    </nav>-->
-    <div>
-        <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        <div class="col-sm-1">
+            <a href="/auth/google" id="signIn">Sign In</a>
+        </div>
     </div>
     <ul class="nav nav-tabs">
         <li role="presentation" class="active"><a href="#">Home</a></li>
         <li role="presentation"><a href="/submit">Upload</a></li>
         <li role="presentation"><a href="/projects">My projects</a></li>
     </ul>
-    <a href="/auth/google" id="signIn">Sign In with Google</a>
     <br>
     <div class="table-responsive">
         <table class="table table-bordered table-hover">
@@ -66,7 +57,6 @@
                 <th scope="col">Description</th>
                 <th scope="col">Project Link</th>
                 <th scope="col">Upload Time</th>
-                <th scope="col">Envelope File</th>
             </tr>
             </thead>
 
@@ -82,7 +72,6 @@
                     <td><%= projects[i].description %></td>
                     <td><a href="<%= projects[i].projectLink %>">Link</a> </td>
                     <td><%= projects[i].uploadTime %></td>
-                    <td><%= projects[i].envelopeFile %></td>
                 </tr>
             <% } %>
 

@@ -95,7 +95,7 @@ app.get('/', function (req, res) {
 app.use(express.static(__dirname + '/public'));
 
 app.get('/submit', function (req, res) {
-    res.sendFile( __dirname + "/public/" + "index.html" );
+    res.sendFile( __dirname + "/public/" + "submit.html" );
 });
 app.get('/logout',(req, res)=> {
     req.logout();
@@ -408,7 +408,7 @@ app.get('/data', function(req, res) {
                             };
                             //res.write(JSON.stringify(scanRange));
                             //console.log(projectDir);
-                            res.render('pages/index', {
+                            res.render('pages/result', {
                                 summary,
                                 scanRange,
                                 projectCode,
