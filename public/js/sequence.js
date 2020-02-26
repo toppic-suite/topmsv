@@ -1,4 +1,4 @@
-function inspect(scanID) {
+function inspect(scanID,scanNum) {
     $.ajax({
         url:"peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID,
         type:"get",
@@ -11,7 +11,7 @@ function inspect(scanID) {
             });
             peakAndIntensityList = peakAndIntensityList.slice(0,-1);
             window.localStorage.setItem('peakAndIntensityList', peakAndIntensityList);
-            window.localStorage.setItem('scan', scanID);
+            window.localStorage.setItem('scan', scanNum);
             $.ajax({
                 url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID,
                 type: "get",

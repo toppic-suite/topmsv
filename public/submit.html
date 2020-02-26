@@ -5,7 +5,7 @@
     <title>Top View</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery.fileupload.css">
-    <link rel="stylesheet" href="css/toppic.css">
+    <link rel="stylesheet" href="css/submit.css">
     <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
@@ -19,8 +19,13 @@
 </head>
 <body>
     <div class="container">
-        <div>
-            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        <div class="row">
+            <div class="col-sm-11">
+                <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+            </div>
+            <div class="col-sm-1">
+                <a href="/auth/google" id="signIn">Sign In</a>
+            </div>
         </div>
         <ul class="nav nav-tabs">
             <li role="presentation"><a href="/">Home</a></li>
@@ -32,7 +37,6 @@
                 <span style="color: #0099DD; "><strong>Top View</strong></span>
             </h1>
         </div>-->
-        <a href="/auth/google" id="signIn">Sign In with Google</a>
         <div class="panel panel-default">
 <!--            <div class="panel-heading">Data Information</div>-->
             <div class="panel-body">
@@ -149,6 +153,6 @@
     <script src="js/jquery-1.9.1.js"></script>
     <script src="js/jquery-ui.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/uploadprogress.js"></script>
+    <script type="text/javascript" src="js/submit.js"></script>
 </body>
 </html>
