@@ -765,6 +765,17 @@ $("#deleteMsalign").click(function () {
         }
     });
 });
+$("#deleteSeq").click(function () {
+    $.ajax({
+        url:"deleteSeq?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+        type: "get",
+        // dataType: 'json',
+        success: function (res) {
+            alert('Your previous sequence data has been removed.');
+            location.reload();
+        }
+    });
+});
 $('#seqResult').click(function () {
     window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_blank');
 });

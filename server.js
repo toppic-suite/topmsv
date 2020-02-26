@@ -643,6 +643,13 @@ app.get('/deleteMsalign', function (req,res) {
         res.end();
     });
 });
+app.get('/deleteSeq', function (req,res) {
+    let projectDir = req.query.projectDir;
+    let projectCode = req.query.projectCode;
+    deleteSeq(projectDir, projectCode, function () {
+        res.end();
+    });
+});
 app.get('/download', function (req,res) {
     let projectCode = req.query.id;
     getProjectSummary(db, projectCode, function (err,row) {
@@ -1107,6 +1114,15 @@ function deleteEnvPeak(projectDir, projectCode, callback) {
     updateEnvStatus(db,0,projectCode, function () {
         callback();
     });
+}
+function deleteSequence(projectDir, projectCode, callback) {
+    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+
+    let stmt = resultDb.prepare(`DROP TABLE IF EXISTS sequence;`);
+    stmt.run();
+    resultDb.close();
+    callback();
 }
 function deleteSeq(projectDir, projectCode, callback) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
