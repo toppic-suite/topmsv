@@ -1,5 +1,6 @@
 var fs = require('fs');
 var nodemailer = require('nodemailer');
+var favicon = require('serve-favicon');
 const sqlite3 = require('sqlite3').verbose();
 var bodyParser = require('body-parser');
 var Papa = require('papaparse');
@@ -22,7 +23,7 @@ app.use(passport.initialize());
 
 const uuidv1 = require('uuid/v1');
 var formidable = require('formidable');
-const { execFile, execFileSync } = require('child_process');
+const { execFile } = require('child_process');
 const CronJob = require('cron').CronJob;
 const molecularFormulae = require('./distribution_calc/molecularformulae');
 const calcDistrubution = new molecularFormulae();
@@ -54,6 +55,8 @@ job.start();
 app.set('view engine', 'ejs');
 app.use(compression());
 
+// set favicon using express middleware
+app.use(favicon(__dirname + '/public/image/favicon.ico'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -358,6 +361,19 @@ app.post('/upload', function (req, res) {
 app.get('/data', function(req, res) {
     console.log("Hello data!");
     var projectCode = req.query.id;
+    let uid = 0;
+    if (req.session.passport === undefined)
+    {
+        //console.log('No user auth!');
+    }
+    else {
+        //console.log(req.session.passport.user.profile);
+        uid = req.session.passport.user.profile.id;
+        /*console.log(typeof uid);
+        console.log('uid', uid);*/
+    }
+
+
     getProjectSummary(db, projectCode, function (err, row) {
         let summary;
         if (err) {
@@ -379,36 +395,58 @@ app.get('/data', function(req, res) {
                     };
                     //console.log(summary);
                     let projectDir = row.projectDir;
+                    let projectUid = row.uid;
                     var fileName = row.fileName;
+                    //console.log(projectUid);
                     //res.write(JSON.stringify(summary));
                     //console.log(row.projectDir);
-                    getScanRange(projectDir, function (err, row) {
-                        let scanRange = {
-                            MIN: row.minScan,
-                            MAX: row.maxScan
-                        };
-                        //res.write(JSON.stringify(scanRange));
-                        //console.log(projectDir);
-                        res.render('pages/index', {
-                            summary,
-                            scanRange,
-                            projectCode,
-                            projectDir,
-                            fileName
+                    if(uid === projectUid) {
+                        getScanRange(projectDir, function (err, row) {
+                            let scanRange = {
+                                MIN: row.minScan,
+                                MAX: row.maxScan
+                            };
+                            //res.write(JSON.stringify(scanRange));
+                            //console.log(projectDir);
+                            res.render('pages/index', {
+                                summary,
+                                scanRange,
+                                projectCode,
+                                projectDir,
+                                fileName
+                            });
+                        })
+                    } else {
+                        getScanRange(projectDir, function (err, row) {
+                            let scanRange = {
+                                MIN: row.minScan,
+                                MAX: row.maxScan
+                            };
+                            //res.write(JSON.stringify(scanRange));
+                            //console.log(projectDir);
+                            res.render('pages/guestResult', {
+                                summary,
+                                scanRange,
+                                projectCode,
+                                projectDir,
+                                fileName
+                            });
                         });
-                    })
+                        /*res.send('You are not the owner of this project');
+                        res.end();*/
+                    }
                 } else if (row.projectStatus === 0) {
                     console.log("Project status: 0");
                     res.send("Your project is processing, please wait for result.");
-                    res.end;
+                    res.end();
                 } else if (row.projectStatus === 2) {
                     console.log("Project status: 2");
                     res.send("Your project failed. Please check your data.");
-                    res.end;
+                    res.end();
                 } else if (row.projectStatus === 3) {
                     console.log("Project status: 3");
                     res.send("Your project has been removed, because it has been one month since you uploaded it.");
-                    res.end;
+                    res.end();
                 }
             }
         }
@@ -537,6 +575,11 @@ app.get('/seqResults', function (req,res) {
     console.log('Hello, seqResults');
     let projectCode = req.query.projectCode;
     getProjectSummary(db, projectCode, function (err,row) {
+        if(row===undefined) {
+            res.sendStatus(404);
+            //res.redirect("/404");
+            return;
+        }
         let projectDir = row.projectDir;
         let envStatus = row.envelopeStatus;
         if (envStatus === 1){
@@ -837,6 +880,7 @@ app.get('/auth/google', passport.authenticate('google', {
 
 app.use('/*', function(req, res){
     console.log('404 handler..');
+    //console.log(req);
     res.sendFile( __dirname + "/public/" + "404.html" );
 });
 
@@ -945,7 +989,8 @@ function getProjectSummary(db, id, callback) {
                     ProjectDir AS projectDir,
                     FileName AS fileName,
                     EnvelopeStatus AS envelopeStatus,
-                    MS1_envelope_file AS ms1_envelope_file
+                    MS1_envelope_file AS ms1_envelope_file,
+                    uid AS uid
                 FROM Projects
                 WHERE ProjectCode = ?`;
     db.get(sql, [id], (err, row) => {
