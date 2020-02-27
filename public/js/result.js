@@ -179,15 +179,14 @@ var padding_g;
 var fixedLine_g;
 function addFigure(dataset) {
 
-    var width = 1100;
-    var height = 120; //160
-    var padding = { top: 10, right: 110, bottom: 50, left: 80 }; //left:50 right:150
+    var width = 1100; //1100
+    var height = 120; //120
+    var padding = { top: 10, right: 10, bottom: 50, left: 80 };
     padding_g = padding;
-    // var dataset = [{rt:1, inteSum:224}, {rt:2, inteSum:528}, {rt:3, inteSum:756}, {rt:4, inteSum:632}];
 
     var maxInte = d3.max(dataset, function(d) {
         return d.inteSum;
-    })
+    });
 
     var formatPercent = d3.format(".0%");
 
@@ -199,17 +198,17 @@ function addFigure(dataset) {
 
     var min = d3.min(dataset, function(d) {
         return d.intePercentage;
-    })
+    });
     var max = d3.max(dataset, function(d) {
         return d.intePercentage;
-    })
+    });
 
     var minRT = d3.min(dataset, function(d) {
         return d.rt;
-    })
+    });
     var maxRT = d3.max(dataset, function(d) {
         return d.rt;
-    })
+    });
     var xScale = d3.scaleLinear()
         .domain([0, maxRT+5])
         .range([0, width - padding.left - padding.right]);
@@ -220,8 +219,10 @@ function addFigure(dataset) {
 
     var svg = d3.select('#rt-sum')
         .append('svg')
-        .attr('width', width + 'px')
-        .attr('height', height + 'px');
+        .attr('viewBox', "0 0 "+ width + " "+height)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .attr('width', '100%')
+        .attr('height', '100%');
 
     var xAxis = d3.axisBottom()
         .scale(xScale)
