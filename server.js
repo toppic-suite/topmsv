@@ -506,16 +506,25 @@ app.post('/sequence', function (req,res) {
 });
 app.get('/seqQuery', function (req, res) {
     let projectDir = req.query.projectDir;
+    let projectCode = req.query.projectCode;
     let scanNum = req.query.scanID;
-    let proteoform = getProteoform(projectDir, scanNum);
-    //console.log(proteoform);
-    if (proteoform !== 0) {
-        res.write(proteoform);
-        res.end();
-    } else {
-        res.write('0');
-        res.end();
-    }
+    getProjectSummary(db,projectCode,function (err,row) {
+        let seqStatus = row.seqStatus;
+        if(seqStatus === 1) {
+            let proteoform = getProteoform(projectDir, scanNum);
+            //console.log(proteoform);
+            if (proteoform !== 0) {
+                res.write(proteoform);
+                res.end();
+            } else {
+                res.write('0');
+                res.end();
+            }
+        } else {
+            res.write('0');
+            res.end();
+        }
+    });
 });
 app.post('/msalign', function (req, res) {
     var form = new formidable.IncomingForm();
