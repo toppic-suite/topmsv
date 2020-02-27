@@ -777,7 +777,7 @@ $("#deleteSeq").click(function () {
     });
 });
 $('#seqResult').click(function () {
-    window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_blank');
+    window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_self');
 });
 $("#seqUpload").click(function () {
     var seqFile = document.querySelector('#seqFile');
