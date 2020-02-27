@@ -160,14 +160,14 @@ function loadInteSumList() {
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var t3 = performance.now();
-            console.log("Call to fetch inteSum data from server took " + (t3 - t2) + " milliseconds.");
+            // console.log("Call to fetch inteSum data from server took " + (t3 - t2) + " milliseconds.");
             var response = JSON.parse(this.responseText);
-            console.log("SumList:");
-            console.log(response);
+/*            console.log("SumList:");
+            console.log(response);*/
             var t0 = performance.now();
             addFigure(response);
             var t1 = performance.now();
-            console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
+            // console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
         }
     };
     var t2 = performance.now();
@@ -471,7 +471,7 @@ function getScanLevelTwoList(scanID,target) {
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-            console.log(response);
+            // console.log(response);
             // $("#tabs li").remove();
             $( "#tabs" ).tabs();
             $("#tabs li").remove();
@@ -515,7 +515,8 @@ function showEnvTable(scan) {
     }
 
     $.ajax( {
-        url:'seqQuery?projectDir=' + document.getElementById("projectDir").value + "&scanID=" + $('#envScan').text(),
+        url:'seqQuery?projectDir=' + document.getElementById("projectDir").value + "&scanID=" + $('#envScan').text()
+            + "&projectCode=" + document.getElementById('projectCode').value,
         type: "get",
         success: function (res) {
             //console.log(res);
@@ -853,7 +854,7 @@ function uploadFile() {
 }
 function uploadSuccess(event) {
     if (xhr.readyState === 4) {
-        alert("Upload successfully! Please wait for data processing, you will get an email when it's done");
+        alert("Upload successfully! Please wait for data processing, you will receive an email when it's done");
         window.location.replace("/projects");
     }
 }
