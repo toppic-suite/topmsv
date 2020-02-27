@@ -84,6 +84,11 @@ app.get('/', function (req, res) {
             } else {
                 row.envStatus = 'No';
             }
+            if(row.seqStatus === 1) {
+                row.seqStatus = 'Yes';
+            } else {
+                row.seqStatus = 'No';
+            }
             row.projectLink = '/data?id=' + row.projectCode;
         });
         res.render('pages/home', {
@@ -169,7 +174,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRow(db, id, projectname, fname, description,des_file,0, emailtosend,1,envFile1.name,uid,public);
+                                insertRow(db, id, projectname, fname, description,des_file,0, emailtosend,1,0,envFile1.name,uid,public);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -287,7 +292,7 @@ app.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRow(db, id, projectname, fname,description,des_file,0, emailtosend,0,0,uid,public);
+                            insertRow(db, id, projectname, fname,description,des_file,0, emailtosend,0,0,0,uid,public);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -478,19 +483,23 @@ app.post('/sequence', function (req,res) {
                 return res.send({"error": 403, "message": "Error on saving file!"});
             }
             deleteSeq(projectDir, projectCode, function () {
-                updateProjectStatus(db, 0, projectCode, function () {
-                    res.end();
-                    execFile('node',[__dirname + '/sequenceParse.js',dbDir,des_seq],((err, stdout, stderr) => {
-                        if(err) {
-                            console.log('Processing sequence file failed!');
-                            sendFailureMess(db, projectName, projectCode, email);
-                            return;
-                        }
-                        updateProjectStatus(db, 1, projectCode, function () {
-                            console.log('Sequence process is done!');
-                        });
-                    }))
-                })
+                updateSeqStatus(db, 0, projectCode, function () {
+                    updateProjectStatus(db, 0, projectCode, function () {
+                        res.end();
+                        execFile('node',[__dirname + '/sequenceParse.js',dbDir,des_seq],((err, stdout, stderr) => {
+                            if(err) {
+                                console.log('Processing sequence file failed!');
+                                sendFailureMess(db, projectName, projectCode, email);
+                                return;
+                            }
+                            updateSeqStatus(db,1, projectCode, function () {
+                                updateProjectStatus(db, 1, projectCode, function () {
+                                    console.log('Sequence process is done!');
+                                });
+                            });
+                        }))
+                    })
+                });
             })
         })
     })
@@ -577,20 +586,27 @@ app.get('/seqResults', function (req,res) {
     getProjectSummary(db, projectCode, function (err,row) {
         if(row===undefined) {
             res.sendStatus(404);
-            //res.redirect("/404");
             return;
         }
         let projectDir = row.projectDir;
         let envStatus = row.envelopeStatus;
-        if (envStatus === 1){
+        let seqStatus = row.sequenceStatus;
+        if (seqStatus === 1 && envStatus === 1){
             let results = getAllSeq(projectDir);
             res.render('pages/sequence', {
                 projectDir: projectDir,
                 projectCode: projectCode,
                 results: results
             });
+        } else if(seqStatus === 1 && envStatus === 0) {
+            let results = getAllSeq(projectDir);
+            res.render('pages/seqWithoutEnv', {
+                projectDir: projectDir,
+                projectCode: projectCode,
+                results: results
+            });
         } else {
-            res.write("You haven't upload envelope file, please upload envelope file first to check your sequence result!");
+            res.write("You haven't uploaded sequence data, please upload first to check your sequence result!");
             res.end();
         }
     })
@@ -627,6 +643,11 @@ app.get('/projects', function (req,res) {
                 } else {
                     row.envStatus = 'No';
                 }
+                if(row.seqStatus === 1) {
+                    row.seqStatus = 'Yes';
+                } else {
+                    row.seqStatus = 'No';
+                }
                 row.projectLink = '/data?id=' + row.projectCode;
             });
             res.render('pages/projects', {
@@ -647,7 +668,9 @@ app.get('/deleteSeq', function (req,res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
     deleteSeq(projectDir, projectCode, function () {
-        res.end();
+        updateSeqStatus(db,0, projectCode, function () {
+            res.end();
+        });
     });
 });
 app.get('/download', function (req,res) {
@@ -918,7 +941,7 @@ function updateProjectStatus(db, status,id,callback) {
         return callback(null);
     });
 }
-function updateEnvStatus(db, status,id,callback) {
+function updateEnvStatus(db,status,id,callback) {
     let sql = `UPDATE Projects
                 SET EnvelopeStatus = ?
                 WHERE ProjectCode = ?`;
@@ -928,6 +951,18 @@ function updateEnvStatus(db, status,id,callback) {
         }
         console.log(`Row(s) updated: ${this.changes}`);
         return callback(null);
+    });
+}
+function updateSeqStatus(db,status,id,callback) {
+    let sql = `UPDATE Projects
+                SET SequenceStatus = ?
+                WHERE ProjectCode = ?`;
+    db.run(sql, [status,id], function (err) {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(`Row(s) updated: ${this.changes}`);
+        return callback();
     });
 }
 function sendFailureMess(db, projectName,projectCode,email) {
@@ -996,6 +1031,7 @@ function getProjectSummary(db, id, callback) {
                     ProjectDir AS projectDir,
                     FileName AS fileName,
                     EnvelopeStatus AS envelopeStatus,
+                    SequenceStatus AS sequenceStatus,
                     MS1_envelope_file AS ms1_envelope_file,
                     uid AS uid
                 FROM Projects
@@ -1114,15 +1150,6 @@ function deleteEnvPeak(projectDir, projectCode, callback) {
     updateEnvStatus(db,0,projectCode, function () {
         callback();
     });
-}
-function deleteSequence(projectDir, projectCode, callback) {
-    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
-    let resultDb = new BetterDB(dbDir);
-
-    let stmt = resultDb.prepare(`DROP TABLE IF EXISTS sequence;`);
-    stmt.run();
-    resultDb.close();
-    callback();
 }
 function deleteSeq(projectDir, projectCode, callback) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
@@ -1697,7 +1724,7 @@ function getFileName(db, id, callback) {
 }
 
 function getProjects(db, uid,callback) {
-    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
+    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, SequenceStatus AS seqStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
                 WHERE (ProjectStatus = 1 OR ProjectStatus = 0) AND uid = ?;`;
     db.all(sql,[uid], (err, rows) => {
@@ -1710,7 +1737,7 @@ function getProjects(db, uid,callback) {
 }
 
 function getProjectsGuest(db,callback) {
-    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
+    let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, SequenceStatus AS seqStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
                 WHERE ProjectStatus = 1 AND public = 'true'`;
     db.all(sql,[], (err, rows) => {
@@ -1769,9 +1796,9 @@ function checkExpiredProj(db, callback) {
     });
 }
 
-function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, ms1EnvFile,uid,public) {
-    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, MS1_envelope_file, uid,public) VALUES(?,?,?,?,?,?,?,?,?,?,?)';
-    db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,ms1EnvFile,uid,public], function(err) {
+function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,public) {
+    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, SequenceStatus, MS1_envelope_file, uid,public) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
+    db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,SeqStatus,ms1EnvFile,uid,public], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -1794,7 +1821,7 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);
