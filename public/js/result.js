@@ -586,7 +586,8 @@ function showEnvTable(scan) {
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "mono_mass",type:'number', required: 'true'},
+            // { "data": "mono_mass",type:'number',step:1.2,pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             {
                 "data": "mono_mz",
