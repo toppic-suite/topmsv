@@ -556,22 +556,42 @@
                         }
                         // Adding text-inputs and errorlabels, but also new HTML5 typees (email, color, ...)
                         else {
-                            data += "<input type='" + this._quoteattr(columnDefs[j].type)
-                                + "' id='" + this._quoteattr(columnDefs[j].name)
-                                + "' pattern='" + this._quoteattr(columnDefs[j].pattern)
-                                + "' title='" + this._quoteattr(columnDefs[j].hoverMsg)
-                                + "' name='" + this._quoteattr(columnDefs[j].title)
-                                + "' placeholder='" + this._quoteattr(columnDefs[j].title)
-                                + "' data-special='" + this._quoteattr(columnDefs[j].special)
-                                + "' data-errorMsg='" + this._quoteattr(columnDefs[j].msg)
-                                + "' data-uniqueMsg='" + this._quoteattr(columnDefs[j].uniqueMsg)
-                                + "' data-unique='" + columnDefs[j].unique
-                                + "' "
-                                + (columnDefs[j].readonly ? ' readonly ' : '')
-                                + (columnDefs[j].disabled ? ' disabled ' : '')
-                                + (columnDefs[j].required ? ' required ' : '')
-                                + (columnDefs[j].maxLength == false ? "" : " maxlength='" + columnDefs[j].maxLength + "'")
-                                + " style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+                            if(columnDefs[j].name === 'mono_mass'){
+                                data += "<input type='" + this._quoteattr(columnDefs[j].type)
+                                    + "' id='" + this._quoteattr(columnDefs[j].name)
+                                    + "' step='1.2"
+                                    + "' pattern='" + this._quoteattr(columnDefs[j].pattern)
+                                    + "' title='" + this._quoteattr(columnDefs[j].hoverMsg)
+                                    + "' name='" + this._quoteattr(columnDefs[j].title)
+                                    + "' placeholder='" + this._quoteattr(columnDefs[j].title)
+                                    + "' data-special='" + this._quoteattr(columnDefs[j].special)
+                                    + "' data-errorMsg='" + this._quoteattr(columnDefs[j].msg)
+                                    + "' data-uniqueMsg='" + this._quoteattr(columnDefs[j].uniqueMsg)
+                                    + "' data-unique='" + columnDefs[j].unique
+                                    + "' "
+                                    + (columnDefs[j].readonly ? ' readonly ' : '')
+                                    + (columnDefs[j].disabled ? ' disabled ' : '')
+                                    + (columnDefs[j].required ? ' required ' : '')
+                                    + (columnDefs[j].maxLength == false ? "" : " maxlength='" + columnDefs[j].maxLength + "'")
+                                    + " style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+                            } else {
+                                data += "<input type='" + this._quoteattr(columnDefs[j].type)
+                                    + "' id='" + this._quoteattr(columnDefs[j].name)
+                                    + "' pattern='" + this._quoteattr(columnDefs[j].pattern)
+                                    + "' title='" + this._quoteattr(columnDefs[j].hoverMsg)
+                                    + "' name='" + this._quoteattr(columnDefs[j].title)
+                                    + "' placeholder='" + this._quoteattr(columnDefs[j].title)
+                                    + "' data-special='" + this._quoteattr(columnDefs[j].special)
+                                    + "' data-errorMsg='" + this._quoteattr(columnDefs[j].msg)
+                                    + "' data-uniqueMsg='" + this._quoteattr(columnDefs[j].uniqueMsg)
+                                    + "' data-unique='" + columnDefs[j].unique
+                                    + "' "
+                                    + (columnDefs[j].readonly ? ' readonly ' : '')
+                                    + (columnDefs[j].disabled ? ' disabled ' : '')
+                                    + (columnDefs[j].required ? ' required ' : '')
+                                    + (columnDefs[j].maxLength == false ? "" : " maxlength='" + columnDefs[j].maxLength + "'")
+                                    + " style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+                            }
                         }
                         data += "<label id='" + this._quoteattr(columnDefs[j].name) + "label"
                                 + "' class='errorLabel'></label>";
