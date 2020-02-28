@@ -160,14 +160,14 @@ function loadInteSumList() {
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var t3 = performance.now();
-            console.log("Call to fetch inteSum data from server took " + (t3 - t2) + " milliseconds.");
+            // console.log("Call to fetch inteSum data from server took " + (t3 - t2) + " milliseconds.");
             var response = JSON.parse(this.responseText);
-            console.log("SumList:");
-            console.log(response);
+            // console.log("SumList:");
+            // console.log(response);
             var t0 = performance.now();
             addFigure(response);
             var t1 = performance.now();
-            console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
+            // console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
         }
     };
     var t2 = performance.now();
@@ -470,7 +470,7 @@ function getScanLevelTwoList(scanID,target) {
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-            console.log(response);
+            // console.log(response);
             // $("#tabs li").remove();
             $( "#tabs" ).tabs();
             $("#tabs li").remove();
@@ -674,7 +674,7 @@ $( document ).ready(function() {
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
-        console.log(scanRef);
+        // console.log(scanRef);
         $('#scanID').val(scanRef);
         $('#request').click();
         localStorage.clear();
