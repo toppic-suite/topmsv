@@ -81,6 +81,18 @@ button.bwButton {
     text-decoration: none;
     display: inline-block;
 }
+button#resultBtn {
+    position: relative;
+    /*left: 60%;*/
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 14px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button#deleteMsalign {
     position: relative;
     font-size: 100%;

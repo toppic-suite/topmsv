@@ -509,7 +509,7 @@ app.get('/seqQuery', function (req, res) {
     let projectCode = req.query.projectCode;
     let scanNum = req.query.scanID;
     getProjectSummary(db,projectCode,function (err,row) {
-        let seqStatus = row.seqStatus;
+        let seqStatus = row.sequenceStatus;
         if(seqStatus === 1) {
             let proteoform = getProteoform(projectDir, scanNum);
             //console.log(proteoform);

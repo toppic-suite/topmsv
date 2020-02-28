@@ -758,26 +758,33 @@ $("#inspect").click(function () {
 });
 
 $("#deleteMsalign").click(function () {
-    $.ajax({
-        url:"deleteMsalign?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
-        type: "get",
-        // dataType: 'json',
-        success: function (res) {
-            alert('Your previous msalign data has been removed.');
-            location.reload();
-        }
-    });
+    var result = confirm("Are you sure that you want to delete msalign data?");
+    if (result) {
+        //Logic to delete the item
+        $.ajax({
+            url:"deleteMsalign?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+            type: "get",
+            // dataType: 'json',
+            success: function (res) {
+                alert('Your previous msalign data has been removed.');
+                location.reload();
+            }
+        });
+    }
 });
 $("#deleteSeq").click(function () {
-    $.ajax({
-        url:"deleteSeq?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
-        type: "get",
-        // dataType: 'json',
-        success: function (res) {
-            alert('Your previous sequence data has been removed.');
-            location.reload();
-        }
-    });
+    var result = confirm("Are you sure that you want to delete sequence data?");
+    if (result) {
+        $.ajax({
+            url:"deleteSeq?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+            type: "get",
+            // dataType: 'json',
+            success: function (res) {
+                alert('Your previous sequence data has been removed.');
+                location.reload();
+            }
+        });
+    }
 });
 $('#seqResult').click(function () {
     window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_self');
@@ -787,10 +794,10 @@ $("#seqUpload").click(function () {
     var seqProgress = document.querySelector('#seqProgressbar');
     var xhr = new XMLHttpRequest();
     if(seqFile.files[0] === undefined) {
-        alert("Please choose a file!");
+        alert("Please choose a sequence file first!");
         return;
     } else if (!seqFile.files[0].name.match(/.(csv)$/i)) {
-        alert('Please upload a csv file!');
+        alert('Please upload a csv file for sequence!');
         return;
     }
     var formData = new FormData();
