@@ -26,7 +26,7 @@ function inspect(scanID,scanNum) {
                     window.localStorage.setItem('ionType', 'Y,B');
                     //console.log(res);
                     $.ajax({
-                        url:"seqQuery?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID,
+                        url:"seqQuery?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById('projectCode').value,
                         type: "get",
                         success: function (res) {
                             //console.log(res);

@@ -47,6 +47,32 @@
 <body class="container">
 
 <main>
+    <!-- Result Modal -->
+    <div id="seqModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Result</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <p>
+                            Click the button below to check all of your sequence results.
+                        </p>
+                        <div>
+                            <button class="btn bwButton" id="seqResult">Sequence Result</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="jumbotron">
         <div>
 				<span class="projectsummary">
@@ -63,7 +89,7 @@
 								<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
 								</div>
 								<div class="col-sm-4">
-									<button id="seqResult" class="btn">Sequence</button>
+									<button id="resultBtn" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Result</button>
 								</div>
 							</div>
 						</div>

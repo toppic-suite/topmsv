@@ -514,7 +514,8 @@ function showEnvTable(scan) {
     }
 
     $.ajax( {
-        url:'seqQuery?projectDir=' + document.getElementById("projectDir").value + "&scanID=" + $('#envScan').text(),
+        url:'seqQuery?projectDir=' + document.getElementById("projectDir").value + "&scanID=" + $('#envScan').text()
+            + "&projectCode=" + document.getElementById('projectCode').value,
         type: "get",
         success: function (res) {
             //console.log(res);
@@ -738,18 +739,22 @@ $("#inspect").click(function () {
 });
 
 $("#deleteMsalign").click(function () {
-    $.ajax({
-        url:"deleteMsalign?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
-        type: "get",
-        // dataType: 'json',
-        success: function (res) {
-            alert('Your previous msalign data has been removed.');
-            location.reload();
-        }
-    });
+    var result = confirm("Are you sure that you want to delete msalign data?");
+    if (result) {
+        //Logic to delete the item
+        $.ajax({
+            url:"deleteMsalign?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+            type: "get",
+            // dataType: 'json',
+            success: function (res) {
+                alert('Your previous msalign data has been removed.');
+                location.reload();
+            }
+        });
+    }
 });
 $('#seqResult').click(function () {
-    window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_blank');
+    window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_self');
 });
 $("#seqUpload").click(function () {
     var seqFile = document.querySelector('#seqFile');
