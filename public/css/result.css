@@ -298,3 +298,13 @@ svg#spectrum2{
 .table th {
     text-align: center;
 }
+
+button#plusBtn {
+    position: relative;
+    right: 130%;
+}
+
+button#minusBtn {
+    position: relative;
+    right: 130%;
+}
