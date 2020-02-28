@@ -514,8 +514,12 @@
                         data += "<div style='margin-left: initial;margin-right: initial;' class='form-group row' id='alteditor-row-" + this._quoteattr(columnDefs[j].name) +"'>";
                         data += "<div class='col-sm-3 col-md-3 col-lg-3 text-right' style='padding-top:4px;'>";
                         data += "<label for='" + columnDefs[j].name + "'>" + columnDefs[j].title + ":</label></div>";
-                        data += "<div class='col-sm-8 col-md-8 col-lg-8'>";
-
+                        //data += "<div class='col-sm-8 col-md-8 col-lg-8'>";
+                        if (columnDefs[j].name === 'mono_mass') {
+                            data += "<div class='col-sm-6 col-md-6 col-lg-6'>";
+                        } else {
+                            data += "<div class='col-sm-8 col-md-8 col-lg-8'>";
+                        }
                         // Adding readonly-fields
                         if (columnDefs[j].type.indexOf("readonly") >= 0) {
                             // type=readonly is deprecated, kept for backward compatibility
@@ -559,7 +563,7 @@
                             if(columnDefs[j].name === 'mono_mass'){
                                 data += "<input type='" + this._quoteattr(columnDefs[j].type)
                                     + "' id='" + this._quoteattr(columnDefs[j].name)
-                                    + "' step='1.2"
+                                    + "' name='" + this._quoteattr(columnDefs[j].name)
                                     + "' pattern='" + this._quoteattr(columnDefs[j].pattern)
                                     + "' title='" + this._quoteattr(columnDefs[j].hoverMsg)
                                     + "' name='" + this._quoteattr(columnDefs[j].title)
@@ -595,7 +599,19 @@
                         }
                         data += "<label id='" + this._quoteattr(columnDefs[j].name) + "label"
                                 + "' class='errorLabel'></label>";
-                        data += "</div><div style='clear:both;'></div></div>";
+
+                        // data += "</div><div style='clear:both;'></div></div>";
+                        if(columnDefs[j].name === 'mono_mass'){
+                            data += "</div><div class='col-sm-2 col-md-2 col-lg-2'>";
+                            data += `<div class="row"><div class="col-sm-6 col-md-6 col-lg-6"><button onclick="minus()" id="minusBtn" type="button" class="btn btn-default btn-number" data-type="minus" data-field="mono_mass">
+                  <span class="glyphicon glyphicon-minus"></span>
+                </button></div><div class="col-sm-6 col-md-6 col-lg-6"><button onclick="plus()" id="plusBtn" type="button" class="btn btn-default btn-number" data-type="plus" data-field="mono_mass">
+                  <span class="glyphicon glyphicon-plus"></span>
+                </button></div></div>
+                                    </div><div style='clear:both;'></div></div>`
+                        } else {
+                            data += "</div><div style='clear:both;'></div></div>";
+                        }
                     }
                 }
                 // data += "</form>";

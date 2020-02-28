@@ -586,8 +586,8 @@ function showEnvTable(scan) {
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "mono_mass",type:'number', required: 'true'},
-            // { "data": "mono_mass",type:'number',step:1.2,pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            // { "data": "mono_mass",type:'number', required: 'true'},
+            { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             {
                 "data": "mono_mz",
@@ -880,4 +880,21 @@ function preprocessSeq(seq) {
     seq = seq.replace(/\[[A-z]*\]/g, '');
     return seq;
     //console.log(seq);
+}
+
+function plus() {
+    var input = $("input[name='mono_mass']");
+    let inputVal = input[input.length-1].value;
+    if(inputVal === "") {inputVal = 0;}
+    inputVal = parseFloat(inputVal) + 1.2;
+    inputVal = inputVal.toFixed(4);
+    input[input.length-1].value = inputVal;
+}
+function minus() {
+    var input = $("input[name='mono_mass']");
+    let inputVal = input[input.length-1].value;
+    if(inputVal === "") {inputVal = 0;}
+    inputVal = parseFloat(inputVal) - 1.2;
+    inputVal = inputVal.toFixed(4);
+    input[input.length-1].value = inputVal;
 }
