@@ -133,10 +133,10 @@ app.post('/upload', function (req, res) {
         var envFile1 = files.envfile1;
         // var envFile2 = files.envfile2;
         var folderid = uuidv1();
-        var des_path = __dirname + "/data/" + folderid + "/";
-        var des_file = __dirname + "/data/" + folderid + "/" + fname;
-        // var des_envFile1 = __dirname + "/data/" + folderid + "/" + "ms1.env";
-        var des_envFile2 = __dirname + "/data/" + folderid + "/" + "ms2.env";
+        var des_path = "./data/" + folderid + "/";
+        var des_file = "./data/" + folderid + "/" + fname;
+        // var des_envFile1 = "./data/" + folderid + "/" + "ms1.env";
+        var des_envFile2 = "./data/" + folderid + "/" + "ms2.env";
         //console.log(envFile1);
         // Generate new path for file
         if (!fs.existsSync(des_path)) {
@@ -145,7 +145,7 @@ app.post('/upload', function (req, res) {
             console.log('Path created: ',des_path);
         }
         if(envFile1 !== undefined) {
-            let des_envFile1 = __dirname + "/data/" + folderid + "/" + envFile1.name;
+            let des_envFile1 = "./data/" + folderid + "/" + envFile1.name;
             fs.rename(envFile1.path, des_envFile1, function (err) {
                 if (err) {
                     console.log(err);
