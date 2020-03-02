@@ -693,7 +693,7 @@ $( document ).ready(function() {
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
-        console.log(scanRef);
+        // console.log(scanRef);
         $('#scanID').val(scanRef);
         $('#request').click();
         localStorage.clear();
