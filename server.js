@@ -563,10 +563,12 @@ app.post('/msalign', function (req, res) {
                         res.end();
                         execFile('node',[__dirname + '/convertMS1Msalign.js',dbDir,des_ms1],((err, stdout, stderr) => {
                             if(err) {
+                                console.log(stdout);
                                 sendFailureMess(db, projectName, projectCode, email);
                             }
                             execFile('node',[__dirname + '/convertMS2Msalign.js',dbDir,des_ms2],((err, stdout, stderr) => {
                                 if(err) {
+                                    console.log(stdout);
                                     sendFailureMess(db, projectName, projectCode, email);
                                 } else {
                                     sendSuccessMess(db, projectName, projectCode, email);
