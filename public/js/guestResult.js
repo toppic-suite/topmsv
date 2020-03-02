@@ -220,8 +220,10 @@ function addFigure(dataset) {
 
     var svg = d3.select('#rt-sum')
         .append('svg')
-        .attr('width', width + 'px')
-        .attr('height', height + 'px');
+        .attr('viewBox', "0 0 "+ width + " "+height)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .attr('width', '100%')
+        .attr('height', '100%');
 
     var xAxis = d3.axisBottom()
         .scale(xScale)
@@ -761,10 +763,10 @@ $("#seqUpload").click(function () {
     var seqProgress = document.querySelector('#seqProgressbar');
     var xhr = new XMLHttpRequest();
     if(seqFile.files[0] === undefined) {
-        alert("Please choose a file!");
+        alert("Please choose a sequence file first!");
         return;
     } else if (!seqFile.files[0].name.match(/.(csv)$/i)) {
-        alert('Please upload a csv file!');
+        alert('Please upload a csv file for sequence!');
         return;
     }
     var formData = new FormData();
