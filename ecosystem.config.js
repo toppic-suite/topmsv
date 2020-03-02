@@ -6,6 +6,10 @@ module.exports = {
         instances: 3,
         autorestart: true,
         watch: false,
+        log_file: './logs/combined.log',
+        error_file: './logs/err.log',
+        out_file: './logs/out.log',
+        time: true,
         env: {
             NODE_ENV: 'development'
         },
