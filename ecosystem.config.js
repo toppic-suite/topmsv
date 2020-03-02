@@ -2,6 +2,7 @@ module.exports = {
     apps : [{
         name: 'top_view',
         script: './server.js',
+        cwd: './',
         // Options reference: https://pm2.keymetrics.io/docs/usage/application-declaration/
         instances: 3,
         autorestart: true,
