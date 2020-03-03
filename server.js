@@ -526,6 +526,30 @@ app.get('/seqQuery', function (req, res) {
         }
     });
 });
+app.post('/updateSeq', function (req, res) {
+    console.log('Hello updateSeq!');
+    let projectCode = req.query.projectCode;
+    let scanID = req.query.scanID;
+    let proteoform = req.query.proteoform;
+    getProjectSummary(db, projectCode, function (err, row) {
+        let seqStatus = row.sequenceStatus;
+        let projectDir = row.projectDir;
+        if(seqStatus === 1) {
+            try {
+                updateSeq(projectDir, proteoform, scanID);
+                res.write('1');
+                res.end();
+            } catch (e) {
+                console.log(e);
+                res.write('0');
+                res.end();
+            }
+        } else {
+            res.write('0');
+            res.end();
+        }
+    })
+});
 app.post('/msalign', function (req, res) {
     var form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
@@ -1162,6 +1186,16 @@ function deleteEnvPeak(projectDir, projectCode, callback) {
         callback();
     });
 }
+function updateSeq(projectDir, proteoform, scanID) {
+    let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    let resultDb = new BetterDB(dbDir);
+    let stmt = resultDb.prepare(`UPDATE sequence
+                                SET proteoform = ?
+                                WHERE scan_id = ?;`);
+    let info = stmt.run(proteoform, scanID);
+    //console.log(info.changes);
+    resultDb.close();
+}
 function deleteSeq(projectDir, projectCode, callback) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);
@@ -1219,6 +1253,7 @@ function addEnv(dir, envID, scan, charge, monoMass,theoInteSum,callback) {
 }
 function addEnvPeak(dir, charge, theo_mono_mass, scan_id, envelope_id, callback) {
     getPeakListByScanID(dir,scan_id,function (rows) {
+        //console.log(rows);
         let peakList = calcDistrubution.emass(theo_mono_mass,charge,rows);
         //console.log(peakList);
         getEnvPeakMax(dir,function (maxID) {

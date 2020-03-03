@@ -71,9 +71,7 @@ SpectrumParameters = function(peakdata) {
     this.setColorToEnvelops = function(envelopes){
 
         envelopes.sort(function(x,y){
-
             return d3.ascending(x.env_peaks[0].mz, y.env_peaks[0].mz);
-
         })
 
         let colorListsize = this.spectrumColorArray.length;

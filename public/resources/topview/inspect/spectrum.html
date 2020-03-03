@@ -79,10 +79,14 @@
 	let mList = window.localStorage.getItem('massAndIntensityList');
 	let scan = window.localStorage.getItem('scan');
 	let proteoform = window.localStorage.getItem('proteoform');
+	let projectCode = window.localStorage.getItem('projectCode');
+	let scanID = window.localStorage.getItem('scanID');
 	$('#peakdata').text(pList);
 	$('#data').text(mList);
 	$('#scan').text(scan);
 	$('#sequencedata').text(proteoform);
+	$('#projectCode').val(projectCode);
+	$('#scanID').val(scanID);
 	 if(peakAndIntensityList != null && massAndIntensityList != null
 		&& sequence != null)
 	{	
@@ -107,6 +111,25 @@
   $("#helpModal").draggable({
     appendTo: "body"
   });
+
+  $('#updateSeq').click(function () {
+	  var result = confirm("Are you sure that you want to update this sequence data?");
+	  if (result) {
+		  proteoform = $('#sequencedata').text();
+		  $.ajax({
+			  url:"/updateSeq?projectCode=" + document.getElementById("projectCode").value + "&scanID=" + scanID + "&proteoform=" + proteoform,
+			  type: "post",
+			  success: function (res) {
+				  if(res === '1'){
+					  alert('Sequence updated successfully!')
+				  } else {
+					  alert('Sequence update failed, please try again');
+				  }
+				  //console.log('updateSeq res:',res);
+			  }
+		  });
+	  }
+  })
 });
 </script>
 <style>
@@ -120,6 +143,8 @@
 	<p>
 		Scan:<span id="scan"></span>
 	</p>
+	<input type="hidden" id="scanID" value="">
+	<input type="hidden" id="projectCode" value="">
 	<div class="flex-rectangle">
 		<div class="row">
 			<div class="col-md-3 col-lg-3">
@@ -265,12 +290,12 @@
 			<h5>&nbsp;&nbsp;&nbsp;Protein sequence</h5>
 		</div>
 		<div class="row">
-			<div class="col-md-9 col-lg-9">
+			<div class="col-md-8 col-lg-8">
 					<textarea id="sequencedata" class="form-control col-xs-8"></textarea>
 			</div>
-			<div class="col-md-3 col-lg-3">
+			<div class="col-md-4 col-lg-4">
         <!--<form class="form-inline float-sm-right error_input"> -->
-        <table>
+        <table style="position: relative;left: 15%;">
           <tr>
             <td>
               <select class = "form-control error_dropdown" id="error_dropdown">
@@ -290,9 +315,12 @@
               <button id="help" type="button" style="width:80%"
                       data-toggle="modal" data-target="#helpModal" class="btn btn-primary btn-sm">Help</button>
             </td>
-            <td colspan=2>
+            <td colspan=1>
               <button id="submit" type="button" style="width:80%" class="btn btn-primary btn-sm">Submit</button>
-            </td>
+			</td>
+			<td>
+				<button id="updateSeq" type="button" class="btn btn-primary btn-sm">Update</button>
+			</td>
           </tr>
         </table>
           <!--</form> -->
