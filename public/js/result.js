@@ -739,6 +739,13 @@ $("#inspect").click(function () {
     peakAndIntensityList = peakAndIntensityList.slice(0,-1);
     window.localStorage.setItem('peakAndIntensityList', peakAndIntensityList);
     window.localStorage.setItem('scan', masslistID);
+    window.localStorage.setItem('scanID', masslistID);
+    window.localStorage.setItem('projectCode', document.getElementById('projectCode').value);
+    if($('#proteoform').text() === 'N/A') {
+        window.localStorage.setItem('proteoform', '');
+    } else {
+        window.localStorage.setItem('proteoform', $('#proteoform').text());
+    }
     $.ajax({
         url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + masslistID,
         type: "get",
@@ -878,13 +885,44 @@ function setProgress(event) {
     }
 }
 
-function preprocessSeq(seq) {
+/*function preprocessSeq(seq) {
     var firstDotIndex = seq.indexOf('.');
     var lastDotIndex = seq.lastIndexOf('.');
     seq = seq.slice(firstDotIndex+1,lastDotIndex);
     seq = seq.replace(/\(/g,'');
     seq = seq.replace(/\)/g, '');
     seq = seq.replace(/\[[A-z]*\]/g, '');
+    return seq;
+    //console.log(seq);
+}*/
+function preprocessSeq(seq) {
+    let firstIsDot = 1;
+    seq = seq.replace(/\(/g,'');
+    seq = seq.replace(/\)/g, '');
+    seq = seq.replace(/\[[A-z]*\]/g, '');
+    var firstDotIndex = seq.indexOf('.');
+    if(firstDotIndex === -1) {
+        firstDotIndex = 0;
+        firstIsDot = 0;
+    }
+    var lastDotIndex = seq.lastIndexOf('.');
+    if(lastDotIndex === -1) {
+        lastDotIndex = seq.length;
+    }
+    var firstIndex = seq.indexOf('[');
+    var lastIndex = seq.lastIndexOf(']');
+    if(firstDotIndex> firstIndex && firstIndex !== -1) {
+        firstDotIndex = 0;
+        firstIsDot = 0;
+    }
+    if(lastDotIndex < lastIndex){
+        lastDotIndex = seq.length;
+    }
+    if(firstIsDot){
+        seq = seq.slice(firstDotIndex + 1, lastDotIndex);
+    } else {
+        seq = seq.slice(firstDotIndex,lastDotIndex);
+    }
     return seq;
     //console.log(seq);
 }
