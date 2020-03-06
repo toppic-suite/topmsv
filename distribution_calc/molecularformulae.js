@@ -249,9 +249,9 @@ class MolecularFormulae{
 				totDistributionList[i].intensity = (avg * totDistributionList[i].intensity)/distributionAvgInte ;
 			}
 		}
-		/*else{
-			alert("No distribution from peaks at that mass position");
-		}*/
+		else{
+			return null;
+		}
 
 		// console.log("totDistributionList : ", totDistributionList);
 		return totDistributionList ;

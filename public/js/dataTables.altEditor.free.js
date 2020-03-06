@@ -679,6 +679,7 @@
                     rowDataArray,
                     function(data){ that._addRowCallback(data); findNextLevelOneScan($('#envScan').text());},
                     function(data){ that._errorCallback(data);
+                    // alert('There is no matched peaks for this envelope!')
                 });
 
             },
@@ -777,6 +778,8 @@
              */
             _errorCallback: function (response, status, more) {
                     var error = response;
+                    // alert(error.responseText);
+                    // console.log(error);
                     var selector = this.modal_selector;
                     $(selector + ' .modal-body .alert').remove();
                     var errstr = this.language.error.message;
@@ -787,7 +790,7 @@
                         }
                     }
                     var message = '<div class="alert alert-danger" role="alert">' +
-                        '<strong>' + this.language.error.label + '</strong> ' + (error.status == null ? "" : this.language.error.responseCode + error.status) + " " + errstr +
+                        '<strong>' + this.language.error.label + '</strong> ' + (error.status == null ? "" : this.language.error.responseCode + error.status) + ". Reason: " + errstr +
                         '</div>';
 
                     $(selector + ' .modal-body').append(message);
