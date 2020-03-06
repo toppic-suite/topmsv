@@ -732,18 +732,32 @@ app.get('/addrow', function (req,res) {
     let charge = req.query.charge;
     let monoMass = req.query.mono_mass;
     let theoInteSum = req.query.intensity;
-    getEnvMax(projectDir,function (envID) {
-        //console.log(envID);
-        ++envID;
-        addEnv(projectDir,envID,scan_id,charge,monoMass,theoInteSum,function () {
-            addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
-                getEnv(projectDir,envID,function (row) {
-                    res.json(row);
-                    res.end();
+    getPeakListByScanID(projectDir, scan_id, function (rows) {
+        let peakList = calcDistrubution.emass(monoMass,charge,rows);
+        console.log(peakList);
+        if (!peakList) {
+            console.log('No match!');
+            // res.send(500, {errors: 'No peak match found!'});
+            res.status(500).send({errors: 'No peak match found!'});
+        } else {
+            getEnvMax(projectDir,function (envID) {
+                //console.log(envID);
+                ++envID;
+                addEnv(projectDir,envID,scan_id,charge,monoMass,theoInteSum,function () {
+                    addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function (err) {
+                        if (err) {
+                            console.log(err);
+                            // res.status(500).send({errors: 'No peak match found!'});
+                        }
+                        getEnv(projectDir,envID,function (row) {
+                            res.json(row);
+                            res.end();
+                        });
+                    });
                 });
-            });
-        });
-    })
+            })
+        }
+    });
 });
 app.get('/editrow', function (req,res) {
     console.log("Hello, editrow!");
@@ -754,14 +768,24 @@ app.get('/editrow', function (req,res) {
     let monoMass = req.query.mono_mass;
     let theoInteSum = req.query.intensity;
 
-    editEnv(projectDir,envID,charge,monoMass,theoInteSum,function () {
-        addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
-            getEnv(projectDir,envID,function (row) {
-                res.json(row);
-                res.end();
-            });
-        });
-    })
+    getPeakListByScanID(projectDir, scan_id, function (rows) {
+        let peakList = calcDistrubution.emass(monoMass,charge,rows);
+        // console.log(peakList);
+        if (!peakList) {
+            // console.log('No match!');
+            // res.send(500, {errors: 'No peak match found!'});
+            res.status(500).send({errors: 'No peak match found!'});
+        } else {
+            editEnv(projectDir,envID,charge,monoMass,theoInteSum,function () {
+                addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
+                    getEnv(projectDir,envID,function (row) {
+                        res.json(row);
+                        res.end();
+                    });
+                });
+            })
+        }
+    });
 });
 app.get('/peaklist', function(req, res) {
     console.log("Hello, peaklist!");
@@ -1255,6 +1279,9 @@ function addEnvPeak(dir, charge, theo_mono_mass, scan_id, envelope_id, callback)
     getPeakListByScanID(dir,scan_id,function (rows) {
         //console.log(rows);
         let peakList = calcDistrubution.emass(theo_mono_mass,charge,rows);
+        if(!peakList) {
+            return callback(1);
+        }
         //console.log(peakList);
         getEnvPeakMax(dir,function (maxID) {
             let envPeakID = maxID + 1;
@@ -1272,7 +1299,7 @@ function addEnvPeak(dir, charge, theo_mono_mass, scan_id, envelope_id, callback)
             });
             insertMany(peakList,envPeakID);
             resultDb.close();
-            return callback();
+            return callback(0);
         })
     })
 }
