@@ -115,14 +115,16 @@
   $('#updateSeq').click(function () {
 	  var result = confirm("Are you sure that you want to update this sequence data?");
 	  if (result) {
-		  proteoform = $('#sequencedata').text();
+		  proteoform = $('#sequencedata').val();
 		  $.ajax({
-			  url:"/updateSeq?projectCode=" + document.getElementById("projectCode").value + "&scanID=" + scanID + "&proteoform=" + proteoform,
+			  url:"/updateSeq?projectCode=" + document.getElementById("projectCode").value + "&scanNum=" + scan + "&proteoform=" + proteoform,
 			  type: "post",
 			  success: function (res) {
 				  if(res === '1'){
-					  alert('Sequence updated successfully!')
-				  } else {
+					  alert('Sequence updated successfully!');
+				  } else if (res === 'Unauthorized') {
+					  alert('Please log in first to save your new sequence');
+				  }else {
 					  alert('Sequence update failed, please try again');
 				  }
 				  //console.log('updateSeq res:',res);
@@ -319,7 +321,7 @@
               <button id="submit" type="button" style="width:80%" class="btn btn-primary btn-sm">Submit</button>
 			</td>
 			<td>
-				<button id="updateSeq" type="button" class="btn btn-primary btn-sm">Update</button>
+				<button id="updateSeq" type="button" class="btn btn-primary btn-sm">Save</button>
 			</td>
           </tr>
         </table>

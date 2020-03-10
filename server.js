@@ -528,15 +528,30 @@ app.get('/seqQuery', function (req, res) {
 });
 app.post('/updateSeq', function (req, res) {
     console.log('Hello updateSeq!');
+    let uid;
+    //console.log(req.session.passport.user.profile);
+    if (!req.session.passport) {
+        res.write('Unauthorized');
+        res.end();
+        return;
+    } else {
+        uid = req.session.passport.user.profile.id;
+    }
     let projectCode = req.query.projectCode;
-    let scanID = req.query.scanID;
+    let scanNum = req.query.scanNum;
     let proteoform = req.query.proteoform;
     getProjectSummary(db, projectCode, function (err, row) {
         let seqStatus = row.sequenceStatus;
         let projectDir = row.projectDir;
+        let projectUid = row.uid;
+        if (projectUid !== uid) {
+            res.write('Unauthorized');
+            res.end();
+            return;
+        }
         if(seqStatus === 1) {
             try {
-                updateSeq(projectDir, proteoform, scanID);
+                updateSeq(projectDir, proteoform, scanNum);
                 res.write('1');
                 res.end();
             } catch (e) {
@@ -1210,14 +1225,14 @@ function deleteEnvPeak(projectDir, projectCode, callback) {
         callback();
     });
 }
-function updateSeq(projectDir, proteoform, scanID) {
+function updateSeq(projectDir, proteoform, scan) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);
     let stmt = resultDb.prepare(`UPDATE sequence
                                 SET proteoform = ?
-                                WHERE scan_id = ?;`);
-    let info = stmt.run(proteoform, scanID);
-    //console.log(info.changes);
+                                WHERE scan_id IN (SELECT ID FROM SPECTRA WHERE SCAN = ?);`);
+    let info = stmt.run(proteoform, scan);
+    console.log(info.changes);
     resultDb.close();
 }
 function deleteSeq(projectDir, projectCode, callback) {
