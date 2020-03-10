@@ -592,7 +592,7 @@ function showEnvTable(scan) {
             {
                 "data": "mono_mz",
                 render: function (data, type, row ) {
-                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(2);
+                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(5);
                     row.mono_mz = mono_mz; // set mono_mz value
                     if($('#msType').text() === 'MS2'){
                         return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
