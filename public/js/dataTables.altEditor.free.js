@@ -290,7 +290,7 @@
                     return;
                 }
                 var columnDefs = this.completeColumnDefs();
-                columnDefs = columnDefs.slice(0,-1); // From second one to last second one
+                // columnDefs = columnDefs.slice(0,-1); // From second one to last second one
                 var data = this.createDialog(columnDefs, this.language.edit.title, this.language.edit.button,
                     this.language.modalClose, 'editRowBtn', 'altEditor-edit-form');
 
@@ -452,7 +452,7 @@
             _openAddModal: function () {
                 var dt = this.s.dt;
                 var columnDefs = this.completeColumnDefs();
-                columnDefs = columnDefs.slice(0,-1); // don't show mono_mz
+                // columnDefs = columnDefs.slice(0,-1); // don't show mono_mz
                 var data = this.createDialog(columnDefs, this.language.add.title, this.language.add.button,
                     this.language.modalClose, 'addRowBtn', 'altEditor-add-form');
 
@@ -578,7 +578,26 @@
                                     + (columnDefs[j].required ? ' required ' : '')
                                     + (columnDefs[j].maxLength == false ? "" : " maxlength='" + columnDefs[j].maxLength + "'")
                                     + " style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
-                            } else {
+                            } else if (columnDefs[j].name === 'mono_mz') {
+                                data += "<input type='" + this._quoteattr(columnDefs[j].type)
+                                    + "' id='" + this._quoteattr(columnDefs[j].name)
+                                    + "' pattern='" + this._quoteattr(columnDefs[j].pattern)
+                                    + "' oninput= change_mono_mass()"
+                                    + " title='" + this._quoteattr(columnDefs[j].hoverMsg)
+                                    + "' name='" + this._quoteattr(columnDefs[j].title)
+                                    + "' placeholder='" + this._quoteattr(columnDefs[j].title)
+                                    + "' data-special='" + this._quoteattr(columnDefs[j].special)
+                                    + "' data-errorMsg='" + this._quoteattr(columnDefs[j].msg)
+                                    + "' data-uniqueMsg='" + this._quoteattr(columnDefs[j].uniqueMsg)
+                                    + "' data-unique='" + columnDefs[j].unique
+                                    + "' "
+                                    + (columnDefs[j].readonly ? ' readonly ' : '')
+                                    + (columnDefs[j].disabled ? ' disabled ' : '')
+                                    + (columnDefs[j].required ? ' required ' : '')
+                                    + (columnDefs[j].maxLength == false ? "" : " maxlength='" + columnDefs[j].maxLength + "'")
+                                    + " style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+                            } else
+                            {
                                 data += "<input type='" + this._quoteattr(columnDefs[j].type)
                                     + "' id='" + this._quoteattr(columnDefs[j].name)
                                     + "' pattern='" + this._quoteattr(columnDefs[j].pattern)

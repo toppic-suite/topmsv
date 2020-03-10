@@ -600,7 +600,9 @@ function showEnvTable(scan) {
                         return `<a href="#spectrum1" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
                     }
                     //return mono_mz;
-                },type: "readonly"
+                }
+                // ,type: "readonly"
+                , required: 'true'
             }
         ],
         onAddRow: function(datatable, rowdata, success, error) {
@@ -942,4 +944,19 @@ function minus() {
     inputVal = parseFloat(inputVal) - 1.2;
     inputVal = inputVal.toFixed(4);
     input[input.length-1].value = inputVal;
+}
+function change_mono_mass() {
+    var input_mz = $("input[id='mono_mz']");
+    let mz = input_mz[input_mz.length-1].value;
+    if(mz === "") {mz = 0;}
+    mz = parseFloat(mz);
+    var chargeInput = $("input[name='Charge']");
+    let charge = chargeInput[chargeInput.length-1].value;
+    if(charge === "") {charge = 0;}
+    charge = parseInt(charge);
+    let result = (mz - 1)*charge;
+    if(result < 0) result = 0;
+    var input = $("input[name='mono_mass']");
+    input[input.length-1].value = result;
+    console.log(result);
 }
