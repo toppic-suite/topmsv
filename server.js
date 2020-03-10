@@ -1936,8 +1936,22 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
                 }
                 console.log("Index for Users is ready!");
             });
-        })
+        });
 
+        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `email` TEXT NOT NULL, `mzmlFile` TEXT NOT NULL, `envFile` TEXT NOT NULL, PRIMARY KEY(`id`))";
+        db.run(sqlToCreateTaskTable, function (err) {
+            if (err) {
+                return console.log(err.message);
+            }
+            console.log("Table for Tasks is ready!");
+            var sqlToTasksIndex = "CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )";
+            db.run(sqlToTasksIndex, function (err) {
+                if (err) {
+                    return console.log(err.message);
+                }
+                console.log("Index for Tasks is ready!");
+            });
+        })
     });
 });
 
