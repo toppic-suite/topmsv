@@ -565,7 +565,8 @@
                                     + "' id='" + this._quoteattr(columnDefs[j].name)
                                     + "' name='" + this._quoteattr(columnDefs[j].name)
                                     + "' pattern='" + this._quoteattr(columnDefs[j].pattern)
-                                    + "' title='" + this._quoteattr(columnDefs[j].hoverMsg)
+                                    + "' oninput= change_mono_mz()"
+                                    + " title='" + this._quoteattr(columnDefs[j].hoverMsg)
                                     + "' name='" + this._quoteattr(columnDefs[j].title)
                                     + "' placeholder='" + this._quoteattr(columnDefs[j].title)
                                     + "' data-special='" + this._quoteattr(columnDefs[j].special)

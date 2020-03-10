@@ -539,7 +539,7 @@ function showEnvTable(scan) {
         scrollY: 370,
         scroller: true,
         altEditor: true,
-        select: 'multi',
+        select: 'os',
         responsive: true,
         buttons: [
             {
@@ -933,17 +933,19 @@ function plus() {
     var input = $("input[name='mono_mass']");
     let inputVal = input[input.length-1].value;
     if(inputVal === "") {inputVal = 0;}
-    inputVal = parseFloat(inputVal) + 1.2;
-    inputVal = inputVal.toFixed(4);
+    inputVal = parseFloat(inputVal) + 1.00235;
+    inputVal = inputVal.toFixed(5);
     input[input.length-1].value = inputVal;
+    change_mono_mz()
 }
 function minus() {
     var input = $("input[name='mono_mass']");
     let inputVal = input[input.length-1].value;
     if(inputVal === "") {inputVal = 0;}
-    inputVal = parseFloat(inputVal) - 1.2;
-    inputVal = inputVal.toFixed(4);
+    inputVal = parseFloat(inputVal) - 1.00235;
+    inputVal = inputVal.toFixed(5);
     input[input.length-1].value = inputVal;
+    change_mono_mz()
 }
 function change_mono_mass() {
     var input_mz = $("input[id='mono_mz']");
@@ -952,11 +954,25 @@ function change_mono_mass() {
     mz = parseFloat(mz);
     var chargeInput = $("input[name='Charge']");
     let charge = chargeInput[chargeInput.length-1].value;
-    if(charge === "") {charge = 0;}
+    if(charge === "") {charge = 1;}
     charge = parseInt(charge);
     let result = (mz - 1)*charge;
     if(result < 0) result = 0;
     var input = $("input[name='mono_mass']");
-    input[input.length-1].value = result;
-    console.log(result);
+    input[input.length-1].value = result.toFixed(5);
+    //console.log(result);
+}
+function change_mono_mz() {
+    var input_mass = $("input[name='mono_mass']");
+    let mass = input_mass[input_mass.length-1].value;
+    if(mass === "") {mass = 0;}
+    mass = parseFloat(mass);
+    var chargeInput = $("input[name='Charge']");
+    let charge = chargeInput[chargeInput.length-1].value;
+    if(charge === "") {charge = 1;}
+    charge = parseInt(charge);
+    let result = (mass/charge) + 1;
+    if(result < 0) result = 0;
+    var input = $("input[id='mono_mz']");
+    input[input.length-1].value = result.toFixed(5);
 }
