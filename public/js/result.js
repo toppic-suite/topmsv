@@ -594,7 +594,7 @@ function showEnvTable(scan) {
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             // { "data": "mono_mass",type:'number', required: 'true'},
             { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true', readonly: 'true',"visible": true, type:"hidden"},
             {
                 "data": "mono_mz",
                 render: function (data, type, row ) {
