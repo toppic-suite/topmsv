@@ -749,12 +749,18 @@ app.get('/addrow', function (req,res) {
     let theoInteSum = req.query.intensity;
     getPeakListByScanID(projectDir, scan_id, function (rows) {
         let peakList = calcDistrubution.emass(monoMass,charge,rows);
-        console.log(peakList);
+        // console.log(peakList);
         if (!peakList) {
             console.log('No match!');
             // res.send(500, {errors: 'No peak match found!'});
             res.status(500).send({errors: 'No peak match found!'});
         } else {
+            let peaksum = 0;
+            peakList.forEach(peak => {
+                peaksum = peaksum + peak.intensity;
+            });
+            theoInteSum = peaksum.toFixed(5);
+            // console.log(theoInteSum);
             getEnvMax(projectDir,function (envID) {
                 //console.log(envID);
                 ++envID;
@@ -791,6 +797,12 @@ app.get('/editrow', function (req,res) {
             // res.send(500, {errors: 'No peak match found!'});
             res.status(500).send({errors: 'No peak match found!'});
         } else {
+            let peaksum = 0;
+            peakList.forEach(peak => {
+                peaksum = peaksum + peak.intensity;
+            });
+            theoInteSum = peaksum.toFixed(5);
+            // console.log(theoInteSum);
             editEnv(projectDir,envID,charge,monoMass,theoInteSum,function () {
                 addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
                     getEnv(projectDir,envID,function (row) {
