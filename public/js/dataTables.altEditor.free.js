@@ -226,7 +226,24 @@
                         });
                     });
                 }
-                
+
+                // add Jump To Button
+                if (dt.button('jumpto:name')) {
+                    dt.button('jumpto:name').action(function (e, dt, node, config) {
+                        var adata = that.s.dt.rows({
+                            selected: true
+                        });
+                        var columnDefs = that.completeColumnDefs();
+                        // only support edit one row
+                        if(adata.data().length > 1) {
+                            alert("Please specify only one row!");
+                            return;
+                        }
+                        // console.log(adata.data()[0].mono_mz);
+                        jumpTo(adata.data()[0].mono_mz)
+                    });
+                }
+
                 // bind 'unique' error messages
                 $(this.modal_selector).bind('input', '[data-unique]', function(elm) {
                     if ($(elm.target).attr('data-unique') == null || $(elm.target).attr('data-unique') === 'false') {

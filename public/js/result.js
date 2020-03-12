@@ -569,6 +569,12 @@ function showEnvTable(scan) {
                 text: 'Refresh',
                 className: 'btn',
                 name: 'refresh'      // do not change name
+            },
+            {
+                extend: 'selected',
+                text: 'Jump to',
+                className: 'btn',
+                name: 'jumpto'
             }
         ],
         "ajax": {
@@ -594,12 +600,12 @@ function showEnvTable(scan) {
                 render: function (data, type, row ) {
                     let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(5);
                     row.mono_mz = mono_mz; // set mono_mz value
-                    if($('#msType').text() === 'MS2'){
+                    /*if($('#msType').text() === 'MS2'){
                         return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
                     } else {
                         return `<a href="#spectrum1" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
-                    }
-                    //return mono_mz;
+                    }*/
+                    return mono_mz;
                 }
                 // ,type: "readonly"
                 , required: 'true'
@@ -639,6 +645,13 @@ function showEnvTable(scan) {
             });
         }
     } );
+}
+function jumpTo(mono_mz) {
+    if($('#msType').text() === 'MS2'){
+        relocSpet2(mono_mz);
+    } else {
+        relocSpet1(mono_mz);
+    }
 }
 function relocSpet1 (mono_mz) {
     addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5);
