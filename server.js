@@ -29,6 +29,7 @@ const molecularFormulae = require('./distribution_calc/molecularformulae');
 const calcDistrubution = new molecularFormulae();
 const BetterDB = require('better-sqlite3');
 
+// Check expired projects every day midnight
 const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
     console.log('Check expired projects:', d);
@@ -51,6 +52,154 @@ const job = new CronJob('00 00 00 * * *', function() {
 });
 job.start();
 
+let avaiResourse = 10;
+// Check waiting tasks in database every minute
+const checkWaitTasks = new CronJob("* * * * *", function() {
+    console.log("Check waiting tasks in database");
+    while (avaiResourse > 0) {
+        let resultDb = new BetterDB('./db/projectDB.db');
+        let stmt = resultDb.prepare(`SELECT Tasks.projectCode AS projectCode, Tasks.mzmlFile AS mzmlFile, Tasks.envFile AS envFile, Tasks.processEnv AS processEnv, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email
+                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
+                WHERE Projects.ProjectStatus = 4
+                LIMIT 1;`);
+        let tasksList = stmt.get();
+        let row = tasksList;
+        console.log(tasksList);
+        if(row !== undefined) {
+            let updateStmt = resultDb.prepare(`UPDATE Projects
+                SET ProjectStatus = ?
+                WHERE ProjectCode = ?`);
+            let info = updateStmt.run(0, row.projectCode);
+            console.log("info", info);
+            if (row.processEnv === 1) {
+                let des_file = row.mzmlFile;
+                let projectname = row.projectName;
+                let projectCode = row.projectCode;
+                let fname = row.fname;
+                let emailtosend = row.email;
+                let des_envFile1 = row.envFile;
+                let adr =  'https://toppic.soic.iupui.edu/data?id=';
+
+                avaiResourse = avaiResourse - 1;
+                execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
+                    if(err) {
+                        setTimeout(function () {
+                            processFailure(db,projectCode, function (err) {
+                                console.log("Process failed!");
+                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                                message.subject = "Your data processing failed";
+                                message.to = emailtosend;
+                                transport.sendMail(message, function(err, info) {
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log(info);
+                                    }
+                                });
+                            });
+                            console.log(err);
+                            avaiResourse = avaiResourse + 1;
+                            return;
+                        }, 60000);
+                    }
+                    //console.log(`stdout: ${stdout}`);
+                    let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
+                    execFile('node',[__dirname + '/convertEnv.js',dbDir,des_envFile1],((err, stdout, stderr) => {
+                        if(err) {
+                            setTimeout(function () {
+                                processFailure(db,projectCode, function (err) {
+                                    console.log("Process failed!");
+                                    message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                                    message.subject = "Your data processing failed";
+                                    message.to = emailtosend;
+                                    transport.sendMail(message, function(err, info) {
+                                        if (err) {
+                                            console.log(err)
+                                        } else {
+                                            console.log(info);
+                                        }
+                                    });
+                                });
+                                console.log(err);
+                                avaiResourse = avaiResourse + 1;
+                                return;
+                            }, 60000);
+                        }
+                            //console.log(`stdout: ${stdout}`);
+                        //console.log(data.toString());
+                        else {
+                            avaiResourse = avaiResourse + 1;
+                            updateProjectStatus(db,1, projectCode, function (err) {
+                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                message.subject = "Your data processing is done";
+                                message.to = emailtosend;
+                                transport.sendMail(message, function(err, info) {
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log(info);
+                                    }
+                                });
+                            });
+                        }
+                    }));
+                });
+
+            } else {
+                let des_file = row.mzmlFile;
+                let projectCode = row.projectCode;
+                let projectname = row.projectName;
+                let fname = row.fname;
+                let emailtosend = row.email;
+                let adr =  'https://toppic.soic.iupui.edu/data?id=';
+
+
+                avaiResourse = avaiResourse - 1;
+                execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
+                    if(err) {
+                        setTimeout(function () {
+                            processFailure(db,projectCode, function (err) {
+                                console.log("Process failed!");
+                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                                message.subject = "Your data processing failed";
+                                message.to = emailtosend;
+                                transport.sendMail(message, function(err, info) {
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log(info);
+                                    }
+                                });
+                            });
+                            console.log(err);
+                            avaiResourse = avaiResourse + 1;
+                            return;
+                        }, 60000);
+                    }else{
+                        avaiResourse = avaiResourse + 1;
+                        updateProjectStatus(db,1, projectCode, function (err) {
+                            message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                            message.subject = "Your data processing is done";
+                            message.to = emailtosend;
+                            transport.sendMail(message, function(err, info) {
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    console.log(info);
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        } else {
+            console.log("Waiting list is empty now.");
+            return;
+        }
+    }
+    console.log('There is no available resource right now');
+});
+checkWaitTasks.start();
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 app.use(compression());
@@ -174,7 +323,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRow(db, id, projectname, fname, description,des_file,0, emailtosend,1,0,envFile1.name,uid,public);
+                                insertRow(db, id, projectname, fname, description,des_file,4, emailtosend,1,0,envFile1.name,uid,public);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -189,6 +338,7 @@ app.post('/upload', function (req, res) {
                                 res.write('<h2>Link: </h2>');
                                 res.write(message.text);
 
+                                insertTask(db, id, des_file, des_envFile1, 1);
                                 res.end();
                                 break;
                             }
@@ -205,67 +355,67 @@ app.post('/upload', function (req, res) {
                     //console.log(response);
                     res.write(JSON.stringify( response ));
 
-                    execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
-                        if(err) {
-                            setTimeout(function () {
-                                processFailure(db,id, function (err) {
-                                    console.log("Process failed!");
-                                    message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                                    message.subject = "Your data processing failed";
-                                    message.to = emailtosend;
-                                    transport.sendMail(message, function(err, info) {
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            console.log(info);
-                                        }
-                                    });
-                                });
-                                console.log(err);
-                                return;
-                            }, 60000);
-                        }
-                        //console.log(`stdout: ${stdout}`);
-                        let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
-                        execFile('node',[__dirname + '/convertEnv.js',dbDir,des_envFile1],((err, stdout, stderr) => {
-                            if(err) {
-                                setTimeout(function () {
-                                    processFailure(db,id, function (err) {
-                                        console.log("Process failed!");
-                                        message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                                        message.subject = "Your data processing failed";
-                                        message.to = emailtosend;
-                                        transport.sendMail(message, function(err, info) {
-                                            if (err) {
-                                                console.log(err)
-                                            } else {
-                                                console.log(info);
-                                            }
-                                        });
-                                    });
-                                    console.log(err);
-                                    return;
-                                }, 60000);
-                            }
-                            //console.log(`stdout: ${stdout}`);
-                            //console.log(data.toString());
-                            else {
-                                updateProjectStatus(db,1, id, function (err) {
-                                    message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
-                                    message.subject = "Your data processing is done";
-                                    message.to = emailtosend;
-                                    transport.sendMail(message, function(err, info) {
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            console.log(info);
-                                        }
-                                    });
-                                });
-
-                            }
-                        }));
-                    });
+                    // execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
+                    //     if(err) {
+                    //         setTimeout(function () {
+                    //             processFailure(db,id, function (err) {
+                    //                 console.log("Process failed!");
+                    //                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                    //                 message.subject = "Your data processing failed";
+                    //                 message.to = emailtosend;
+                    //                 transport.sendMail(message, function(err, info) {
+                    //                     if (err) {
+                    //                         console.log(err)
+                    //                     } else {
+                    //                         console.log(info);
+                    //                     }
+                    //                 });
+                    //             });
+                    //             console.log(err);
+                    //             return;
+                    //         }, 60000);
+                    //     }
+                    //     //console.log(`stdout: ${stdout}`);
+                    //     let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
+                    //     execFile('node',[__dirname + '/convertEnv.js',dbDir,des_envFile1],((err, stdout, stderr) => {
+                    //         if(err) {
+                    //             setTimeout(function () {
+                    //                 processFailure(db,id, function (err) {
+                    //                     console.log("Process failed!");
+                    //                     message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                    //                     message.subject = "Your data processing failed";
+                    //                     message.to = emailtosend;
+                    //                     transport.sendMail(message, function(err, info) {
+                    //                         if (err) {
+                    //                             console.log(err)
+                    //                         } else {
+                    //                             console.log(info);
+                    //                         }
+                    //                     });
+                    //                 });
+                    //                 console.log(err);
+                    //                 return;
+                    //             }, 60000);
+                    //         }
+                    //         //console.log(`stdout: ${stdout}`);
+                    //         //console.log(data.toString());
+                    //         else {
+                    //             updateProjectStatus(db,1, id, function (err) {
+                    //                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
+                    //                 message.subject = "Your data processing is done";
+                    //                 message.to = emailtosend;
+                    //                 transport.sendMail(message, function(err, info) {
+                    //                     if (err) {
+                    //                         console.log(err)
+                    //                     } else {
+                    //                         console.log(info);
+                    //                     }
+                    //                 });
+                    //             });
+                    //
+                    //         }
+                    //     }));
+                    // });
                 });
             })
         } else {
@@ -292,7 +442,7 @@ app.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRow(db, id, projectname, fname,description,des_file,0, emailtosend,0,0,0,uid,public);
+                            insertRow(db, id, projectname, fname,description,des_file,4, emailtosend,0,0,0,uid,public);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -307,6 +457,7 @@ app.post('/upload', function (req, res) {
                             res.write('<h2>Link: </h2>');
                             res.write(message.text);
 
+                            insertTask(db, id, des_file, null, 0);
                             res.end();
                             break;
                         }
@@ -324,40 +475,40 @@ app.post('/upload', function (req, res) {
                 //console.log(response);
                 res.write(JSON.stringify( response ));
 
-                execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
-                    if(err) {
-                        setTimeout(function () {
-                            processFailure(db,id, function (err) {
-                                console.log("Process failed!");
-                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                                message.subject = "Your data processing failed";
-                                message.to = emailtosend;
-                                transport.sendMail(message, function(err, info) {
-                                    if (err) {
-                                        console.log(err)
-                                    } else {
-                                        console.log(info);
-                                    }
-                                });
-                            });
-                            console.log(err);
-                            return;
-                        }, 60000);
-                    }else{
-                        updateProjectStatus(db,1, id, function (err) {
-                            message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
-                            message.subject = "Your data processing is done";
-                            message.to = emailtosend;
-                            transport.sendMail(message, function(err, info) {
-                                if (err) {
-                                    console.log(err)
-                                } else {
-                                    console.log(info);
-                                }
-                            });
-                        });
-                    }
-                });
+                // execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
+                //     if(err) {
+                //         setTimeout(function () {
+                //             processFailure(db,id, function (err) {
+                //                 console.log("Process failed!");
+                //                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                //                 message.subject = "Your data processing failed";
+                //                 message.to = emailtosend;
+                //                 transport.sendMail(message, function(err, info) {
+                //                     if (err) {
+                //                         console.log(err)
+                //                     } else {
+                //                         console.log(info);
+                //                     }
+                //                 });
+                //             });
+                //             console.log(err);
+                //             return;
+                //         }, 60000);
+                //     }else{
+                //         updateProjectStatus(db,1, id, function (err) {
+                //             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
+                //             message.subject = "Your data processing is done";
+                //             message.to = emailtosend;
+                //             transport.sendMail(message, function(err, info) {
+                //                 if (err) {
+                //                     console.log(err)
+                //                 } else {
+                //                     console.log(info);
+                //                 }
+                //             });
+                //         });
+                //     }
+                // });
             });
         }
     })
@@ -1896,10 +2047,32 @@ function checkExpiredProj(db, callback) {
         }
     });
 }
-
+function checkWaitingTasks(db, callback) {
+    let sql = `SELECT Tasks.mzmlFile AS mzmlFile, Tasks.envFile AS envFile, Tasks.processEnv AS processEnv, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email
+                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
+                WHERE Projects.ProjectStatus = 4
+                LIMIT 1;`;
+    db.get(sql, (err, row) => {
+        if (err) {
+            throw  err;
+        } else {
+            return callback(null, row);
+        }
+    })
+}
 function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,public) {
     let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, SequenceStatus, MS1_envelope_file, uid,public) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
     db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,SeqStatus,ms1EnvFile,uid,public], function(err) {
+        if (err) {
+            return console.log(err.message);
+        }
+        // get the last insert id
+        console.log(`A row has been inserted with rowid ${this.lastID}`);
+    });
+}
+function insertTask(db, projectCode, mzmlFile, envFile, processEnv) {
+    let sql = 'INSERT INTO Tasks(projectCode, mzmlFile, envFile, processEnv) VALUES(?,?,?,?)';
+    db.run(sql, [projectCode,mzmlFile,envFile,processEnv], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -1951,7 +2124,7 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
             });
         });
 
-        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `email` TEXT NOT NULL, `mzmlFile` TEXT NOT NULL, `envFile` TEXT NOT NULL, PRIMARY KEY(`id`))";
+        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `mzmlFile` TEXT NOT NULL, `envFile` TEXT NULL, `processEnv` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
         db.run(sqlToCreateTaskTable, function (err) {
             if (err) {
                 return console.log(err.message);
