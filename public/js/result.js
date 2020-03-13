@@ -555,7 +555,7 @@ function showEnvTable(scan) {
             },
             {
                 extend: 'selected', // Bind to Selected row
-                text: 'Edit',
+                text: 'Update',
                 className: 'btn',
                 name: 'edit'        // do not change name
             },
