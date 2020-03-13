@@ -145,8 +145,8 @@
                 this.language = DataTable.settings.values().next().value.oLanguage.altEditor || {};
                 this.language.modalClose = this.language.modalClose || 'Close';
                 this.language.edit = this.language.edit || {};
-                this.language.edit = { title: this.language.edit.title || 'Edit record',
-                                       button: this.language.edit.button || 'Edit'
+                this.language.edit = { title: this.language.edit.title || 'Update record',
+                                       button: this.language.edit.button || 'Update'
                                      };
                 this.language.delete = this.language.delete || {};
                 this.language.delete = { title: this.language.delete.title || 'Delete record',
