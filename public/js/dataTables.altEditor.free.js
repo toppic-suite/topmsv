@@ -269,7 +269,6 @@
                     this.s.dt.button('refresh:name').action(function (e, dt, node, config) {
                         if (dt.ajax && dt.ajax.url()) {
                             dt.ajax.reload();
-                            findNextLevelOneScan($('#envScan').text());
                         }
                     });
                 }
@@ -350,7 +349,12 @@
 
                 that.onEditRow(that,
                     rowDataArray,
-                    function(data,b,c,d,e){ that._editRowCallback(data,b,c,d,e); findNextLevelOneScan($('#envScan').text());
+                    function(data,b,c,d,e){
+                        that._editRowCallback(data,b,c,d,e);
+                        refresh();
+                        /*let mono_old = mono_mz_list1_g;
+                        findNextLevelOneScan($('#envScan').text());
+                        addSpectrum('spectrum2', peakList1_g, envList1_g, mono_old);*/
                     },
                     function(data){ that._errorCallback(data);
                 });
@@ -456,7 +460,7 @@
                 jsonDataArray.envList = envList;
                 that.onDeleteRow(that,
                     jsonDataArray,
-                    function(data){ that._deleteRowCallback(data); findNextLevelOneScan($('#envScan').text());},
+                    function(data){ that._deleteRowCallback(data); refresh();},
                     function(data){ that._errorCallback(data);
                 });
             },
@@ -714,7 +718,7 @@
 
                 that.onAddRow(that,
                     rowDataArray,
-                    function(data){ that._addRowCallback(data); findNextLevelOneScan($('#envScan').text());},
+                    function(data){ that._addRowCallback(data); refresh();},
                     function(data){ that._errorCallback(data);
                     // alert('There is no matched peaks for this envelope!')
                 });

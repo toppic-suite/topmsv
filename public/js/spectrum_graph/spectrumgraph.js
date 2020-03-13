@@ -18,6 +18,16 @@ SpectrumGraph = function(svgId,spectrumParameters,peakData){
     {
 		spectrumParameters.zoom(mousePos[0], mousePos[1], ratio);
     }
+	  if(lockPara1 === true) {
+		  console.log('1 true');
+		  spectrumParameters = specPara1_g;
+		  lockPara1 = false;
+	  }
+	  if(lockPara2 === true) {
+		  console.log('2 true');
+		  spectrumParameters = specPara2_g;
+		  lockPara2 = false;
+	  }
 	drawSpectrum(svgId,spectrumParameters,peakData);
   }
 
@@ -28,8 +38,8 @@ SpectrumGraph = function(svgId,spectrumParameters,peakData){
 					.attr("height", "100%")
 					.call(this.zoom);
 	this.svg.call(this.zoom.transform, d3.zoomIdentity);
-												
-  drawSpectrum(svgId,spectrumParameters, peakData);
+
+	// drawSpectrum(svgId,spectrumParameters, peakData);
 }
 
 drawTicks = function(svg,spectrumParameters,spectrumgraph){
@@ -345,6 +355,12 @@ function drawSpectrum(svgId, spectrumParameters, peakData){
 		drawPeaks(svg, spectrumParameters, peakData);
 		addCircles(svg,spectrumParameters,peakData);
 		addLabels(svg, spectrumParameters);
+		if(svgId === '#spectrum1') {
+			specPara1_g = spectrumParameters;
+		} else {
+			specPara2_g = spectrumParameters;
+		}
+		console.log(spectrumParameters.minMz);
 		//SpectrumDownload.addDownloadRect(svgId, spectrumParameters);
 	// }
 //   addDownloadRect(svgId, spectrumParameters);
