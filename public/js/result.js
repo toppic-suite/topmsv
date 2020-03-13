@@ -989,3 +989,57 @@ function change_mono_mz() {
     var input = $("input[id='mono_mz']");
     input[input.length-1].value = result.toFixed(5);
 }
+let specPara1_g;
+let lockPara1 = false;
+let specPara2_g;
+let lockPara2 = false;
+function refresh() {
+    /*let monoMZ1_old = mono_mz_list1_g;
+    let monoMZ2_old = mono_mz_list2_g;
+    let msType_old = $('#msType').text();
+    console.log(msType_old);
+    findNextLevelOneScan($('#envScan').text());
+    addSpectrum('spectrum1', peakList1_g, envList1_g, monoMZ1_old);
+    addSpectrum('spectrum2', peakList2_g, envList2_g, monoMZ2_old);
+    if (msType_old === 'MS1') {
+        showEnvTable($("#scanID1").text());
+        $("#switch").text('MS2');
+    }*/
+
+    // addSpectrum('spectrum1', peakList1_g, envList1_g, mono_mz_list1_g);
+
+    let msType_old = $('#msType').text();
+    let scanID;
+    if (msType_old === 'MS1') {
+        lockPara1 = true;
+        scanID = $('#scanID1').text();
+        showEnvTable($("#scanID1").text());
+        $("#switch").text('MS2');
+    } else {
+        lockPara2 = true;
+        scanID = $('#scanID2').text();
+    }
+    $.ajax({
+        url:"envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value,
+        type: "get",
+        // dataType: 'json',
+        success: function (res) {
+            if (msType_old === 'MS1') {
+                envList1_g = JSON.parse(res);
+                if(envList1_g===0) {
+                    envList1_g = [];
+                }
+                addSpectrum('spectrum1', peakList1_g, envList1_g, null);
+            } else {
+                envList2_g = JSON.parse(res);
+                console.log(envList2_g);
+                if(envList2_g===0) {
+                    envList2_g = [];
+                }
+                addSpectrum('spectrum2', peakList2_g, envList2_g, null);
+            }
+        }
+    });
+    // findNextLevelOneScan($('#envScan').text());
+    //setTimeout()
+}
