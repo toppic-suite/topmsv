@@ -30,6 +30,7 @@
     "passport-google-oauth": "^2.0.0",
     "express-session": "^1.17.0",
     "papaparse": "^5.1.1",
-    "serve-favicon": "^2.5.0"
+    "serve-favicon": "^2.5.0",
+    "os": "^0.1.1"
   }
 }

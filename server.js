@@ -11,6 +11,8 @@ var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var passport = require('passport');
 const auth = require('./auth');
+const os = require('os')
+const cpuCount = os.cpus().length;
 var app = express();
 app.use(helmet());
 app.use(cookieSession({
@@ -52,13 +54,14 @@ const job = new CronJob('00 00 00 * * *', function() {
 });
 job.start();
 
-let avaiResourse = 10;
+var avaiResourse = cpuCount;
+console.log("cpuCount", cpuCount);
 // Check waiting tasks in database every minute
 const checkWaitTasks = new CronJob("* * * * *", function() {
     console.log("Check waiting tasks in database");
     while (avaiResourse > 0) {
         let resultDb = new BetterDB('./db/projectDB.db');
-        let stmt = resultDb.prepare(`SELECT Tasks.projectCode AS projectCode, Tasks.mzmlFile AS mzmlFile, Tasks.envFile AS envFile, Tasks.processEnv AS processEnv, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email
+        let stmt = resultDb.prepare(`SELECT Tasks.projectCode AS projectCode, Tasks.mzmlFile AS mzmlFile, Tasks.envFile AS envFile, Tasks.processEnv AS processEnv, Tasks.threadNum AS threadNum, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email
                 FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
                 WHERE Projects.ProjectStatus = 4
                 LIMIT 1;`);
@@ -66,6 +69,9 @@ const checkWaitTasks = new CronJob("* * * * *", function() {
         let row = tasksList;
         console.log(tasksList);
         if(row !== undefined) {
+            if (avaiResourse < row.threadNum) {
+                return;
+            }
             let updateStmt = resultDb.prepare(`UPDATE Projects
                 SET ProjectStatus = ?
                 WHERE ProjectCode = ?`);
@@ -260,6 +266,18 @@ app.get('/logout',(req, res)=> {
 app.post('/upload', function (req, res) {
     console.log("hello,upload");
     let uid = req.session.passport.user.profile.id;
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`SELECT email AS email
+                                FROM Users
+                                WHERE uid = ?;`);
+    let queryResult = stmt.get(uid);
+    let email;
+    if (!queryResult) {
+        console.log("Upload files failed, no corresponding email address!");
+        return;
+    } else {
+        email = queryResult.email;
+    }
     var form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
@@ -270,7 +288,7 @@ app.post('/upload', function (req, res) {
         //console.log(fields.emailaddress);
         //console.log(files.dbfile);
         var projectname = fields.projectname;
-        var emailtosend = fields.emailaddress;
+        var emailtosend = email;
         var description = fields.description;
         var public = fields.public;
         var file = files.dbfile;
@@ -338,7 +356,7 @@ app.post('/upload', function (req, res) {
                                 res.write('<h2>Link: </h2>');
                                 res.write(message.text);
 
-                                insertTask(db, id, des_file, des_envFile1, 1);
+                                insertTask(db, id, des_file, des_envFile1, 1,1);
                                 res.end();
                                 break;
                             }
@@ -457,7 +475,7 @@ app.post('/upload', function (req, res) {
                             res.write('<h2>Link: </h2>');
                             res.write(message.text);
 
-                            insertTask(db, id, des_file, null, 0);
+                            insertTask(db, id, des_file, null, 0,1);
                             res.end();
                             break;
                         }
@@ -2070,9 +2088,9 @@ function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectD
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
 }
-function insertTask(db, projectCode, mzmlFile, envFile, processEnv) {
-    let sql = 'INSERT INTO Tasks(projectCode, mzmlFile, envFile, processEnv) VALUES(?,?,?,?)';
-    db.run(sql, [projectCode,mzmlFile,envFile,processEnv], function(err) {
+function insertTask(db, projectCode, mzmlFile, envFile, processEnv, threadNum) {
+    let sql = 'INSERT INTO Tasks(projectCode, mzmlFile, envFile, processEnv, threadNum) VALUES(?,?,?,?,?)';
+    db.run(sql, [projectCode,mzmlFile,envFile,processEnv, threadNum], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -2124,7 +2142,7 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
             });
         });
 
-        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `mzmlFile` TEXT NOT NULL, `envFile` TEXT NULL, `processEnv` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
+        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `mzmlFile` TEXT NOT NULL, `envFile` TEXT NULL, `processEnv` INTEGER NOT NULL, `threadNum` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
         db.run(sqlToCreateTaskTable, function (err) {
             if (err) {
                 return console.log(err.message);
