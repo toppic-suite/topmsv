@@ -5,7 +5,7 @@
     var envfile1 = document.querySelector('#envfile1');
     // var envfile2 = document.querySelector('#envfile2');
     var project = document.getElementById('projectName');
-    var email = document.getElementById('emailAddress');
+    // var email = document.getElementById('emailAddress');
     var description = document.getElementById('description');
     var pub = document.getElementById('public');
     //console.log(pub.checked);
@@ -50,7 +50,7 @@
     // 点击上传
     function uploadFile(event) {
         //console.log(ValidateEmail(email.value));
-        if (project.value === '' || email.value ==='' || file.files[0] === undefined) {
+        if (project.value === '' || file.files[0] === undefined) {
             alert("Please fill in all information above!");
         }else if(!file.files[0].name.match(/.(mzML)$/i)){
             alert('Please upload a mzML file!');
@@ -58,15 +58,15 @@
             alert('Please upload an env file for envelopes!');
         /*}else if(envfile2.files[0] !== undefined && !envfile2.files[0].name.match(/.(env)$/i)){
             alert('Please upload an env file for ms2!');*/
-        }else if (!ValidateEmail(email.value)){
-            alert("You have entered an invalid email address!")
+        /*}else if (!ValidateEmail(email.value)){
+            alert("You have entered an invalid email address!")*/
         } else {
             var formData = new FormData();
             formData.append('dbfile', file.files[0]);
             formData.append('envfile1', envfile1.files[0]);
             // formData.append('envfile2', envfile2.files[0]);
             formData.append('projectname', project.value);
-            formData.append('emailaddress', email.value);
+            // formData.append('emailaddress', email.value);
             formData.append('description', description.value);
             formData.append('public', pub.checked);
             xhr.onload = uploadSuccess;
