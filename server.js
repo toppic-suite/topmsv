@@ -25,7 +25,7 @@ app.use(passport.initialize());
 
 const uuidv1 = require('uuid/v1');
 var formidable = require('formidable');
-const { execFile } = require('child_process');
+const { execFile, exec } = require('child_process');
 const CronJob = require('cron').CronJob;
 const molecularFormulae = require('./distribution_calc/molecularformulae');
 const calcDistrubution = new molecularFormulae();
@@ -54,64 +54,47 @@ const job = new CronJob('00 00 00 * * *', function() {
 });
 job.start();
 
-var avaiResourse = cpuCount;
+var avaiResourse = cpuCount - 2;
 console.log("cpuCount", cpuCount);
-// Check waiting tasks in database every minute
-const checkWaitTasks = new CronJob("* * * * *", function() {
-    console.log("Check waiting tasks in database");
-    while (avaiResourse > 0) {
-        let resultDb = new BetterDB('./db/projectDB.db');
-        let stmt = resultDb.prepare(`SELECT Tasks.projectCode AS projectCode, Tasks.mzmlFile AS mzmlFile, Tasks.envFile AS envFile, Tasks.processEnv AS processEnv, Tasks.threadNum AS threadNum, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email
-                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
-                WHERE Projects.ProjectStatus = 4
-                LIMIT 1;`);
-        let tasksList = stmt.get();
-        let row = tasksList;
-        console.log(tasksList);
-        if(row !== undefined) {
-            if (avaiResourse < row.threadNum) {
-                return;
-            }
-            let updateStmt = resultDb.prepare(`UPDATE Projects
-                SET ProjectStatus = ?
-                WHERE ProjectCode = ?`);
-            let info = updateStmt.run(0, row.projectCode);
-            console.log("info", info);
-            if (row.processEnv === 1) {
-                let des_file = row.mzmlFile;
-                let projectname = row.projectName;
-                let projectCode = row.projectCode;
-                let fname = row.fname;
-                let emailtosend = row.email;
-                let des_envFile1 = row.envFile;
-                let adr =  'https://toppic.soic.iupui.edu/data?id=';
+// Check waiting tasks in database every second
+const checkWaitTasks = new CronJob("* * * * * *", function() {
+    // console.log("Check waiting tasks in database");
+    let tasksList = getTaskListSync();
+    // console.log("tasksList", tasksList);
+    if (tasksList !== undefined) {
+        for (let i = 0; i < tasksList.length; i++) {
+            let task = tasksList[i];
+            let threadNum = task.threadNum;
+            let projectCode = task.projectCode;
+            if(threadNum <= avaiResourse) {
+                // console.log("Available resources");
+                let projectStatus = checkProjectStatusSync(projectCode).projectStatus;
+                console.log("projectStatus", projectStatus);
+                if (projectStatus === 0) {
+                    console.log("This project is processing, skip it");
+                    return;
+                } else if (projectStatus === 2 || projectStatus ===3) {
+                    console.log("This project is removed or failed, skip it");
+                    return;
+                }else {
+                    console.log("Processing project...");
+                    let taskID = task.taskID;
+                    let app = task.app;
+                    let parameter = task.parameter;
+                    let projectname = task.projectName;
+                    let fname = task.fname;
+                    let emailtosend = task.email;
+                    let adr =  'https://toppic.soic.iupui.edu/data?id=';
 
-                avaiResourse = avaiResourse - 1;
-                execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
-                    if(err) {
-                        setTimeout(function () {
-                            processFailure(db,projectCode, function (err) {
-                                console.log("Process failed!");
-                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                                message.subject = "Your data processing failed";
-                                message.to = emailtosend;
-                                transport.sendMail(message, function(err, info) {
-                                    if (err) {
-                                        console.log(err)
-                                    } else {
-                                        console.log(info);
-                                    }
-                                });
-                            });
-                            console.log(err);
-                            avaiResourse = avaiResourse + 1;
-                            return;
-                        }, 60000);
-                    }
-                    //console.log(`stdout: ${stdout}`);
-                    let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
-                    execFile('node',[__dirname + '/convertEnv.js',dbDir,des_envFile1],((err, stdout, stderr) => {
+                    avaiResourse = avaiResourse - threadNum;
+                    updateProjectStatusSync(0, projectCode);
+                    exec(app+' '+parameter, (err, stdout, stderr) => {
+                        console.log(stdout);
+                        console.log(stderr);
                         if(err) {
+                            console.log(err);
+                            updateTaskStatusSync(1, taskID);
+                            avaiResourse = avaiResourse + threadNum;
                             setTimeout(function () {
                                 processFailure(db,projectCode, function (err) {
                                     console.log("Process failed!");
@@ -126,16 +109,13 @@ const checkWaitTasks = new CronJob("* * * * *", function() {
                                         }
                                     });
                                 });
-                                console.log(err);
-                                avaiResourse = avaiResourse + 1;
-                                return;
                             }, 60000);
-                        }
-                            //console.log(`stdout: ${stdout}`);
-                        //console.log(data.toString());
-                        else {
-                            avaiResourse = avaiResourse + 1;
-                            updateProjectStatus(db,1, projectCode, function (err) {
+                        }else{
+                            updateTaskStatusSync(1, taskID);
+                            avaiResourse = avaiResourse + threadNum;
+                            let remainingTask = checkRemainingTask(projectCode);
+                            if (remainingTask === 1) {
+                                updateProjectStatusSync(4, projectCode);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                                 message.subject = "Your data processing is done";
                                 message.to = emailtosend;
@@ -146,28 +126,13 @@ const checkWaitTasks = new CronJob("* * * * *", function() {
                                         console.log(info);
                                     }
                                 });
-                            });
-                        }
-                    }));
-                });
+                                /*updateProjectStatus(db,4, projectCode, function (err) {
 
-            } else {
-                let des_file = row.mzmlFile;
-                let projectCode = row.projectCode;
-                let projectname = row.projectName;
-                let fname = row.fname;
-                let emailtosend = row.email;
-                let adr =  'https://toppic.soic.iupui.edu/data?id=';
-
-
-                avaiResourse = avaiResourse - 1;
-                execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
-                    if(err) {
-                        setTimeout(function () {
-                            processFailure(db,projectCode, function (err) {
-                                console.log("Process failed!");
-                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                                message.subject = "Your data processing failed";
+                                });*/
+                            } else {
+                                updateProjectStatusSync(1,projectCode);
+                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                message.subject = "Your data processing is done";
                                 message.to = emailtosend;
                                 transport.sendMail(message, function(err, info) {
                                     if (err) {
@@ -176,34 +141,115 @@ const checkWaitTasks = new CronJob("* * * * *", function() {
                                         console.log(info);
                                     }
                                 });
-                            });
-                            console.log(err);
-                            avaiResourse = avaiResourse + 1;
-                            return;
-                        }, 60000);
-                    }else{
-                        avaiResourse = avaiResourse + 1;
-                        updateProjectStatus(db,1, projectCode, function (err) {
-                            message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
-                            message.subject = "Your data processing is done";
-                            message.to = emailtosend;
-                            transport.sendMail(message, function(err, info) {
-                                if (err) {
-                                    console.log(err)
-                                } else {
-                                    console.log(info);
-                                }
-                            });
-                        });
-                    }
-                });
+                                /*updateProjectStatus(db,1, projectCode, function (err) {
+
+                                });*/
+                            }
+                        }
+                    });
+//                         updateProjectStatus(db,0, projectCode, function (err) {
+//                             exec(app+' '+parameter, (err, stdout, stderr) => {
+//                                 console.log(stdout);
+//                                 console.log(stderr);
+//                                 if(err) {
+//                                     setTimeout(function () {
+//                                         processFailure(db,projectCode, function (err) {
+//                                             console.log("Process failed!");
+//                                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+//                                             message.subject = "Your data processing failed";
+//                                             message.to = emailtosend;
+//                                             transport.sendMail(message, function(err, info) {
+//                                                 if (err) {
+//                                                     console.log(err)
+//                                                 } else {
+//                                                     console.log(info);
+//                                                 }
+//                                             });
+//                                         });
+//                                         console.log(err);
+//                                         updateTaskStatusSync(1, taskID);
+//                                         avaiResourse = avaiResourse + threadNum;
+//                                         return;
+// /*                                        updateTaskStatusAsync(db, 1, taskID, function (err) {
+//                                             avaiResourse = avaiResourse + threadNum;
+//                                             return;
+//                                         })*/
+//                                     }, 60000);
+//                                 }else{
+//                                     updateTaskStatusSync(1, taskID);
+//                                     avaiResourse = avaiResourse + threadNum;
+//                                     let remainingTask = checkRemainingTask(projectCode);
+//                                     if (remainingTask === 1) {
+//                                         updateProjectStatus(db,4, projectCode, function (err) {
+//                                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+//                                             message.subject = "Your data processing is done";
+//                                             message.to = emailtosend;
+//                                             transport.sendMail(message, function(err, info) {
+//                                                 if (err) {
+//                                                     console.log(err)
+//                                                 } else {
+//                                                     console.log(info);
+//                                                 }
+//                                             });
+//                                         });
+//                                     } else {
+//                                         updateProjectStatus(db,1, projectCode, function (err) {
+//                                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+//                                             message.subject = "Your data processing is done";
+//                                             message.to = emailtosend;
+//                                             transport.sendMail(message, function(err, info) {
+//                                                 if (err) {
+//                                                     console.log(err)
+//                                                 } else {
+//                                                     console.log(info);
+//                                                 }
+//                                             });
+//                                         });
+//                                     }
+//                                     /*updateTaskStatusAsync(db, 1, taskID, function (err) {
+//                                         avaiResourse = avaiResourse + threadNum;
+//                                         let remainingTask = checkRemainingTask(projectCode);
+//                                         if (remainingTask === 1) {
+//                                             updateProjectStatus(db,4, projectCode, function (err) {
+//                                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+//                                                 message.subject = "Your data processing is done";
+//                                                 message.to = emailtosend;
+//                                                 transport.sendMail(message, function(err, info) {
+//                                                     if (err) {
+//                                                         console.log(err)
+//                                                     } else {
+//                                                         console.log(info);
+//                                                     }
+//                                                 });
+//                                             });
+//                                         } else {
+//                                             updateProjectStatus(db,1, projectCode, function (err) {
+//                                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+//                                                 message.subject = "Your data processing is done";
+//                                                 message.to = emailtosend;
+//                                                 transport.sendMail(message, function(err, info) {
+//                                                     if (err) {
+//                                                         console.log(err)
+//                                                     } else {
+//                                                         console.log(info);
+//                                                     }
+//                                                 });
+//                                             });
+//                                         }
+//                                     })*/
+//                                 }
+//                             })
+//                         })
+                }
+            } else {
+                console.log("No enough resources!");
+                return;
             }
-        } else {
-            console.log("Waiting list is empty now.");
-            return;
         }
     }
-    console.log('There is no available resource right now');
+    /*getTaskListAsync(db, function (err, rows) {
+        let tasksList = rows;
+    })*/
 });
 checkWaitTasks.start();
 // set the view engine to ejs
@@ -271,6 +317,7 @@ app.post('/upload', function (req, res) {
                                 FROM Users
                                 WHERE uid = ?;`);
     let queryResult = stmt.get(uid);
+    resultDb.close();
     let email;
     if (!queryResult) {
         console.log("Upload files failed, no corresponding email address!");
@@ -356,7 +403,15 @@ app.post('/upload', function (req, res) {
                                 res.write('<h2>Link: </h2>');
                                 res.write(message.text);
 
-                                insertTask(db, id, des_file, des_envFile1, 1,1);
+                                let app = './cpp/bin/mzMLReader';
+                                let parameter = des_file + ' -f';
+                                submitTask(id, app, parameter,1);
+
+                                app = 'node';
+                                let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
+                                parameter = './convertEnv ' + dbDir + ' ' + des_envFile1;
+                                submitTask(id, app, parameter, 1);
+
                                 res.end();
                                 break;
                             }
@@ -475,7 +530,10 @@ app.post('/upload', function (req, res) {
                             res.write('<h2>Link: </h2>');
                             res.write(message.text);
 
-                            insertTask(db, id, des_file, null, 0,1);
+                            let app = './cpp/bin/mzMLReader';
+                            let parameter = des_file + ' -f';
+                            submitTask(id, app, parameter, 1);
+
                             res.end();
                             break;
                         }
@@ -620,6 +678,10 @@ app.get('/data', function(req, res) {
                 } else if (row.projectStatus === 3) {
                     console.log("Project status: 3");
                     res.send("Your project has been removed, because it has been one month since you uploaded it.");
+                    res.end();
+                } else if (row.projectStatus === 4) {
+                    console.log("Project status: 4");
+                    res.send("Your project is on the task wait list, please wait for result!");
                     res.end();
                 }
             }
@@ -874,6 +936,111 @@ app.get('/projects', function (req,res) {
             });
         });
     }
+
+});
+app.get('/topfd', function (req, res) {
+    if (req.session.passport === undefined) {
+        res.write("Please log in first to use topfd for your projecct");
+        res.end();
+
+    } else {
+        // console.log(req.session.passport);
+        // console.log(req.query.projectCode);
+        let projectCode = req.query.projectCode;
+        if (!projectCode) {
+            res.write("No project selected for this topfd task.");
+            return;
+        } else {
+            res.render('pages/task', {
+                projectCode
+            });
+        }
+    }
+});
+app.get('/topfdTask', function (req,res) {
+    const app = './proteomics_cpp/bin/topfd';
+    let commandArr = '';
+    let projectCode = req.query.projectCode;
+
+    // console.log(req.query);
+    let maximumCharge = req.query.Maximum_charge;
+    if (maximumCharge !== '') {
+        commandArr += '-c ';
+        commandArr += maximumCharge;
+    }
+
+    let maximumMass = req.query.Maximum_mass;
+    if (maximumMass !== '') {
+        commandArr += ' -m ';
+        commandArr += maximumMass;
+    }
+    let ms1SignalNoiseRatio = req.query.MS1_signal_noise_ratio;
+    if (ms1SignalNoiseRatio !== '') {
+        commandArr += ' -r ';
+        commandArr += ms1SignalNoiseRatio;
+    }
+
+    let msMsSignalNoiseRatio = req.query.MS_MS_signal_noise_ratio;
+    if (msMsSignalNoiseRatio !== '') {
+        commandArr += ' -t ';
+        commandArr += msMsSignalNoiseRatio;
+    }
+
+    let mzError = req.query.M_Z_error;
+    if (mzError !== '') {
+        commandArr += ' -e ';
+        commandArr += mzError;
+    }
+
+    let precursorWindow = req.query.Precursor_window;
+    if (precursorWindow !== '') {
+        commandArr += ' -w ';
+        commandArr += precursorWindow;
+    }
+
+    let msSpectra = req.query.MS_Spectra;
+    if (msSpectra === 'on') {
+        commandArr += ' -o';
+    }
+
+    let threadNumber = req.query.thread_number;
+    if (threadNumber !== '') {
+        commandArr += ' -u ';
+        commandArr += threadNumber;
+    }
+
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`SELECT ProjectDir AS projectDir, FileName AS fileName
+                                FROM Projects
+                                WHERE projectCode = ?;`);
+    let result = stmt.get(projectCode);
+    resultDb.close();
+    // console.log(result);
+    let projectDir;
+    if (result) {
+        projectDir = result.projectDir;
+        commandArr += ' ';
+        commandArr += projectDir;
+        // console.log(projectDir);
+        // console.log(commandArr);
+        submitTask(projectCode, app, commandArr, threadNumber);
+        let fileName = result.fileName.substr(0, result.fileName.lastIndexOf("."));
+        let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
+        let des_ms1 = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_file/' + fileName + '_ms1.msalign';
+        let des_ms2 = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_ms2.msalign';
+
+        updateEnvStatusSync(1, projectCode);
+        submitTask(projectCode, 'node','./convertMS1Msalign.js ' + dbDir + ' ' + des_ms1, 1);
+        submitTask(projectCode, 'node','./convertMS2Msalign.js ' + dbDir + ' ' + des_ms2, 1);
+        /*updateEnvStatus(db, 1, projectCode, function () {
+        });*/
+    } else {
+        res.write("No such project exists!");
+        res.end();
+        return;
+    }
+    res.write("Your task is submitted, please wait for result!");
+    res.end();
 
 });
 app.get('/deleteMsalign', function (req,res) {
@@ -1196,6 +1363,117 @@ function updateProjectStatus(db, status,id,callback) {
         console.log(`Row(s) updated: ${this.changes}`);
         return callback(null);
     });
+}
+function getTaskListSync() {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`SELECT Tasks.ID AS taskID, Tasks.projectCode AS projectCode, Tasks.app AS app, Tasks.parameter AS parameter, Tasks.finish AS finish, Tasks.threadNum AS threadNum, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email, Projects.ProjectStatus AS projectStatus
+                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
+                WHERE Tasks.finish = 0 AND Projects.ProjectStatus = 4;`);
+    let tasksList = stmt.all();
+    resultDb.close();
+    return tasksList;
+}
+function getTaskListAsync(db, callback) {
+    let sql = `SELECT Tasks.ID AS taskID, Tasks.projectCode AS projectCode, Tasks.app AS app, Tasks.parameter AS parameter, Tasks.finish AS finish, Tasks.threadNum AS threadNum, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email, Projects.ProjectStatus AS projectStatus
+                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
+                WHERE Tasks.finish = 0 AND Projects.ProjectStatus = 4;`;
+
+    db.all(sql, [], (err, rows) => {
+        if(err) {
+            console.error(err.message);
+            throw err;
+        }
+        return callback(err, rows);
+    });
+}
+function checkProjectStatusAsync(db, projectCode, callback) {
+    let sql = `SELECT Projects.ProjectStatus AS projectStatus
+                                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
+                                WHERE Tasks.projectCode = ?;`;
+    db.get(sql,[projectCode], function (err, row) {
+        if (err) {
+            console.error(err.message);
+            return err;
+        }
+        return callback(err, row);
+    })
+}
+function updateProjectStatusSync(status, projectCode) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Projects
+                SET ProjectStatus = ?
+                WHERE ProjectCode = ?`);
+    let info = stmt.run(status, projectCode);
+    console.log('info', info);
+    resultDb.close();
+}
+function updateTaskStatusAsync(db, status, taskID, callback) {
+    let sql = `UPDATE Tasks
+                SET finish = ?
+                WHERE id = ?`;
+    db.run(sql, [status,taskID], function (err) {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(`Row(s) updated: ${this.changes}`);
+        return callback(null);
+    });
+}
+function updateTaskStatusSync(status, taskID) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Tasks
+                SET finish = ?
+                WHERE id = ?`);
+    let info = stmt.run(status, taskID);
+    console.log('info', info);
+    resultDb.close();
+}
+function checkProjectStatusSync(projectCode) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`SELECT Projects.ProjectStatus AS projectStatus
+                                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
+                                WHERE Tasks.projectCode = ?;`);
+    let queryResult = stmt.get(projectCode);
+    resultDb.close();
+    return queryResult;
+}
+function checkRemainingTask(projectCode) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`SELECT Projects.ProjectStatus AS projectStatus
+                                FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
+                                WHERE Tasks.projectCode = ? AND Tasks.finish = 0;`);
+    let queryResult = stmt.get(projectCode);
+    resultDb.close();
+
+    if (queryResult === undefined) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+function submitTask(projectCode, app, parameter, threadNum) {
+    let queryResult = checkProjectStatusSync(projectCode);
+
+    if (queryResult === undefined) {
+        updateProjectStatusSync(4, projectCode);
+        insertTask(db, projectCode, app, parameter,threadNum, 0);
+    } else if (queryResult.projectStatus === 2 || queryResult.projectStatus === 3) {
+        return;
+    } else if (queryResult.projectStatus === 0) {
+        insertTask(db, projectCode, app, parameter,threadNum, 0);
+    } else {
+        updateProjectStatusSync(4, projectCode);
+        insertTask(db, projectCode, app, parameter,threadNum, 0);
+    }
+
+}
+function updateEnvStatusSync(status, id) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Projects
+                SET EnvelopeStatus = ?
+                WHERE ProjectCode = ?`);
+    let info = stmt.run(status, id);
+    resultDb.close();
 }
 function updateEnvStatus(db,status,id,callback) {
     let sql = `UPDATE Projects
@@ -2088,9 +2366,9 @@ function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectD
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
 }
-function insertTask(db, projectCode, mzmlFile, envFile, processEnv, threadNum) {
-    let sql = 'INSERT INTO Tasks(projectCode, mzmlFile, envFile, processEnv, threadNum) VALUES(?,?,?,?,?)';
-    db.run(sql, [projectCode,mzmlFile,envFile,processEnv, threadNum], function(err) {
+function insertTask(db, projectCode, app, parameter, threadNum, finish) {
+    let sql = 'INSERT INTO Tasks(projectCode, app, parameter, threadNum, finish) VALUES(?,?,?,?,?)';
+    db.run(sql, [projectCode, app, parameter, threadNum, finish], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -2108,7 +2386,7 @@ function insertUser(db, uid, email, firstname, lastname, fullname){
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
 }
-let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+var db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
         console.error(err.message);
     }
@@ -2142,7 +2420,7 @@ let db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
             });
         });
 
-        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `mzmlFile` TEXT NOT NULL, `envFile` TEXT NULL, `processEnv` INTEGER NOT NULL, `threadNum` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
+        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
         db.run(sqlToCreateTaskTable, function (err) {
             if (err) {
                 return console.log(err.message);
