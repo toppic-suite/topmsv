@@ -61,6 +61,10 @@ function importData(database,data) {
 
                 var peaks = stmtGetPeakList.all(scan_id);
                 var peakList = calcDistrubution.emass(mass,charge,peaks);
+                if (peakList === null) {
+                    env_id = env_id + 1;
+                    return;
+                }
                 peakList.forEach(peak => {
                     stmtEnvPeak.run(envPeakID,env_id,peak.mz,peak.intensity);
                     envPeakID++;

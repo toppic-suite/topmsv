@@ -3,6 +3,7 @@ const Database = require('better-sqlite3');
 const molecularFormulae = require('./distribution_calc/molecularformulae');
 const calcDistrubution = new molecularFormulae();
 var myArgs = process.argv.slice(2);
+// console.log(myArgs);
 const betterDB = new Database(myArgs[0]);
 const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope (\n' +
     '    envelope_id INTEGER PRIMARY KEY,\n' +
@@ -55,10 +56,18 @@ function importData(database,data) {
                 var mass = parseFloat(element.split("\t")[0]);
                 var inte = parseFloat(element.split("\t")[1]);
                 var charge = parseInt(element.split("\t")[2]);
+                // console.log(mass, inte, charge);
+                // console.log("env_id", env_id);
                 stmtEnv.run(env_id,scan_id,mass,inte,charge);
 
                 var peaks = stmtGetPeakList.all(scan_id);
+                // console.log("peaks", peaks);
                 var peakList = calcDistrubution.emass(mass,charge,peaks);
+                // console.log("peakList",peakList);
+                if (peakList === null) {
+                    env_id = env_id + 1;
+                    return;
+                }
                 peakList.forEach(peak => {
                     stmtEnvPeak.run(envPeakID,env_id,peak.mz,peak.intensity);
                     envPeakID++;
