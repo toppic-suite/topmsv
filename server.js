@@ -1,4 +1,5 @@
 var fs = require('fs');
+var archiver = require('archiver');
 var nodemailer = require('nodemailer');
 var favicon = require('serve-favicon');
 const sqlite3 = require('sqlite3').verbose();
@@ -11,7 +12,7 @@ var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var passport = require('passport');
 const auth = require('./auth');
-const os = require('os')
+const os = require('os');
 const cpuCount = os.cpus().length;
 var app = express();
 app.use(helmet());
@@ -1039,6 +1040,7 @@ app.get('/topfdTask', function (req,res) {
         res.end();
         return;
     }
+    res.redirect('/');
     res.write("Your task is submitted, please wait for result!");
     res.end();
 
@@ -1063,7 +1065,43 @@ app.get('/download', function (req,res) {
     let projectCode = req.query.id;
     getProjectSummary(db, projectCode, function (err,row) {
         let projectDir = row.projectDir;
-        res.download(projectDir);
+        let projectName = row.projectName;
+        let fileName = row.fileName;
+
+        let fName = fileName.substr(0, fileName.lastIndexOf("."));
+        let dbDir = projectDir.substr(0, projectDir.lastIndexOf("/"));
+
+        let zipName = '/'+projectName+'.zip';
+        var output = fs.createWriteStream(dbDir + zipName);
+
+        var archive = archiver('zip', {
+            zlib: { level: 9 } // Sets the compression level.
+        });
+
+        output.on('close', function() {
+            console.log(archive.pointer() + ' total bytes');
+            console.log('archiver has been finalized and the output file descriptor has closed.');
+            res.download(dbDir + zipName);
+        });
+
+        archive.on('error', function(err) {
+            throw err;
+        });
+
+        archive.pipe(output);
+
+        var file1 = dbDir + '/' + fName + '_ms2.feature';
+        var file2 = dbDir + '/' + fName + '_ms2.msalign';
+        var file3 = dbDir + '/' + fName + '_ms1.feature';
+        var file4 = dbDir + '/' + fName + '_feature.xml';
+        var dir5 = dbDir + '/' + fName + '_file';
+        archive
+            .append(fs.createReadStream(file1), { name: fName + '_ms2.feature' })
+            .append(fs.createReadStream(file2), { name: fName + '_ms2.msalign' })
+            .append(fs.createReadStream(file3), { name: fName + '_ms1.feature' })
+            .append(fs.createReadStream(file4), { name: fName + '_feature.xml' })
+            .directory(dir5, fName + '_file')
+            .finalize();
     })
 
 });
