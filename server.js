@@ -1117,9 +1117,10 @@ app.get('/topfdTask', function (req,res) {
         res.end();
         return;
     }
+    res.sendFile(__dirname + '/public/backToHome.html');
     // res.redirect('/');
-    res.write("Your task is submitted, please wait for result!");
-    res.end();
+    // res.write('Your task is submitted, please wait for result! Please go back to home page to wait result: <a href ="https://toppic.soic.iupui.edu/">Home</a>');
+    // res.end();
 });
 app.get('/deleteMsalign', function (req,res) {
     let projectDir = req.query.projectDir;
@@ -1539,7 +1540,7 @@ function updateTaskStatusSync(status, taskID) {
                 SET finish = ?
                 WHERE id = ?`);
     let info = stmt.run(status, taskID);
-    console.log('info', info);
+    // console.log('info', info);
     resultDb.close();
 }
 function checkProjectStatusSync(projectCode) {
