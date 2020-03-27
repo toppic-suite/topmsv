@@ -1117,7 +1117,7 @@ app.get('/topfdTask', function (req,res) {
         res.end();
         return;
     }
-    res.redirect('/');
+    // res.redirect('/');
     res.write("Your task is submitted, please wait for result!");
     res.end();
 });
