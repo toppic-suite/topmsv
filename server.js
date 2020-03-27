@@ -89,7 +89,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
 
                     avaiResourse = avaiResourse - threadNum;
                     updateProjectStatusSync(0, projectCode);
-                    exec(app+' '+parameter, (err, stdout, stderr) => {
+                    exec(app+' '+parameter, {maxBuffer: 1024 * 50000}, (err, stdout, stderr) => {
                         console.log(stdout);
                         console.log(stderr);
                         if(err) {
@@ -939,6 +939,83 @@ app.get('/projects', function (req,res) {
     }
 
 });
+app.get('/toppic', function (req, res) {
+    if (req.session.passport === undefined) {
+        res.write("Please log in first to use topic for your projecct");
+        res.end();
+
+    } else {
+        // console.log(req.session.passport);
+        // console.log(req.query.projectCode);
+        let projectCode = req.query.projectCode;
+        if (!projectCode) {
+            res.write("No project selected for this topic task.");
+            return;
+        } else {
+            res.render('pages/topicTask', {
+                projectCode
+            });
+        }
+    }
+});
+app.post('/toppicTask', function (req, res) {
+    console.log("Hello, toppicTask")
+    const app = './proteomics_cpp/bin/toppic';
+    let commandArr = '';
+    var form = new formidable.IncomingForm();
+    form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
+    form.encoding = 'utf-8';
+    form.uploadDir = "tmp";
+    form.keepExtensions = true;
+
+    form.parse(req, function (err, fields, files) {
+        var fastaFile = files.fastaFile;
+        var lcmsFeatureFile = files.lcmsFeatureFile;
+        var fiexedPTMFile = files.fiexedPTMFile;
+        var ptmShiftFile = files.ptmShiftFile;
+        var projectCode = fields.projectCode;
+        var threadNum = fields.threadNum;
+        console.log(projectCode);
+        getProjectSummary(db, projectCode, function (err, row) {
+            let projectDir = row.projectDir;
+            let fileName = row.fileName;
+            let msalign_name = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2.msalign';
+            let msalign_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + msalign_name;
+            var des_fastaFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fastaFile.name;
+            fs.rename(fastaFile.path, des_fastaFile, function (err) {
+                if (err) {
+                    console.log(err);
+                    return res.send({"error": 403, "message": "Error on saving file!"});
+                }
+                console.log("Files are saved.");
+
+                if (!fs.existsSync(msalign_dir)) {
+                    console.log('The msalign file does not exist.');
+                    return res.send({"error": 403, "message": "Error on finding msalign file!"});
+                }
+
+                commandArr = commandArr + des_fastaFile + ' ' + msalign_dir;
+                console.log(commandArr);
+                console.log(threadNum);
+                submitTask(projectCode,app, commandArr, threadNum);
+
+                deleteSeq(projectDir, projectCode, function () {
+                    updateSeqStatus(db, 0, projectCode, function () {
+                        let seqApp = 'node';
+                        let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
+                        let seqName = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2_toppic_prsm.tsv';
+                        let msalign_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqName;
+                        let seqParameter = './sequenceParse.js ' + dbDir + ' ' + msalign_dir;
+                        console.log(seqParameter);
+                        submitTask(projectCode, seqApp, seqParameter, 1);
+                        res.end();
+                    });
+                });
+            })
+        })
+    })
+
+});
 app.get('/topfd', function (req, res) {
     if (req.session.passport === undefined) {
         res.write("Please log in first to use topfd for your projecct");
@@ -1043,7 +1120,6 @@ app.get('/topfdTask', function (req,res) {
     res.redirect('/');
     res.write("Your task is submitted, please wait for result!");
     res.end();
-
 });
 app.get('/deleteMsalign', function (req,res) {
     let projectDir = req.query.projectDir;
@@ -2403,6 +2479,9 @@ function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectD
         // get the last insert id
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
+}
+function insertTaskSync() {
+
 }
 function insertTask(db, projectCode, app, parameter, threadNum, finish) {
     let sql = 'INSERT INTO Tasks(projectCode, app, parameter, threadNum, finish) VALUES(?,?,?,?,?)';

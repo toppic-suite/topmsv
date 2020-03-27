@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Task</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery.fileupload.css">
+    <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-154408351-1');
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-11">
+            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        </div>
+        <!--<div class="col-sm-1">
+            <a href="/auth/google" id="signIn">Sign In</a>
+        </div>-->
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding-top: 0px;">
+            <h3><strong>TopPIC Configuration</strong></h3>
+            <p><strong>Please run TopFD first before you run a ToPIC task.</strong></p>
+                <input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+
+                <div class="form-group">
+                    <label for="Protein_Database_Fasta">Protein database file in FASTA format</label>
+                    <input id="Protein_Database_Fasta" type="file" name="Protein_Database_Fasta">
+                </div>
+
+                <div class="form-group">
+                    <label for="LCMS_Feature">Text file containing LC/MS feature information (optional)</label>
+                    <input id="LCMS_Feature" type="file" name="LCMS_Feature">
+                </div>
+
+                <div class="form-group">
+                    <label for="Fixed_PTMs">Text file of fixed PTMs (optional)</label>
+                    <input id="Fixed_PTMs" type="file" name="Fixed_PTMs">
+                </div>
+
+                <div class="form-group">
+                    <label for="PTMs_Shifts">Text file of PTMs for the characterization of unexpected mass shifts (optional)</label>
+                    <input id="PTMs_Shifts" type="file" name="PTMs_Shifts">
+                </div>
+
+                <div class="form-group">
+                    <h5><strong>Number of threads</strong></h5>
+                    <select class="form-control form-control-sm" name="thread_number" id="threadNum">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <small id="thread_number_help" class="form-text text-muted">Select number of threads to run this task.</small>
+                </div>
+
+                <div id="progressbar" class="progress-bar progress-bar-striped" role="progressbar"
+                     style="width: 0%">0%</div>
+                <br>
+                <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</div>
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/topicTask.js"></script>
+
+</body>
+</html>
