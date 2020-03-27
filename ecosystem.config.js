@@ -3,7 +3,7 @@ module.exports = {
         name: 'top_view',
         script: './server.js',
         // Options reference: https://pm2.keymetrics.io/docs/usage/application-declaration/
-        instances: 3,
+        instances: 1,
         autorestart: true,
         watch: false,
         log_file: './logs/combined.log',
