@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Task</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery.fileupload.css">
+    <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-154408351-1');
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-11">
+            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        </div>
+        <div class="col-sm-1">
+            <a href="/auth/google" id="signIn">Sign In</a>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding-top: 0px;">
+            <h3><strong>TopFD Configuration</strong></h3>
+            <br>
+            <form action="/topfdTask">
+                <input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+                <div class="form-group">
+                    <label for="Maximum_charge">Maximum charge</label>
+                    <input type="text" class="form-control" id="Maximum_charge" name="Maximum_charge" placeholder="30">
+                    <small id="Maximum_charge_help" class="form-text text-muted">Maximum charge state of precursor and fragment ions. The default value is 30.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="Maximum_mass">Maximum mass</label>
+                    <input type="text" class="form-control" id="Maximum_mass" name="Maximum_mass" placeholder="100000">
+                    <small id="Maximum_mass_help" class="form-text text-muted">Maximum monoisotopic mass of precursor and fragment ions. The default value is 100,000 Dalton.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="MS1_signal_noise_ratio">MS1 signal/noise ratio</label>
+                    <input type="text" class="form-control" id="MS1_signal_noise_ratio" name="MS1_signal_noise_ratio" placeholder="3">
+                    <small id="MS1_signal_noise_ratio_help" class="form-text text-muted">Signal/noise ratio for MS1 spectra. The default value is 3.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="MS_MS_signal_noise_ratio">MS/MS signal/noise ratio</label>
+                    <input type="text" class="form-control" id="MS_MS_signal_noise_ratio" name="MS_MS_signal_noise_ratio" placeholder="1">
+                    <small id="MS_MS_signal_noise_ratio_help" class="form-text text-muted">Signal/noise ratio for MS/MS spectra. The default value is 1.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="M_Z_error">M/Z error</label>
+                    <input type="text" class="form-control" id="M_Z_error" name="M_Z_error" placeholder="0.02">
+                    <small id="M_Z_error_help" class="form-text text-muted">Set the error tolerance of m/z values of spectral peaks.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="Precursor_window">Precursor window</label>
+                    <input type="text" class="form-control" id="Precursor_window" name="Precursor_window" placeholder="3.0">
+                    <small id="Precursor_window_help" class="form-text text-muted">Set the precursor isolation window size.</small>
+                </div>
+
+                <div class="form-check">
+                    <h5><strong>MS1 Spectra</strong></h5>
+                    <input type="checkbox" class="form-check-input" id="MS_Spectra" name="MS_Spectra">
+                    <label class="form-check-label" for="MS_Spectra">Does not contain MS1 spectra</label>
+                </div>
+
+                <div class="form-group">
+                    <h5><strong>Number of threads</strong></h5>
+                    <select class="form-control form-control-sm" name="thread_number">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+                    <small id="thread_number_help" class="form-text text-muted">Select number of threads to run this task.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
