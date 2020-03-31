@@ -30,43 +30,50 @@
         <div class="panel-body" style="padding-top: 0px;">
             <h3><strong>TopPIC Configuration</strong></h3>
             <p><strong>Please run TopFD first before you run a ToPIC task.</strong></p>
-                <input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+            <input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
 
-                <div class="form-group">
-                    <label for="Protein_Database_Fasta">Protein database file in FASTA format</label>
-                    <input id="Protein_Database_Fasta" type="file" name="Protein_Database_Fasta">
-                </div>
+            <div class="form-group">
+                <label for="Protein_Database_Fasta">Protein database file in FASTA format</label>
+                <input id="Protein_Database_Fasta" type="file" name="Protein_Database_Fasta">
+            </div>
 
-                <div class="form-group">
-                    <label for="LCMS_Feature">Text file containing LC/MS feature information (optional)</label>
-                    <input id="LCMS_Feature" type="file" name="LCMS_Feature">
-                </div>
+            <!--<div class="form-group">
+                <label for="LCMS_Feature">Text file containing LC/MS feature information (optional)</label>
+                <input id="LCMS_Feature" type="file" name="LCMS_Feature">
+            </div>-->
 
-                <div class="form-group">
-                    <label for="Fixed_PTMs">Text file of fixed PTMs (optional)</label>
-                    <input id="Fixed_PTMs" type="file" name="Fixed_PTMs">
-                </div>
+            <div class="form-group">
+                <label for="Fixed_PTMs">Text file of fixed PTMs (optional)</label>
+                <input id="Fixed_PTMs" type="file" name="Fixed_PTMs">
+            </div>
 
-                <div class="form-group">
-                    <label for="PTMs_Shifts">Text file of PTMs for the characterization of unexpected mass shifts (optional)</label>
-                    <input id="PTMs_Shifts" type="file" name="PTMs_Shifts">
-                </div>
+            <div class="form-group">
+                <label for="PTMs_Shifts">Text file of PTMs for the characterization of unexpected mass shifts (optional)</label>
+                <input id="PTMs_Shifts" type="file" name="PTMs_Shifts">
+            </div>
 
-                <div class="form-group">
-                    <h5><strong>Number of threads</strong></h5>
-                    <select class="form-control form-control-sm" name="thread_number" id="threadNum">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                    </select>
-                    <small id="thread_number_help" class="form-text text-muted">Select number of threads to run this task.</small>
-                </div>
+            <!--<div class="form-group">
+                <label for="Activation">MS1 signal/noise ratio</label>
+                <input type="text" class="form-control" id="MS1_signal_noise_ratio" name="MS1_signal_noise_ratio" placeholder="3">
+                <small id="MS1_signal_noise_ratio_help" class="form-text text-muted">Signal/noise ratio for MS1 spectra. The default value is 3.</small>
+            </div>-->
 
-                <div id="progressbar" class="progress-bar progress-bar-striped" role="progressbar"
-                     style="width: 0%">0%</div>
-                <br>
-                <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+
+            <div class="form-group">
+                <h5><strong>Number of threads</strong></h5>
+                <select class="form-control form-control-sm" name="thread_number" id="threadNum">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                </select>
+                <small id="thread_number_help" class="form-text text-muted">Select number of threads to run this task.</small>
+            </div>
+
+            <div id="progressbar" class="progress-bar progress-bar-striped" role="progressbar"
+                 style="width: 0%">0%</div>
+            <br>
+            <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
         </div>
     </div>
 </div>
