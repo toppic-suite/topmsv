@@ -31,12 +31,14 @@ function importData(db, data) {
     var id = stmtMaxSeqID.get().maxID + 1;
     Papa.parse(data, {
         complete: function(results) {
-            //console.log("Finished:", results.data);
-            results.data.forEach(row => {
+            // console.log("Finished:", results);
+            let parseResult = results.data.slice(1);
+            // console.log("parseResult", parseResult);
+            parseResult.forEach(row => {
                 // console.log(row);
-                //console.log('Scans:', row[4]);
+                // console.log('Scans:', row[4]);
                 var scan = row[4];
-                //console.log('Proteoform:', row[17]);
+                // console.log('Proteoform:', row[17]);
                 var protein_accession = row[13];
                 var proteoform = row[17];
                 if(scan !== 'Scan(s)'){

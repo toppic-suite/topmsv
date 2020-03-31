@@ -2,7 +2,7 @@
     'use strict';
 
     var fastaFile = document.querySelector('#Protein_Database_Fasta');
-    var lcmsFeatureFile = document.querySelector('#LCMS_Feature');
+    // var lcmsFeatureFile = document.querySelector('#LCMS_Feature');
     var fiexedPTMFile = document.querySelector('#Fixed_PTMs');
     var ptmShiftFile = document.querySelector('#PTMs_Shifts');
     var projectCode = document.getElementById('projectCode');
@@ -27,8 +27,8 @@
             alert("Please choose a fasta database!");
         }else if(!fastaFile.files[0].name.match(/.(fasta)$/i)){
             alert('Please upload a fasta file for protein database!');
-        }else if(lcmsFeatureFile.files[0] !== undefined && !lcmsFeatureFile.files[0].name.match(/.(txt)$/i)){
-            alert('Please upload a txt file for feature file!');
+/*        }else if(lcmsFeatureFile.files[0] !== undefined && !lcmsFeatureFile.files[0].name.match(/.(txt)$/i)){
+            alert('Please upload a txt file for feature file!');*/
         }else if(fiexedPTMFile.files[0] !== undefined && !fiexedPTMFile.files[0].name.match(/.(txt)$/i)){
             alert('Please upload a txt file for fixed ptm file!');
         }else if (ptmShiftFile.files[0] !== undefined && !ptmShiftFile.files[0].name.match(/.(txt)$/i)){
@@ -36,7 +36,7 @@
         } else {
             var formData = new FormData();
             formData.append('fastaFile', fastaFile.files[0]);
-            formData.append('lcmsFeatureFile', lcmsFeatureFile.files[0]);
+            // formData.append('lcmsFeatureFile', lcmsFeatureFile.files[0]);
             formData.append('fiexedPTMFile', fiexedPTMFile.files[0]);
             formData.append('ptmShiftFile', ptmShiftFile.files[0]);
             formData.append('projectCode', projectCode.value);
