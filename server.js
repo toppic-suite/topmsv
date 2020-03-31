@@ -389,7 +389,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRow(db, id, projectname, fname, description,des_file,4, emailtosend,1,0,envFile1.name,uid,public);
+                                insertRowSync(db, id, projectname, fname, description,des_file,4, emailtosend,1,0,envFile1.name,uid,public);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -516,7 +516,7 @@ app.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRow(db, id, projectname, fname,description,des_file,4, emailtosend,0,0,0,uid,public);
+                            insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,uid,public);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -977,6 +977,7 @@ app.post('/toppicTask', function (req, res) {
         var threadNum = fields.threadNum;
         console.log(projectCode);
         getProjectSummary(db, projectCode, function (err, row) {
+            let envStatus = row.envelopeStatus;
             let projectDir = row.projectDir;
             let fileName = row.fileName;
             let msalign_name = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2.msalign';
@@ -991,7 +992,7 @@ app.post('/toppicTask', function (req, res) {
 
                 if (!fs.existsSync(msalign_dir)) {
                     console.log('The msalign file does not exist.');
-                    return res.send({"error": 403, "message": "Error on finding msalign file!"});
+                    return res.send({"error": 403, "message": "Error on finding msalign file! Please run TopFD first!"});
                 }
 
                 commandArr = commandArr + des_fastaFile + ' ' + msalign_dir;
@@ -1007,6 +1008,7 @@ app.post('/toppicTask', function (req, res) {
                         let msalign_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqName;
                         let seqParameter = './sequenceParse.js ' + dbDir + ' ' + msalign_dir;
                         console.log(seqParameter);
+                        updateSeqStatusSync(1, projectCode);
                         submitTask(projectCode, seqApp, seqParameter, 1);
                         res.end();
                     });
@@ -1571,14 +1573,14 @@ function submitTask(projectCode, app, parameter, threadNum) {
 
     if (queryResult === undefined) {
         updateProjectStatusSync(4, projectCode);
-        insertTask(db, projectCode, app, parameter,threadNum, 0);
+        insertTaskSync(projectCode, app, parameter,threadNum, 0);
     } else if (queryResult.projectStatus === 2 || queryResult.projectStatus === 3) {
         return;
     } else if (queryResult.projectStatus === 0) {
-        insertTask(db, projectCode, app, parameter,threadNum, 0);
+        insertTaskSync(projectCode, app, parameter,threadNum, 0);
     } else {
         updateProjectStatusSync(4, projectCode);
-        insertTask(db, projectCode, app, parameter,threadNum, 0);
+        insertTaskSync(projectCode, app, parameter,threadNum, 0);
     }
 
 }
@@ -1601,6 +1603,15 @@ function updateEnvStatus(db,status,id,callback) {
         console.log(`Row(s) updated: ${this.changes}`);
         return callback(null);
     });
+}
+function updateSeqStatusSync(status,id) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Projects
+                SET SequenceStatus = ?
+                WHERE ProjectCode = ?`);
+    let info = stmt.run(status, id);
+    console.log("updateSeqStatusSync Info:", info);
+    resultDb.close();
 }
 function updateSeqStatus(db,status,id,callback) {
     let sql = `UPDATE Projects
@@ -2481,8 +2492,19 @@ function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectD
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
 }
-function insertTaskSync() {
-
+function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,public) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare('INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, SequenceStatus, MS1_envelope_file, uid,public) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)');
+    let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,public);
+    console.log("insertRowSync info", info);
+    resultDb.close();
+}
+function insertTaskSync(projectCode, app, parameter, threadNum, finish) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare('INSERT INTO Tasks(projectCode, app, parameter, threadNum, finish) VALUES(?,?,?,?,?)');
+    let info = stmt.run(projectCode, app, parameter, threadNum, finish);
+    console.log("insertTaskSync info", info);
+    resultDb.close();
 }
 function insertTask(db, projectCode, app, parameter, threadNum, finish) {
     let sql = 'INSERT INTO Tasks(projectCode, app, parameter, threadNum, finish) VALUES(?,?,?,?,?)';
