@@ -52,12 +52,149 @@
                 <input id="PTMs_Shifts" type="file" name="PTMs_Shifts">
             </div>
 
-            <!--<div class="form-group">
-                <label for="Activation">MS1 signal/noise ratio</label>
-                <input type="text" class="form-control" id="MS1_signal_noise_ratio" name="MS1_signal_noise_ratio" placeholder="3">
-                <small id="MS1_signal_noise_ratio_help" class="form-text text-muted">Signal/noise ratio for MS1 spectra. The default value is 3.</small>
-            </div>-->
+            <div class="form-group">
+                <label for="Activation">Activation</label>
+                <select class="form-control form-control-sm" name="Activation" id="Activation">
+                    <option>FILE</option>
+                    <option>CID</option>
+                    <option>HCD</option>
+                    <option>ETD</option>
+                    <option>UVPD</option>
+                </select>
+                <small id="Activation_help" class="form-text text-muted">&lt;CID|HCD|ETD|UVPD|FILE> Set the fragmentation method(s) of MS/MS spectra. When "FILE" is selected, the fragmentation methods of spectra are given in the input spectrum data file.</small>
+            </div>
 
+            <div class="form-group">
+                <label for="Fixed_mod">Fixed mod</label>
+                <select class="form-control form-control-sm" name="Fixed_mod" id="Fixed_mod">
+                    <option>C57</option>
+                    <option>C58</option>
+                    <option>Upload fixed modification file</option>
+                </select>
+                <small id="Fixed_mod_help" class="form-text text-muted">&lt;C57|C58> Set fixed modifications. When C57 is selected, carbamidomethylation on cysteine is the only fixed modification. When C58 is selected, carboxymethylation on cysteine is the only fixed modification.</small>
+            </div>
+
+            <div class="form-check">
+                <h5><strong>N terminal form</strong></h5>
+                <div>
+                    <input type="checkbox" class="form-check-input" id="N_terminal_form_option_0_" name="N_terminal_form_option_0_" checked>
+                    <label class="form-check-label" for="N_terminal_form_option_0_">NONE</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="form-check-input" id="N_terminal_form_option_1_" name="N_terminal_form_option_1_" checked>
+                    <label class="form-check-label" for="N_terminal_form_option_1_">NME</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="form-check-input" id="N_terminal_form_option_2_" name="N_terminal_form_option_2_" checked>
+                    <label class="form-check-label" for="N_terminal_form_option_2_">NME_ACETYLATION</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="form-check-input" id="N_terminal_form_option_3_" name="N_terminal_form_option_3_" checked>
+                    <label class="form-check-label" for="N_terminal_form_option_3_">M_ACETYLATION</label>
+                </div>
+            </div>
+
+            <div class="form-check">
+                <h5><strong>Decoy</strong></h5>
+                <div>
+                    <input type="checkbox" class="form-check-input" id="Decoy_option" name="Decoy_option">
+                    <label class="form-check-label" for="Decoy_option">Use a decoy database</label>
+                    <div>
+                        <small id="Decoy_option_help" class="form-text text-muted">Use a shuffled decoy protein database to estimate spectrum and proteoform level FDRs. When checked, a shuffled decoy database is automatically generated.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="Mass_error_tolerance">Mass error tolerance</label>
+                <input id="Mass_error_tolerance" type="text" class="form-control" name="Mass_error_tolerance" placeholder="15">
+                <small id="Mass_error_tolerance_help" class="form-text text-muted">&lt;a positive integer> Set the error tolerance for precursor and fragment masses in part-per-million (ppm). Default value: 15. When the lookup table approach (-l) is used for E-value estimation, valid error tolerance values are 5, 10, and 15 ppm.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Proteoform_error_tolerance">Proteoform error tolerance</label>
+                <input id="Proteoform_error_tolerance" type="text" class="form-control" name="Proteoform_error_tolerance" placeholder="1.2">
+                <small id="Proteoform_error_tolerance_help" class="form-text text-muted">&lt;a positive number> Set the error tolerance for identifying PrSM clusters (in Dalton). Default value: 1.2 Dalton.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Max_shift">Max shift</label>
+                <input id="Max_shift" type="text" class="form-control" name="Max_shift" placeholder="500">
+                <small id="Max_shift_help" class="form-text text-muted">&lt;a number> Set the maximum value for unexpected mass shifts (in Dalton). Default value: 500.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Min_shift">Min shift</label>
+                <input id="Min_shift" type="text" class="form-control" name="Min_shift" placeholder="-500">
+                <small id="Min_shift_help" class="form-text text-muted">&lt;a number> Set the minimum value for unexpected mass shifts (in Dalton). Default value: -500.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Max_unexpected_mass_shift">Max unexpected mass shift</label>
+                <select class="form-control form-control-sm" name="Max_unexpected_mass_shift" id="Max_unexpected_mass_shift">
+                    <option>0</option>
+                    <option selected>1</option>
+                    <option>2</option>
+                </select>
+                <small id="Max_unexpected_mass_shift_help" class="form-text text-muted">&lt;0|1|2> Set the maximum number of unexpected mass shifts in a PrSM.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Spectrum_cutoff_type">Spectrum cutoff type</label>
+                <select class="form-control form-control-sm" name="Spectrum_cutoff_type" id="Spectrum_cutoff_type">
+                    <option>EVALUE</option>
+                    <option>FDR</option>
+                </select>
+                <small id="Spectrum_cutoff_type_help" class="form-text text-muted">Set the spectrum level cutoff type for filtering PrSMs. Default value: EVALUE.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Spectrum_cutoff_value">Spectrum cutoff value</label>
+                <input id="Spectrum_cutoff_value" type="text" class="form-control" name="Spectrum_cutoff_value" placeholder="0.01">
+                <small id="Spectrum_cutoff_value_help" class="form-text text-muted">&lt;a positive number> Set the spectrum level cutoff value for filtering PrSMs.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Proteoform_cutoff_type">Proteoform cutoff type</label>
+                <select class="form-control form-control-sm" name="Proteoform_cutoff_type" id="Proteoform_cutoff_type">
+                    <option>EVALUE</option>
+                    <option>FDR</option>
+                </select>
+                <small id="Proteoform_cutoff_type_help" class="form-text text-muted">&lt;EVALUE|FDR> Set the proteoform level cutoff type for filtering proteoforms and PrSMs.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Proteoform_cutoff_value">Proteoform cutoff value</label>
+                <input id="Proteoform_cutoff_value" type="text" class="form-control" name="Proteoform_cutoff_value" placeholder="0.01">
+                <small id="Proteoform_cutoff_help" class="form-text text-muted">&lt;a positive number> Set the proteoform level cutoff value for filtering proteoforms and PrSMs.</small>
+            </div>
+
+            <div class="form-check">
+                <h5><strong>Lookup table</strong></h5>
+                <input type="checkbox" class="form-check-input" id="Lookup_table" name="Lookup_table">
+                <label class="form-check-label" for="Lookup_table">Use a lookup table method</label>
+                <div>
+                    <small id="Lookup_table_help" class="form-text text-muted">Use a lookup table method for computing p-values and E-values. It is faster than the default generating function approach, but it may reduce the number of identifications.</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="Combined_spectra">Combined spectra</label>
+                <input id="Combined_spectra" type="text" class="form-control" name="Combined_spectra" placeholder="1">
+                <small id="Combined_spectra_help" class="form-text text-muted">&lt;a positive integer> Set the number of combined spectra. The parameter is set to 2 (or 3) for combining spectral pairs (or triplets) generated by the alternating fragmentation mode.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Miscore_threshold">Miscore threshold</label>
+                <input id="Miscore_threshold" type="text" class="form-control" name="Miscore_threshold" placeholder="0.45">
+                <small id="Miscore_threshold_help" class="form-text text-muted">Set the score threshold (MIScore) for filtering results of PTM characterization. Default value: 0.45.</small>
+            </div>
+
+            <div class="form-check">
+                <h5><strong>No TopFD feature</strong></h5>
+                <input type="checkbox" class="form-check-input" id="No_TopFD_feature" name="No_TopFD_feature">
+                <label class="form-check-label" for="No_TopFD_feature">No TopFD Feature</label>
+            </div>
 
             <div class="form-group">
                 <h5><strong>Number of threads</strong></h5>
