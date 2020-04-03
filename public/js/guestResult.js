@@ -181,7 +181,7 @@ function addFigure(dataset) {
 
     var width = 1100;
     var height = 120; //160
-    var padding = { top: 10, right: 110, bottom: 50, left: 80 }; //left:50 right:150
+    var padding = { top: 10, right: 10, bottom: 50, left: 80 }; //left:50 right:150
     padding_g = padding;
     // var dataset = [{rt:1, inteSum:224}, {rt:2, inteSum:528}, {rt:3, inteSum:756}, {rt:4, inteSum:632}];
 
@@ -540,7 +540,7 @@ function showEnvTable(scan) {
         scrollY: 370,
         scroller: true,
         altEditor: true,
-        select: 'multi',
+        select: 'os',
         responsive: true,
         buttons: [
             {
@@ -553,6 +553,12 @@ function showEnvTable(scan) {
                 text: 'Refresh',
                 className: 'btn',
                 name: 'refresh'      // do not change name
+            },
+            {
+                extend: 'selected',
+                text: 'Jump to',
+                className: 'btn',
+                name: 'jumpto'
             }
         ],
         "ajax": {
@@ -571,19 +577,21 @@ function showEnvTable(scan) {
             { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true', readonly: 'true',"visible": true, type:"hidden"},
             {
                 "data": "mono_mz",
                 render: function (data, type, row ) {
-                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(2);
+                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(5);
                     row.mono_mz = mono_mz; // set mono_mz value
-                    if($('#msType').text() === 'MS2'){
+                    /*if($('#msType').text() === 'MS2'){
                         return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
                     } else {
                         return `<a href="#spectrum1" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
-                    }
-                    //return mono_mz;
-                },type: "readonly"
+                    }*/
+                    return mono_mz;
+                }
+                // ,type: "readonly"
+                , required: 'true'
             }
         ],
         onAddRow: function(datatable, rowdata, success, error) {
@@ -620,6 +628,13 @@ function showEnvTable(scan) {
             });
         }
     } );
+}
+function jumpTo(mono_mz) {
+    if($('#msType').text() === 'MS2'){
+        relocSpet2(mono_mz);
+    } else {
+        relocSpet1(mono_mz);
+    }
 }
 function relocSpet1 (mono_mz) {
     addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5);
@@ -722,6 +737,13 @@ $("#inspect").click(function () {
     peakAndIntensityList = peakAndIntensityList.slice(0,-1);
     window.localStorage.setItem('peakAndIntensityList', peakAndIntensityList);
     window.localStorage.setItem('scan', masslistID);
+    window.localStorage.setItem('scanID', masslistID);
+    window.localStorage.setItem('projectCode', document.getElementById('projectCode').value);
+    if($('#proteoform').text() === 'N/A') {
+        window.localStorage.setItem('proteoform', '');
+    } else {
+        window.localStorage.setItem('proteoform', $('#proteoform').text());
+    }
     $.ajax({
         url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + masslistID,
         type: "get",
@@ -798,14 +820,89 @@ $("#seqUpload").click(function () {
         }
     }
 });
-
 function preprocessSeq(seq) {
-    var firstDotIndex = seq.indexOf('.');
-    var lastDotIndex = seq.lastIndexOf('.');
-    seq = seq.slice(firstDotIndex+1,lastDotIndex);
+    let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
     seq = seq.replace(/\)/g, '');
     seq = seq.replace(/\[[A-z]*\]/g, '');
+    var firstDotIndex = seq.indexOf('.');
+    if(firstDotIndex === -1) {
+        firstDotIndex = 0;
+        firstIsDot = 0;
+    }
+    var lastDotIndex = seq.lastIndexOf('.');
+    if(lastDotIndex === -1) {
+        lastDotIndex = seq.length;
+    }
+    var firstIndex = seq.indexOf('[');
+    var lastIndex = seq.lastIndexOf(']');
+    if(firstDotIndex> firstIndex && firstIndex !== -1) {
+        firstDotIndex = 0;
+        firstIsDot = 0;
+    }
+    if(lastDotIndex < lastIndex){
+        lastDotIndex = seq.length;
+    }
+    if(firstIsDot){
+        seq = seq.slice(firstDotIndex + 1, lastDotIndex);
+    } else {
+        seq = seq.slice(firstDotIndex,lastDotIndex);
+    }
     return seq;
     //console.log(seq);
+}
+
+let specPara1_g;
+let lockPara1 = false;
+let specPara2_g;
+let lockPara2 = false;
+function refresh() {
+    /*let monoMZ1_old = mono_mz_list1_g;
+    let monoMZ2_old = mono_mz_list2_g;
+    let msType_old = $('#msType').text();
+    console.log(msType_old);
+    findNextLevelOneScan($('#envScan').text());
+    addSpectrum('spectrum1', peakList1_g, envList1_g, monoMZ1_old);
+    addSpectrum('spectrum2', peakList2_g, envList2_g, monoMZ2_old);
+    if (msType_old === 'MS1') {
+        showEnvTable($("#scanID1").text());
+        $("#switch").text('MS2');
+    }*/
+
+    // addSpectrum('spectrum1', peakList1_g, envList1_g, mono_mz_list1_g);
+
+    let msType_old = $('#msType').text();
+    let scanID;
+    if (msType_old === 'MS1') {
+        lockPara1 = true;
+        scanID = $('#scanID1').text();
+        showEnvTable($("#scanID1").text());
+        $("#switch").text('MS2');
+    } else {
+        lockPara2 = true;
+        scanID = $('#scanID2').text();
+    }
+    $.ajax({
+        url:"envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value,
+        type: "get",
+        // dataType: 'json',
+        success: function (res) {
+            if (msType_old === 'MS1') {
+                envList1_g = JSON.parse(res);
+                if(envList1_g===0) {
+                    envList1_g = [];
+                }
+                addSpectrum('spectrum1', peakList1_g, envList1_g, null);
+            } else {
+                envList2_g = JSON.parse(res);
+                console.log(envList2_g);
+                if(envList2_g===0) {
+                    envList2_g = [];
+                }
+                addSpectrum('spectrum2', peakList2_g, envList2_g, null);
+            }
+        }
+    });
+    // findNextLevelOneScan($('#envScan').text());
+    //setTimeout()
 }

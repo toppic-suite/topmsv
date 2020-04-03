@@ -919,6 +919,8 @@ app.get('/projects', function (req,res) {
                     row.projectStatus = 'Failed';
                 } else if(row.projectStatus === 3) {
                     row.projectStatus = 'Removed';
+                } else if(row.projectStatus ===4) {
+                    row.projectStatus = 'Waiting';
                 }
                 if(row.envStatus === 1) {
                     row.envStatus = 'Yes';
@@ -971,10 +973,12 @@ app.post('/toppicTask', function (req, res) {
     form.parse(req, function (err, fields, files) {
         var fastaFile = files.fastaFile;
         var lcmsFeatureFile = files.lcmsFeatureFile;
-        var fiexedPTMFile = files.fiexedPTMFile;
+        var fixedPTMFile = files.fixedPTMFile;
         var ptmShiftFile = files.ptmShiftFile;
         var projectCode = fields.projectCode;
         var threadNum = fields.threadNum;
+        var parameter = fields.command;
+        console.log("parameter",parameter);
         console.log(projectCode);
         getProjectSummary(db, projectCode, function (err, row) {
             let envStatus = row.envelopeStatus;
@@ -995,8 +999,20 @@ app.post('/toppicTask', function (req, res) {
                     return res.send({"error": 403, "message": "Error on finding msalign file! Please run TopFD first!"});
                 }
 
-                commandArr = commandArr + des_fastaFile + ' ' + msalign_dir;
-                console.log(commandArr);
+                if(fixedPTMFile !== undefined) {
+                    var des_fixedPTMFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fixedPTMFile.name;
+                    fs.renameSync(fixedPTMFile.path, des_fixedPTMFile);
+                    parameter = parameter + ' -f '+ des_fixedPTMFile;
+                }
+
+                if (ptmShiftFile !== undefined) {
+                    var des_ptmShiftFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + ptmShiftFile.name;
+                    fs.renameSync(ptmShiftFile.path, des_ptmShiftFile);
+                    parameter = parameter + ' -i '+ des_ptmShiftFile;
+                }
+
+                commandArr = parameter + ' -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
+                console.log("commandArr",commandArr);
                 console.log(threadNum);
                 submitTask(projectCode,app, commandArr, threadNum);
 
@@ -1146,43 +1162,46 @@ app.get('/download', function (req,res) {
         let projectDir = row.projectDir;
         let projectName = row.projectName;
         let fileName = row.fileName;
+        let envStatus = row.envelopeStatus;
+        if (envStatus !== 1) {
+            res.download(projectDir);
+        } else {
+            let fName = fileName.substr(0, fileName.lastIndexOf("."));
+            let dbDir = projectDir.substr(0, projectDir.lastIndexOf("/"));
 
-        let fName = fileName.substr(0, fileName.lastIndexOf("."));
-        let dbDir = projectDir.substr(0, projectDir.lastIndexOf("/"));
+            let zipName = '/'+projectName+'.zip';
+            var output = fs.createWriteStream(dbDir + zipName);
 
-        let zipName = '/'+projectName+'.zip';
-        var output = fs.createWriteStream(dbDir + zipName);
+            var archive = archiver('zip', {
+                zlib: { level: 9 } // Sets the compression level.
+            });
 
-        var archive = archiver('zip', {
-            zlib: { level: 9 } // Sets the compression level.
-        });
+            output.on('close', function() {
+                console.log(archive.pointer() + ' total bytes');
+                console.log('archiver has been finalized and the output file descriptor has closed.');
+                res.download(dbDir + zipName);
+            });
 
-        output.on('close', function() {
-            console.log(archive.pointer() + ' total bytes');
-            console.log('archiver has been finalized and the output file descriptor has closed.');
-            res.download(dbDir + zipName);
-        });
+            archive.on('error', function(err) {
+                throw err;
+            });
 
-        archive.on('error', function(err) {
-            throw err;
-        });
+            archive.pipe(output);
 
-        archive.pipe(output);
-
-        var file1 = dbDir + '/' + fName + '_ms2.feature';
-        var file2 = dbDir + '/' + fName + '_ms2.msalign';
-        var file3 = dbDir + '/' + fName + '_ms1.feature';
-        var file4 = dbDir + '/' + fName + '_feature.xml';
-        var dir5 = dbDir + '/' + fName + '_file';
-        archive
-            .append(fs.createReadStream(file1), { name: fName + '_ms2.feature' })
-            .append(fs.createReadStream(file2), { name: fName + '_ms2.msalign' })
-            .append(fs.createReadStream(file3), { name: fName + '_ms1.feature' })
-            .append(fs.createReadStream(file4), { name: fName + '_feature.xml' })
-            .directory(dir5, fName + '_file')
-            .finalize();
+            var file1 = dbDir + '/' + fName + '_ms2.feature';
+            var file2 = dbDir + '/' + fName + '_ms2.msalign';
+            var file3 = dbDir + '/' + fName + '_ms1.feature';
+            var file4 = dbDir + '/' + fName + '_feature.xml';
+            var dir5 = dbDir + '/' + fName + '_file';
+            archive
+                .append(fs.createReadStream(file1), { name: fName + '_ms2.feature' })
+                .append(fs.createReadStream(file2), { name: fName + '_ms2.msalign' })
+                .append(fs.createReadStream(file3), { name: fName + '_ms1.feature' })
+                .append(fs.createReadStream(file4), { name: fName + '_feature.xml' })
+                .directory(dir5, fName + '_file')
+                .finalize();
+        }
     })
-
 });
 app.get('/deleterow', function (req,res) {
     console.log("Hello, deleterow!");
@@ -2400,7 +2419,7 @@ function getFileName(db, id, callback) {
 function getProjects(db, uid,callback) {
     let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, SequenceStatus AS seqStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
-                WHERE (ProjectStatus = 1 OR ProjectStatus = 0) AND uid = ?;`;
+                WHERE (ProjectStatus = 1 OR ProjectStatus = 0 OR ProjectStatus = 2 OR ProjectStatus = 3) AND uid = ?;`;
     db.all(sql,[uid], (err, rows) => {
         if(err) {
             return callback(err);
