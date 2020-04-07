@@ -714,25 +714,24 @@ app.post('/sequence', function (req,res) {
                 console.log(err);
                 return res.send({"error": 403, "message": "Error on saving file!"});
             }
-            deleteSeq(projectDir, projectCode, function () {
-                updateSeqStatus(db, 0, projectCode, function () {
-                    updateProjectStatus(db, 0, projectCode, function () {
-                        res.end();
-                        execFile('node',[__dirname + '/sequenceParse.js',dbDir,des_seq],((err, stdout, stderr) => {
-                            if(err) {
-                                console.log('Processing sequence file failed!');
-                                sendFailureMess(db, projectName, projectCode, email);
-                                return;
-                            }
-                            updateSeqStatus(db,1, projectCode, function () {
-                                updateProjectStatus(db, 1, projectCode, function () {
-                                    console.log('Sequence process is done!');
-                                });
-                            });
-                        }))
-                    })
+            deleteSeq(projectDir, projectCode);
+            updateSeqStatusSync(0,projectCode);
+            res.end();
+            let parameter = __dirname + '/sequenceParse.js ' + dbDir + ' ' + des_seq;
+            submitTask(projectCode, 'node', parameter, 1);
+            updateSeqStatusSync(1, projectCode);
+            /*execFile('node',[__dirname + '/sequenceParse.js',dbDir,des_seq],((err, stdout, stderr) => {
+                if(err) {
+                    console.log('Processing sequence file failed!');
+                    sendFailureMess(db, projectName, projectCode, email);
+                    return;
+                }
+                updateSeqStatus(db,1, projectCode, function () {
+                    updateProjectStatus(db, 1, projectCode, function () {
+                        console.log('Sequence process is done!');
+                    });
                 });
-            })
+            }))*/
         })
     })
 });
@@ -809,48 +808,58 @@ app.post('/msalign', function (req, res) {
         var dbDir = fields.projectDir;
         var projectName = fields.projectName;
         var projectCode = fields.projectCode;
-        deleteEnvPeak(dbDir, projectCode, function () {
-            console.log('Deleted previous Envelope Peaks!');
-            var email = fields.email;
-            dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
-            var des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms1.name;
-            var des_ms2 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms2.name;
-            if (ms1 === undefined || ms2 === undefined) {
-                console.log("Upload files failed!");
-                sendFailureMess(db, projectName, projectCode, email);
-                return;
+        deleteEnvPeak(dbDir, projectCode);
+
+        console.log('Deleted previous Envelope Peaks!');
+        var email = fields.email;
+        dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
+        var des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms1.name;
+        var des_ms2 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms2.name;
+        if (ms1 === undefined || ms2 === undefined) {
+            console.log("Upload files failed!");
+            sendFailureMess(db, projectName, projectCode, email);
+            return;
+        }
+        fs.rename(ms1.path, des_ms1, function (err) {
+            if (err) {
+                console.log(err);
+                return res.send({"error": 403, "message": "Error on saving file!"});
             }
-            fs.rename(ms1.path, des_ms1, function (err) {
+            fs.rename(ms2.path, des_ms2, function (err) {
                 if (err) {
                     console.log(err);
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
-                fs.rename(ms2.path, des_ms2, function (err) {
-                    if (err) {
-                        console.log(err);
-                        return res.send({"error": 403, "message": "Error on saving file!"});
-                    }
-                    updateProjectStatus(db,0, fields.projectCode, function () {
-                        res.end();
-                        execFile('node',[__dirname + '/convertMS1Msalign.js',dbDir,des_ms1],((err, stdout, stderr) => {
+                res.end();
+                let parameterTask1 = __dirname + '/convertMS1Msalign.js '+ dbDir + ' ' + des_ms1;
+                submitTask(projectCode, 'node', parameterTask1, 1);
+
+                let parameterTask2 = __dirname + '/convertMS2Msalign.js '+ dbDir + ' ' + des_ms2;
+                submitTask(projectCode, 'node', parameterTask2, 1);
+                updateEnvStatusSync(1, projectCode);
+
+
+
+                /*updateProjectStatus(db,0, fields.projectCode, function () {
+                    res.end();
+                    execFile('node',[__dirname + '/convertMS1Msalign.js',dbDir,des_ms1],((err, stdout, stderr) => {
+                        if(err) {
+                            console.log(stdout);
+                            sendFailureMess(db, projectName, projectCode, email);
+                        }
+                        execFile('node',[__dirname + '/convertMS2Msalign.js',dbDir,des_ms2],((err, stdout, stderr) => {
                             if(err) {
                                 console.log(stdout);
                                 sendFailureMess(db, projectName, projectCode, email);
+                            } else {
+                                sendSuccessMess(db, projectName, projectCode, email);
+                                console.log('msalign file processing is done!');
                             }
-                            execFile('node',[__dirname + '/convertMS2Msalign.js',dbDir,des_ms2],((err, stdout, stderr) => {
-                                if(err) {
-                                    console.log(stdout);
-                                    sendFailureMess(db, projectName, projectCode, email);
-                                } else {
-                                    sendSuccessMess(db, projectName, projectCode, email);
-                                    console.log('msalign file processing is done!');
-                                }
-                            }));
                         }));
-                    });
-                })
+                    }));
+                });*/
             })
-        });
+        })
     })
 });
 app.get('/auth/google/callback',
@@ -993,7 +1002,7 @@ app.post('/toppicTask', function (req, res) {
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
                 console.log("Files are saved.");
-
+                console.log("msaling_dir", msalign_dir);
                 if (!fs.existsSync(msalign_dir)) {
                     console.log('The msalign file does not exist.');
                     return res.send({"error": 403, "message": "Error on finding msalign file! Please run TopFD first!"});
@@ -1016,19 +1025,17 @@ app.post('/toppicTask', function (req, res) {
                 console.log(threadNum);
                 submitTask(projectCode,app, commandArr, threadNum);
 
-                deleteSeq(projectDir, projectCode, function () {
-                    updateSeqStatus(db, 0, projectCode, function () {
-                        let seqApp = 'node';
-                        let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
-                        let seqName = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2_toppic_prsm.tsv';
-                        let msalign_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqName;
-                        let seqParameter = './sequenceParse.js ' + dbDir + ' ' + msalign_dir;
-                        console.log(seqParameter);
-                        updateSeqStatusSync(1, projectCode);
-                        submitTask(projectCode, seqApp, seqParameter, 1);
-                        res.end();
-                    });
-                });
+                deleteSeq(projectDir, projectCode);
+                updateSeqStatusSync(0, projectCode);
+                let seqApp = 'node';
+                let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
+                let seqName = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2_toppic_prsm.tsv';
+                let seq_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqName;
+                let seqParameter = './sequenceParse.js ' + dbDir + ' ' + seq_dir;
+                console.log(seqParameter);
+                updateSeqStatusSync(1, projectCode);
+                submitTask(projectCode, seqApp, seqParameter, 1);
+                res.end();
             })
         })
     })
@@ -1119,6 +1126,7 @@ app.get('/topfdTask', function (req,res) {
         commandArr += projectDir;
         // console.log(projectDir);
         // console.log(commandArr);
+        deleteEnvPeak(projectDir, projectCode);
         submitTask(projectCode, app, commandArr, threadNumber);
         let fileName = result.fileName.substr(0, result.fileName.lastIndexOf("."));
         let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
@@ -1128,8 +1136,6 @@ app.get('/topfdTask', function (req,res) {
         updateEnvStatusSync(1, projectCode);
         submitTask(projectCode, 'node','./convertMS1Msalign.js ' + dbDir + ' ' + des_ms1, 1);
         submitTask(projectCode, 'node','./convertMS2Msalign.js ' + dbDir + ' ' + des_ms2, 1);
-        /*updateEnvStatus(db, 1, projectCode, function () {
-        });*/
     } else {
         res.write("No such project exists!");
         res.end();
@@ -1143,18 +1149,20 @@ app.get('/topfdTask', function (req,res) {
 app.get('/deleteMsalign', function (req,res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
-    deleteEnvPeak(projectDir, projectCode, function () {
-        res.end();
-    });
+    deleteEnvPeak(projectDir, projectCode);
+    res.end();
 });
 app.get('/deleteSeq', function (req,res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
-    deleteSeq(projectDir, projectCode, function () {
+    deleteSeq(projectDir,projectCode);
+    updateSeqStatusSync(0,projectCode);
+    res.end();
+    /*deleteSeq(projectDir, projectCode, function () {
         updateSeqStatus(db,0, projectCode, function () {
             res.end();
         });
-    });
+    });*/
 });
 app.get('/download', function (req,res) {
     let projectCode = req.query.id;
@@ -1817,7 +1825,7 @@ function deleteEnv(dir, envID, callback) {
     });
     resultDb.close();
 }
-function deleteEnvPeak(projectDir, projectCode, callback) {
+function deleteEnvPeak(projectDir, projectCode) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);
 
@@ -1826,9 +1834,10 @@ function deleteEnvPeak(projectDir, projectCode, callback) {
     stmt = resultDb.prepare(`DROP TABLE IF EXISTS envelope;`);
     stmt.run();
     resultDb.close();
-    updateEnvStatus(db,0,projectCode, function () {
+    updateEnvStatusSync(0, projectCode);
+    /*updateEnvStatus(db,0,projectCode, function () {
         callback();
-    });
+    });*/
 }
 function updateSeq(projectDir, proteoform, scan) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
@@ -1840,14 +1849,13 @@ function updateSeq(projectDir, proteoform, scan) {
     console.log(info.changes);
     resultDb.close();
 }
-function deleteSeq(projectDir, projectCode, callback) {
+function deleteSeq(projectDir, projectCode) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);
 
     let stmt = resultDb.prepare(`DROP TABLE IF EXISTS sequence;`);
     stmt.run();
     resultDb.close();
-    callback();
 }
 function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
     let sql = `UPDATE envelope

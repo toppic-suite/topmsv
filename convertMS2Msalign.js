@@ -57,7 +57,7 @@ function importData(database,data) {
                 var mass = parseFloat(element.split("\t")[0]);
                 var inte = parseFloat(element.split("\t")[1]);
                 var charge = parseInt(element.split("\t")[2]);
-                stmtEnv.run(env_id,scan_id,mass,inte,charge);
+                // stmtEnv.run(env_id,scan_id,mass,inte,charge);
 
                 var peaks = stmtGetPeakList.all(scan_id);
                 var peakList = calcDistrubution.emass(mass,charge,peaks);
@@ -65,6 +65,7 @@ function importData(database,data) {
                     env_id = env_id + 1;
                     return;
                 }
+                stmtEnv.run(env_id,scan_id,mass,inte,charge);
                 peakList.forEach(peak => {
                     stmtEnvPeak.run(envPeakID,env_id,peak.mz,peak.intensity);
                     envPeakID++;
