@@ -118,7 +118,7 @@ button#deleteSeq {
 }
 button#topfdtask {
     position: relative;
-    left: 60%;
+    left: 40%;
     font-size: 93%;
     background-color: #555555;
     color: white;
@@ -130,7 +130,7 @@ button#topfdtask {
 }
 button#toppicTask {
     position: relative;
-    left: 62%;
+    left: 40%;
     font-size: 93%;
     background-color: #555555;
     color: white;
@@ -142,7 +142,7 @@ button#toppicTask {
 }
 button#home {
     position: relative;
-    /*left: 51%;*/
+    left: 61%;
     /*font-size: 95%;*/
     background-color: #555555;
     color: white;
@@ -192,7 +192,7 @@ button#prev1 {
 }
 button#uploadMsalign {
     position: relative;
-    /*left: 71%;*/
+    left: 40%;
     /*font-size: 95%;*/
     background-color: #555555;
     color: white;
@@ -204,12 +204,12 @@ button#uploadMsalign {
 }
 button#uploadSequence {
     position: relative;
-    /*left: 60%;*/
+    left: 25%;
     /*font-size: 95%;*/
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 14px;
+    padding: 2px 5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
