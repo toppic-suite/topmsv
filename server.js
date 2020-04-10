@@ -1,4 +1,5 @@
 var fs = require('fs');
+var rimraf = require("rimraf");
 var archiver = require('archiver');
 var nodemailer = require('nodemailer');
 var favicon = require('serve-favicon');
@@ -38,7 +39,8 @@ const job = new CronJob('00 00 00 * * *', function() {
     console.log('Check expired projects:', d);
     checkExpiredProj(db, function (err, rows) {
         rows.forEach(element => {
-            fs.unlink(element.dir, (err) => {
+            removeProject(element.pcode);
+            /*fs.unlink(element.dir, (err) => {
                 if (err) throw err;
                 console.log(`${element.fileName} was deleted`);
             });
@@ -47,9 +49,7 @@ const job = new CronJob('00 00 00 * * *', function() {
                 if (err) throw err;
                 console.log(`${dbDir} was deleted`);
             });
-            updateProjectStatus(db, 3, element.pcode,function(err){
-                console.log(`${element.pcode} status has been updated`);
-            });
+            updateProjectStatusSync(3, element.pcode);*/
         });
     });
 });
@@ -674,11 +674,11 @@ app.get('/data', function(req, res) {
                     res.end();
                 } else if (row.projectStatus === 2) {
                     console.log("Project status: 2");
-                    res.send("Your project failed. Please check your data.");
+                    res.send("Your project failed.");
                     res.end();
                 } else if (row.projectStatus === 3) {
                     console.log("Project status: 3");
-                    res.send("Your project has been removed, because it has been one month since you uploaded it.");
+                    res.send("Your project has been removed.");
                     res.end();
                 } else if (row.projectStatus === 4) {
                     console.log("Project status: 4");
@@ -942,6 +942,7 @@ app.get('/projects', function (req,res) {
                     row.seqStatus = 'No';
                 }
                 row.projectLink = '/data?id=' + row.projectCode;
+                row.editLink = '/projectManagement?projectCode=' + row.projectCode;
             });
             res.render('pages/projects', {
                 projects: rows
@@ -1145,6 +1146,61 @@ app.get('/topfdTask', function (req,res) {
     // res.redirect('/');
     // res.write('Your task is submitted, please wait for result! Please go back to home page to wait result: <a href ="https://toppic.soic.iupui.edu/">Home</a>');
     // res.end();
+});
+app.get('/projectManagement', function (req, res) {
+    if (req.session.passport === undefined){
+        res.write("Please log in first!");
+        res.end();
+        return;
+    }
+    else {
+        //console.log(req.session.passport.user.profile);
+        const uid = req.session.passport.user.profile.id;
+        const projectCode = req.query.projectCode;
+        getProjectSummary(db, projectCode, function (err, row) {
+            let projectName = row.projectName;
+            let projectPublic = row.public;
+            let projectDescription = row.description;
+            let projectUid = row.uid;
+            if(projectUid !== uid) {
+                res.write("Please log in first!");
+                res.end();
+                return;
+            }
+            res.render('pages/projectManagement', {
+                projectCode: projectCode,
+                projectName: projectName,
+                publicValue: projectPublic,
+                description: projectDescription
+            })
+        });
+    }
+
+});
+app.post('/removeProject', function (req, res) {
+    console.log("Hello, removeProject!");
+    const projectCode = req.query.projectCode;
+    getProjectSummary(db, projectCode, function (err, row) {
+        let projectStatus = row.projectStatus;
+        if (projectStatus === 3) {
+            res.end();
+            return;
+        } else {
+            removeProject(projectCode);
+            res.end();
+        }
+    });
+});
+app.post('/editProject', function (req,res) {
+    console.log("Hello, editProject!");
+    const projectCode = req.query.projectCode;
+    const projectName = req.query.projectName;
+    const description = req.query.description;
+    const publicStatus = req.query.publicStatus;
+    updateProjectNameSync(projectName, projectCode);
+    updateDescriptionSync(description, projectCode);
+    updatePublicStatusSync(publicStatus, projectCode);
+    res.end();
 });
 app.get('/deleteMsalign', function (req,res) {
     let projectDir = req.query.projectDir;
@@ -1430,6 +1486,10 @@ app.get('/envlist', function(req, res) {
     let scanid = req.query.scanID;
     let projectCode = req.query.projectCode;
     //console.log(scanid);
+    getProjectSummary(db, projectCode, function (err, row) {
+
+
+    })
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
@@ -1720,7 +1780,9 @@ function getProjectSummary(db, id, callback) {
                     EnvelopeStatus AS envelopeStatus,
                     SequenceStatus AS sequenceStatus,
                     MS1_envelope_file AS ms1_envelope_file,
-                    uid AS uid
+                    uid AS uid,
+                    public AS public,
+                    Description AS description
                 FROM Projects
                 WHERE ProjectCode = ?`;
     db.get(sql, [id], (err, row) => {
@@ -2496,6 +2558,46 @@ function checkExpiredProj(db, callback) {
         }
     });
 }
+
+function removeProject(projectCode) {
+    updateProjectStatusSync(3, projectCode);
+    getProjectSummary(db, projectCode, function (err, row) {
+        let projectDir = row.projectDir;
+        let dir = projectDir.substr(0, projectDir.lastIndexOf("/"));
+        rimraf(dir, [],function () { console.log("Remove Project " + projectCode); });
+    });
+}
+
+function updatePublicStatusSync(status, projectCode) {
+    const resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Projects
+                SET public = ?
+                WHERE ProjectCode = ?`);
+    let info = stmt.run(status, projectCode);
+    console.log('updatePublicStatusSync info', info);
+    resultDb.close();
+}
+
+function updateDescriptionSync(description, projectCode) {
+    const resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Projects
+                SET Description = ?
+                WHERE ProjectCode = ?`);
+    let info = stmt.run(description, projectCode);
+    console.log('updateDescriptionSync info', info);
+    resultDb.close();
+}
+
+function updateProjectNameSync(projectName, projectCode) {
+    const resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Projects
+                SET ProjectName = ?
+                WHERE ProjectCode = ?`);
+    let info = stmt.run(projectName, projectCode);
+    console.log('updateProjectNameSync info', info);
+    resultDb.close();
+}
+
 function checkWaitingTasks(db, callback) {
     let sql = `SELECT Tasks.mzmlFile AS mzmlFile, Tasks.envFile AS envFile, Tasks.processEnv AS processEnv, Projects.ProjectName AS projectName, Projects.FileName AS fname, Projects.Email AS email
                 FROM Tasks INNER JOIN Projects ON Tasks.projectCode = Projects.ProjectCode
