@@ -34,6 +34,12 @@ const calcDistrubution = new molecularFormulae();
 const BetterDB = require('better-sqlite3');
 
 // Check expired projects every day midnight
+/**
+ * Create a CronJob to check expired projects every day midnight, if expired then remove projects
+ *
+ * @async
+ * @type {CronJob}
+ */
 const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
     console.log('Check expired projects:', d);
@@ -58,6 +64,14 @@ job.start();
 var avaiResourse = cpuCount - 2;
 console.log("cpuCount", cpuCount);
 // Check waiting tasks in database every second
+/**
+ * Create a task scheduler for topview app
+ * It will check Tasks table in project database every second, if taskList is not empty then check
+ * whether it has enough resources, if there are available resources then execute tasks, if not then check again
+ * next second.
+ *
+ * @type {CronJob}
+ */
 const checkWaitTasks = new CronJob("* * * * * *", function() {
     // console.log("Check waiting tasks in database");
     let tasksList = getTaskListSync();
@@ -262,6 +276,11 @@ app.use(favicon(__dirname + '/public/image/favicon.ico'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+/**
+ * Express router for main webpage
+ *
+ * Show all public projects in database to both guests and users
+ */
 app.get('/', function (req, res) {
     if (req.session.token) {
         res.cookie('token', req.session.token);
@@ -301,15 +320,33 @@ app.get('/', function (req, res) {
 
 app.use(express.static(__dirname + '/public'));
 
+/**
+ * Express router for /submit
+ * send submit.html page to user
+ */
 app.get('/submit', function (req, res) {
     res.sendFile( __dirname + "/public/" + "submit.html" );
 });
+
+/**
+ * Express router for /logout
+ *
+ * clear session and redirect to home page
+ */
 app.get('/logout',(req, res)=> {
     req.logout();
     //req.session.destroy();
     req.session = null;
     res.redirect('/');
 });
+
+/**
+ * Express router for /upload
+ *
+ * Save mzML file and env file (optional) to target directory
+ * and save project information into project database,
+ * then submit task to task scheduler
+ */
 app.post('/upload', function (req, res) {
     console.log("hello,upload");
     let uid = req.session.passport.user.profile.id;
@@ -338,7 +375,7 @@ app.post('/upload', function (req, res) {
         var projectname = fields.projectname;
         var emailtosend = email;
         var description = fields.description;
-        var public = fields.public;
+        var publicStatus = fields.public;
         var file = files.dbfile;
         if (file === undefined) {
             console.log("Upload files failed!");
@@ -389,7 +426,7 @@ app.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRowSync(db, id, projectname, fname, description,des_file,4, emailtosend,1,0,envFile1.name,uid,public);
+                                insertRowSync(db, id, projectname, fname, description,des_file,4, emailtosend,1,0,envFile1.name,uid,publicStatus);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -516,7 +553,7 @@ app.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,uid,public);
+                            insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,uid,publicStatus);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -591,6 +628,11 @@ app.post('/upload', function (req, res) {
     })
 });
 
+/**
+ * Express router for /data
+ *
+ * Check project status and render result page back to users
+ */
 app.get('/data', function(req, res) {
     console.log("Hello data!");
     var projectCode = req.query.id;
@@ -689,6 +731,13 @@ app.get('/data', function(req, res) {
         }
     });
 });
+
+/**
+ * Express router for /sequence
+ *
+ * Handle request to upload sequence file, delete current sequence information in database
+ * then submit task to process sequence file
+ */
 app.post('/sequence', function (req,res) {
     console.log('Hello, sequence!');
     var form = new formidable.IncomingForm();
@@ -735,6 +784,12 @@ app.post('/sequence', function (req,res) {
         })
     })
 });
+/**
+ * Express router for /seqQuery
+ *
+ * Query proteoform by projectCode and scan,
+ * send back proteoform result to user
+ */
 app.get('/seqQuery', function (req, res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
@@ -757,6 +812,11 @@ app.get('/seqQuery', function (req, res) {
         }
     });
 });
+/**
+ * Express router for /updateSeq
+ *
+ * Handle request to update one proteoform in database by scan
+ */
 app.post('/updateSeq', function (req, res) {
     console.log('Hello updateSeq!');
     let uid;
@@ -796,6 +856,13 @@ app.post('/updateSeq', function (req, res) {
         }
     })
 });
+/**
+ * Express router for /msalign
+ *
+ * Handle request to upload msalign file, save files to project directory,
+ * then delete current envelope peaks and submit process msalign file task to
+ * task scheduler
+ */
 app.post('/msalign', function (req, res) {
     var form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
@@ -862,6 +929,11 @@ app.post('/msalign', function (req, res) {
         })
     })
 });
+/**
+ * Express router for /auth/google/callback
+ *
+ * authenticate users by google, if there is a new user, then insert user information into Users table of database
+ */
 app.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     function(req, res) {
@@ -871,6 +943,13 @@ app.get('/auth/google/callback',
         insertUser(db, profile.id, profile.emails[0].value,profile.name.givenName, profile.name.familyName, profile.displayName);
         res.redirect('/');
     });
+
+/**
+ * Express router for /seqResults
+ *
+ * Query proteoform list by projectCode and
+ * render a sequence list web page to users
+ */
 app.get('/seqResults', function (req,res) {
     console.log('Hello, seqResults');
     let projectCode = req.query.projectCode;
@@ -902,6 +981,13 @@ app.get('/seqResults', function (req,res) {
         }
     })
 });
+
+/**
+ * Express router for /projects
+ *
+ * Authenticate user by uid then
+ * get a list which contains all projects the user owns and render the list back to user
+ */
 app.get('/projects', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
@@ -951,6 +1037,11 @@ app.get('/projects', function (req,res) {
     }
 
 });
+/**
+ * Express router for /toppic
+ *
+ * Render a toppic task configure web page back to user
+ */
 app.get('/toppic', function (req, res) {
     if (req.session.passport === undefined) {
         res.write("Please log in first to use topic for your projecct");
@@ -970,8 +1061,13 @@ app.get('/toppic', function (req, res) {
         }
     }
 });
+/**
+ * Express router for /toppicTask
+ *
+ * Hanld request to generate a toppic task, save files and delete previous sequence information in database
+ */
 app.post('/toppicTask', function (req, res) {
-    console.log("Hello, toppicTask")
+    console.log("Hello, toppicTask");
     const app = './proteomics_cpp/bin/toppic';
     let commandArr = '';
     var form = new formidable.IncomingForm();
@@ -1042,6 +1138,11 @@ app.post('/toppicTask', function (req, res) {
     })
 
 });
+/**
+ * Express router for /topfd
+ *
+ * Render topfd configure page to user
+ */
 app.get('/topfd', function (req, res) {
     if (req.session.passport === undefined) {
         res.write("Please log in first to use topfd for your projecct");
@@ -1061,6 +1162,11 @@ app.get('/topfd', function (req, res) {
         }
     }
 });
+/**
+ * Express router for /topfdTask
+ *
+ * Handle request to create a topFD task, generate parameter for task and delete previous envelope peaks
+ */
 app.get('/topfdTask', function (req,res) {
     const app = './proteomics_cpp/bin/topfd';
     let commandArr = '';
@@ -1147,6 +1253,11 @@ app.get('/topfdTask', function (req,res) {
     // res.write('Your task is submitted, please wait for result! Please go back to home page to wait result: <a href ="https://toppic.soic.iupui.edu/">Home</a>');
     // res.end();
 });
+/**
+ * Express router for /projectManagement
+ *
+ * Render project management page to user
+ */
 app.get('/projectManagement', function (req, res) {
     if (req.session.passport === undefined){
         res.write("Please log in first!");
@@ -1177,6 +1288,11 @@ app.get('/projectManagement', function (req, res) {
     }
 
 });
+/**
+ * Express router for /removeProject
+ *
+ * Remove project by projectCode
+ */
 app.post('/removeProject', function (req, res) {
     console.log("Hello, removeProject!");
     const projectCode = req.query.projectCode;
@@ -1191,6 +1307,11 @@ app.post('/removeProject', function (req, res) {
         }
     });
 });
+/**
+ * Express router for /editProject
+ *
+ * Edit projectName, projectDescription, projectPublicStatus by projectCode
+ */
 app.post('/editProject', function (req,res) {
     console.log("Hello, editProject!");
     const projectCode = req.query.projectCode;
@@ -1202,12 +1323,22 @@ app.post('/editProject', function (req,res) {
     updatePublicStatusSync(publicStatus, projectCode);
     res.end();
 });
+/**
+ * Express router for /deleteMsalign
+ *
+ * Delete current envelope peaks
+ */
 app.get('/deleteMsalign', function (req,res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
     deleteEnvPeak(projectDir, projectCode);
     res.end();
 });
+/**
+ * Express router for /deleteSeq
+ *
+ * Delete current sequence information
+ */
 app.get('/deleteSeq', function (req,res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
@@ -1220,6 +1351,12 @@ app.get('/deleteSeq', function (req,res) {
         });
     });*/
 });
+/**
+ * Express router for /download
+ *
+ * If envStatus is 0, then render mzML file to user.
+ * IF envStatus is 1, then zip all results files then render zip back to user.
+ */
 app.get('/download', function (req,res) {
     let projectCode = req.query.id;
     getProjectSummary(db, projectCode, function (err,row) {
@@ -1267,6 +1404,11 @@ app.get('/download', function (req,res) {
         }
     })
 });
+/**
+ * Express router for /deleterow
+ *
+ * Delete multiple envelopes by envelope_id
+ */
 app.get('/deleterow', function (req,res) {
     console.log("Hello, deleterow!");
     let projectDir = req.query.projectDir;
@@ -1276,6 +1418,11 @@ app.get('/deleterow', function (req,res) {
         res.end();
     });
 });
+/**
+ * Express router for /addrow
+ *
+ * Add one envelope and calculate its distribution then save it in existing database
+ */
 app.get('/addrow', function (req,res) {
     console.log("Hello, addrow!");
     let projectDir = req.query.projectDir;
@@ -1317,6 +1464,15 @@ app.get('/addrow', function (req,res) {
         }
     });
 });
+
+/**
+ * Route serving edit row.
+ * @name get/editrow
+ * @function
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
 app.get('/editrow', function (req,res) {
     console.log("Hello, editrow!");
     let projectDir = req.query.projectDir;
@@ -1901,6 +2057,14 @@ function deleteEnvPeak(projectDir, projectCode) {
         callback();
     });*/
 }
+
+/**
+ * Update proteoform of sequence table by scan
+ *
+ * @param projectDir
+ * @param proteoform
+ * @param scan
+ */
 function updateSeq(projectDir, proteoform, scan) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);
@@ -1908,7 +2072,7 @@ function updateSeq(projectDir, proteoform, scan) {
                                 SET proteoform = ?
                                 WHERE scan_id IN (SELECT ID FROM SPECTRA WHERE SCAN = ?);`);
     let info = stmt.run(proteoform, scan);
-    console.log(info.changes);
+    console.log("updateSeq info", info.changes);
     resultDb.close();
 }
 function deleteSeq(projectDir, projectCode) {
@@ -2611,9 +2775,9 @@ function checkWaitingTasks(db, callback) {
         }
     })
 }
-function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,public) {
-    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, SequenceStatus, MS1_envelope_file, uid,public) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
-    db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,SeqStatus,ms1EnvFile,uid,public], function(err) {
+function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,publicStatus) {
+    let sql = 'INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, SequenceStatus, MS1_envelope_file, uid, public) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
+    db.run(sql, [ProjectCode,ProjectName,FileName,Description,ProjectDir,ProjectStatus,Email,EnvStatus,SeqStatus,ms1EnvFile,uid,publicStatus], function(err) {
         if (err) {
             return console.log(err.message);
         }
@@ -2621,10 +2785,10 @@ function insertRow(db, ProjectCode, ProjectName, FileName, Description, ProjectD
         console.log(`A row has been inserted with rowid ${this.lastID}`);
     });
 }
-function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,public) {
+function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,publicStatus) {
     let resultDb = new BetterDB('./db/projectDB.db');
-    let stmt = resultDb.prepare('INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, SequenceStatus, MS1_envelope_file, uid,public) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)');
-    let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid,public);
+    let stmt = resultDb.prepare('INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, SequenceStatus, MS1_envelope_file, uid, public) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)');
+    let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid, publicStatus);
     console.log("insertRowSync info", info);
     resultDb.close();
 }
