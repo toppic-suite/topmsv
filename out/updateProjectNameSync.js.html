@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: updateProjectNameSync.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: updateProjectNameSync.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var BetterDB = require("better-sqlite3");
+/**
+ * Update project name by given projectCode. Sync mode.
+ * @param {string} projectName
+ * @param {string} projectCode
+ */
+function updateProjectNameSync(projectName, projectCode) {
+    const resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`UPDATE Projects
+                SET ProjectName = ?
+                WHERE ProjectCode = ?`);
+    let info = stmt.run(projectName, projectCode);
+    console.log('updateProjectNameSync info', info);
+    resultDb.close();
+}
+module.exports = updateProjectNameSync;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addEnv">addEnv</a></li><li><a href="global.html#checkExpiredProj">checkExpiredProj</a></li><li><a href="global.html#checkProjectStatusAsync">checkProjectStatusAsync</a></li><li><a href="global.html#checkProjectStatusSync">checkProjectStatusSync</a></li><li><a href="global.html#checkRemainingTask">checkRemainingTask</a></li><li><a href="global.html#checkWaitingTasks">checkWaitingTasks</a></li><li><a href="global.html#deleteEnv">deleteEnv</a></li><li><a href="global.html#deleteEnvPeak">deleteEnvPeak</a></li><li><a href="global.html#deleteMultiEnvs">deleteMultiEnvs</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteSeqSync">deleteSeqSync</a></li><li><a href="global.html#deleteSingleEnv">deleteSingleEnv</a></li><li><a href="global.html#editEnv">editEnv</a></li><li><a href="global.html#getAllSeq">getAllSeq</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#getEnvCharge">getEnvCharge</a></li><li><a href="global.html#getEnvMax">getEnvMax</a></li><li><a href="global.html#getEnvNum">getEnvNum</a></li><li><a href="global.html#getEnvPeakList">getEnvPeakList</a></li><li><a href="global.html#getEnvTable">getEnvTable</a></li><li><a href="global.html#getFilePath">getFilePath</a></li><li><a href="global.html#getNext">getNext</a></li><li><a href="global.html#getNextLevelOneScan">getNextLevelOneScan</a></li><li><a href="global.html#getPeakList">getPeakList</a></li><li><a href="global.html#getPrecMZ">getPrecMZ</a></li><li><a href="global.html#getPrev">getPrev</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getProjectsGuest">getProjectsGuest</a></li><li><a href="global.html#getProjectSummary">getProjectSummary</a></li><li><a href="global.html#getProteoform">getProteoform</a></li><li><a href="global.html#getRelatedScan1">getRelatedScan1</a></li><li><a href="global.html#getRelatedScan2">getRelatedScan2</a></li><li><a href="global.html#getRTAsync">getRTAsync</a></li><li><a href="global.html#getScanID">getScanID</a></li><li><a href="global.html#getScanLevel">getScanLevel</a></li><li><a href="global.html#getScanLevelTwoList">getScanLevelTwoList</a></li><li><a href="global.html#getScanRange">getScanRange</a></li><li><a href="global.html#getSumList">getSumList</a></li><li><a href="global.html#getTaskListAsync">getTaskListAsync</a></li><li><a href="global.html#getTaskListSync">getTaskListSync</a></li><li><a href="global.html#ifEnvExists">ifEnvExists</a></li><li><a href="global.html#ifExists">ifExists</a></li><li><a href="global.html#insertEnvPeak">insertEnvPeak</a></li><li><a href="global.html#insertRow">insertRow</a></li><li><a href="global.html#insertRowSync">insertRowSync</a></li><li><a href="global.html#insertTask">insertTask</a></li><li><a href="global.html#insertTaskSync">insertTaskSync</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#makeid">makeid</a></li><li><a href="global.html#processFailure">processFailure</a></li><li><a href="global.html#sendFailureMess">sendFailureMess</a></li><li><a href="global.html#sendSuccessMess">sendSuccessMess</a></li><li><a href="global.html#showData">showData</a></li><li><a href="global.html#submitTask">submitTask</a></li><li><a href="global.html#updateDescriptionSync">updateDescriptionSync</a></li><li><a href="global.html#updateEnvStatus">updateEnvStatus</a></li><li><a href="global.html#updateEnvStatusSync">updateEnvStatusSync</a></li><li><a href="global.html#updateProjectNameSync">updateProjectNameSync</a></li><li><a href="global.html#updateProjectStatus">updateProjectStatus</a></li><li><a href="global.html#updateProjectStatusSync">updateProjectStatusSync</a></li><li><a href="global.html#updatePublicStatusSync">updatePublicStatusSync</a></li><li><a href="global.html#updateSeqStatus">updateSeqStatus</a></li><li><a href="global.html#updateSeqStatusSync">updateSeqStatusSync</a></li><li><a href="global.html#updateSequence">updateSequence</a></li><li><a href="global.html#updateTaskStatusAsync">updateTaskStatusAsync</a></li><li><a href="global.html#updateTaskStatusSync">updateTaskStatusSync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Apr 28 2020 12:08:15 GMT-0400 (Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
