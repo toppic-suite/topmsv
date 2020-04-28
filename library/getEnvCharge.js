@@ -4,6 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {sqliteDB} resultDB
  * @param {number} envelope_id
  * @param {function} callback
+ * @deprecated
  */
 function getEnvCharge(resultDB, envelope_id, callback) {
     let sql = `SELECT mono_mass AS mono_mass, charge AS charge
