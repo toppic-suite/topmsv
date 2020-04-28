@@ -1,0 +1,49 @@
+let times = 0;
+let result=[];
+const getEnvNum = require("./getEnvNum");
+const getEnvPeakList = require("./getEnvPeakList");
+const sqlite3 = require('sqlite3').verbose();
+
+/**
+ * Helper function for router envlist
+ * @param resultDB
+ * @param scan_id
+ * @param res
+ */
+function showData(resultDB,scan_id,res) {
+    getEnvNum(resultDB, scan_id, function (err, rows) {
+        //console.log(rows.length);
+        //console.log(typeof rows);
+        let max = rows.length;
+        if (rows.length === 0){
+            //console.log("Empty rows!");
+            res.write("0");
+            res.end();
+            resultDB.close();
+        }
+        else {
+            rows.forEach(envelope => {
+                let id = envelope.id;
+                let charge = envelope.charge;
+                let mono_mass = envelope.mono_mass;
+                let oneEnvelope = {};
+                oneEnvelope.mono_mass = mono_mass;
+                oneEnvelope.charge = charge;
+                getEnvPeakList(resultDB,id, function(err, rows) {
+                    oneEnvelope.env_peaks=rows;
+                    result.push(oneEnvelope);
+                    ++times;
+                    if(times === max){
+                        //console.log(JSON.stringify(result));
+                        res.write(JSON.stringify(result));
+                        res.end();
+                        times = 0;
+                        result = [];
+                        resultDB.close();
+                    }
+                });
+            });
+        }
+    });
+}
+module.exports = showData;
