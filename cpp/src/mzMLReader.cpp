@@ -193,7 +193,7 @@ void mzMLReader::insertSp(int scanIndex, std::string scan, double retentionTime)
 };
 void mzMLReader::insertPeak(int peakIndex, int scanIndex, double intensity, double mz) {
    /* Create SQL statement */
-   std::string sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY) "  \
+   std::string sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME) "  \
          "VALUES (" + int2str(peakIndex) + ", " + int2str(scanIndex) + ", " + num2str(mz) + ", " + num2str(intensity) + " ); ";
    sql = (char *)sqlstr.c_str();
 
