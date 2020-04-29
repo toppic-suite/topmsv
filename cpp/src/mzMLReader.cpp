@@ -193,6 +193,35 @@ void mzMLReader::insertSp(int scanIndex, std::string scan, double retentionTime)
 };
 void mzMLReader::insertPeak(int peakIndex, int scanIndex, double intensity, double mz) {
    /* Create SQL statement */
+   std::string sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY) "  \
+         "VALUES (" + int2str(peakIndex) + ", " + int2str(scanIndex) + ", " + num2str(mz) + ", " + num2str(intensity) + " ); ";
+   sql = (char *)sqlstr.c_str();
+
+   /* Execute SQL statement */
+   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+   if( rc != SQLITE_OK ){
+      // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+      std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+      sqlite3_free(zErrMsg);
+      if (rc == 19) {
+        sqlstr = "SELECT * FROM PEAKS WHERE ID=" + int2str(peakIndex) + ";";
+        std::cout << sqlstr << std::endl;
+        std::cout << int2str(peakIndex) << ", " << int2str(scanIndex) << ", " << num2str(mz) << ", " << num2str(intensity) << std::endl;
+        sql = (char *)sqlstr.c_str();
+        /* Execute SQL statement */
+        rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+        if( rc != SQLITE_OK ){
+          std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+          sqlite3_free(zErrMsg);
+        }
+      }
+   }else{
+      // fprintf(stdout, "Records created successfully\n");
+      // std::cout << "Records created successfully" << std::endl;
+   }
+};
+void mzMLReader::insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz) {
+   /* Create SQL statement */
    std::string sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME) "  \
          "VALUES (" + int2str(peakIndex) + ", " + int2str(scanIndex) + ", " + num2str(mz) + ", " + num2str(intensity) + " ); ";
    sql = (char *)sqlstr.c_str();
