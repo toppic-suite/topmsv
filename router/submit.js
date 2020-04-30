@@ -4,10 +4,10 @@
  */
 var express = require("express");
 var router = express.Router();
-
+var path = require("path");
 
 var submit = router.get('/submit', function (req, res) {
-    res.sendFile( __dirname + "/public/" + "submit.html" );
+    res.sendFile( path.resolve(__dirname + "/../public/submit.html") );
 });
 
 module.exports = submit;
