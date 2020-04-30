@@ -58,6 +58,12 @@ const getTaskListSync = require('./library/getTaskListSync');
  *
  * @type {CronJob}
  */
+const checkProjectStatusSync = require("./library/checkProjectStatusSync");
+const updateProjectStatusSync = require("./library/updateProjectStatusSync");
+const updateTaskStatusSync = require("./library/updateTaskStatusSync");
+const processFailure = require("./library/processFailure");
+const checkRemainingTask = require("./library/checkRemainingTask");
+
 const checkWaitTasks = new CronJob("* * * * * *", function() {
     // console.log("Check waiting tasks in database");
     let tasksList = getTaskListSync();
@@ -97,7 +103,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             updateTaskStatusSync(1, taskID);
                             avaiResourse = avaiResourse + threadNum;
                             setTimeout(function () {
-                                processFailure(db,projectCode, function (err) {
+                                processFailure(projectCode, function (err) {
                                     console.log("Process failed!");
                                     message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
                                     message.subject = "Your data processing failed";
