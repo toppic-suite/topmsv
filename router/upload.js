@@ -111,7 +111,7 @@ var upload = router.post('/upload', function (req, res) {
                                 res.write('<h2>Link: </h2>');
                                 res.write(message.text);
 
-                                let app = './cpp/bin/mzMLReader';
+                                let app = './cpp/bin/mzMLReader3D';
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter,1);
 
@@ -238,7 +238,7 @@ var upload = router.post('/upload', function (req, res) {
                             res.write('<h2>Link: </h2>');
                             res.write(message.text);
 
-                            let app = './cpp/bin/mzMLReader';
+                            let app = './cpp/bin/mzMLReader3D';
                             let parameter = des_file + ' -f';
                             submitTask(id, app, parameter, 1);
 
