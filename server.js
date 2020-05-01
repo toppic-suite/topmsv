@@ -391,6 +391,11 @@ app.use('/', require("./router/envlist"));
 
 app.use('/', require("./router/envtable"));
 
+/*routers used for 3d visualization */
+app.use('/', require("./router/submit3D"));
+app.use('/', require("./router/data3D"));
+app.use('/', require("./router/upload3D"));
+
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']
 }));

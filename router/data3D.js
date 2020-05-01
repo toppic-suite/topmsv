@@ -1,5 +1,5 @@
 /**
- * Express router for /data
+ * Express router for /data3D
  *
  * Check project status and render result page back to users
  */
@@ -8,8 +8,8 @@ var router = express.Router();
 var getProjectSummary = require("../library/getProjectSummary");
 var getScanRange = require("../library/getScanRange");
 
-var data = router.get('/data', function(req, res) {
-    console.log("Hello data!");
+var data3D = router.get('/data3D', function(req, res) {
+    console.log("Hello data 3D!");
     var projectCode = req.query.id;
     let uid = 0;
     if (req.session.passport === undefined)
@@ -107,4 +107,4 @@ var data = router.get('/data', function(req, res) {
     });
 });
 
-module.exports = data;
+module.exports = data3D;

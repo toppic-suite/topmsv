@@ -41,9 +41,21 @@ file(GLOB MZMLREADER_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 file(GLOB MSREADER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/msReader.cpp
                        ${CMAKE_CURRENT_SOURCE_DIR}/src/mzMLReader.cpp)
 
+# mzMLReader
+file(GLOB MZMLREADER3D_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+
+# msReader for 3D
+file(GLOB MSREADER3D_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/msReader3D.cpp
+                       ${CMAKE_CURRENT_SOURCE_DIR}/src/mzMLReader3D.cpp)
+
 add_executable(mzMLReader ${MZMLREADER_MAIN_SRCS} ${MSREADER_SRC} ${PWIZ_SRC} ${SQLITE3})
+add_executable(mzMLReader3D ${MZMLREADER3D_MAIN_SRCS} ${MSREADER3D_SRC} ${PWIZ_SRC} ${SQLITE3})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_link_libraries(mzMLReader dl xalan-c xerces-c boost_program_options
         boost_filesystem boost_system boost_thread boost_iostreams boost_chrono pthread z)
+
+  target_link_libraries(mzMLReader3D dl xalan-c xerces-c boost_program_options
+        boost_filesystem boost_system boost_thread boost_iostreams boost_chrono pthread z)
+
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 

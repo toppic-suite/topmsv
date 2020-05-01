@@ -1,4 +1,4 @@
-#include "mzMLReader.hpp" 
+#include "mzMLReader3D.hpp" 
 
 Range RANGE;
 sqlite3_stmt *stmtSp;
@@ -95,6 +95,7 @@ mzMLReader::mzMLReader() {
    data = (char*)("Callback function called");
 };
 void mzMLReader::setName(std::string fileName) {
+   fileName.insert(fileName.length() - 5, "_3D"); 
    databaseName = fileName.replace(fileName.length() - 4,4,"db");
   // std::cout << "databaseName" << databaseName << std::endl;
 };
