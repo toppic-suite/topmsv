@@ -1,5 +1,5 @@
-#ifndef MZMLREADER_HPP_
-#define MZMLREADER_HPP_
+#ifndef MZMLREADER3D_HPP_
+#define MZMLREADER3D_HPP_
 
 
 #include <iostream>
