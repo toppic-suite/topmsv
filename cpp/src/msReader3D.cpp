@@ -1,5 +1,5 @@
 
-#include "msReader.hpp" 
+#include "msReader3D.hpp" 
 
 bool cmpPoints(Point p1, Point p2) {
   return p1.inten > p2.inten;
@@ -154,7 +154,7 @@ void msReader::createDtabase_normal() {
       for (int j=0; j<pairs.size(); j++) {
         count++ ;
         // std::cout << count << std::endl;
-        databaseReader.insertPeak(count, i, pairs[j].intensity, pairs[j].mz);
+        databaseReader.insertPeakFor3DViz(count, i, pairs[j].intensity, pairs[j].mz);
       }
     }
   }

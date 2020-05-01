@@ -1,5 +1,5 @@
-#ifndef MSREADER_HPP_
-#define MSREADER_HPP_
+#ifndef MSREADER3D_HPP_
+#define MSREADER3D_HPP_
 
 
 #include <iostream>

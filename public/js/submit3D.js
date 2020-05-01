@@ -71,7 +71,7 @@
             formData.append('public', pub.checked);
             xhr.onload = uploadSuccess;
             xhr.upload.onprogress = setProgress;
-            xhr.open('post', '/upload', true);
+            xhr.open('post', '/upload3D', true);
             xhr.send(formData);
         }
     }

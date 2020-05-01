@@ -17,8 +17,8 @@ var fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
 
-var upload = router.post('/upload', function (req, res) {
-    console.log("hello,upload");
+var upload = router.post('/upload3D', function (req, res) {
+    console.log("hello,upload3D");
     let uid = req.session.passport.user.profile.id;
     let resultDb = new BetterDB('./db/projectDB.db');
     let stmt = resultDb.prepare(`SELECT email AS email
@@ -111,13 +111,20 @@ var upload = router.post('/upload', function (req, res) {
                                 res.write('<h2>Link: </h2>');
                                 res.write(message.text);
 
-                                let app = './cpp/bin/mzMLReader';
+                                let app = './cpp/bin/mzMLReader3D';
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter,1);
+
+                                //generate 2d data as well
+                                submitTask(id, './cpp/bin/mzMLReader', parameter, 1);
 
                                 app = 'node';
                                 let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
                                 parameter = './convertEnv ' + dbDir + ' ' + des_envFile1;
+                                submitTask(id, app, parameter, 1);
+
+                                //convert 2d data as well
+                                dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + "3D.db";
                                 submitTask(id, app, parameter, 1);
 
                                 res.end();
@@ -238,9 +245,12 @@ var upload = router.post('/upload', function (req, res) {
                             res.write('<h2>Link: </h2>');
                             res.write(message.text);
 
-                            let app = './cpp/bin/mzMLReader';
+                            let app = './cpp/bin/mzMLReader3D';
                             let parameter = des_file + ' -f';
                             submitTask(id, app, parameter, 1);
+
+                            //generate 2d data database as well
+                            submitTask(id, './cpp/bin/mzMLReader', parameter, 1);
 
                             res.end();
                             break;
