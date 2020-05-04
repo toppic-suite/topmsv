@@ -102,6 +102,7 @@ function findNextLevelOneScan(scan) {
             getScanLevel(scan,nextScan);
         }
     };
+    console.log(document.getElementById("projectDir").value);
     xhttp.open("GET", "findNextLevelOneScan?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan, true);
     xhttp.send();
 }
