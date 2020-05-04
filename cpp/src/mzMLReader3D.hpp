@@ -54,7 +54,7 @@ public:
 	void creatTable();
 	void insertSp(int scanIndex, std::string scan, double retentionTime);
 	void insertPeak(int peakIndex, int scanIndex, double intensity, double mz);
-	void insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz);
+	void insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void getRange();
 	void getScanRange();
 	void getPeaksFromScan(int scan);
@@ -68,7 +68,7 @@ public:
 	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
 	void updateSpStmt(int currentID, int prevID);
 	void updateSpSumStmt(int currentID, double peaksInteSum);
-	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz);
+	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void createIndex();
 
 	double MZ_GROUP1_SIZE;

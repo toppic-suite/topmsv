@@ -154,7 +154,7 @@ void msReader::createDtabase_normal() {
       for (int j=0; j<pairs.size(); j++) {
         count++ ;
         // std::cout << count << std::endl;
-        databaseReader.insertPeakFor3DViz(count, i, pairs[j].intensity, pairs[j].mz);
+        databaseReader.insertPeakFor3DViz(count, i, pairs[j].intensity, pairs[j].mz, retentionTime);
       }
     }
   }
@@ -201,7 +201,7 @@ void msReader::createDtabase() { //stmt
         count++ ;
         // std::cout << count << std::endl;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
-        databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz);
+        databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
       }
 
       // cout << currentID <<endl;
