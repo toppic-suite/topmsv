@@ -1,5 +1,8 @@
 #include "mzMLReader3D.hpp" 
 
+#include <iostream>
+#include <fstream>
+
 Range RANGE;
 sqlite3_stmt *stmtSp;
 sqlite3_stmt *stmtPeak;
@@ -145,7 +148,8 @@ void mzMLReader::creatTable() {
          "ID INT PRIMARY KEY     NOT NULL," \
          "SPECTRAID     INT      NOT NULL REFERENCES SPEACTRA(ID)," \
          "MZ            REAL     NOT NULL," \
-         "INTENSITY     REAL     NOT NULL);");
+         "INTENSITY     REAL     NOT NULL," \
+         "RETENTIONTIME     REAL     NULL);");
 
    /* Execute SQL statement */
    rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
@@ -221,10 +225,13 @@ void mzMLReader::insertPeak(int peakIndex, int scanIndex, double intensity, doub
       // std::cout << "Records created successfully" << std::endl;
    }
 };
-void mzMLReader::insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz) {
+void mzMLReader::insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime) {
    /* Create SQL statement */
+
    std::string sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME) "  \
-         "VALUES (" + int2str(peakIndex) + ", " + int2str(scanIndex) + ", " + num2str(mz) + ", " + num2str(intensity) + " ); ";
+         "VALUES (" + int2str(peakIndex) + ", " + int2str(scanIndex) + ", " + num2str(mz) + 
+         ", " + num2str(intensity) + ", " + num2str(retentionTime) + " ); ";
+
    sql = (char *)sqlstr.c_str();
 
    /* Execute SQL statement */
@@ -236,7 +243,7 @@ void mzMLReader::insertPeakFor3DViz(int peakIndex, int scanIndex, double intensi
       if (rc == 19) {
         sqlstr = "SELECT * FROM PEAKS WHERE ID=" + int2str(peakIndex) + ";";
         std::cout << sqlstr << std::endl;
-        std::cout << int2str(peakIndex) << ", " << int2str(scanIndex) << ", " << num2str(mz) << ", " << num2str(intensity) << std::endl;
+        std::cout << int2str(peakIndex) << ", " << int2str(scanIndex) << ", " << num2str(mz) << ", " << num2str(intensity) << ", " << num2str(retentionTime)<< std::endl;
         sql = (char *)sqlstr.c_str();
         /* Execute SQL statement */
         rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
@@ -384,7 +391,7 @@ void mzMLReader::openInsertStmt() {
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtLevelPair, 0);
 
-  sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY) VALUES (? ,? ,?, ?); ";
+  sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY, RETENTIONTIME) VALUES (? ,? ,?, ?, ?); ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtPeak, 0);
 
@@ -446,13 +453,14 @@ void mzMLReader::updateSpSumStmt(int currentID, double peaksInteSum) {
     std::cout << sqlite3_errmsg(db) << std::endl;
   }
 }
-void mzMLReader::insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz) {
+void mzMLReader::insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime) {
   // std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std::endl;
   sqlite3_reset(stmtPeak);
   sqlite3_bind_int(stmtPeak,1,peakIndex);
   sqlite3_bind_int(stmtPeak,2,scanIndex);
   sqlite3_bind_double(stmtPeak,4,intensity);
   sqlite3_bind_double(stmtPeak,3,mz);
+  sqlite3_bind_double(stmtPeak,5,retentionTime);
   int r = sqlite3_step(stmtPeak);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db) << std::endl;
