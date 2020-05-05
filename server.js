@@ -396,6 +396,8 @@ app.use('/', require("./router/submit3D"));
 app.use('/', require("./router/data3D"));
 app.use('/', require("./router/upload3D"));
 app.use('/', require("./router/projects3D"));
+app.use('/', require("./router/load3dData"));
+
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']

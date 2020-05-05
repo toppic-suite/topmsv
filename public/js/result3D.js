@@ -103,11 +103,10 @@ function load3dData(){
  
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
-            console.log ("what is this :", this);
         }
     }
-    xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "3D.db", true);
-
+    xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "_3D.db", true);
+    xhttp.send();
 }
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
