@@ -24,23 +24,21 @@ bool cmpPoints(Point p1, Point p2);
 std::string getScan(std::string id);
 typedef std::shared_ptr<pwiz::msdata::MSDataFile> MSDataFilePtr;
 
-class msReader
+class msReader3D
 {
 public:
 	pwiz::msdata::DefaultReaderList readers_;
 	MSDataFilePtr msd_ptr_;
 	pwiz::msdata::SpectrumListPtr spec_list_ptr_;
-
-
-
-	msReader(std::string filename);
+	msReader3D(std::string filename);
 	std::string file_name;
 	//pwiz::msdata::MSData test_msdata;
 	//boost::shared_ptr<std::istream> is;
 	//Index_mzML_Ptr index;
 	SpectrumListPtr sl;
-	mzMLReader databaseReader;
+	mzMLReader3D databaseReader;
 	Range RANGE;
+
 	void getScans(int scanLevel);
 	void getSinglePeaks(int scan);
 	void getScanRangeDB();

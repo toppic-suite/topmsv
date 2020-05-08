@@ -21,7 +21,7 @@ void getMax(double &max, double v) {
   return;
 }
 
-msReader::msReader(std::string filename) {
+msReader3D::msReader3D(std::string filename) {
 	file_name = filename;
 
   msd_ptr_ = std::make_shared<pwiz::msdata::MSDataFile>(file_name, &readers_);
@@ -38,7 +38,7 @@ msReader::msReader(std::string filename) {
   RANGE.INTMAX = 0;
 };
 
-void msReader::getScans(int scanLevel) {
+void msReader3D::getScans(int scanLevel) {
   int count = 0;
   int spSize = sl->size();
   for(int i = 0; i < spSize; i++){
@@ -50,7 +50,7 @@ void msReader::getScans(int scanLevel) {
   std::cout << std::endl;
 };
 
-void msReader::getSinglePeaks(int scanID) {
+void msReader3D::getSinglePeaks(int scanID) {
   SpectrumPtr s = sl->spectrum(scanID, true);
   std::vector<MZIntensityPair> pairs;
   s->getMZIntensityPairs(pairs);
@@ -60,7 +60,7 @@ void msReader::getSinglePeaks(int scanID) {
   std::cout << std::endl;
 };
 
-void msReader::getRange() {
+void msReader3D::getRange() {
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
@@ -100,7 +100,7 @@ void msReader::getRange() {
   std::cout << intmin << "\t" << intmax << "\t" << std::endl;
 };
 
-void msReader::getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
+void msReader3D::getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
@@ -134,7 +134,7 @@ void msReader::getAllPeaks(double mzmin, double mzmax, double rtmin, double rtma
 };
 
 
-void msReader::createDtabase_normal() {
+void msReader3D::createDtabase_normal() {
   databaseReader.openDatabase(file_name);
   databaseReader.creatTable();
   int scanLevel = 1;
@@ -161,7 +161,7 @@ void msReader::createDtabase_normal() {
   databaseReader.endTransaction();
   databaseReader.closeDatabase();
 }
-void msReader::createDtabase() { //stmt
+void msReader3D::createDtabase() { //stmt
   clock_t t1 = clock();
   databaseReader.openDatabase(file_name);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
@@ -262,7 +262,7 @@ void msReader::createDtabase() { //stmt
 }
 
 // get range of scan from database
-void msReader::getScanRangeDB() {
+void msReader3D::getScanRangeDB() {
   clock_t t1 = clock();
   databaseReader.openDatabase(file_name);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
@@ -275,7 +275,7 @@ void msReader::getScanRangeDB() {
   t1 = clock();
 };
 
-void msReader::getRangeDB() {
+void msReader3D::getRangeDB() {
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
@@ -296,7 +296,7 @@ void msReader::getRangeDB() {
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 };
-void msReader::getPeaksFromScanDB(int scan) {
+void msReader3D::getPeaksFromScanDB(int scan) {
   clock_t t1 = clock();
   databaseReader.openDatabase(file_name);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
@@ -308,7 +308,7 @@ void msReader::getPeaksFromScanDB(int scan) {
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 }
-void msReader::getAllPeaksDB(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
+void msReader3D::getAllPeaksDB(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
@@ -323,7 +323,7 @@ void msReader::getAllPeaksDB(double mzmin, double mzmax, double rtmin, double rt
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 };
-void msReader::getRangeFromRaw() {
+void msReader3D::getRangeFromRaw() {
   int scanLevel = 1;
   int spSize = sl->size();
   int count = 0;
@@ -350,7 +350,7 @@ void msReader::getRangeFromRaw() {
   std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
   std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
 }
-void msReader::createDtabaseOneTable() { //stmt
+void msReader3D::createDtabaseOneTable() { //stmt
   clock_t t1 = clock();
   getRangeFromRaw();
   std::cout <<"Get range from raw data Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
@@ -406,7 +406,7 @@ void msReader::createDtabaseOneTable() { //stmt
   databaseReader.closeDatabase();
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }
-void msReader::getRangeDBOneTable() {
+void msReader3D::getRangeDBOneTable() {
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
@@ -427,7 +427,7 @@ void msReader::getRangeDBOneTable() {
   // std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 };
-void msReader::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
+void msReader3D::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
@@ -442,7 +442,7 @@ void msReader::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, d
   // std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 };
-void msReader::createDtabaseOneTableRTree() { //stmt
+void msReader3D::createDtabaseOneTableRTree() { //stmt
   clock_t t1 = clock();
   getRangeFromRaw();
   std::cout <<"Get range from raw data Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
@@ -498,7 +498,107 @@ void msReader::createDtabaseOneTableRTree() { //stmt
   databaseReader.closeDatabase();
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }
-void msReader::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
+
+void msReader3d::createDtabasMultiLayer() {
+  //create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
+  clock_t t1 = clock();
+  getRangeFromRaw();
+  std::cout <<"Get range from raw data Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.openDatabase(file_name);
+  std::cout <<"Open database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.creatTable();
+  std::cout <<"Create table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  int scanLevel = 1;
+  int count = 0;
+  int spSize = sl->size();
+  std::vector<Point> pointsList;
+  databaseReader.beginTransaction();
+  std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+  databaseReader.openInsertStmt();
+  int levelOneID = 0;
+  int levelTwoID = 0;
+  int levelOneScanID = 0;
+  int levelTwoScanID = 0;
+  double peaksInteSum = 0.000;
+  for(int i = 0; i < spSize; i++){
+    // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
+      SpectrumPtr s = sl->spectrum(i, true); // read with binary data
+      if (s == nullptr) {std::cout << "null"<<endl;}
+      pwiz::msdata::SpectrumInfo spec_info(*s);
+      Scan dummy;
+      Scan scan = s->scanList.scans.empty() ? dummy : s->scanList.scans[0];
+      double retentionTime = scan.cvParam(MS_scan_start_time).timeInSeconds();
+      int scanLevel = sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>(); // check scanLevel
+      int currentScanID = std::stoi(getScan(sl->spectrumIdentity(i).id));
+      int currentID = i+1;
+      // intert peaks and sum intensity
+      vector<MZIntensityPair> pairs;
+      s->getMZIntensityPairs(pairs);
+      peaksInteSum = 0.000;
+      for (int j=0; j<pairs.size(); j++) {
+        count++ ;
+        peaksInteSum = peaksInteSum + pairs[j].intensity;
+        databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+      }
+
+      if (scanLevel == 2) {
+        double prec_mz;
+        int prec_charge;
+        double prec_inte;
+        if (spec_info.precursors.size() == 0) {
+          prec_mz = 0;
+          prec_charge = 1;
+          prec_inte = 0.0;
+        } 
+        else {
+          prec_mz = spec_info.precursors[0].mz;
+          prec_charge = static_cast<int>(spec_info.precursors[0].charge);
+          prec_inte = spec_info.precursors[0].intensity;
+        }
+        if (prec_mz < 0) {
+          prec_mz = 0;
+        }
+        if (prec_charge  < 0) {
+          prec_charge = 1;
+        }
+        if (prec_inte < 0) {
+          prec_inte = 0.0;
+        }
+
+        databaseReader.insertSpStmt(currentID, getScan(sl->spectrumIdentity(i).id),retentionTime,scanLevel,prec_mz,prec_charge,prec_inte,peaksInteSum,NULL,levelTwoID);
+        // update prev's next
+        databaseReader.updateSpStmt(currentID,levelTwoID);
+        levelTwoID = currentID;
+        levelTwoScanID = currentScanID;
+        databaseReader.insertScanLevelPairStmt(levelOneScanID, levelTwoScanID);
+      }else if(scanLevel == 1){
+        databaseReader.insertSpStmt(currentID, getScan(sl->spectrumIdentity(i).id),retentionTime,scanLevel,NULL,NULL,NULL,peaksInteSum,NULL,levelOneID); 
+        // update prev's next
+        databaseReader.updateSpStmt(currentID,levelOneID);
+        levelOneID = currentID;
+        levelOneScanID = currentScanID;
+      }
+  //up to here, same as current code for creating 2d db file 
+  
+  //sort peak table
+  databaseReader.sortTable();
+
+  //create peaks0, peaks1.. tables
+  databaseReader.creatLayersTable();
+
+  //check if the rows of table are sorted based on rt or mz. If sorted by mz,
+  //while mz < i * (max mz - min mz) / 70, keep reading the rows of database
+  //if rt < i * (max rt - min rt) / 70, add that row to peak0 table, for instance.
+  //when while loop exits, increment i and start again from the next row (not start from the beginning every time, only move forward)
+
+
+}
+
+void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
