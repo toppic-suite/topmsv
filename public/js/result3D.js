@@ -103,6 +103,8 @@ function load3dData(){
  
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            console.log(response);
         }
     }
     xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "_3D.db", true);
@@ -724,7 +726,6 @@ $( document ).ready(function() {
     findNextLevelOneScan(min);
     loadInteSumList();
     
-
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
         // console.log(scanRef);

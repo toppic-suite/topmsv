@@ -33,11 +33,27 @@ struct Range{
   std::string TARGET = "";
 };
 
+//value of n and m in n * m grid on graph
+//ratio is 5:36
+struct Grid{
+	vector<int> LEVEL0 = {90, 54};//4860 peaks
+	vector<int> LEVEL1 = {180, 108};//19440 peaks
+	vector<int> LEVEL2 = {365, 219};//79935 peaks
+	vector<int> LEVEL3 = {705, 423};//298915 peaks
+	vector<int> LEVEL4 = {1175, 705};//828375 peaks
+	vector<int> LEVEL5 = {1720, 1032};//1775040 peaks
+
+	/*3d vector. dimesion 1 is each level (0-5), dimension 2 is mz (x range in grid), 
+	dimension 3 is rt (y range in grid) */
+	//vector<vector<vector<bool>>> GRIDBLOCKS;
+
+	vector<vector<bool>> GRIDBLOCKS;//2d vector for now, contain data for level 0 only
+};
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
 std::string int2str(int num);
-class mzMLReader
+class mzMLReader3D
 {
 public:
 	std::string databaseName;
@@ -47,13 +63,12 @@ public:
 	char *sql;
 	char *data;
 	bool isNew;
-	mzMLReader();
+	mzMLReader3D();
 	void setName(std::string fileName);
 	void openDatabase(std::string fileName);
 	void closeDatabase();
 	void creatTable();
 	void insertSp(int scanIndex, std::string scan, double retentionTime);
-	void insertPeak(int peakIndex, int scanIndex, double intensity, double mz);
 	void insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void getRange();
 	void getScanRange();
@@ -91,6 +106,9 @@ public:
 	int RT_GROUP3;
 	int RT_GROUP4;
 	int RT_GROUP5;
+
+	void sortTable();
+	void convertData(double mz, double rt);
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);
 	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
