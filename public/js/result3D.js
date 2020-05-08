@@ -104,7 +104,7 @@ function load3dData(){
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-            console.log(response);
+            //console.log(response);
         }
     }
     xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "_3D.db", true);
