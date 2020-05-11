@@ -7,9 +7,8 @@ var load3dData = router.get('/load3dData', function (req, res) {
     var projectDir = req.query.projectDir;
     load3dDataLib(projectDir, function (err, rows) {
         res.write(JSON.stringify(rows));
-        console.log("rows", rows);
         res.end();
-    });
+   });
 });
 
 module.exports = load3dData;

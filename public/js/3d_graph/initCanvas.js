@@ -48,7 +48,7 @@ InitCanvas.prototype.drawGrid = function(width, height){
 
     gridLines.rotation.x = 0.95 * Math.PI;
     gridLines.rotation.y = 0.10 * Math.PI;
-    gridLines.rotation.z = -0.10 * Math.PI;
+    gridLines.rotation.z = -0.20 * Math.PI;
 
     return gridLines;
 }
@@ -58,12 +58,13 @@ InitCanvas.prototype.initCanvas = function(){
 
     const canvasDOM = document.querySelector("#graph-container");
     
-    this.renderer.setClearColor(0xffffff, 1);
-    this.renderer.setSize(window.innerWidth * 0.8, window.innerHeight  * 0.7);
+    this.renderer.setClearColor(0xF5F5F5, 0);
+    this.renderer.setSize(window.innerWidth * 0.5, window.innerHeight  * 0.2);
     canvasDOM.appendChild(this.renderer.domElement);
     
     //enable rotation
-    let controls = new THREE.OrbitControls(this.camera, this.renderer.domElement );
+    
+	let controls = new THREE.OrbitControls(this.camera, this.renderer.domElement );
     controls.enableRotate = false;
     //controls.target.set(graphWidth/3, 0, graphHeight/3); // focus on the center of the grid
     
