@@ -9,9 +9,8 @@ const sqlite3 = require('sqlite3').verbose();
 function load3dData(dir, callback) {
     console.log("load3dData function running...")
     let sql = `SELECT *
-                FROM PEAKS;`;
+                FROM PEAKS LIMIT 3000;`;
     let dbDir = dir;
-    console.log(dbDir)
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
             console.error("error during db generation", err.message);
@@ -22,7 +21,6 @@ function load3dData(dir, callback) {
         if (err) {
             console.error(err.message);
         }
-        //console.log(row);
         return callback(null, row);
     });
     resultDb.close();
