@@ -49,7 +49,13 @@ job.start();
 var avaiResourse = cpuCount - 2;
 console.log("cpuCount", cpuCount);
 
-const getTaskListSync = require('./library/getTaskListSync');
+const getTaskListSync = require("./library/getTaskListSync");
+const checkProjectStatusSync = require("./library/checkProjectStatusSync");
+const updateProjectStatusSync = require("./library/updateProjectStatusSync");
+const updateTaskStatusSync = require("./library/updateTaskStatusSync");
+const processFailure = require("./library/processFailure");
+const checkRemainingTask = require("./library/checkRemainingTask");
+
 /**
  * Create a task scheduler for topview app
  * It will check Tasks table in project database every second, if taskList is not empty then check
@@ -97,7 +103,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             updateTaskStatusSync(1, taskID);
                             avaiResourse = avaiResourse + threadNum;
                             setTimeout(function () {
-                                processFailure(db,projectCode, function (err) {
+                                processFailure(projectCode, function (err) {
                                     console.log("Process failed!");
                                     message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
                                     message.subject = "Your data processing failed";
@@ -352,7 +358,9 @@ app.use('/', require("./router/addrow"));
 
 app.use('/', require("./router/editrow"));
 
-app.use('/', require("./router/peaklist"))
+app.use('/', require("./router/previewEdit"));
+
+app.use('/', require("./router/peaklist"));
 
 
 app.use('/', require("./router/scanID"));
