@@ -2918,6 +2918,416 @@
     
 
     
+    <h4 class="name" id="getEnvIDListByMZRange"><span class="type-signature">(async) </span>getEnvIDListByMZRange<span class="signature">(dir, min, max, scan)</span><span class="type-signature"> &rarr; {array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get a list of Envelope ID, whose Mz value is between min and max. Async mode.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dir</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scan</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="getEnvIDListByMZRange.js.html">getEnvIDListByMZRange.js</a>, <a href="getEnvIDListByMZRange.js.html#line12">line 12</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    EnvelopeIDList
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getEnvInfoSync"><span class="type-signature"></span>getEnvInfoSync<span class="signature">(dir, envID)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get envelope's mono_mass and charge by given envelope ID. Sync mode.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dir</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>envID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="getEnvInfoSync.js.html">getEnvInfoSync.js</a>, <a href="getEnvInfoSync.js.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    result
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="getEnvMax"><span class="type-signature">(async) </span>getEnvMax<span class="signature">(dir, callback)</span><span class="type-signature"></span></h4>
     
 
@@ -3433,6 +3843,188 @@
 
 
 
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getEnvPeakListSync"><span class="type-signature"></span>getEnvPeakListSync<span class="signature">(dir, envID)</span><span class="type-signature"> &rarr; {array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get envelope peaks by given envelopeID. Sync Mode.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dir</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>envID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="getEnvPeakListSync.js.html">getEnvPeakListSync.js</a>, <a href="getEnvPeakListSync.js.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    result
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">array</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -4324,6 +4916,212 @@
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="getPeakList.js.html">getPeakList.js</a>, <a href="getPeakList.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getPeakListByMZRange"><span class="type-signature"></span>getPeakListByMZRange<span class="signature">(dir, min, max, scan)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get one given scan's peak mz and intensity where peaks' mz are between min and max. Sync mode.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dir</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scan</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="getPeakListByMZRange.js.html">getPeakListByMZRange.js</a>, <a href="getPeakListByMZRange.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -12134,13 +12932,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addEnv">addEnv</a></li><li><a href="global.html#checkExpiredProj">checkExpiredProj</a></li><li><a href="global.html#checkProjectStatusAsync">checkProjectStatusAsync</a></li><li><a href="global.html#checkProjectStatusSync">checkProjectStatusSync</a></li><li><a href="global.html#checkRemainingTask">checkRemainingTask</a></li><li><a href="global.html#checkWaitingTasks">checkWaitingTasks</a></li><li><a href="global.html#deleteEnv">deleteEnv</a></li><li><a href="global.html#deleteEnvPeak">deleteEnvPeak</a></li><li><a href="global.html#deleteMultiEnvs">deleteMultiEnvs</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteSeqSync">deleteSeqSync</a></li><li><a href="global.html#deleteSingleEnv">deleteSingleEnv</a></li><li><a href="global.html#editEnv">editEnv</a></li><li><a href="global.html#getAllSeq">getAllSeq</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#getEnvCharge">getEnvCharge</a></li><li><a href="global.html#getEnvMax">getEnvMax</a></li><li><a href="global.html#getEnvNum">getEnvNum</a></li><li><a href="global.html#getEnvPeakList">getEnvPeakList</a></li><li><a href="global.html#getEnvTable">getEnvTable</a></li><li><a href="global.html#getFilePath">getFilePath</a></li><li><a href="global.html#getNext">getNext</a></li><li><a href="global.html#getNextLevelOneScan">getNextLevelOneScan</a></li><li><a href="global.html#getPeakList">getPeakList</a></li><li><a href="global.html#getPrecMZ">getPrecMZ</a></li><li><a href="global.html#getPrev">getPrev</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getProjectsGuest">getProjectsGuest</a></li><li><a href="global.html#getProjectSummary">getProjectSummary</a></li><li><a href="global.html#getProteoform">getProteoform</a></li><li><a href="global.html#getRelatedScan1">getRelatedScan1</a></li><li><a href="global.html#getRelatedScan2">getRelatedScan2</a></li><li><a href="global.html#getRTAsync">getRTAsync</a></li><li><a href="global.html#getScanID">getScanID</a></li><li><a href="global.html#getScanLevel">getScanLevel</a></li><li><a href="global.html#getScanLevelTwoList">getScanLevelTwoList</a></li><li><a href="global.html#getScanRange">getScanRange</a></li><li><a href="global.html#getSumList">getSumList</a></li><li><a href="global.html#getTaskListAsync">getTaskListAsync</a></li><li><a href="global.html#getTaskListSync">getTaskListSync</a></li><li><a href="global.html#ifEnvExists">ifEnvExists</a></li><li><a href="global.html#ifExists">ifExists</a></li><li><a href="global.html#insertEnvPeak">insertEnvPeak</a></li><li><a href="global.html#insertRow">insertRow</a></li><li><a href="global.html#insertRowSync">insertRowSync</a></li><li><a href="global.html#insertTask">insertTask</a></li><li><a href="global.html#insertTaskSync">insertTaskSync</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#makeid">makeid</a></li><li><a href="global.html#processFailure">processFailure</a></li><li><a href="global.html#sendFailureMess">sendFailureMess</a></li><li><a href="global.html#sendSuccessMess">sendSuccessMess</a></li><li><a href="global.html#showData">showData</a></li><li><a href="global.html#submitTask">submitTask</a></li><li><a href="global.html#updateDescriptionSync">updateDescriptionSync</a></li><li><a href="global.html#updateEnvStatus">updateEnvStatus</a></li><li><a href="global.html#updateEnvStatusSync">updateEnvStatusSync</a></li><li><a href="global.html#updateProjectNameSync">updateProjectNameSync</a></li><li><a href="global.html#updateProjectStatus">updateProjectStatus</a></li><li><a href="global.html#updateProjectStatusSync">updateProjectStatusSync</a></li><li><a href="global.html#updatePublicStatusSync">updatePublicStatusSync</a></li><li><a href="global.html#updateSeqStatus">updateSeqStatus</a></li><li><a href="global.html#updateSeqStatusSync">updateSeqStatusSync</a></li><li><a href="global.html#updateSequence">updateSequence</a></li><li><a href="global.html#updateTaskStatusAsync">updateTaskStatusAsync</a></li><li><a href="global.html#updateTaskStatusSync">updateTaskStatusSync</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addEnv">addEnv</a></li><li><a href="global.html#checkExpiredProj">checkExpiredProj</a></li><li><a href="global.html#checkProjectStatusAsync">checkProjectStatusAsync</a></li><li><a href="global.html#checkProjectStatusSync">checkProjectStatusSync</a></li><li><a href="global.html#checkRemainingTask">checkRemainingTask</a></li><li><a href="global.html#checkWaitingTasks">checkWaitingTasks</a></li><li><a href="global.html#deleteEnv">deleteEnv</a></li><li><a href="global.html#deleteEnvPeak">deleteEnvPeak</a></li><li><a href="global.html#deleteMultiEnvs">deleteMultiEnvs</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteSeqSync">deleteSeqSync</a></li><li><a href="global.html#deleteSingleEnv">deleteSingleEnv</a></li><li><a href="global.html#editEnv">editEnv</a></li><li><a href="global.html#getAllSeq">getAllSeq</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#getEnvCharge">getEnvCharge</a></li><li><a href="global.html#getEnvIDListByMZRange">getEnvIDListByMZRange</a></li><li><a href="global.html#getEnvInfoSync">getEnvInfoSync</a></li><li><a href="global.html#getEnvMax">getEnvMax</a></li><li><a href="global.html#getEnvNum">getEnvNum</a></li><li><a href="global.html#getEnvPeakList">getEnvPeakList</a></li><li><a href="global.html#getEnvPeakListSync">getEnvPeakListSync</a></li><li><a href="global.html#getEnvTable">getEnvTable</a></li><li><a href="global.html#getFilePath">getFilePath</a></li><li><a href="global.html#getNext">getNext</a></li><li><a href="global.html#getNextLevelOneScan">getNextLevelOneScan</a></li><li><a href="global.html#getPeakList">getPeakList</a></li><li><a href="global.html#getPeakListByMZRange">getPeakListByMZRange</a></li><li><a href="global.html#getPrecMZ">getPrecMZ</a></li><li><a href="global.html#getPrev">getPrev</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getProjectsGuest">getProjectsGuest</a></li><li><a href="global.html#getProjectSummary">getProjectSummary</a></li><li><a href="global.html#getProteoform">getProteoform</a></li><li><a href="global.html#getRelatedScan1">getRelatedScan1</a></li><li><a href="global.html#getRelatedScan2">getRelatedScan2</a></li><li><a href="global.html#getRTAsync">getRTAsync</a></li><li><a href="global.html#getScanID">getScanID</a></li><li><a href="global.html#getScanLevel">getScanLevel</a></li><li><a href="global.html#getScanLevelTwoList">getScanLevelTwoList</a></li><li><a href="global.html#getScanRange">getScanRange</a></li><li><a href="global.html#getSumList">getSumList</a></li><li><a href="global.html#getTaskListAsync">getTaskListAsync</a></li><li><a href="global.html#getTaskListSync">getTaskListSync</a></li><li><a href="global.html#ifEnvExists">ifEnvExists</a></li><li><a href="global.html#ifExists">ifExists</a></li><li><a href="global.html#insertEnvPeak">insertEnvPeak</a></li><li><a href="global.html#insertRow">insertRow</a></li><li><a href="global.html#insertRowSync">insertRowSync</a></li><li><a href="global.html#insertTask">insertTask</a></li><li><a href="global.html#insertTaskSync">insertTaskSync</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#makeid">makeid</a></li><li><a href="global.html#processFailure">processFailure</a></li><li><a href="global.html#sendFailureMess">sendFailureMess</a></li><li><a href="global.html#sendSuccessMess">sendSuccessMess</a></li><li><a href="global.html#showData">showData</a></li><li><a href="global.html#submitTask">submitTask</a></li><li><a href="global.html#updateDescriptionSync">updateDescriptionSync</a></li><li><a href="global.html#updateEnvStatus">updateEnvStatus</a></li><li><a href="global.html#updateEnvStatusSync">updateEnvStatusSync</a></li><li><a href="global.html#updateProjectNameSync">updateProjectNameSync</a></li><li><a href="global.html#updateProjectStatus">updateProjectStatus</a></li><li><a href="global.html#updateProjectStatusSync">updateProjectStatusSync</a></li><li><a href="global.html#updatePublicStatusSync">updatePublicStatusSync</a></li><li><a href="global.html#updateSeqStatus">updateSeqStatus</a></li><li><a href="global.html#updateSeqStatusSync">updateSeqStatusSync</a></li><li><a href="global.html#updateSequence">updateSequence</a></li><li><a href="global.html#updateTaskStatusAsync">updateTaskStatusAsync</a></li><li><a href="global.html#updateTaskStatusSync">updateTaskStatusSync</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Apr 28 2020 15:39:23 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue May 12 2020 02:53:29 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

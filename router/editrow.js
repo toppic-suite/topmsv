@@ -33,6 +33,7 @@ var editrow = router.get("/editrow", function (req, res) {
             editEnv(projectDir,envID,charge,monoMass,theoInteSum,function () {
                 addEnvPeak(projectDir,charge,monoMass,scan_id,envID,function () {
                     getEnv(projectDir,envID,function (row) {
+
                         res.json(row);
                         res.end();
                     });
