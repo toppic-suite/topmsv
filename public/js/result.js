@@ -637,7 +637,7 @@ function showEnvTable(scan) {
         onEditRow: function(datatable, rowdata, success, error) {
             $.ajax({
                 // a tipycal url would be /{id} with type='POST'
-                url: "/editrow?projectDir=" + document.getElementById("projectDir").value,
+                url: "/previewEdit?projectDir=" + document.getElementById("projectDir").value,
                 type: 'GET',
                 data: rowdata,
                 success: success,
@@ -943,51 +943,65 @@ function preprocessSeq(seq) {
 }
 
 function plus() {
-    var input = $("input[name='mono_mass']");
-    let inputVal = input[input.length-1].value;
+    // var input = $("input[name='mono_mass']");
+    // let inputVal = input[input.length-1].value;
+    let inputVal = $('#preview_mono_mass').val();
     if(inputVal === "") {inputVal = 0;}
     inputVal = parseFloat(inputVal) + 1.00235;
     inputVal = inputVal.toFixed(5);
-    input[input.length-1].value = inputVal;
-    change_mono_mz()
+    $('#preview_mono_mass').val(inputVal);
+    // input[input.length-1].value = inputVal;
+    change_mono_mz();
+    updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
 }
 function minus() {
-    var input = $("input[name='mono_mass']");
-    let inputVal = input[input.length-1].value;
+    // var input = $("input[name='mono_mass']");
+    // let inputVal = input[input.length-1].value;
+    let inputVal = $('#preview_mono_mass').val();
     if(inputVal === "") {inputVal = 0;}
     inputVal = parseFloat(inputVal) - 1.00235;
     inputVal = inputVal.toFixed(5);
-    input[input.length-1].value = inputVal;
-    change_mono_mz()
+    $('#preview_mono_mass').val(inputVal);
+    // input[input.length-1].value = inputVal;
+    change_mono_mz();
+    updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
 }
 function change_mono_mass() {
-    var input_mz = $("input[id='mono_mz']");
-    let mz = input_mz[input_mz.length-1].value;
+    // var input_mz = $("input[id='mono_mz']");
+    // let mz = input_mz[input_mz.length-1].value;
+    let mz = $('#preview_mono_mz').val();
     if(mz === "") {mz = 0;}
     mz = parseFloat(mz);
-    var chargeInput = $("input[name='Charge']");
-    let charge = chargeInput[chargeInput.length-1].value;
+    // var chargeInput = $("input[name='Charge']");
+    // let charge = chargeInput[chargeInput.length-1].value;
+    let charge = $('#preview_charge').val();
     if(charge === "") {charge = 1;}
     charge = parseInt(charge);
     let result = (mz - 1)*charge;
     if(result < 0) result = 0;
-    var input = $("input[name='mono_mass']");
-    input[input.length-1].value = result.toFixed(5);
+    // var input = $("input[name='mono_mass']");
+    // input[input.length-1].value = result.toFixed(5);
+    $('#preview_mono_mass').val(result.toFixed(5));
+    updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
     //console.log(result);
 }
 function change_mono_mz() {
-    var input_mass = $("input[name='mono_mass']");
-    let mass = input_mass[input_mass.length-1].value;
+    // var input_mass = $("input[name='mono_mass']");
+    // let mass = input_mass[input_mass.length-1].value;
+    let mass = $('#preview_mono_mass').val();
     if(mass === "") {mass = 0;}
     mass = parseFloat(mass);
-    var chargeInput = $("input[name='Charge']");
-    let charge = chargeInput[chargeInput.length-1].value;
+    // var chargeInput = $("input[name='Charge']");
+    // let charge = chargeInput[chargeInput.length-1].value;
+    let charge = $('#preview_charge').val();
     if(charge === "") {charge = 1;}
     charge = parseInt(charge);
     let result = (mass/charge) + 1;
     if(result < 0) result = 0;
-    var input = $("input[id='mono_mz']");
-    input[input.length-1].value = result.toFixed(5);
+
+    // var input = $("input[id='mono_mz']");
+    // input[input.length-1].value = result.toFixed(5);
+    $('#preview_mono_mz').val(result.toFixed(5));
 }
 let specPara1_g;
 let lockPara1 = false;
@@ -1043,3 +1057,98 @@ function refresh() {
     // findNextLevelOneScan($('#envScan').text());
     //setTimeout()
 }
+var peakList_temp;
+var envList_temp;
+let specPara3_g;
+var lockPara_3 = false;
+let preview_scanID_g;
+function preview(dataObj) {
+    // console.log("dataObj:",dataObj);
+    let envID = dataObj.envelope_id;
+    let scanID = dataObj.scan_id;
+    preview_scanID_g = scanID;
+    let charge = dataObj.charge;
+    let intensity = dataObj.intensity;
+    let mono_mass = dataObj.mono_mass;
+    let mono_mz = parseFloat(dataObj.mono_mz);
+
+    $('#preview_envelope_id').val(envID);
+    $('#preview_charge').val(charge);
+    $('#preview_mono_mass').val(mono_mass);
+    $('#preview_mono_mz').val(mono_mz);
+    //addSpectrum('previewSpectrum1', oriPeakList, oriEnvList, mono_mass);
+    // addSpectrum("previewSpectrum2", peakList_temp, envList_temp, mono_mass);
+    $.ajax({
+        url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
+            "&scan_id=" + scanID +
+            "&envelope_id=" + envID +
+            "&charge=" + charge +
+            "&intensity=" + intensity +
+            "&mono_mass=" + mono_mass,
+        type: "get",
+        // dataType: 'json',
+        success: function (res) {
+            var data = (typeof res === "string") ? JSON.parse(res) : res;
+            console.log("returnList preview", data);
+            data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
+            data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
+            data.envlist[0].env.scan_id = parseInt(data.envlist[0].env.scan_id);
+            data.envlist[0].env.envelope_id = parseInt(data.envlist[0].env.envelope_id);
+            data.envlist[0].env.mono_mass = parseFloat(data.envlist[0].env.mono_mass);
+            data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
+            peakList_temp = data.peaklist;
+            envList_temp = data.envlist;
+            addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass + 1);
+            addSpectrum("previewSpectrum2", peakList_temp, envList_temp, mono_mass + 1);
+        }
+    });
+    $('#previewModal').modal('show');
+}
+function updatePreview(scanID, envID, charge, mono_mass) {
+    $.ajax({
+        url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
+            "&scan_id=" + scanID +
+            "&envelope_id=" + envID +
+            "&charge=" + charge +
+            "&mono_mass=" + mono_mass,
+        type: "get",
+        // dataType: 'json',
+        success: function (res) {
+            var data = (typeof res === "string") ? JSON.parse(res) : res;
+            // console.log("returnList preview", data);
+            data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
+            data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
+            data.envlist[0].env.scan_id = parseInt(data.envlist[0].env.scan_id);
+            data.envlist[0].env.envelope_id = parseInt(data.envlist[0].env.envelope_id);
+            data.envlist[0].env.mono_mass = parseFloat(data.envlist[0].env.mono_mass);
+            data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
+            peakList_temp = data.peaklist;
+            envList_temp = data.envlist;
+            addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass + 1);
+            addSpectrum("previewSpectrum2", peakList_temp, envList_temp, parseFloat(mono_mass) + 1);
+        }
+    });
+}
+
+$("#previewSaveBtn").click(function () {
+    // var result = confirm("Are you sure that you want to save this change?");
+    if (true) {
+        //Logic to delete the item
+        $.ajax({
+            url:"editrow?projectDir=" + document.getElementById("projectDir").value +
+                "&scan_id=" + envList_temp[0].env.scan_id +
+                "&envelope_id=" + envList_temp[0].env.envelope_id +
+                "&charge=" + envList_temp[0].env.charge +
+                "&intensity=" + envList_temp[0].env.intensity +
+                "&mono_mass=" + envList_temp[0].env.mono_mass,
+            type: "get",
+            // dataType: 'json',
+            success: function (res) {
+                alert('Your change has been saved!');
+                $('#previewModal').modal('hide');
+                refresh();
+                $('#envTable').DataTable().ajax.reload();
+            }
+        });
+    }
+});
