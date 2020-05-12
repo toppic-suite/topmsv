@@ -50,11 +50,6 @@ var avaiResourse = cpuCount - 2;
 console.log("cpuCount", cpuCount);
 
 const getTaskListSync = require("./library/getTaskListSync");
-const checkProjectStatusSync = require("./library/checkProjectStatusSync");
-const updateProjectStatusSync = require("./library/updateProjectStatusSync");
-const updateTaskStatusSync = require("./library/updateTaskStatusSync");
-const processFailure = require("./library/processFailure");
-const checkRemainingTask = require("./library/checkRemainingTask");
 
 /**
  * Create a task scheduler for topview app
