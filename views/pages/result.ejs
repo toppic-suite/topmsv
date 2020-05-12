@@ -141,6 +141,81 @@
 				</div>
 			</div>
 		</div>
+		<!-- Preview Modal-->
+		<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="previewModalLabel">Preview</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_envelope_id">Envelope:</label>
+							</div>
+							<div class="col-sm-8 col-md-8 col-lg-8">
+								<input type="text" id="preview_envelope_id" name="Envelope ID" placeholder="Envelope ID" readonly class="form-control  form-control-sm">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_charge">Charge:</label>
+							</div>
+							<div class="col-sm-8 col-md-8 col-lg-8">
+								<input type="text" id="preview_charge" name="Charge" pattern="[+-]?([0-9]*[.])?[0-9]+" placeholder="Charge" class="form-control  form-control-sm">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_mono_mass">Mono Mass:</label>
+							</div>
+							<div class="col-sm-6 col-md-6 col-lg-6">
+								<input type="text" id="preview_mono_mass" name="preview_mono_mass" pattern="[+-]?([0-9]*[.])?[0-9]+" oninput="change_mono_mz()" placeholder="Mono Mass" class="form-control  form-control-sm">
+							</div>
+							<div class="col-sm-2 col-md-2 col-lg-2">
+								<div class="row">
+									<div class="col-sm-6 col-md-6 col-lg-6">
+										<button onclick="minus()" id="minusBtn" type="button" class="btn btn-default btn-number" data-type="minus" data-field="mono_mass"><span class="glyphicon glyphicon-minus"></span></button>
+									</div>
+									<div class="col-sm-6 col-md-6 col-lg-6">
+										<button onclick="plus()" id="plusBtn" type="button" class="btn btn-default btn-number" data-type="plus" data-field="mono_mass"><span class="glyphicon glyphicon-plus"></span></button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_mono_mz">Mono M/Z:</label>
+							</div>
+							<div class="col-sm-8 col-md-8 col-lg-8">
+								<input type="text" id="preview_mono_mz" name="Mono M/Z" placeholder="Mono M/Z" oninput="change_mono_mass()" class="form-control  form-control-sm">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<p><strong>Before update:</strong></p>
+						</div>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<svg id="previewSpectrum1"></svg>
+						</div>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<p><strong>After update:</strong></p>
+						</div>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<svg id="previewSpectrum2"></svg>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button id="previewSaveBtn" type="button" class="btn btn-primary">Save changes</button>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="jumbotron">
 			<div>
 				<span class="projectsummary">

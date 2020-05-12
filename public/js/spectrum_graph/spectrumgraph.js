@@ -28,6 +28,17 @@ SpectrumGraph = function(svgId,spectrumParameters,peakData){
 		  spectrumParameters = specPara2_g;
 		  lockPara2 = false;
 	  }
+	  if(lockPara_3 === true) {
+	  	console.log('3 true');
+	  	if ($('#msType').text() === 'MS2') {
+	  		console.log('ms2');
+			spectrumParameters = specPara2_g;
+			lockPara_3 = false;
+		} else {
+	  		spectrumParameters = specPara1_g;
+			lockPara_3 = false;
+		}
+	  }
 	drawSpectrum(svgId,spectrumParameters,peakData);
   }
 
@@ -357,10 +368,12 @@ function drawSpectrum(svgId, spectrumParameters, peakData){
 		addLabels(svg, spectrumParameters);
 		if(svgId === '#spectrum1') {
 			specPara1_g = spectrumParameters;
-		} else {
+		} else if(svgId === '#spectrum2'){
 			specPara2_g = spectrumParameters;
+		} else if (svgId === '#spectrum3'){
+			specPara3_g = spectrumParameters;
 		}
-		console.log(spectrumParameters.minMz);
+		//console.log(spectrumParameters.minMz);
 		//SpectrumDownload.addDownloadRect(svgId, spectrumParameters);
 	// }
 //   addDownloadRect(svgId, spectrumParameters);
