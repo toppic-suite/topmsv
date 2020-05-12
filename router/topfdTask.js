@@ -9,6 +9,7 @@ var BetterDB = require("better-sqlite3");
 var deleteEnvPeak = require("../library/deleteEnvPeak");
 var submitTask = require("../library/submitTask");
 var updateEnvStatusSync = require("../library/updateEnvStatusSync");
+var path = require("path");
 
 var topfdTask = router.get('/topfdTask', function (req,res) {
     const app = './proteomics_cpp/bin/topfd';
@@ -91,7 +92,7 @@ var topfdTask = router.get('/topfdTask', function (req,res) {
         res.end();
         return;
     }
-    res.sendFile(__dirname + '/public/backToHome.html');
+    res.sendFile( path.resolve(__dirname + "/../public/backToHome.html") );
     // res.redirect('/');
     // res.write('Your task is submitted, please wait for result! Please go back to home page to wait result: <a href ="https://toppic.soic.iupui.edu/">Home</a>');
     // res.end();
