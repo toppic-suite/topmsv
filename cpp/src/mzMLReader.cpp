@@ -114,6 +114,7 @@ void mzMLReader::openDatabase(std::string fileName) {
 void mzMLReader::closeDatabase() {
    sqlite3_close(db);
 };
+
 void mzMLReader::creatTable() {
    /* Create SQL statement */
    sql = (char*)("CREATE TABLE SPECTRA("  \
