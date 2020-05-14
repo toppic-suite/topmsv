@@ -6,6 +6,7 @@ var load3dData = router.get('/load3dData', function (req, res) {
     console.log("Hello, load3dData!");
     var projectDir = req.query.projectDir;
     load3dDataLib(projectDir, function (err, rows) {
+		console.log("rows count: ", rows.length)
         res.write(JSON.stringify(rows));
         res.end();
    });

@@ -93,7 +93,7 @@ function getRT(scanNum) {
     xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
     xhttpRT.send();
 }
-function load3dData(canvas){
+function load3dData(msGraph){
     var xhttp = new XMLHttpRequest();
 
     let fullDir = (document.getElementById("projectDir").value).split("/");
@@ -104,9 +104,7 @@ function load3dData(canvas){
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-            console.log("response", response);
-			let graph = new Graph();
-			graph.drawGraph(response, canvas)
+			msGraph.plotPoints(response);
         }
     }
     xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "_3D.db", true);
@@ -728,13 +726,20 @@ $( document ).ready(function() {
         $('#envFileInfo').hide();
     }
     $('#envFileInfo').hide();
+    /*
 	//load 3d canvas
 	let canvas = new InitCanvas();
 	canvas.initCanvas();  
 	
     //load 3d graph data
-    load3dData(canvas);
     
+    */
+    
+    /***** SETUP ******/
+    let graph3D = new MsGraph(document.body, document.querySelector("#graph-container"));
+    graph3D.init();
+    load3dData(graph3D);
+
 	showEnvTable(min);
     findNextLevelOneScan(min);
     loadInteSumList();
