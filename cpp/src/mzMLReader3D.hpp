@@ -34,9 +34,9 @@ struct Range{
 };
 
 //value of n and m in n * m grid on graph
-//ratio is 5:36
+//ratio is 10:3
 struct Grid{
-	vector<int> LEVEL0 = {90, 54};//4860 peaks
+	vector<int> LEVEL0 = {100, 30};//3000 peaks
 	vector<int> LEVEL1 = {180, 108};//19440 peaks
 	vector<int> LEVEL2 = {365, 219};//79935 peaks
 	vector<int> LEVEL3 = {705, 423};//298915 peaks
@@ -47,7 +47,9 @@ struct Grid{
 	dimension 3 is rt (y range in grid) */
 	//vector<vector<vector<bool>>> GRIDBLOCKS;
 
-	vector<vector<bool>> GRIDBLOCKS;//2d vector for now, contain data for level 0 only
+	//check if ID is really int -- is it string?
+	//vector<vector<int, double>> GRIDBLOCKS;//2d vector for now, contain data for level 0 only
+	
 };
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
@@ -108,7 +110,7 @@ public:
 	int RT_GROUP5;
 
 	void sortTable();
-	void convertData(double mz, double rt);
+	void insertDataLayerTable();
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);
 	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
