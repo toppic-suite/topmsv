@@ -1,5 +1,6 @@
-
 #include "msReader3D.hpp" 
+#include <iostream>
+#include <fstream>
 
 bool cmpPoints(Point p1, Point p2) {
   return p1.inten > p2.inten;
@@ -585,17 +586,27 @@ void msReader3d::createDtabasMultiLayer() {
   //up to here, same as current code for creating 2d db file 
   
   //sort peak table
-  databaseReader.sortTable();
+  //databaseReader.sortTable();
+
+  //databaseReader.assignPeaks();
 
   //create peaks0, peaks1.. tables
   databaseReader.creatLayersTable();
-
-  //check if the rows of table are sorted based on rt or mz. If sorted by mz,
-  //while mz < i * (max mz - min mz) / 70, keep reading the rows of database
-  //if rt < i * (max rt - min rt) / 70, add that row to peak0 table, for instance.
-  //when while loop exits, increment i and start again from the next row (not start from the beginning every time, only move forward)
+  
+  //add data to peaks0 table
+  //databaseReader.insertDataLayerTable();
 
 
+/*
+  //store range information in a separate db file
+  ofstream rangeData ("rangeData.txt);
+  if (rangeData.is_open()){
+    rangeData << RANGE.MZMIN << "\t" << RANGE.MZMAX << "\t" << RANGE.RTMIN << "\t" << RANGE.RTMAX;
+    rangeData.close();
+  }
+  else{
+    std::cout << "cannot create rangeData.txt" << std::endl;
+  }*/
 }
 
 void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {

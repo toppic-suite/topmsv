@@ -65,7 +65,12 @@ MsGraph.prototype.scale = function(rawPoints){
 }
 // plots multiple points on the graph and redraws it
 MsGraph.prototype.plotPoints = function(points) {
-    this.scale(points);//update this.dataRange
+    //this.scale(points);//update this.dataRange
+    let peakSelect = new PeakSelect(points);
+    peakSelect.getDataRange("dataRange.txt");
+    let pointsOnGrid = peakSelect.assignPeaks();
+
+    this.dataRange = peakSelect.dataRange;
     this.updateViewRange(this.dataRange);
 
     // determine if cylinders should be used and their radius
@@ -73,10 +78,18 @@ MsGraph.prototype.plotPoints = function(points) {
     this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
 
     // Plots points on the graph immediately. points should be an array of coordinate arrays.
-    for (var i = 0; i < points.length && this.linesArray.length < this.POINTS_PLOTTED_LIMIT; i++) {
-        this.plotPoint(points[i]);
+    for (var i = 0;  i++) {
+        
     }
-    
+
+    let i = 0;
+    while (i < pointsOnGrid.length && this.linesArray.length < this.POINTS_PLOTTED_LIMIT){
+        if (pointsOnGrid[i].length > 0){
+            this.plotPoint(pointsOnGrid[i]);
+            i++;
+        }
+    }
+
     this.plotJumpMarker();
     
     // make sure the groups are plotted and update the view

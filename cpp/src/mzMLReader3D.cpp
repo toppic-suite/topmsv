@@ -98,6 +98,9 @@ int callbackConvertData(sqlite3 *db, int argc, char **argv, char **azColName){
   //argv = [id, mz, rt, intensity]
   Grid GRID;//contains information on n, m in n*m grid
   Range RANGE;
+  std::vector<std::vector<std::vector<int, double>>> gridBlocks (GRID.LEVEL0[0], std::vector<int, double>(GRID.LEVEL0[1], {-1, -1}));
+  
+  //std::vector<std::vector<std::vector<int, double>>> GRIDBLOCKS;
   /*get the max min mz and max min rt, to get the range of mz and rt
   then multiply the data by target range/ current range*/   
   double mzRange = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
@@ -110,28 +113,64 @@ int callbackConvertData(sqlite3 *db, int argc, char **argv, char **azColName){
     if it has a peak, the value at the index is FALSE. If it does not have a peak yet, the value is TRUE.
     if TRUE, insert the peak into the corresponding table and set the value at [xIndex][yIndex] to be FALSE
   */
-  if (GRID.GRIDBLOCKS[xIndex][yIndex]){//if gridBlock does not have a peak yet
-    //insert this row to corresponsing Peaks(n) table
-    //if not possible, save ID of the row to a vector and later do SELECT INSERT 
-
-    std::string sqlstr = "INSERT INTO PEAKS0 (ID,SCAN, MZ,RETENTIONTIME, INTENSITY) VALUES (" + argv[0] + ", " 
-        + argv[1] + ", " + argv[2] + ", " + argv[3] + ", " + ", " + argv[4] + " ); ";
-    char *sql = (char *)sqlstr.c_str();
-
-    /* Execute SQL statement */
-    int rc = sqlite3_exec(db, sql, callback, 0, 0);
-    if( rc != SQLITE_OK ){
-        // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
-        // std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-        sqlite3_free(0);
-    }else{
-        // fprintf(stdout, "Records created successfully\n");
-        // std::cout << "Records created successfully" << std::endl;
+  if (gridBlocks[xIndex][yIndex][0] < 0){//if gridBlock does not have a peak yet
+    //store the intensity and ID
+    gridBlocks[xIndex][yIndex] = {argv[0], argv[3]};
+  }
+  else{
+    //compare intensity
+    if (argv[3] > gridBlocks[xIndex][yIndex][1]){
+      gridBlocks[xIndex][yIndex] = {argv[0], argv[3]};
     }
-    //set [xIndex][yIndex] to FALSE
-    GRID.GRIDBLOCKS[xIndex][yIndex] = false;
+  }
+  //GRIDBLOCKS now should be having one peak for each grid, unless there was no peak in that grid mz and rt range
+  std::string sqlstr = "BEGIN;";
+  sql = (char *)sqlstr.c_str();
+
+  /* Execute SQL statement */
+  rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+  if( rc != SQLITE_OK ){
+    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    // fprintf(stdout, "Records created successfully\n");
+    // std::cout << "Records created successfully" << std::endl;
   }
 
+  for (int i = 0; i < gridBlocks.size(); i++){
+    for (int h = 0; h < gridBlocks[i].size(); h++){
+      std::string sqlstr = "INSERT INTO PEAKS0 (ID,SCAN, MZ,RETENTIONTIME, INTENSITY) VALUES (" + argv[0] + ", " 
+          + argv[1] + ", " + argv[2] + ", " + argv[3] + ", " + ", " + argv[4] + " ) 
+          SELECT * FROM PEAKS
+          WHERE ID=" + gridBlocks[i][h][0] + ";";
+      char *sql = (char *)sqlstr.c_str();
+
+      /* Execute SQL statement */
+      int rc = sqlite3_exec(db, sql, callback, 0, 0);
+      if( rc != SQLITE_OK ){
+          // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+          // std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+          sqlite3_free(0);
+      }else{
+          // fprintf(stdout, "Records created successfully\n");
+          // std::cout << "Records created successfully" << std::endl;
+      }
+    }
+  }
+  std::string sqlstr = "COMMIT;";
+  sql = (char *)sqlstr.c_str();
+
+  /* Execute SQL statement */
+  rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+  if( rc != SQLITE_OK ){
+    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    // fprintf(stdout, "Records created successfully\n");
+    // std::cout << "Records created successfully" << std::endl;
+  }
   return 0;
 }
 mzMLReader3D::mzMLReader3D() {
@@ -158,6 +197,26 @@ void mzMLReader3D::openDatabase(std::string fileName) {
 void mzMLReader3D::closeDatabase() {
    sqlite3_close(db);
 };
+
+void mzMLReader3d::assignPeaks(){
+  //the index is determined mzrange / grid width, rtrange/ grid height
+  //for now, the grid is 100 * 30 (original grid ratio is 10:3)
+    let mzScale = 100 / this.dataRange.mzrange;
+    let rtScale = 30 / this.dataRange.rtrange;
+
+    //for each peak
+    for (let i = 0; i < this.rawPoints.length; i++){
+        let mz = Math.ceil(this.rawPoints[i].MZ * mzScale);
+        let rt = Math.ceil(this.rawPoints[i].RETENTIONTIME * rtScale);
+
+        if (this.gridBlocks[mz][rt] == 0){
+            //no peak has been identified. store intensity of this peak;
+        }
+
+    }
+}
+
+
 void mzMLReader3D::creatTable() {
    /* Create SQL statement */
    sql = (char*)("CREATE TABLE SPECTRA("  \
@@ -555,9 +614,7 @@ void mzMLReader3D::sortTable(){
     // std::cout << "Operation done successfully" << std::endl;
   }
 }
-void mzMLReader3D::convertData(double mz, double rt){
-  //GRID.GRIDBLOCKS needs initialization to set all value at all index to be TRUE
-
+void mzMLReader3D::insertDataLayerTable(){
   std::string sqlstr = "SELECT ID, MZ, RETENTIONTIME, INTENSITY FROM PEAKS;";
   sql = (char *)sqlstr.c_str();
   /* Execute SQL statement */
@@ -928,12 +985,12 @@ void mzMLReader3D::creatLayersTableRTree() {
     beginTransaction();
     createLayerTableRTree(num2str(i));
     openInsertLayerStmtRTree(num2str(i));
-    for (int j = 0; j < n; j++) {
+    /*for (int j = 0; j < n; j++) {
       for (int k = 0; k < n; k++) {
         // std::cout << "Inserting region <" << j << "," << k << "> for layer " << i << " <" << n << "," << n << ">" << std::endl;
         insertPeaksLayerStmtRTree(origin, j, k, mzsize, rtsize);
       }
-    }
+    }*/
     closeInsertLayerStmtRTree();
     endTransaction();
     std::cout <<"InsertLayer Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
