@@ -93,7 +93,29 @@ function getRT(scanNum) {
     xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
     xhttpRT.send();
 }
-function load3dData(msGraph){
+function loadDataRange(callback, msGraph){
+    var xhttp = new XMLHttpRequest();
+
+    let fullDir = (document.getElementById("projectDir").value).split("/");
+
+    let dir = fullDir[0].concat("/");
+    dir = dir.concat(fullDir[1]);
+    let response = {};
+    callback(msGraph, response);//call load3dData
+/*
+    xhttp.onreadystatechange = function (){
+        if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            console.log(this.responseText)
+
+            
+        }
+    }
+    xhttp.open("GET", "loadDataRange?projectDir=" + dir + "/" + "dataRange.txt", true);
+    xhttp.send();*/
+}
+
+function load3dData(msGraph, dataRange){
     var xhttp = new XMLHttpRequest();
 
     let fullDir = (document.getElementById("projectDir").value).split("/");
@@ -104,11 +126,14 @@ function load3dData(msGraph){
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-			msGraph.plotPoints(response);
+			msGraph.plotPoints(response, dataRange);
         }
     }
     xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "_3D.db", true);
     xhttp.send();
+}
+function draw3DGraph(msGraph){
+    loadDataRange(load3dData, msGraph);
 }
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
@@ -726,19 +751,14 @@ $( document ).ready(function() {
         $('#envFileInfo').hide();
     }
     $('#envFileInfo').hide();
-    /*
-	//load 3d canvas
-	let canvas = new InitCanvas();
-	canvas.initCanvas();  
-	
-    //load 3d graph data
+
     
-    */
-    
-    /***** SETUP ******/
+    /***** 3d graph SETUP ******/
     let graph3D = new MsGraph(document.body, document.querySelector("#graph-container"));
     graph3D.init();
-    load3dData(graph3D);
+    draw3DGraph(graph3D);
+    //loadDataRange();
+    //load3dData(graph3D);
 
 	showEnvTable(min);
     findNextLevelOneScan(min);
