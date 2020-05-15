@@ -8,7 +8,7 @@ MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
-MsGraph.prototype.scale = function(rawPoints){
+/*MsGraph.prototype.scale = function(rawPoints){
 	//decide scale factor based on range of mz and rt
 	//find max/min mz and rt
 	let minMZ = 0, minRT = 0, minInte = 0;
@@ -62,15 +62,15 @@ MsGraph.prototype.scale = function(rawPoints){
     this.dataRange.intrange = inteRange;
 
     //return {"mzScale":mzScale, "rtScale":rtScale, "inteScale":inteScale};
-}
+}*/
 // plots multiple points on the graph and redraws it
-MsGraph.prototype.plotPoints = function(points) {
-    //this.scale(points);//update this.dataRange
+MsGraph.prototype.plotPoints = function(points, dataRange) {
     let peakSelect = new PeakSelect(points);
-    peakSelect.getDataRange("dataRange.txt");
     let pointsOnGrid = peakSelect.assignPeaks();
-
-    this.dataRange = peakSelect.dataRange;
+    this.dataRange = {mzmin: 0, mzmax: 2000, mzrange: 2000, rtmin: 0, rtmax: 20, rtrange: 20, intmin: 0, intmax: 5000};
+    //this.dataRange = dataRange;
+    //peakSelect.dataRange = dataRange;
+    //this.updateViewRange(this.dataRange);
     this.updateViewRange(this.dataRange);
 
     // determine if cylinders should be used and their radius
@@ -78,15 +78,25 @@ MsGraph.prototype.plotPoints = function(points) {
     this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
 
     // Plots points on the graph immediately. points should be an array of coordinate arrays.
-    for (var i = 0;  i++) {
-        
-    }
+    let peakCount = 0;
+    let enoughPeaks = false;
 
-    let i = 0;
-    while (i < pointsOnGrid.length && this.linesArray.length < this.POINTS_PLOTTED_LIMIT){
-        if (pointsOnGrid[i].length > 0){
-            this.plotPoint(pointsOnGrid[i]);
-            i++;
+    //console.log(pointsOnGrid[33][27])
+   // console.log(pointsOnGrid[33][1])
+    for (let i = 0; i < pointsOnGrid.length; i++){
+        if (enoughPeaks){
+            break;33
+        }
+        for (let h = 0; h < pointsOnGrid[i].length; h++){
+            if (peakCount > this.linesArray.length || peakCount > this.POINTS_PLOTTED_LIMIT){
+                enoughPeaks = true;
+                break;
+            }
+            if (pointsOnGrid[i][h].length > 0){
+                //console.log(pointsOnGrid[i][h][0], i, h)
+                this.plotPoint(pointsOnGrid[i][h][0]);
+                peakCount++;
+            }
         }
     }
 
@@ -132,6 +142,7 @@ MsGraph.prototype.plotJumpMarker = function() {
 
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
+    //console.log(point)
     // point: an array of the following values
     var id = point.ID;
     //var trace = point[1];
@@ -154,7 +165,7 @@ MsGraph.prototype.plotPoint = function(point) {
     
     var drawObj;
 
-    var meshmat = new THREE.MeshBasicMaterial({color: this.gradientCache[gradientindex]});
+    var meshmat = new THREE.MeshBasicMaterial({color: 0x350fa8});
 
     if (this.useCylinders) {
         // cylinders are single objects that act as thick lines and as pinheads (from above)
@@ -170,7 +181,7 @@ MsGraph.prototype.plotPoint = function(point) {
             0, 0, 0,
             0, y, 0,
         ]), 3));
-        var linemat = new THREE.LineBasicMaterial({color: this.gradientCache[gradientindex]});
+        var linemat = new THREE.LineBasicMaterial({color: 0x350fa8});
         var line = new THREE.Line(linegeo, linemat);
         line.position.set(mz, 0, rt);
 
