@@ -54,6 +54,7 @@ public:
 	void getRangeDBOneTable();
 	void getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 	void createDtabaseOneTableRTree();
+	void createDtabasMultiLayer();
 	void getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 };
 
