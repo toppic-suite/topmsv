@@ -19,7 +19,7 @@ var previewEdit = router.get("/previewEdit", function (req, res) {
 
     getPeakListByScanID(projectDir, scan_id, function (rows) {
         let peakList = calcDistribution.emass(monoMass,charge,rows);
-        console.log(peakList);
+        // console.log(peakList);
         if (!peakList) {
             console.log('No peaks match!');
             // res.send(500, {errors: 'No peak match found!'});
