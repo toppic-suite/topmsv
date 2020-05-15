@@ -41,8 +41,8 @@ file(GLOB MZMLREADER_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 file(GLOB MSREADER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/msReader.cpp
                        ${CMAKE_CURRENT_SOURCE_DIR}/src/mzMLReader.cpp)
 
-# mzMLReader
-file(GLOB MZMLREADER3D_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
+# mzMLReader3D
+file(GLOB MZMLREADER3D_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main3D.cpp)
 
 # msReader for 3D
 file(GLOB MSREADER3D_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/msReader3D.cpp
