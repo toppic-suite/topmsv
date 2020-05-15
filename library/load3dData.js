@@ -7,7 +7,6 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function load3dData(dir, callback) {
-    console.log("load3dData function running...")
     let sql = `SELECT *
                 FROM PEAKS LIMIT 1000;`;
     let dbDir = dir;

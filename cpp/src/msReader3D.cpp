@@ -260,6 +260,15 @@ void msReader3D::createDtabase() { //stmt
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+
+  ofstream rangeData ("rangeData.txt");
+  if (rangeData.is_open()){
+    rangeData << RANGE.MZMIN << "\t" << RANGE.MZMAX << "\t" << RANGE.RTMIN << "\t" << RANGE.RTMAX << "\t"<< RANGE.INTMIN << "\t" << RANGE.INTMAX;
+    rangeData.close();
+  }
+  else{
+    std::cout << "cannot create rangeData.txt" << std::endl;
+  }
 }
 
 // get range of scan from database
@@ -406,6 +415,8 @@ void msReader3D::createDtabaseOneTable() { //stmt
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+
+  
 }
 void msReader3D::getRangeDBOneTable() {
   int scanLevel = 1;
@@ -500,7 +511,8 @@ void msReader3D::createDtabaseOneTableRTree() { //stmt
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }
 
-void msReader3d::createDtabasMultiLayer() {
+void msReader3D::createDtabasMultiLayer() {
+  /*
   //create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
   clock_t t1 = clock();
   getRangeFromRaw();
@@ -583,6 +595,7 @@ void msReader3d::createDtabasMultiLayer() {
         levelOneID = currentID;
         levelOneScanID = currentScanID;
       }
+  }
   //up to here, same as current code for creating 2d db file 
   
   //sort peak table
@@ -596,17 +609,16 @@ void msReader3d::createDtabasMultiLayer() {
   //add data to peaks0 table
   //databaseReader.insertDataLayerTable();
 
-
-/*
   //store range information in a separate db file
-  ofstream rangeData ("rangeData.txt);
+  ofstream rangeData ("rangeData.txt");
   if (rangeData.is_open()){
-    rangeData << RANGE.MZMIN << "\t" << RANGE.MZMAX << "\t" << RANGE.RTMIN << "\t" << RANGE.RTMAX;
+    rangeData << RANGE.MZMIN << "\t" << RANGE.MZMAX << "\t" << RANGE.RTMIN << "\t" << RANGE.RTMAX << "\t"<< RANGE.INTMIN << "\t" << RANGE.INTMAX;
     rangeData.close();
   }
   else{
     std::cout << "cannot create rangeData.txt" << std::endl;
-  }*/
+  }
+  */
 }
 
 void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
