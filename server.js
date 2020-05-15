@@ -397,6 +397,7 @@ app.use('/', require("./router/data3D"));
 app.use('/', require("./router/upload3D"));
 app.use('/', require("./router/projects3D"));
 app.use('/', require("./router/load3dData"));
+app.use('/', require("./router/loadDataRange"));
 
 
 app.get('/auth/google', passport.authenticate('google', {

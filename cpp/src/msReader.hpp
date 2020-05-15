@@ -8,7 +8,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include "mzMLReader3D.hpp" 
+#include "mzMLReader.hpp" 
 
 #include "pwiz/data/msdata/DefaultReaderList.hpp"
 #include "pwiz/data/msdata/MSDataFile.hpp"
