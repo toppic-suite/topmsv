@@ -11,6 +11,10 @@ sqlite3_stmt *stmtLevelPair;
 sqlite3_stmt *stmtUpdate;
 sqlite3_stmt *stmtSpSumUpdate;
 
+Grid GRID;
+/*initialize 3d vector with default values*/
+std::vector<std::vector<std::vector<double> > >  Grid::GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (GRID.LEVEL5[0], std::vector<std::vector<double> >(GRID.LEVEL5[1], std::vector<double>({-1, -1})));
+  
 std::string num2str(double num) {
   // std::cout << num << std::endl;
   stringstream stream;
@@ -94,87 +98,47 @@ int callbackInsertPeakRTree(void *NotUsed, int argc, char **argv, char **azColNa
   }
   return 0;
 };
-int callbackConvertData(sqlite3 *db, int argc, char **argv, char **azColName){
-  //argv = [id, mz, rt, intensity]
- /* Grid GRID;//contains information on n, m in n*m grid
+int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
+  /*ID  INT PRIMARY KEY     NOT NULL," \ 
+    "SPECTRAID       INT      NOT NULL," \
+    "MZ              REAL     NOT NULL," \
+    "INTENSITY       REAL     NOT NULL," \
+    "RETENTIONTIME   REAL     NOT NULL);");   <--------- PEAKS table */
+
+  Grid GRID;//contains information on n, m in n*m grid
   Range RANGE;
-  std::vector<std::vector<std::vector<int, double>>> gridBlocks (GRID.LEVEL0[0], std::vector<int, double>(GRID.LEVEL0[1], {-1, -1}));
+
+  mzMLReader3D mzmlReader3D;
   
-  //std::vector<std::vector<std::vector<int, double>>> GRIDBLOCKS;
   /*get the max min mz and max min rt, to get the range of mz and rt
   then multiply the data by target range/ current range*/   
-  /*double mzRange = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
+  double mzRange = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
   double rtRange = RANGE.RTMAX - RANGE.RTMIN;//range of rt in mzML
 
-  int xIndex = ceil(std::stod(argv[2])/(GRID.LEVEL0[0]/mzRange));
-  int yIndex = ceil(std::stod(argv[3])/(GRID.LEVEL0[1]/rtRange));
-*/
+  int xIndex = ceil(std::stod(argv[2])/(GRID.LEVEL5[0]/mzRange));
+  int yIndex = ceil(std::stod(argv[4])/(GRID.LEVEL5[1]/rtRange));
+
   /*see if the grid block at [xIndex][yIndex] already has a peak.
     if it has a peak, the value at the index is FALSE. If it does not have a peak yet, the value is TRUE.
     if TRUE, insert the peak into the corresponding table and set the value at [xIndex][yIndex] to be FALSE
   */
-  /*if (gridBlocks[xIndex][yIndex][0] < 0){//if gridBlock does not have a peak yet
+  if (GRID.GRIDBLOCKS[xIndex][yIndex][0] < 0){//if gridBlock does not have a peak yet
     //store the intensity and ID
-    gridBlocks[xIndex][yIndex] = {argv[0], argv[3]};
+    GRID.GRIDBLOCKS[xIndex][yIndex][0] = std::stoi(argv[0]);
+    GRID.GRIDBLOCKS[xIndex][yIndex][1] = std::stod(argv[3]);
   }
   else{
     //compare intensity
-    if (argv[3] > gridBlocks[xIndex][yIndex][1]){
-      gridBlocks[xIndex][yIndex] = {argv[0], argv[3]};
+    if (std::stod(argv[3]) > GRID.GRIDBLOCKS[xIndex][yIndex][1]){
+      GRID.GRIDBLOCKS[xIndex][yIndex][0] = std::stoi(argv[0]);
+      GRID.GRIDBLOCKS[xIndex][yIndex][1] = std::stod(argv[3]);
     }
   }
   //GRIDBLOCKS now should be having one peak for each grid, unless there was no peak in that grid mz and rt range
-  std::string sqlstr = "BEGIN;";
-  sql = (char *)sqlstr.c_str();
-
-  /* Execute SQL statement */
-  /*rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
-  if( rc != SQLITE_OK ){
-    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
-    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-    sqlite3_free(zErrMsg);
-  }else{
-    // fprintf(stdout, "Records created successfully\n");
-    // std::cout << "Records created successfully" << std::endl;
-  }
-
-  for (int i = 0; i < gridBlocks.size(); i++){
-    for (int h = 0; h < gridBlocks[i].size(); h++){
-      std::string sqlstr = "INSERT INTO PEAKS0 (ID,SCAN, MZ,RETENTIONTIME, INTENSITY) VALUES (" + argv[0] + ", " 
-          + argv[1] + ", " + argv[2] + ", " + argv[3] + ", " + ", " + argv[4] + " ) 
-          SELECT * FROM PEAKS
-          WHERE ID=" + gridBlocks[i][h][0] + ";";
-      char *sql = (char *)sqlstr.c_str();
-
-      /* Execute SQL statement */
-      /*int rc = sqlite3_exec(db, sql, callback, 0, 0);
-      if( rc != SQLITE_OK ){
-          // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
-          // std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-          sqlite3_free(0);
-      }else{
-          // fprintf(stdout, "Records created successfully\n");
-          // std::cout << "Records created successfully" << std::endl;
-      }
-    }
-  }
-  std::string sqlstr = "COMMIT;";
- /* sql = (char *)sqlstr.c_str();
-
-  /* Execute SQL statement */
-/*  rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
-  if( rc != SQLITE_OK ){
-    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
-    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-    sqlite3_free(zErrMsg);
-  }else{
-    // fprintf(stdout, "Records created successfully\n");
-    // std::cout << "Records created successfully" << std::endl;
-  }
-  return 0;*/
+  return 0;
 }
 mzMLReader3D::mzMLReader3D() {
-   data = (char*)("Callback function called");
+  data = (char*)("Callback function called");
 };
 void mzMLReader3D::setName(std::string fileName) {
    fileName.insert(fileName.length() - 5, "_3D"); 
@@ -197,25 +161,6 @@ void mzMLReader3D::openDatabase(std::string fileName) {
 void mzMLReader3D::closeDatabase() {
    sqlite3_close(db);
 };
-/*
-void mzMLReader3d::assignPeaks(){
-  //the index is determined mzrange / grid width, rtrange/ grid height
-  //for now, the grid is 100 * 30 (original grid ratio is 10:3)
-    let mzScale = 100 / this.dataRange.mzrange;
-    let rtScale = 30 / this.dataRange.rtrange;
-
-    //for each peak
-    for (let i = 0; i < this.rawPoints.length; i++){
-        let mz = Math.ceil(this.rawPoints[i].MZ * mzScale);
-        let rt = Math.ceil(this.rawPoints[i].RETENTIONTIME * rtScale);
-
-        if (this.gridBlocks[mz][rt] == 0){
-            //no peak has been identified. store intensity of this peak;
-        }
-
-    }
-}
-*/
 
 void mzMLReader3D::creatTable() {
    /* Create SQL statement */
@@ -602,12 +547,10 @@ Use only one table.
 Use only one table.
 Use only one table.
 */
-/*
-void mzMLReader3D::sortTable(){
-  std::string sqlstr = "SELECT * FROM PEAKS ORDER BY INTENSITY DESC;";
+void mzMLReader3D::insertPeakDataToGridBlocks(){
+  std::string sqlstr = "SELECT * FROM PEAKS;";
   sql = (char *)sqlstr.c_str();
-
-  rc = sqlite3_exec(db, sql, callbackPeak, (void*)data, &zErrMsg);
+  rc = sqlite3_exec(db, sql, callbackConvertData, db, &zErrMsg);//after this function, gridBlocks has a peak for each grid
   if( rc != SQLITE_OK ){
     std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
     sqlite3_free(zErrMsg);
@@ -615,19 +558,32 @@ void mzMLReader3D::sortTable(){
     // std::cout << "Operation done successfully" << std::endl;
   }
 }
-void mzMLReader3D::insertDataLayerTable(){
-  std::string sqlstr = "SELECT ID, MZ, RETENTIONTIME, INTENSITY FROM PEAKS;";
-  sql = (char *)sqlstr.c_str();
-  rc = sqlite3_exec(db, sql, callbackConvertData, db, &zErrMsg);
-  if( rc != SQLITE_OK ){
-    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-    sqlite3_free(zErrMsg);
-  }else{
-    // std::cout << "Operation done successfully" << std::endl;
+void mzMLReader3D::insertDataLayerTable(int layerNum){
+  insertPeakDataToGridBlocks();
+  //check if vector is still there
+  Grid GRID;
+
+  std::cout << "grid block size : " << GRID.GRIDBLOCKS.size() << std::endl;
+  for (int i = 0; i < GRID.GRIDBLOCKS.size(); i++){
+    for (int h = 0; i < GRID.GRIDBLOCKS[i].size(); h++){
+      int id = (int)GRID.GRIDBLOCKS[i][h][0];
+      if (id > 0){
+        std::string sqlstr = "INSERT INTO PEAKS" + num2str(layerNum) + "(ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME)" + 
+        "SELECT * FROM PEAKS WHERE ID=" + num2str(id)+ ";";
+        sql = (char *)sqlstr.c_str();
+        rc = sqlite3_exec(db, sql, callbackConvertData, db, &zErrMsg);//after this function, gridBlocks has a peak for each grid
+        if( rc != SQLITE_OK ){
+          std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+          sqlite3_free(zErrMsg);
+        }else{
+          // std::cout << "Operation done successfully" << std::endl;
+        }
+      }
+    }
   }
   
 }
-*/
+
 void mzMLReader3D::setRange(Range tmpRange) {
   RANGE = tmpRange;
   double maxBlock = RANGE.COUNT/RANGE.MAXRETURN;

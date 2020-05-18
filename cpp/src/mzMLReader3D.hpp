@@ -1,7 +1,6 @@
 #ifndef MZMLREADER3D_HPP_
 #define MZMLREADER3D_HPP_
 
-
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -37,19 +36,14 @@ struct Range{
 //ratio is 10:3
 struct Grid{
 	vector<int> LEVEL0 = {100, 30};//3000 peaks
-	vector<int> LEVEL1 = {180, 108};//19440 peaks
-	vector<int> LEVEL2 = {365, 219};//79935 peaks
-	vector<int> LEVEL3 = {705, 423};//298915 peaks
-	vector<int> LEVEL4 = {1175, 705};//828375 peaks
-	vector<int> LEVEL5 = {1720, 1032};//1775040 peaks
-
-	/*3d vector. dimesion 1 is each level (0-5), dimension 2 is mz (x range in grid), 
-	dimension 3 is rt (y range in grid) */
-	//vector<vector<vector<bool>>> GRIDBLOCKS;
-
-	//check if ID is really int -- is it string?
-	//vector<vector<int, double>> GRIDBLOCKS;//2d vector for now, contain data for level 0 only
+	vector<int> LEVEL1 = {250, 75};//18750 peaks
+	vector<int> LEVEL2 = {500, 150};//75000 peaks
+	vector<int> LEVEL3 = {1000, 300};//300000 peaks
+	vector<int> LEVEL4 = {1600, 480};//768000 peaks
+	vector<int> LEVEL5 = {2500, 750};//1875000 peaks
 	
+	/*3d vector*/
+  	static vector<vector<vector<double> > > GRIDBLOCKS;
 };
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
@@ -109,8 +103,8 @@ public:
 	int RT_GROUP4;
 	int RT_GROUP5;
 
-	void sortTable();
-	void insertDataLayerTable();
+	void insertPeakDataToGridBlocks();
+	void insertDataLayerTable(int layerNum);
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);
 	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
