@@ -63,42 +63,66 @@ MsGraph.setOnTop = function(obj) {
 
     //return {"mzScale":mzScale, "rtScale":rtScale, "inteScale":inteScale};
 }*/
-// plots multiple points on the graph and redraws it
-MsGraph.prototype.plotPoints = function(points, dataRange) {
-    let peakSelect = new PeakSelect(points);
-    let pointsOnGrid = peakSelect.assignPeaks();
-    this.dataRange = {mzmin: 0, mzmax: 2000, mzrange: 2000, rtmin: 0, rtmax: 20, rtrange: 20, intmin: 0, intmax: 5000};
-    //this.dataRange = dataRange;
-    //peakSelect.dataRange = dataRange;
-    //this.updateViewRange(this.dataRange);
-    this.updateViewRange(this.dataRange);
+MsGraph.prototype.getDataRange = function(points){
+    console.log("getDataRAnge")
+    let mzmin = points[0].MZ;
+    let mzmax = points[points.length -1].MZ;
+    let rtmin = 0;
+    let rtmax = 0;
+    let intmin = 0;
+    let intmax = 0;
 
+    for (let i = 0; i < points.length; i++){
+        if (points[i].RETENTIONTIME < rtmin){
+            rtmin = points[i].RETENTIONTIME;
+        }
+        else if(points[i].RETENTIONTIME > rtmax){
+            rtmax = points[i].RETENTIONTIME;
+        };
+        if (points[i].INTENSITY < intmin){
+            intmin = points[i].INTENSITY;
+        }
+        else if(points[i].INTENSITY > intmax){
+            intmax = points[i].INTENSITY;
+        }
+    }
+    let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
+    "intmin": intmin, "intmax": intmax};
+    console.log(dataRange)
+    return dataRange;
+}
+// plots multiple points on the graph and redraws it
+MsGraph.prototype.plotPoints = function(points) {
+    let peakSelect = new PeakSelect(points);
+    
+    this.dataRange = this.getDataRange(points);
+    peakSelect.dataRange = this.dataRange;
+
+    this.updateViewRange(this.dataRange);
+    
     // determine if cylinders should be used and their radius
     var zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
     this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
 
-    // Plots points on the graph immediately. points should be an array of coordinate arrays.
-    let peakCount = 0;
-    let enoughPeaks = false;
+    for (let i = 0; i < points.length; i++){
+        this.plotPoint(points[i]);
+    }
 
-    //console.log(pointsOnGrid[33][27])
-   // console.log(pointsOnGrid[33][1])
-    for (let i = 0; i < pointsOnGrid.length; i++){
+    /*for (let i = 0; i < points.length; i++){
         if (enoughPeaks){
-            break;33
+            break;
         }
-        for (let h = 0; h < pointsOnGrid[i].length; h++){
+        for (let h = 0; h < points[i].length; h++){
             if (peakCount > this.linesArray.length || peakCount > this.POINTS_PLOTTED_LIMIT){
                 enoughPeaks = true;
                 break;
             }
-            if (pointsOnGrid[i][h].length > 0){
-                //console.log(pointsOnGrid[i][h][0], i, h)
-                this.plotPoint(pointsOnGrid[i][h][0]);
+            if (points[i][h].length > 0){
+                this.plotPoint(points[i][h][0]);
                 peakCount++;
             }
         }
-    }
+    }*/
 
     this.plotJumpMarker();
     

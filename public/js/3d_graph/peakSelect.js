@@ -7,8 +7,8 @@
 */
 function PeakSelect(rawPoints){
     this.rawPoints = rawPoints;
-    this.gridBlocks = Array(100).fill().map(() => Array(30).fill([]));
-    this.dataRange = {mzmin: 0, mzmax: 2000, mzrange: 2000, rtmin: 0, rtmax: 20, rtrange: 20, intmin: 0, intmax: 5000};
+    //this.gridBlocks = Array(100).fill().map(() => Array(30).fill([]));
+    //this.dataRange = {mzmin: 0, mzmax: 2000, mzrange: 2000, rtmin: 0, rtmax: 20, rtrange: 20, intmin: 0, intmax: 5000};
 }
 PeakSelect.prototype.assignPeaks = function(){
     console.log("dataRange", this.dataRange);
