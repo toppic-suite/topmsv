@@ -512,7 +512,7 @@ void msReader3D::createDtabaseOneTableRTree() { //stmt
 }
 
 void msReader3D::createDtabasMultiLayer() {
-  /*
+  
   //create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
   clock_t t1 = clock();
   getRangeFromRaw();
@@ -596,29 +596,14 @@ void msReader3D::createDtabasMultiLayer() {
         levelOneScanID = currentScanID;
       }
   }
+ 
   //up to here, same as current code for creating 2d db file 
   
-  //sort peak table
-  //databaseReader.sortTable();
-
-  //databaseReader.assignPeaks();
-
   //create peaks0, peaks1.. tables
   databaseReader.creatLayersTable();
-  
-  //add data to peaks0 table
-  //databaseReader.insertDataLayerTable();
 
-  //store range information in a separate db file
-  ofstream rangeData ("rangeData.txt");
-  if (rangeData.is_open()){
-    rangeData << RANGE.MZMIN << "\t" << RANGE.MZMAX << "\t" << RANGE.RTMIN << "\t" << RANGE.RTMAX << "\t"<< RANGE.INTMIN << "\t" << RANGE.INTMAX;
-    rangeData.close();
-  }
-  else{
-    std::cout << "cannot create rangeData.txt" << std::endl;
-  }
-  */
+  //add data to peaks0, peaks1.. tables
+  databaseReader.insertDataLayerTable(5);
 }
 
 void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
