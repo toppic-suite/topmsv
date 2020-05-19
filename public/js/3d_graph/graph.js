@@ -357,11 +357,10 @@ MsGraph.prototype.resizeCamera = function() {
 // update labels and legend to reflect a new view range
 MsGraph.prototype.updateViewRange = function(newViewRange) {
     console.log('updateViewRange');
-    //console.log(newViewRange);
     this.viewRange = newViewRange;
     //this.legend.updateViewRect(newViewRange, this.dataRange);
     this.repositionPlot(this.viewRange);
-    //this.drawDataLabels();
+    this.drawDataLabels();
     this.renderDelayed();
 };
 
@@ -522,6 +521,9 @@ MsGraph.prototype.drawDataLabels = function() {
     var intmintext = MsGraph.roundTo(this.viewRange.intmin, this.ROUND_INT);
     var intmaxtext = MsGraph.roundTo(this.viewRange.intmax, this.ROUND_INT);
 
+    var mztext = "m/z";
+    var rttext = "retention time";
+
     this.containerEl.find(".status-p-visible").text(this.nPointsVisible);
 
     this.containerEl.find(".status-r-mzmin").text(mzmintext);
@@ -531,22 +533,27 @@ MsGraph.prototype.drawDataLabels = function() {
     this.containerEl.find(".status-r-intmin").text(intmintext);
     this.containerEl.find(".status-r-intmax").text(intmaxtext);
 
-    var prog = this.dataRange.progress;
-    this.containerEl.find(".status-progress").text(prog ? (MsGraph.roundTo(prog*100, 2) + "% (press A to recompute)") : "unknown (press A to recompute)");
+    //var prog = this.dataRange.progress;
+    //this.containerEl.find(".status-progress").text(prog ? (MsGraph.roundTo(prog*100, 2) + "% (press A to recompute)") : "unknown (press A to recompute)");
 
-    this.containerEl.find(".status-group").text(this.editor.getGroupStatusText());
+    //this.containerEl.find(".status-group").text(this.editor.getGroupStatusText());
 
     this.labels.mzMin = MsGraph.makeTextSprite(mzmintext, {r: 0, g: 0, b: 0}, 16);
     this.labels.mzMax = MsGraph.makeTextSprite(mzmaxtext,{r: 0, g: 0, b: 0}, 16);
     this.labels.rtMin = MsGraph.makeTextSprite(rtmintext,{r: 0, g: 0, b: 0}, 16);
     this.labels.rtMax = MsGraph.makeTextSprite(rtmaxtext,{r: 0, g: 0, b: 0}, 16);
+    this.labels.mz = MsGraph.makeTextSprite(mztext,{r: 0, g: 0, b: 0}, 16);
+    this.labels.rt = MsGraph.makeTextSprite(rttext,{r: 0, g: 0, b: 0}, 16);
 
+    this.labels.mz.position.set(0.5, 0.5, this.GRID_RANGE + 1.5);
     this.labels.mzMin.position.set(0.5, -0.5, this.GRID_RANGE + 1.5);
     this.labels.mzMax.position.set(this.GRID_RANGE, -0.5, this.GRID_RANGE + 1.5);
+
+    this.labels.rt.position.set(-1.5, 0.5, this.GRID_RANGE);
     this.labels.rtMin.position.set(-1.5, -0.5, this.GRID_RANGE);
     this.labels.rtMax.position.set(-1.5, -0.5, 0.5);
 
-    this.labelgroup.add(this.labels.mzMin, this.labels.mzMax, this.labels.rtMin, this.labels.rtMax);
+    this.labelgroup.add(this.labels.mzMin, this.labels.mzMax, this.labels.rtMin, this.labels.rtMax, this.labels.mz, this.labels.rt);
 };
 
 // labels the closest point to the mouse
