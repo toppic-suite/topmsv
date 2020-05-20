@@ -8,63 +8,39 @@ MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
-/*MsGraph.prototype.scale = function(rawPoints){
-	//decide scale factor based on range of mz and rt
-	//find max/min mz and rt
-	let minMZ = 0, minRT = 0, minInte = 0;
-	let maxMZ = rawPoints[0].MZ, maxInte = rawPoints[0].INTENSITY, maxRT = rawPoints[0].RETENTIONTIME;
-	
-	for (let i = 0; i < rawPoints.length;i++){
-		if (rawPoints[i].MZ < minMZ){
-			minMZ = rawPoints[i].MZ;
-		}
-		if (rawPoints[i].MZ > maxMZ){
-			maxMZ = rawPoints[i].MZ;
-		}
-		if (rawPoints[i].RETENTIONTIME < minRT){
-			minRT = rawPoints[i].RETENTIONTIME;
-		}
-		if (rawPoints[i].RETENTIONTIME < maxRT){
-			maxRT = rawPoints[i].RETENTIONTIME;
-		}
-		if (rawPoints[i].RETENTIONTIME < minInte){
-			minInte = rawPoints[i].INTENSITY;
-		}
-		if (rawPoints[i].RETENTIONTIME < maxInte){
-			maxInte = rawPoints[i].INTENSITY;
-		}
-	}
+MsGraph.prototype.filterDataAndGetRange = function(points, min, max){
+    let mzmin = min;
+    let mzmax = max;
+    let rtmin = 0;
+    let rtmax = 0;
+    let intmin = 0;
+    let intmax = 0;
 
-	let mzRange = Math.ceil(maxMZ - minMZ);
-	let rtRange = Math.ceil(maxRT - minRT);
-	let inteRange = Math.ceil(maxInte - minInte);
-	
-	//current graph is 20:12 (5:3)
-	//mzRange : 5 = value : target => target * mzRange = value * 5 
+    let filteredData = [];
 
-	let mzScale = 5 / mzRange;
-	let rtScale = 3 / rtRange;
-	let inteScale = 5 / inteRange;
-    console.log("range", mzRange, rtRange, inteRange)
-    
-    //{ mzmin: 0, mzmax: 1, mzrange: 1, rtmin: 0, rtmax: 1, rtrange: 1, intmin: 0, intmax: 1000, intrange: 1000 };
-   
-    this.dataRange.mzmin = minMZ;
-    this.dataRange.mzmax = maxMZ;
-    this.dataRange.mzrange = mzRange;
-
-    this.dataRange.rtmin = maxRT;
-    this.dataRange.rtmax = maxRT;
-    this.dataRange.rtrange = rtRange;
-
-    this.dataRange.intmin = minInte;
-    this.dataRange.intmax = maxInte;
-    this.dataRange.intrange = inteRange;
-
-    //return {"mzScale":mzScale, "rtScale":rtScale, "inteScale":inteScale};
-}*/
+    for (let i = 0; i < points.length; i++){
+        if (points[i].MZ >= mzmin && points[i].MZ <= mzmax){
+            filteredData.push(points[i]);
+            if (points[i].RETENTIONTIME < rtmin){
+                rtmin = points[i].RETENTIONTIME;
+            }
+            else if(points[i].RETENTIONTIME > rtmax){
+                rtmax = points[i].RETENTIONTIME;
+            };
+            if (points[i].INTENSITY < intmin){
+                intmin = points[i].INTENSITY;
+            }
+            else if(points[i].INTENSITY > intmax){
+                intmax = points[i].INTENSITY;
+            }
+        }
+    }
+    let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
+    "intmin": intmin, "intmax": intmax};
+    //console.log(dataRange)
+    return {"filteredData":filteredData, "dataRange":dataRange};
+}
 MsGraph.prototype.getDataRange = function(points){
-    console.log("getDataRAnge")
     let mzmin = points[0].MZ;
     let mzmax = points[points.length -1].MZ;
     let rtmin = 0;
@@ -88,15 +64,36 @@ MsGraph.prototype.getDataRange = function(points){
     }
     let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
     "intmin": intmin, "intmax": intmax};
-    console.log(dataRange)
+    //console.log(dataRange)
     return dataRange;
+}
+MsGraph.prototype.redrawGraph = function(minMz, maxMz){
+    this.linesArray = [];
+    let updatedData = this.filterDataAndGetRange(this.currentData, minMz, maxMz);
+
+    this.dataRange = updatedData.dataRange;
+    this.updateViewRange(this.dataRange);
+
+    let zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
+    this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
+    
+    for (let i = 0; i < updatedData.filteredData.length; i++){
+        this.plotPoint(updatedData.filteredData[i]);
+    }
+    this.plotJumpMarker();
+    
+    // make sure the groups are plotted and update the view
+    this.repositionPlot(this.viewRange);
+    this.updateViewRange(this.viewRange);
+}
+MsGraph.prototype.addDataToGraph = function(points){
+    this.currentData = points;//store loaded data
 }
 // plots multiple points on the graph and redraws it
 MsGraph.prototype.plotPoints = function(points) {
-    let peakSelect = new PeakSelect(points);
-    
+    //let peakSelect = new PeakSelect(points);
     this.dataRange = this.getDataRange(points);
-    peakSelect.dataRange = this.dataRange;
+    //peakSelect.dataRange = this.dataRange;
 
     this.updateViewRange(this.dataRange);
     
@@ -104,35 +101,16 @@ MsGraph.prototype.plotPoints = function(points) {
     var zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
     this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
 
+    this.linesArray = [];
+
     for (let i = 0; i < points.length; i++){
         this.plotPoint(points[i]);
     }
-
-    /*for (let i = 0; i < points.length; i++){
-        if (enoughPeaks){
-            break;
-        }
-        for (let h = 0; h < points[i].length; h++){
-            if (peakCount > this.linesArray.length || peakCount > this.POINTS_PLOTTED_LIMIT){
-                enoughPeaks = true;
-                break;
-            }
-            if (points[i][h].length > 0){
-                this.plotPoint(points[i][h][0]);
-                peakCount++;
-            }
-        }
-    }*/
-
     this.plotJumpMarker();
     
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
     this.updateViewRange(this.viewRange);
-    //this.renderImmediate();
-    //console.log(this.scene)
-    //this.editor.makeBrushSizeCursor();
-    //this.editor.resetLineColors();
 };
 
 // plots an X over the location of the current bookmark

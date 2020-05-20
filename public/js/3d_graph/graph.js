@@ -38,6 +38,8 @@ function MsGraph(containerEl, graphEl) {
     this.ROUND_MZ = 3;
     this.ROUND_RT = 3;
     this.ROUND_INT = 3;
+
+    this.currentData; //all data for current scan (so that no need to load all back when moving ms1 graph)
 }
 
 /******** SETUP FUNCTIONS ******/
@@ -356,12 +358,13 @@ MsGraph.prototype.resizeCamera = function() {
 
 // update labels and legend to reflect a new view range
 MsGraph.prototype.updateViewRange = function(newViewRange) {
-    console.log('updateViewRange');
+    //console.log('updateViewRange');
     this.viewRange = newViewRange;
     //this.legend.updateViewRect(newViewRange, this.dataRange);
     this.repositionPlot(this.viewRange);
     this.drawDataLabels();
-    this.renderDelayed();
+    this.renderImmediate();
+    //this.renderDelayed();
 };
 
 // prevent user from going outside the data range or zooming in so far that math breaks down

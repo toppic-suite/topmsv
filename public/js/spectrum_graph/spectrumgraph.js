@@ -12,7 +12,7 @@ SpectrumGraph = function(svgId,spectrumParameters,peakData){
     let mousePos = d3.mouse(this);
     if (ratio == 1) 
     {
-      	spectrumParameters.drag(distance);
+		  spectrumParameters.drag(distance);
     }
     else 
     {
@@ -40,6 +40,7 @@ SpectrumGraph = function(svgId,spectrumParameters,peakData){
 	this.svg.call(this.zoom.transform, d3.zoomIdentity);
 
 	// drawSpectrum(svgId,spectrumParameters, peakData);
+	return spectrumParameters;
 }
 
 drawTicks = function(svg,spectrumParameters,spectrumgraph){
@@ -175,6 +176,9 @@ addDatatoAxis = function(svg,spectrumParameters){
 						.style("font-size","14px")
 	}
 	//return [currentMinPeakVal,currentMaxPeakVal];
+
+	 //signal event listner watching mz range change
+	 update3dGraph(minMz, maxMz);//trigger redrawing the graph (calls function in result3D.js)
 }
 drawPeaks = function(svg,spectrumParameters,peakdata){
 	let peaks = svg.append("g")
@@ -360,7 +364,9 @@ function drawSpectrum(svgId, spectrumParameters, peakData){
 		} else {
 			specPara2_g = spectrumParameters;
 		}
-		console.log(spectrumParameters.minMz);
+		//console.log(spectrumParameters.minMz);
+		//console.log(spectrumParameters.minMz, spectrumParameters.maxMz);
+		//here, update the range of data
 		//SpectrumDownload.addDownloadRect(svgId, spectrumParameters);
 	// }
 //   addDownloadRect(svgId, spectrumParameters);
