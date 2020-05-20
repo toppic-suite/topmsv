@@ -40,6 +40,7 @@ SpectrumGraph = function(svgId,spectrumParameters,peakData){
 	this.svg.call(this.zoom.transform, d3.zoomIdentity);
 
 	// drawSpectrum(svgId,spectrumParameters, peakData);
+	return spectrumParameters;
 }
 
 drawTicks = function(svg,spectrumParameters,spectrumgraph){
@@ -360,7 +361,9 @@ function drawSpectrum(svgId, spectrumParameters, peakData){
 		} else {
 			specPara2_g = spectrumParameters;
 		}
-		console.log(spectrumParameters.minMz);
+		//console.log(spectrumParameters.minMz);
+		//console.log(spectrumParameters.minMz, spectrumParameters.maxMz);
+		//here, update the range of data
 		//SpectrumDownload.addDownloadRect(svgId, spectrumParameters);
 	// }
 //   addDownloadRect(svgId, spectrumParameters);

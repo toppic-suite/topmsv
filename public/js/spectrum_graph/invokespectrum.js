@@ -7,7 +7,7 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ){
 	let listSize = peakList.length;
 	let minMzData = peakList[0].mz;
 	let maxMzData = peakList[listSize-1].mz;
-	
+
 	peakList.sort(function(x,y){
 		return d3.ascending(x.intensity, y.intensity);
 	})
@@ -36,6 +36,8 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ){
 			}
 		}
 	}
+	//currminMz and currmaxMz = range shown in the graph now
+	
 	specParameters.initScale(currminMz,currmaxMz,maxIntensity,minIntensity,minMzData,maxMzData,currentMaxIntensity);
 	let peakData = {};
 	peakList.sort(function(x,y){
@@ -46,7 +48,7 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ){
 
 	//console.log(peakData);
 	id = "#"+id;
-	let spectrumgraph = new SpectrumGraph(id,specParameters,peakData);
-	 return spectrumgraph;
+	let spectrumgraphPara = new SpectrumGraph(id,specParameters,peakData);
+	return spectrumgraphPara;
 }
 
