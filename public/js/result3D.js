@@ -1,3 +1,5 @@
+let graph3D;//3d graph
+
 function getRelatedScan2(scanID) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -62,10 +64,12 @@ function loadPeakList1(scanID, prec_mz) {
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
                         envList1_g = JSON.parse(this.responseText);
+                        console.log("envList1_g", envList1_g);
                         if (envList1_g !== 0){
-                            addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
+                            let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                         }else {
-                            addSpectrum("spectrum1",peakList1_g, [],prec_mz);
+                            let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
+                            plot3dGraph(ms1GraphParameters)//parameter contains mz range
                         }
                     }
                 };
@@ -186,7 +190,8 @@ function load3dDataByScan(scanID, msGraph){
             var response = JSON.parse(this.responseText);
             //console.log("response", response);
             //result is sorted by mz
-        	msGraph.plotPoints(response);
+            //msGraph.plotPoints(response);
+            msGraph.addDataToGraph(response);
         }
     }
     xhttp.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + "_3D.db" + "&scanID=" + scanID,true);
@@ -221,9 +226,17 @@ function loadDataRangeByScan(callback, scanID, msGraph){
     callback(msGraph, response);//call load3dData
 
 }*/
-function draw3DGraph(scanID, msGraph){
+function plot3dGraph(ms1GraphParameters){
+    graph3D.redrawGraph(ms1GraphParameters.minMz, ms1GraphParameters.maxMz);
+}
+function draw3dGraph(scanID, msGraph){
     //loadDataRangeByScan(load3dData, scanID, msGraph);
     load3dDataByScan(scanID, msGraph);
+}
+function add3dGraph(){
+    let scanID = document.getElementById("rangeMin").value;
+    graph3D.init();
+    draw3dGraph(scanID, graph3D);
 }
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
@@ -832,6 +845,10 @@ dimensionSwitch.addEventListener('click', function () {
 
 },false)
 
+function update3dGraph(minMz, maxMz){
+    graph3D.redrawGraph(minMz, maxMz);
+}
+
 //function running on startup
 $( document ).ready(function() {
     var min = document.getElementById("rangeMin").value;
@@ -845,6 +862,9 @@ $( document ).ready(function() {
 	showEnvTable(min);
     findNextLevelOneScan(min);
     loadInteSumList();
+
+    graph3D = new MsGraph(document.body, document.querySelector("#graph-container"))
+    add3dGraph();//draw 3d graph
     
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
@@ -853,11 +873,6 @@ $( document ).ready(function() {
         $('#request').click();
         localStorage.clear();
     }
-    /***** 3d graph SETUP ******/
-    let graph3D = new MsGraph(document.body, document.querySelector("#graph-container"));
-    graph3D.init();
-    draw3DGraph(min, graph3D);
-
 });
 $("#scanID").keyup(function(event) {
     if (event.keyCode === 13) {
