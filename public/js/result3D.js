@@ -69,7 +69,7 @@ function loadPeakList1(scanID, prec_mz) {
                             let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                         }else {
                             let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                            update3dGraph(ms1GraphParameters)//parameter contains mz range
+                            plot3dGraph(ms1GraphParameters)//parameter contains mz range
                         }
                     }
                 };
@@ -226,8 +226,8 @@ function loadDataRangeByScan(callback, scanID, msGraph){
     callback(msGraph, response);//call load3dData
 
 }*/
-function update3dGraph(ms1GraphParameters){
-    graph3D.redrawGraph(ms1GraphParameters);
+function plot3dGraph(ms1GraphParameters){
+    graph3D.redrawGraph(ms1GraphParameters.minMz, ms1GraphParameters.maxMz);
 }
 function draw3dGraph(scanID, msGraph){
     //loadDataRangeByScan(load3dData, scanID, msGraph);
@@ -845,6 +845,10 @@ dimensionSwitch.addEventListener('click', function () {
 
 },false)
 
+function update3dGraph(minMz, maxMz){
+    graph3D.redrawGraph(minMz, maxMz);
+}
+
 //function running on startup
 $( document ).ready(function() {
     var min = document.getElementById("rangeMin").value;
@@ -869,7 +873,6 @@ $( document ).ready(function() {
         $('#request').click();
         localStorage.clear();
     }
-
 });
 $("#scanID").keyup(function(event) {
     if (event.keyCode === 13) {

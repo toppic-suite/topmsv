@@ -358,12 +358,13 @@ MsGraph.prototype.resizeCamera = function() {
 
 // update labels and legend to reflect a new view range
 MsGraph.prototype.updateViewRange = function(newViewRange) {
-    console.log('updateViewRange');
+    //console.log('updateViewRange');
     this.viewRange = newViewRange;
     //this.legend.updateViewRect(newViewRange, this.dataRange);
     this.repositionPlot(this.viewRange);
     this.drawDataLabels();
-    this.renderDelayed();
+    this.renderImmediate();
+    //this.renderDelayed();
 };
 
 // prevent user from going outside the data range or zooming in so far that math breaks down
