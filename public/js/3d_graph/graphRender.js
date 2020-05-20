@@ -37,7 +37,7 @@ MsGraph.prototype.filterDataAndGetRange = function(points, min, max){
     }
     let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
     "intmin": intmin, "intmax": intmax};
-    console.log(dataRange)
+    //console.log(dataRange)
     return {"filteredData":filteredData, "dataRange":dataRange};
 }
 MsGraph.prototype.getDataRange = function(points){
@@ -67,9 +67,9 @@ MsGraph.prototype.getDataRange = function(points){
     //console.log(dataRange)
     return dataRange;
 }
-MsGraph.prototype.redrawGraph = function(ms1GraphParameters){
+MsGraph.prototype.redrawGraph = function(minMz, maxMz){
     this.linesArray = [];
-    let updatedData = this.filterDataAndGetRange(this.currentData, ms1GraphParameters.minMz, ms1GraphParameters.maxMz);
+    let updatedData = this.filterDataAndGetRange(this.currentData, minMz, maxMz);
 
     this.dataRange = updatedData.dataRange;
     this.updateViewRange(this.dataRange);
