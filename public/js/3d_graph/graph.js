@@ -38,6 +38,8 @@ function MsGraph(containerEl, graphEl) {
     this.ROUND_MZ = 3;
     this.ROUND_RT = 3;
     this.ROUND_INT = 3;
+
+    this.currentData; //all data for current scan (so that no need to load all back when moving ms1 graph)
 }
 
 /******** SETUP FUNCTIONS ******/
