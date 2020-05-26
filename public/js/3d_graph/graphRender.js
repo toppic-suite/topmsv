@@ -15,9 +15,7 @@ MsGraph.prototype.filterDataAndGetRange = function(points, min, max){
     let rtmax = 0;
     let intmin = 0;
     let intmax = 0;
-
     let filteredData = [];
-
     for (let i = 0; i < points.length; i++){
         if (points[i].MZ >= mzmin && points[i].MZ <= mzmax){
             filteredData.push(points[i]);
@@ -40,6 +38,42 @@ MsGraph.prototype.filterDataAndGetRange = function(points, min, max){
     //console.log(dataRange)
     return {"filteredData":filteredData, "dataRange":dataRange};
 }
+
+// MsGraph.prototype.filterDataAndGetRange = function(points){
+//     let mzmin = 0;
+//     let mzmax = 0;
+//     let rtmin = 0;
+//     let rtmax = 0;
+//     let intmin = 0;
+//     let intmax = 0;
+
+//     let filteredData = [];
+//     for (let i = 0; i < points.length; i++){
+//         filteredData.push(points[i]);
+//         if (points[i].MZ < mzmin){
+//             mzmin = points[i].MZ;
+//         }
+//         else if(points[i].MZ > mzmax){
+//             mzmax = points[i].MZ;
+//         };
+//         if (points[i].RETENTIONTIME < rtmin){
+//             rtmin = points[i].RETENTIONTIME;
+//         }
+//         else if(points[i].RETENTIONTIME > rtmax){
+//             rtmax = points[i].RETENTIONTIME;
+//         };
+//         if (points[i].INTENSITY < intmin){
+//             intmin = points[i].INTENSITY;
+//         }
+//         else if(points[i].INTENSITY > intmax){
+//             intmax = points[i].INTENSITY;
+//         }
+//     }
+//     let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
+//     "intmin": intmin, "intmax": intmax};
+//     //console.log(dataRange)
+//     return {"filteredData":filteredData, "dataRange":dataRange};
+// }
 MsGraph.prototype.getDataRange = function(points){
     let mzmin = points[0].MZ;
     let mzmax = points[points.length -1].MZ;
@@ -67,8 +101,9 @@ MsGraph.prototype.getDataRange = function(points){
     //console.log(dataRange)
     return dataRange;
 }
-MsGraph.prototype.redrawGraph = function(minMz, maxMz){
+MsGraph.prototype.drawDefaultGraph = function(minMz, maxMz){//draw based on ms1 graph mz range
     this.linesArray = [];
+    console.log("currentData", this.currentData)
     let updatedData = this.filterDataAndGetRange(this.currentData, minMz, maxMz);
 
     this.dataRange = updatedData.dataRange;
@@ -91,10 +126,7 @@ MsGraph.prototype.addDataToGraph = function(points){
 }
 // plots multiple points on the graph and redraws it
 MsGraph.prototype.plotPoints = function(points) {
-    //let peakSelect = new PeakSelect(points);
     this.dataRange = this.getDataRange(points);
-    //peakSelect.dataRange = this.dataRange;
-
     this.updateViewRange(this.dataRange);
     
     // determine if cylinders should be used and their radius
