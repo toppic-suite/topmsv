@@ -243,6 +243,31 @@
 
 			<hr>
 			<div class="row">
+				<div class="rangeBtns">
+					<div class="col-sm-9">
+						<strong>Retention time Range: </strong>
+					</div>
+					<div class="col-sm-4">
+						<input type="text" id="rtRangeMin" name="rtRange" value=0>
+					</div>
+					<div class="col-sm-4">
+						<input type="text" id="rtRangeMax" name="rtRange" value=10>
+					</div>
+				</div>
+				<div class="rangeBtns">
+					<div class="col-sm-9">
+						<strong>m/z time Range: </strong>
+					</div>
+					<div class="col-sm-4">
+						<input type="text" id="mzRangeMin" name="mzRange">
+					</div>
+					<div class="col-sm-4">
+						<input type="text" id="mzRangeMax" name="mzRange">
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<button class="btn" type="submit" id="request3dGraphRedraw">Request</button>
+				</div>
 				<div id="graph-container"></div>
 			</div>
 			
