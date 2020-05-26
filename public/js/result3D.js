@@ -69,7 +69,7 @@ function loadPeakList1(scanID, prec_mz) {
                             let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                         }else {
                             let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                            plot3dGraph(ms1GraphParameters)//parameter contains mz range
+                            load3dDataByRtRange(ms1GraphParameters, graph3D)
                         }
                     }
                 };
@@ -188,13 +188,31 @@ function load3dDataByScan(scanID, msGraph){
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-            //console.log("response", response);
-            //result is sorted by mz
-            //msGraph.plotPoints(response);
             msGraph.addDataToGraph(response);
         }
     }
     xhttp.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + "_3D.db" + "&scanID=" + scanID,true);
+    xhttp.send();
+}
+function load3dDataByRtRange(ms1GraphParameters, msGraph){
+    var xhttp = new XMLHttpRequest();
+    let maxRT = 5;//default max and min rt
+    let minRT = 0;
+
+    let fullDir = (document.getElementById("projectDir").value).split("/");
+    let fileName = (fullDir[fullDir.length -1].split("."))[0];
+    let dir = fullDir[0].concat("/");
+    dir = dir.concat(fullDir[1]);
+
+    xhttp.onreadystatechange = function (){
+        if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            msGraph.addDataToGraph(response);
+            plot3dGraph(ms1GraphParameters);
+            //msGraph.plotPoints(response);
+        }
+    }
+    xhttp.open("GET","load3dDataByRtRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minRT + "&maxRT=" + maxRT,true);
     xhttp.send();
 }
 /*
@@ -227,16 +245,10 @@ function loadDataRangeByScan(callback, scanID, msGraph){
 
 }*/
 function plot3dGraph(ms1GraphParameters){
-    graph3D.redrawGraph(ms1GraphParameters.minMz, ms1GraphParameters.maxMz);
+    graph3D.drawDefaultGraph(ms1GraphParameters.minMz, ms1GraphParameters.maxMz);
 }
-function draw3dGraph(scanID, msGraph){
-    //loadDataRangeByScan(load3dData, scanID, msGraph);
-    load3dDataByScan(scanID, msGraph);
-}
-function add3dGraph(){
-    let scanID = document.getElementById("rangeMin").value;
+function init3dGraph(){
     graph3D.init();
-    draw3dGraph(scanID, graph3D);
 }
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
@@ -846,7 +858,7 @@ dimensionSwitch.addEventListener('click', function () {
 },false)
 
 function update3dGraph(minMz, maxMz){
-    graph3D.redrawGraph(minMz, maxMz);
+    //graph3D.redrawGraph(minMz, maxMz);
 }
 
 //function running on startup
@@ -864,7 +876,7 @@ $( document ).ready(function() {
     loadInteSumList();
 
     graph3D = new MsGraph(document.body, document.querySelector("#graph-container"))
-    add3dGraph();//draw 3d graph
+    init3dGraph();
     
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
