@@ -8,29 +8,34 @@ MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
-MsGraph.prototype.filterDataAndGetRange = function(points, min, max){
-    let mzmin = min;
-    let mzmax = max;
-    let rtmin = 0;
+MsGraph.prototype.filterDataAndGetRange = function(points){
+    let mzmin = Infinity;
+    let mzmax = 0;
+    let rtmin = Infinity;
     let rtmax = 0;
-    let intmin = 0;
+    let intmin = Infinity;
     let intmax = 0;
     let filteredData = [];
+
     for (let i = 0; i < points.length; i++){
-        if (points[i].MZ >= mzmin && points[i].MZ <= mzmax){
-            filteredData.push(points[i]);
-            if (points[i].RETENTIONTIME < rtmin){
-                rtmin = points[i].RETENTIONTIME;
-            }
-            else if(points[i].RETENTIONTIME > rtmax){
-                rtmax = points[i].RETENTIONTIME;
-            };
-            if (points[i].INTENSITY < intmin){
-                intmin = points[i].INTENSITY;
-            }
-            else if(points[i].INTENSITY > intmax){
-                intmax = points[i].INTENSITY;
-            }
+        filteredData.push(points[i]);
+        if (points[i].MZ < mzmin){
+            mzmin = points[i].MZ;
+        }
+        else if(points[i].MZ > mzmax){
+            mzmax = points[i].MZ;
+        };
+        if (points[i].RETENTIONTIME < rtmin){
+            rtmin = points[i].RETENTIONTIME;
+        }
+        else if(points[i].RETENTIONTIME > rtmax){
+            rtmax = points[i].RETENTIONTIME;
+        };
+        if (points[i].INTENSITY < intmin){
+            intmin = points[i].INTENSITY;
+        }
+        else if(points[i].INTENSITY > intmax){
+            intmax = points[i].INTENSITY;
         }
     }
     let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
@@ -39,41 +44,6 @@ MsGraph.prototype.filterDataAndGetRange = function(points, min, max){
     return {"filteredData":filteredData, "dataRange":dataRange};
 }
 
-// MsGraph.prototype.filterDataAndGetRange = function(points){
-//     let mzmin = 0;
-//     let mzmax = 0;
-//     let rtmin = 0;
-//     let rtmax = 0;
-//     let intmin = 0;
-//     let intmax = 0;
-
-//     let filteredData = [];
-//     for (let i = 0; i < points.length; i++){
-//         filteredData.push(points[i]);
-//         if (points[i].MZ < mzmin){
-//             mzmin = points[i].MZ;
-//         }
-//         else if(points[i].MZ > mzmax){
-//             mzmax = points[i].MZ;
-//         };
-//         if (points[i].RETENTIONTIME < rtmin){
-//             rtmin = points[i].RETENTIONTIME;
-//         }
-//         else if(points[i].RETENTIONTIME > rtmax){
-//             rtmax = points[i].RETENTIONTIME;
-//         };
-//         if (points[i].INTENSITY < intmin){
-//             intmin = points[i].INTENSITY;
-//         }
-//         else if(points[i].INTENSITY > intmax){
-//             intmax = points[i].INTENSITY;
-//         }
-//     }
-//     let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
-//     "intmin": intmin, "intmax": intmax};
-//     //console.log(dataRange)
-//     return {"filteredData":filteredData, "dataRange":dataRange};
-// }
 MsGraph.prototype.getDataRange = function(points){
     let mzmin = points[0].MZ;
     let mzmax = points[points.length -1].MZ;
@@ -101,10 +71,10 @@ MsGraph.prototype.getDataRange = function(points){
     //console.log(dataRange)
     return dataRange;
 }
-MsGraph.prototype.drawDefaultGraph = function(minMz, maxMz){//draw based on ms1 graph mz range
+MsGraph.prototype.drawDefaultGraph = function(){//draw based on ms1 graph mz range
     this.linesArray = [];
-    console.log("currentData", this.currentData)
-    let updatedData = this.filterDataAndGetRange(this.currentData, minMz, maxMz);
+    //console.log("currentData", this.currentData)
+    let updatedData = this.filterDataAndGetRange(this.currentData);
 
     this.dataRange = updatedData.dataRange;
     this.updateViewRange(this.dataRange);

@@ -69,7 +69,7 @@ function loadPeakList1(scanID, prec_mz) {
                             let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                         }else {
                             let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                            load3dDataByRtRange(ms1GraphParameters, graph3D)
+                            load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, -1, -1, graph3D)
                         }
                     }
                 };
@@ -194,10 +194,37 @@ function load3dDataByScan(scanID, msGraph){
     xhttp.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + "_3D.db" + "&scanID=" + scanID,true);
     xhttp.send();
 }
-function load3dDataByRtRange(ms1GraphParameters, msGraph){
+/*
+function load3DDataByMzRtRange(minMZ, maxMZ, minRT, maxRT, msGraph){
     var xhttp = new XMLHttpRequest();
-    let maxRT = 5;//default max and min rt
-    let minRT = 0;
+    let fullDir = (document.getElementById("projectDir").value).split("/");
+    let fileName = (fullDir[fullDir.length -1].split("."))[0];
+    let dir = fullDir[0].concat("/");
+    dir = dir.concat(fullDir[1]);
+
+    xhttp.onreadystatechange = function (){
+        if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            msGraph.addDataToGraph(response);
+            plot3dGraph(ms1GraphParameters.minMZ, ms1GraphParameters.maxMZ);
+        }
+    }
+    xhttp.open("GET","load3dDataByRtRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minRT + "&maxRT=" + maxRT + "&minMZ=" + minRT + "&maxRT=" + maxRT,true);
+    xhttp.send();
+}*/
+function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph){
+    var xhttp = new XMLHttpRequest();
+    let maxRT = maxrt;//default max and min rt
+    let minRT = minrt;
+    let maxMZ = maxmz;
+    let minMZ = minmz;
+
+    if (minrt < 0 || maxrt < 0){
+        //if invalid value is passed -- in case of startup, -1 is passed--assign default value
+        minRT = 0;
+        maxRT = 10;
+    }
+    console.log(minmz, maxmz, minrt, maxrt)
 
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
@@ -208,11 +235,11 @@ function load3dDataByRtRange(ms1GraphParameters, msGraph){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
             msGraph.addDataToGraph(response);
-            plot3dGraph(ms1GraphParameters);
-            //msGraph.plotPoints(response);
+            msGraph.drawDefaultGraph();
+            //plot3dGraph(ms1GraphParameters.minMZ, ms1GraphParameters.maxMZ);
         }
     }
-    xhttp.open("GET","load3dDataByRtRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minRT + "&maxRT=" + maxRT,true);
+    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minRT + "&maxRT=" + maxRT + "&minMZ=" + minMZ + "&maxMZ=" + maxMZ,true);
     xhttp.send();
 }
 /*
@@ -244,9 +271,9 @@ function loadDataRangeByScan(callback, scanID, msGraph){
     callback(msGraph, response);//call load3dData
 
 }*/
-function plot3dGraph(ms1GraphParameters){
-    graph3D.drawDefaultGraph(ms1GraphParameters.minMz, ms1GraphParameters.maxMz);
-}
+/*function plot3dGraph(minMZ, maxMZ){
+    graph3D.drawDefaultGraph();
+}*/
 function init3dGraph(){
     graph3D.init();
 }
@@ -851,11 +878,18 @@ next1.addEventListener('click', function () {
     }
 },false)
 
-//listener for 2d/3d buttons
-var dimensionSwitch = document.getElementById('switch-dimension-button');
-dimensionSwitch.addEventListener('click', function () {
+//listener for rt range and mz range change in 3d graph
+let redrawRequestButton = document.getElementById('request3dGraphRedraw');
+redrawRequestButton.addEventListener('click', function(){
+    let minRT = document.getElementById('rtRangeMin').value;
+    let maxRT = document.getElementById('rtRangeMax').value;
+    let minMZ = document.getElementById('mzRangeMin').value;
+    let maxMZ = document.getElementById('mzRangeMax').value;
 
-},false)
+    //reload data and redraw graph
+    load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT,graph3D);
+
+}, false);
 
 function update3dGraph(minMz, maxMz){
     //graph3D.redrawGraph(minMz, maxMz);
