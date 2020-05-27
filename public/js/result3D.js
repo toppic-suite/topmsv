@@ -234,6 +234,7 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph){
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
+            //console.log(response)
             msGraph.addDataToGraph(response);
             msGraph.drawDefaultGraph();
             //plot3dGraph(ms1GraphParameters.minMZ, ms1GraphParameters.maxMZ);
@@ -271,9 +272,7 @@ function loadDataRangeByScan(callback, scanID, msGraph){
     callback(msGraph, response);//call load3dData
 
 }*/
-/*function plot3dGraph(minMZ, maxMZ){
-    graph3D.drawDefaultGraph();
-}*/
+
 function init3dGraph(){
     graph3D.init();
 }
