@@ -214,18 +214,16 @@ function load3DDataByMzRtRange(minMZ, maxMZ, minRT, maxRT, msGraph){
 }*/
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph){
     var xhttp = new XMLHttpRequest();
-    let maxRT = maxrt;//default max and min rt
-    let minRT = minrt;
-    let maxMZ = maxmz;
-    let minMZ = minmz;
 
     if (minrt < 0 || maxrt < 0){
         //if invalid value is passed -- in case of startup, -1 is passed--assign default value
-        minRT = 0;
-        maxRT = 10;
+        minrt = 0;
+        maxrt = 10;
     }
-    console.log(minmz, maxmz, minrt, maxrt)
-
+    /*console.log(this.dataRange)
+    
+*/
+    //let range = {"mzmin": minMZ, "mzmax":maxMZ, "mzrange":maxMZ - minMZ, "rtmin":minRT, "rtmax":maxRT, "rtrange":maxRT-minRT, "intmin":0, "intmax:":0, "intrange":0};
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
     let dir = fullDir[0].concat("/");
@@ -236,11 +234,11 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph){
             var response = JSON.parse(this.responseText);
             //console.log(response)
             msGraph.addDataToGraph(response);
-            msGraph.drawDefaultGraph();
+            msGraph.drawDefaultGraph(minmz, maxmz, minrt, maxrt);
             //plot3dGraph(ms1GraphParameters.minMZ, ms1GraphParameters.maxMZ);
         }
     }
-    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minRT + "&maxRT=" + maxRT + "&minMZ=" + minMZ + "&maxMZ=" + maxMZ,true);
+    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz,true);
     xhttp.send();
 }
 /*
