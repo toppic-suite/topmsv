@@ -9,10 +9,10 @@ MsGraph.setOnTop = function(obj) {
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
 MsGraph.prototype.filterDataAndGetRange = function(points){
-    let mzmin = Infinity;
+    /*let mzmin = Infinity;
     let mzmax = 0;
     let rtmin = Infinity;
-    let rtmax = 0;
+    let rtmax = 0;*/
     let intmin = Infinity;
     let intmax = 0;
     let filteredData = [];
@@ -20,7 +20,7 @@ MsGraph.prototype.filterDataAndGetRange = function(points){
 
     for (let i = 0; i < points.length; i++){
         filteredData.push(points[i]);
-        if (points[i].MZ < mzmin){
+       /* if (points[i].MZ < mzmin){
             mzmin = points[i].MZ;
         }
         if(points[i].MZ > mzmax){
@@ -31,7 +31,7 @@ MsGraph.prototype.filterDataAndGetRange = function(points){
         }
         if(points[i].RETENTIONTIME > rtmax){
             rtmax = points[i].RETENTIONTIME;
-        };
+        };*/
         if (points[i].INTENSITY < intmin){
             intmin = points[i].INTENSITY;
         }
@@ -39,11 +39,9 @@ MsGraph.prototype.filterDataAndGetRange = function(points){
             intmax = points[i].INTENSITY;
         }
     }
-    //let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
-   // "intmin": intmin, "intmax": intmax};
 
-   this.dataRange.intmin = intmin;
-   this.dataRange.intmax = intmax;
+    this.dataRange.intmin = intmin;
+    this.dataRange.intmax = intmax;
 
     console.log("dataRange", this.dataRange)
     return {"filteredData":filteredData, "dataRange":this.dataRange};
@@ -81,7 +79,6 @@ MsGraph.prototype.getDataRange = function(points){
 MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.linesArray = [];
 
-    //console.log(this.dataRange);
     this.dataRange.rtmin = minrt;
     this.dataRange.rtmax = maxrt;
     this.dataRange.rtrange = maxrt - minrt;

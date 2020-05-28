@@ -19,7 +19,7 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
     for (let i = 0; i < this.currentData.length; i++){
         this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * 1/10;
     }
-    this.drawDefaultGraph({});
+    this.drawDefaultGraph(this.dataRange.mzmin, this.dataRange.mzmax, this.dataRange.rtmin, this.dataRange.rtmax);
 }
 MsGraph.prototype.getMousePosition = function(event) {
     var el = this.renderer.domElement;
