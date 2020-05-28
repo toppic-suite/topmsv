@@ -57,6 +57,9 @@ MsGraph.prototype.init = function(){
     renderer.setClearColor(0xF5F5F5, 0);
     this.graphEl.appendChild(renderer.domElement);
 
+    //enable zoom
+    this.zoomGraph(this);
+
     // camera
     var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
     camera.position.set(15, 15, 30);
@@ -71,7 +74,7 @@ MsGraph.prototype.init = function(){
     graphControls.mouseButtons = { ORBIT: THREE.MOUSE.RIGHT };
     graphControls.addEventListener( 'change', this.renderImmediate.bind(this) );
     graphControls.target.set(this.GRID_RANGE/2, 0, this.GRID_RANGE/2); // focus on the center of the grid
-    graphControls.enableZoom = true;
+    //graphControls.enableZoom = true;
     graphControls.enablePan = false;
     graphControls.enabled = true;
 
@@ -184,26 +187,7 @@ MsGraph.prototype.makeGradientCache = function()
 
 // returns the mouse position as a Vector3 as a fraction of the viewing window
 // returns null if the mouse is outside of the plane of the graph
-MsGraph.prototype.getMousePosition = function(event) {
-    var el = this.renderer.domElement;
 
-    // find mouse position, normalized to a [-1,1] in both x/y-axes on screen
-    var coord = {
-        x: ((event.clientX - el.offsetLeft) / el.offsetWidth)  * 2 - 1,
-        y: - ((event.clientY - el.offsetTop) / el.offsetHeight) * 2 + 1
-    };
-    var raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(coord, this.camera);
-
-    var pos = new THREE.Vector3();
-    raycaster.ray.intersectPlane(this.graphPlane, pos);
-    if (pos) {
-        // convert world coordinates to graph-fractional coordinates
-        pos.multiply(this.rangeTransform);
-        pos.z = 1 - pos.z;
-    }
-    return pos;
-};
 
 // converts two vectors in fraction of visible space (e.g. from getMousePosition)
 // to an {mzmin,mzmax,rtmin,rtmax} object based on current view range
@@ -358,10 +342,11 @@ MsGraph.prototype.resizeCamera = function() {
 
 // update labels and legend to reflect a new view range
 MsGraph.prototype.updateViewRange = function(newViewRange) {
-    //console.log('updateViewRange');
     this.viewRange = newViewRange;
     //this.legend.updateViewRect(newViewRange, this.dataRange);
+
     this.repositionPlot(this.viewRange);
+
     this.drawDataLabels();
     this.renderImmediate();
     //this.renderDelayed();
@@ -403,8 +388,8 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
     r = this.constrainBounds(r);
     this.updateViewRange(r);
 
-    this.toolbar.disableNoiseButton();
-    this.dataBridge.requestPointsFromServer();
+    load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
+    //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
 };
 
 MsGraph.prototype.setWindowArea = function(mzmin, mzmax, rtmin, rtmax) {

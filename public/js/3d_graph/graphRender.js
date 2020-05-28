@@ -9,41 +9,44 @@ MsGraph.setOnTop = function(obj) {
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
 MsGraph.prototype.filterDataAndGetRange = function(points){
-    let mzmin = Infinity;
+    /*let mzmin = Infinity;
     let mzmax = 0;
     let rtmin = Infinity;
-    let rtmax = 0;
+    let rtmax = 0;*/
     let intmin = Infinity;
     let intmax = 0;
     let filteredData = [];
+   // console.log(range)
 
     for (let i = 0; i < points.length; i++){
         filteredData.push(points[i]);
-        if (points[i].MZ < mzmin){
+       /* if (points[i].MZ < mzmin){
             mzmin = points[i].MZ;
         }
-        else if(points[i].MZ > mzmax){
+        if(points[i].MZ > mzmax){
             mzmax = points[i].MZ;
         };
         if (points[i].RETENTIONTIME < rtmin){
             rtmin = points[i].RETENTIONTIME;
         }
-        else if(points[i].RETENTIONTIME > rtmax){
+        if(points[i].RETENTIONTIME > rtmax){
             rtmax = points[i].RETENTIONTIME;
-        };
+        };*/
         if (points[i].INTENSITY < intmin){
             intmin = points[i].INTENSITY;
         }
-        else if(points[i].INTENSITY > intmax){
+        if(points[i].INTENSITY > intmax){
             intmax = points[i].INTENSITY;
         }
     }
-    let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
-    "intmin": intmin, "intmax": intmax};
-    //console.log(dataRange)
-    return {"filteredData":filteredData, "dataRange":dataRange};
-}
 
+    this.dataRange.intmin = intmin;
+    this.dataRange.intmax = intmax;
+
+    console.log("dataRange", this.dataRange)
+    return {"filteredData":filteredData, "dataRange":this.dataRange};
+}
+/*
 MsGraph.prototype.getDataRange = function(points){
     let mzmin = points[0].MZ;
     let mzmax = points[points.length -1].MZ;
@@ -70,10 +73,20 @@ MsGraph.prototype.getDataRange = function(points){
     "intmin": intmin, "intmax": intmax};
     //console.log(dataRange)
     return dataRange;
-}
-MsGraph.prototype.drawDefaultGraph = function(){//draw based on ms1 graph mz range
+}*/
+
+
+MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.linesArray = [];
-    //console.log("currentData", this.currentData)
+
+    this.dataRange.rtmin = minrt;
+    this.dataRange.rtmax = maxrt;
+    this.dataRange.rtrange = maxrt - minrt;
+
+    this.dataRange.mzmin = minmz;
+    this.dataRange.mzmax = maxmz;
+    this.dataRange.mzrange = maxmz - minmz;
+
     let updatedData = this.filterDataAndGetRange(this.currentData);
 
     this.dataRange = updatedData.dataRange;
@@ -85,11 +98,13 @@ MsGraph.prototype.drawDefaultGraph = function(){//draw based on ms1 graph mz ran
     for (let i = 0; i < updatedData.filteredData.length; i++){
         this.plotPoint(updatedData.filteredData[i]);
     }
-    this.plotJumpMarker();
-    
+    //this.plotJumpMarker();
+
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
+
     this.updateViewRange(this.viewRange);
+    //console.log("newLines", this.linesArray);
 }
 MsGraph.prototype.addDataToGraph = function(points){
     this.currentData = points;//store loaded data
@@ -108,10 +123,11 @@ MsGraph.prototype.plotPoints = function(points) {
     for (let i = 0; i < points.length; i++){
         this.plotPoint(points[i]);
     }
-    this.plotJumpMarker();
+    //this.plotJumpMarker();
     
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
+    
     this.updateViewRange(this.viewRange);
 };
 
@@ -146,7 +162,6 @@ MsGraph.prototype.plotJumpMarker = function() {
 
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
-    //console.log(point)
     // point: an array of the following values
     var id = point.ID;
     //var trace = point[1];
@@ -158,10 +173,10 @@ MsGraph.prototype.plotPoint = function(point) {
     var maxLogScale = Math.log(this.dataRange.intmax);
 
     // find line color and calculate geometry
-    var gradientscale = this.USE_LOG_SCALE_COLOR ? thisLogScale / maxLogScale : inten / this.dataRange.intmax;
-    gradientscale = Math.max(0, Math.min(gradientscale, 1)); // must be in range 0-1
+    //var gradientscale = this.USE_LOG_SCALE_COLOR ? thisLogScale / maxLogScale : inten / this.dataRange.intmax;
+    //gradientscale = Math.max(0, Math.min(gradientscale, 1)); // must be in range 0-1
     
-    var gradientindex = Math.floor((this.gradientCache.length - 1) * gradientscale);
+    //var gradientindex = Math.floor((this.gradientCache.length - 1) * gradientscale);
     
     var x = mz;
     var y = this.USE_LOG_SCALE_HEIGHT ? Math.min(thisLogScale, maxLogScale) : inten;
