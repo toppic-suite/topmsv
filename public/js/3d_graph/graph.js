@@ -342,10 +342,11 @@ MsGraph.prototype.resizeCamera = function() {
 
 // update labels and legend to reflect a new view range
 MsGraph.prototype.updateViewRange = function(newViewRange) {
-    //console.log('updateViewRange');
     this.viewRange = newViewRange;
     //this.legend.updateViewRect(newViewRange, this.dataRange);
+
     this.repositionPlot(this.viewRange);
+
     this.drawDataLabels();
     this.renderImmediate();
     //this.renderDelayed();
@@ -388,8 +389,7 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
     this.updateViewRange(r);
 
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
-    //this.toolbar.disableNoiseButton();
-    //this.dataBridge.requestPointsFromServer();
+    //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
 };
 
 MsGraph.prototype.setWindowArea = function(mzmin, mzmax, rtmin, rtmax) {
