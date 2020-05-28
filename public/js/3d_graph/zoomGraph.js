@@ -16,10 +16,20 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
     this.repositionPlot(this.viewRange);
 
     this.updateViewRange(this.viewRange);*/
+    this.linesArray = [];
+
     for (let i = 0; i < this.currentData.length; i++){
-        this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * 1/10;
+        this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * scaleFactor;
+        this.plotPoint(this.currentData[i]);
     }
-    this.drawDefaultGraph(this.dataRange.mzmin, this.dataRange.mzmax, this.dataRange.rtmin, this.dataRange.rtmax);
+
+    //this.plotJumpMarker();
+    this.viewRange["intscale"] = this.viewRange["intscale"] + scaleFactor - 1;//because default value is 1, deduct 1 to start from 0.
+    // make sure the groups are plotted and update the view
+    this.repositionPlot(this.viewRange);
+
+    this.updateViewRange(this.viewRange);
+//    this.drawDefaultGraph(this.dataRange.mzmin, this.dataRange.mzmax, this.dataRange.rtmin, this.dataRange.rtmax);
 }
 MsGraph.prototype.getMousePosition = function(event) {
     var el = this.renderer.domElement;
@@ -58,7 +68,7 @@ MsGraph.prototype.onZoom = function(e){
     }
 
     //figure out where the cursor is (near x axis, y axis, in the middle)
-    console.log("viewRange", this.viewRange)
+    //console.log("viewRange", this.viewRange)
     if (mousePos.x <= 0.1 && mousePos.x >= -0.1){//rt range adjust
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
@@ -89,7 +99,5 @@ MsGraph.prototype.onZoom = function(e){
     let newmzmin = (mzPoint) - (newmzrange / this.viewRange.mzrange) * (mzPoint - this.viewRange.mzmin);
     let newrtmin = (rtPoint) - (newrtrange / this.viewRange.rtrange) * (rtPoint - this.viewRange.rtmin);
     
-    //console.log("mzpoint:", mzPoint, ", rtPoint: ", rtPoint, "newmzmin: ", newmzmin, ", newrtmin: ", newrtmin);
-    console.log("setting vieing area", newmzmin, newmzrange, newrtmin, newrtrange)
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
