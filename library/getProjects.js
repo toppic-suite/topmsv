@@ -14,7 +14,7 @@ function getProjects(uid,callback) {
     });
     let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, SequenceStatus AS seqStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
-                WHERE (ProjectStatus = 1 OR ProjectStatus = 0 OR ProjectStatus = 2 OR ProjectStatus = 3) AND uid = ?;`;
+                WHERE (ProjectStatus = 1 OR ProjectStatus = 0 OR ProjectStatus = 2) AND uid = ?;`;
     db.all(sql,[uid], (err, rows) => {
         if(err) {
             return callback(err);
