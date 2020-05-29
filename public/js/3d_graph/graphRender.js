@@ -43,7 +43,7 @@ MsGraph.prototype.filterDataAndGetRange = function(points){
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
 
-    console.log("dataRange", this.dataRange)
+    //console.log("dataRange", this.dataRange)
     return {"filteredData":filteredData, "dataRange":this.dataRange};
 }
 /*
@@ -99,7 +99,7 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
         this.plotPoint(updatedData.filteredData[i]);
     }
     //this.plotJumpMarker();
-
+    this.viewRange["intscale"] = 1;
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
 
@@ -124,7 +124,7 @@ MsGraph.prototype.plotPoints = function(points) {
         this.plotPoint(points[i]);
     }
     //this.plotJumpMarker();
-    
+    this.viewRange["intscale"] = 1;
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
     
@@ -226,7 +226,7 @@ MsGraph.prototype.plotPoint = function(point) {
     if (!this.useCylinders) {
         this.pinGroup.add(drawObj.pinhead);
     }
-    
+    //console.log(inten)
 };
 
 // scales and positions the plot depending on the new viewing range
@@ -239,8 +239,9 @@ MsGraph.prototype.repositionPlot = function(r) {
     // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
     var mz_squish = this.GRID_RANGE / r.mzrange;
     var rt_squish = - this.GRID_RANGE / r.rtrange;
-
-    this.datagroup.scale.set(mz_squish, this.GRID_RANGE_VERTICAL / heightScale, rt_squish);
+    //console.log("intScale: ", r.intscale)
+   // console.log("multiply: ", this.GRID_RANGE_VERTICAL / heightScale * r.intscale)
+    this.datagroup.scale.set(mz_squish, (this.GRID_RANGE_VERTICAL / heightScale) * r.intscale, rt_squish);
 
     // Reposition the plot so that mzmin,rtmin is at the correct corner
     this.datagroup.position.set(-r.mzmin*mz_squish, 0, this.GRID_RANGE - r.rtmin*rt_squish);
