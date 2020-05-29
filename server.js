@@ -394,6 +394,20 @@ app.use('/', require("./router/envlist"));
 
 app.use('/', require("./router/envtable"));
 
+app.use('/', require("./router/projectTab"));
+
+app.use('/', require("./router/newProject"));
+
+app.use('/', require("./router/createProject"));
+
+app.use('/', require("./router/experimentManagement"));
+
+app.use('/', require("./router/createExperiment"));
+
+app.use('/', require("./router/test"));
+
+app.use('/',require("./router/getInfo"));
+
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']
 }));

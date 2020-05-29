@@ -1,3 +1,28 @@
+// let graphFeatures = new graphFeatures();
+// class GraphFeatures{
+//     constructor(){
+//         this.showCircles = true;
+//         this.showIons = false;
+//         this.showSequene = false;
+//         this.isAddbgColor = false;
+//         this.fixedWidthOfBgColorForMs1 = 2;
+//         this.ratio = 1.000684;
+//         this.tickWidthThreshholdval = 0.5;
+//         this.bgMinMz = 0;
+//         this.bgMaxMz = 0;
+//         this.bgColor = "orange";
+//         this.prefixSequenceData = [];
+//         this.suffixSequeceData = [];
+//         this.adjustableIonPosition = 4;
+//         this.svgWidth = 910;
+//         this.svgHeight = 220;
+//         this.padding = {left:70, right:20, head:10, bottom:50};
+//         this.adjustableHeightVal = 60;
+//         this.fixedHeightOfIonAboveThePeak = 10;
+//         this.specWidth = this.svgWidth - this.padding.left - this.padding.right;
+//         this.specHeight = this.svgHeight - this.padding.head - this.padding.bottom;
+//     }
+// }
 function getRelatedScan2(scanID) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -51,7 +76,9 @@ function getScanID(ID) {
 }
 let peakList1_g;
 let envList1_g;
+let graph1_g;
 function loadPeakList1(scanID, prec_mz) {
+    const graphFeatures = new GraphFeatures();
     if (scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -63,9 +90,9 @@ function loadPeakList1(scanID, prec_mz) {
                     if (this.readyState == 4 && this.status == 200) {
                         envList1_g = JSON.parse(this.responseText);
                         if (envList1_g !== 0){
-                            addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
+                            graph1_g = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz, null,graphFeatures);
                         }else {
-                            addSpectrum("spectrum1",peakList1_g, [],prec_mz);
+                            graph1_g = addSpectrum("spectrum1",peakList1_g, [],prec_mz, null,graphFeatures);
                         }
                     }
                 };
@@ -107,7 +134,9 @@ function findNextLevelOneScan(scan) {
 }
 let peakList2_g;
 let envList2_g;
+let graph2_g;
 function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
+    const graphFeatures = new GraphFeatures();
     if(scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -126,9 +155,9 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                         envList2_g = JSON.parse(this.responseText);
                         //console.log(envList2_g);
                         if (envList2_g !== 0){
-                            addSpectrum("spectrum2",peakList2_g, envList2_g,null);
+                            graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
                         }else {
-                            addSpectrum("spectrum2",peakList2_g, [],null);
+                            graph2_g = addSpectrum("spectrum2",peakList2_g, [],null,null, graphFeatures);
                         }
                         // var t7 = performance.now();
                         // console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
@@ -654,10 +683,15 @@ function jumpTo(mono_mz) {
     }
 }
 function relocSpet1 (mono_mz) {
-    addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5);
+    const graphFeatures = new GraphFeatures();
+    graph1_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
+    //addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5,null, graphFeatures);
 }
 function relocSpet2 (mono_mz) {
-    addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5);
+    const graphFeatures = new GraphFeatures();
+    // console.log("relocSpect2 on", mono_mz+0.5);
+    graph2_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
+    //addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5,null, graphFeatures);
 }
 var requestButton = document.getElementById('request');
 requestButton.addEventListener('click', function () {
@@ -1021,7 +1055,7 @@ function refresh() {
     }*/
 
     // addSpectrum('spectrum1', peakList1_g, envList1_g, mono_mz_list1_g);
-
+    const graphFeatures = new GraphFeatures();
     let msType_old = $('#msType').text();
     let scanID;
     if (msType_old === 'MS1') {
@@ -1043,14 +1077,14 @@ function refresh() {
                 if(envList1_g===0) {
                     envList1_g = [];
                 }
-                addSpectrum('spectrum1', peakList1_g, envList1_g, null);
+                graph1_g = addSpectrum('spectrum1', peakList1_g, envList1_g, null, null, graphFeatures);
             } else {
                 envList2_g = JSON.parse(res);
                 console.log(envList2_g);
                 if(envList2_g===0) {
                     envList2_g = [];
                 }
-                addSpectrum('spectrum2', peakList2_g, envList2_g, null);
+                graph2_g = addSpectrum('spectrum2', peakList2_g, envList2_g, null, null, graphFeatures);
             }
         }
     });
@@ -1062,8 +1096,11 @@ var envList_temp;
 let specPara3_g;
 var lockPara_3 = false;
 let preview_scanID_g;
+let graph_preview1_g;
+let graph_preview2_g;
 function preview(dataObj) {
     // console.log("dataObj:",dataObj);
+    const graphFeatures = new GraphFeatures();
     let envID = dataObj.envelope_id;
     let scanID = dataObj.scan_id;
     preview_scanID_g = scanID;
@@ -1090,6 +1127,7 @@ function preview(dataObj) {
         success: function (res) {
             var data = (typeof res === "string") ? JSON.parse(res) : res;
             console.log("returnList preview", data);
+            data.envlist[0].charge = parseInt(data.envlist[0].charge);
             data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
             data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
             data.envlist[0].env.scan_id = parseInt(data.envlist[0].env.scan_id);
@@ -1098,13 +1136,15 @@ function preview(dataObj) {
             data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
             peakList_temp = data.peaklist;
             envList_temp = data.envlist;
-            addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass + 1);
-            addSpectrum("previewSpectrum2", peakList_temp, envList_temp, mono_mass + 1);
+            console.log("type: ", typeof mono_mass);
+            graph_preview1_g = addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass/data.envlist[0].charge + 1,null, graphFeatures);
+            graph_preview2_g = addSpectrum("previewSpectrum2", peakList_temp, envList_temp, mono_mass/charge + 1,null, graphFeatures);
         }
     });
     $('#previewModal').modal('show');
 }
 function updatePreview(scanID, envID, charge, mono_mass) {
+    const graphFeatures = new GraphFeatures();
     $.ajax({
         url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
             "&scan_id=" + scanID +
@@ -1116,6 +1156,7 @@ function updatePreview(scanID, envID, charge, mono_mass) {
         success: function (res) {
             var data = (typeof res === "string") ? JSON.parse(res) : res;
             // console.log("returnList preview", data);
+            data.envlist[0].charge = parseInt(data.envlist[0].charge);
             data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
             data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
             data.envlist[0].env.scan_id = parseInt(data.envlist[0].env.scan_id);
@@ -1124,8 +1165,11 @@ function updatePreview(scanID, envID, charge, mono_mass) {
             data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
             peakList_temp = data.peaklist;
             envList_temp = data.envlist;
-            addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass + 1);
-            addSpectrum("previewSpectrum2", peakList_temp, envList_temp, parseFloat(mono_mass) + 1);
+            // let graphFeatures = new GraphFeatures();
+            // graph_preview1_g.redraw(data.envlist[0].mono_mass + 1, graphFeatures);
+            addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass /data.envlist[0].charge + 1, null, graphFeatures);
+            // graph_preview2_g.redraw(parseFloat(mono_mass) + 1, graphFeatures);
+            addSpectrum("previewSpectrum2", peakList_temp, envList_temp, parseFloat(mono_mass)/parseInt(charge) + 1, null, graphFeatures);
         }
     });
 }
@@ -1152,3 +1196,4 @@ $("#previewSaveBtn").click(function () {
         });
     }
 });
+var correspondingSpecParams_g = [];
