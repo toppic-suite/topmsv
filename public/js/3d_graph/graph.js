@@ -60,6 +60,9 @@ MsGraph.prototype.init = function(){
     //enable zoom
     this.zoomGraph(this);
 
+    //enable panning
+    this.panGraph(this);
+
     // camera
     var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
     camera.position.set(15, 15, 30);
@@ -389,6 +392,21 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
     this.updateViewRange(r);
 
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
+    //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
+};
+MsGraph.prototype.setViewingAreaNoDataLoad = function(mzmin, mzrange, rtmin, rtrange) {
+    var r = mzmin;
+
+    if (typeof mzmin === "number") {
+        r = {
+            mzmin: mzmin, mzmax: mzmin + mzrange, mzrange: mzrange,
+            rtmin: rtmin, rtmax: rtmin + rtrange, rtrange: rtrange,
+        };
+    }
+    r = this.constrainBounds(r);
+    this.updateViewRange(r);
+    this.drawDefaultGraph(mzmin, mzmin + mzrange, rtmin, rtmin + rtrange);
+    //load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
     //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
 };
 
