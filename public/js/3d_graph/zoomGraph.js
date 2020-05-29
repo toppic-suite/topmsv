@@ -4,32 +4,18 @@ MsGraph.prototype.zoomGraph = function(graph){
     graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
 }
 MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
-    //multiply intensity by scaleFactor
-    /*console.log("intensity adjustment")
-    
-    this.updateViewRange(this.viewRange);*/
-    //console.log(this.linesArray)
-    /*for (let i = 0; i < this.linesArray.length; i++){
-        this.linesArray[i].geometry.boundingSphere = this.linesArray[i].geometry.boundingSphere.radius * 5;
-        console.log(this.linesArray[i].geometry.boundingSphere)
-    }
-    this.repositionPlot(this.viewRange);
-
-    this.updateViewRange(this.viewRange);*/
     this.linesArray = [];
 
     for (let i = 0; i < this.currentData.length; i++){
-        this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * scaleFactor;
+        this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * scaleFactor;//multiply intensity by scaleFactor
         this.plotPoint(this.currentData[i]);
     }
 
     //this.plotJumpMarker();
     this.viewRange["intscale"] = this.viewRange["intscale"] + scaleFactor - 1;//because default value is 1, deduct 1 to start from 0.
-    // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
 
     this.updateViewRange(this.viewRange);
-//    this.drawDefaultGraph(this.dataRange.mzmin, this.dataRange.mzmax, this.dataRange.rtmin, this.dataRange.rtmax);
 }
 MsGraph.prototype.getMousePosition = function(event) {
     var el = this.renderer.domElement;
@@ -68,7 +54,6 @@ MsGraph.prototype.onZoom = function(e){
     }
 
     //figure out where the cursor is (near x axis, y axis, in the middle)
-    //console.log("viewRange", this.viewRange)
     if (mousePos.x <= 0.1 && mousePos.x >= -0.1){//rt range adjust
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
@@ -87,12 +72,9 @@ MsGraph.prototype.onZoom = function(e){
     if (newmzrange < 0.01){
         newmzrange = 0.01;
     }
-
     // constrains points to within the graph bounds
     let mzDist = Math.min(Math.max(mousePos.z, 0), 1);
     let rtDist = Math.min(Math.max(mousePos.x, 0), 1);
-
-    //console.log("mzDist: ", mzDist, ", rtDist: ", rtDist);
 
     let mzPoint = mzDist * this.viewRange.mzrange + this.viewRange.mzmin;;
     let rtPoint = rtDist * this.viewRange.rtrange + this.viewRange.rtmin;
