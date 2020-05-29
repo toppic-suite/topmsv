@@ -98,86 +98,7 @@ function getRT(scanNum) {
     xhttpRT.send();
 }
 
-/*
-function loadDataRange(callback, scanID, msGraph){
-    let fullDir = (document.getElementById("projectDir").value).split("/");
-
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
-    let response = {};
-
-    //scanID = ms1 scan ID
-
-    if (scanID !== '0') {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                getRT(scanID);
-                //peakList = JSON.parse(this.responseText);
-                //peakList = total peak list of scanID
-            }
-        };
-        xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-        xhttp.send();
-
-    }else{
-        alert("NULL");
-    }
-    callback(msGraph, response);//call load3dData
-
-}*/
-/*
-function load3dDataByScan(msGraph){
-    var xhttp = new XMLHttpRequest();
-
-    let fullDir = (document.getElementById("projectDir").value).split("/");
-    let fileName = (fullDir[fullDir.length -1].split("."))[0];
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
-    
-    //get mz range and rt from the labels in ms1 graph
-    let ms1Graph = document.getElementById("spectrum1");
-    console.log(ms1Graph)
-    let ms1GraphChildren = ms1Graph.childNodes;
-    console.log(ms1GraphChildren)
-    for (let i = 0; i < ms1GraphChildren.length; i++){
-        console.log(ms1GraphChildren[i])
-        if (ms1GraphChildren[i].id == "axisPoints"){
-            console.log(ms1GraphChildren[i].children);
-        }
-    }
-    //let minmz = axisLabels[0].value;
-    //let maxmz = axisLabels[axisLabels.length - 1].value;
-   // console.log(minmz, maxmz);
-
-    /*xhttp.onreadystatechange = function (){
-        if (this.readyState == 4 && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-			msGraph.plotPoints(response, dataRange);
-        }
-    }
-    xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "_3D.db", true);
-    xhttp.send();
-}*/
-/*
-function load3dData(msGraph, dataRange){
-    var xhttp = new XMLHttpRequest();
-
-    let fullDir = (document.getElementById("projectDir").value).split("/");
-    let fileName = (fullDir[fullDir.length -1].split("."))[0];
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
- 
-    xhttp.onreadystatechange = function (){
-        if (this.readyState == 4 && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-			msGraph.plotPoints(response, dataRange);
-        }
-    }
-    xhttp.open("GET", "load3dData?projectDir=" + dir + "/" + fileName + "_3D.db", true);
-    xhttp.send();
-}*/
-function load3dDataByScan(scanID, msGraph){
+/*function load3dDataByScan(scanID, msGraph){
     var xhttp = new XMLHttpRequest();
 
     let fullDir = (document.getElementById("projectDir").value).split("/");
@@ -193,25 +114,8 @@ function load3dDataByScan(scanID, msGraph){
     }
     xhttp.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + "_3D.db" + "&scanID=" + scanID,true);
     xhttp.send();
-}
-/*
-function load3DDataByMzRtRange(minMZ, maxMZ, minRT, maxRT, msGraph){
-    var xhttp = new XMLHttpRequest();
-    let fullDir = (document.getElementById("projectDir").value).split("/");
-    let fileName = (fullDir[fullDir.length -1].split("."))[0];
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
-
-    xhttp.onreadystatechange = function (){
-        if (this.readyState == 4 && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            msGraph.addDataToGraph(response);
-            plot3dGraph(ms1GraphParameters.minMZ, ms1GraphParameters.maxMZ);
-        }
-    }
-    xhttp.open("GET","load3dDataByRtRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minRT + "&maxRT=" + maxRT + "&minMZ=" + minRT + "&maxRT=" + maxRT,true);
-    xhttp.send();
 }*/
+
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph){
     var xhttp = new XMLHttpRequest();
 
@@ -220,9 +124,7 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph){
         minrt = 0;
         maxrt = 10;
     }
-    /*console.log(this.dataRange)
-    
-*/
+
     //let range = {"mzmin": minMZ, "mzmax":maxMZ, "mzrange":maxMZ - minMZ, "rtmin":minRT, "rtmax":maxRT, "rtrange":maxRT-minRT, "intmin":0, "intmax:":0, "intrange":0};
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
