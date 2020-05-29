@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Project</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery.fileupload.css">
+    <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-154408351-1');
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-11">
+            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        </div>
+        <!--<div class="col-sm-1">
+            <a href="/auth/google" id="signIn">Sign In</a>
+        </div>-->
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding-top: 0px;">
+            <input type="hidden" id="uid" name="uid" value="<%= info.uid %>">
+            <h3><strong>New Project</strong></h3>
+            <br>
+            <div class="form-group">
+                <label for="project_Name">Project Name</label>
+                <input type="text" class="form-control" id="project_Name" name="project_Name" placeholder="Project Name">
+            </div>
+
+            <button type="button" class="btn btn-primary" id="createButton" style="margin-top: 8px;">Confirm</button>
+        </div>
+    </div>
+</div>
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/createProject.js"></script>
+
+</body>
+</html>
