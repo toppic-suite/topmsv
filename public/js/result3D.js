@@ -75,7 +75,7 @@ function loadPeakList1(scanID, prec_mz) {
                                     let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                                    load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, 0, rt, graph3D, true)
+                                    load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, 0, rt, true)
                                 }    
                             }
                         };    
@@ -109,7 +109,7 @@ function getRT(scanNum) {
     xhttpRT.send();
 }
 
-function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph, updateTextBox){
+function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     var xhttp = new XMLHttpRequest();
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
@@ -119,8 +119,8 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph, updateTextBo
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-            msGraph.addDataToGraph(response);
-            msGraph.drawDefaultGraph(minmz, maxmz, minrt, maxrt);
+            graph3D.addDataToGraph(response);
+            graph3D.drawDefaultGraph(minmz, maxmz, minrt, maxrt);
 
             if (updateTextBox){
                 //update data range in textboxes if getting range from each scan, not by users
@@ -771,13 +771,13 @@ next1.addEventListener('click', function () {
 //listener for rt range and mz range change in 3d graph
 let redrawRequestButton = document.getElementById('request3dGraphRedraw');
 redrawRequestButton.addEventListener('click', function(){
-    let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;
+    let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
     let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
     let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
     let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
 
     //reload data and redraw graph
-    load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT,graph3D, false);
+    load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, false);
 
 }, false);
 
@@ -795,7 +795,8 @@ $( document ).ready(function() {
     findNextLevelOneScan(min);
     loadInteSumList();
 
-    graph3D = new MsGraph(document.body, document.querySelector("#graph-container"))
+    //graph3D = new MsGraph(document.body, document.querySelector("#graph-container"))
+    graph3D = new MsGraph('body', document.querySelector("#graph-container"));
     init3dGraph();
     
     let scanRef = window.localStorage.getItem('scan');

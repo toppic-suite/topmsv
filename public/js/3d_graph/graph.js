@@ -7,7 +7,7 @@ function MsGraph(containerEl, graphEl) {
     // Adjusts the size of the baseline grid
     this.GRID_RANGE = 20;
     this.GRID_RANGE_VERTICAL = 6;
-    this.VIEW_SIZE = 20; // in world units; large enough to fit the graph and labels at reasonable angles
+    this.VIEW_SIZE = 18; // in world units; large enough to fit the graph and labels at reasonable angles
 
     this.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
     this.rangeTransform = new THREE.Vector3(1/this.GRID_RANGE, 1/this.GRID_RANGE_VERTICAL, 1/this.GRID_RANGE);
