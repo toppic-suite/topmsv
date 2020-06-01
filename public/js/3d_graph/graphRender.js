@@ -8,30 +8,11 @@ MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
-MsGraph.prototype.filterDataAndGetRange = function(points){
-    /*let mzmin = Infinity;
-    let mzmax = 0;
-    let rtmin = Infinity;
-    let rtmax = 0;*/
+MsGraph.prototype.getInteRange = function(points){
     let intmin = Infinity;
     let intmax = 0;
-    let filteredData = [];
-   // console.log(range)
 
     for (let i = 0; i < points.length; i++){
-        filteredData.push(points[i]);
-       /* if (points[i].MZ < mzmin){
-            mzmin = points[i].MZ;
-        }
-        if(points[i].MZ > mzmax){
-            mzmax = points[i].MZ;
-        };
-        if (points[i].RETENTIONTIME < rtmin){
-            rtmin = points[i].RETENTIONTIME;
-        }
-        if(points[i].RETENTIONTIME > rtmax){
-            rtmax = points[i].RETENTIONTIME;
-        };*/
         if (points[i].INTENSITY < intmin){
             intmin = points[i].INTENSITY;
         }
@@ -39,22 +20,18 @@ MsGraph.prototype.filterDataAndGetRange = function(points){
             intmax = points[i].INTENSITY;
         }
     }
-
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
-
-    //console.log("dataRange", this.dataRange)
-    return {"filteredData":filteredData, "dataRange":this.dataRange};
 }
-/*
-MsGraph.prototype.getDataRange = function(points){
-    let mzmin = points[0].MZ;
-    let mzmax = points[points.length -1].MZ;
-    let rtmin = 0;
+
+MsGraph.prototype.getInteRtRange = function(points){
+    let rtmin = Infinity;
     let rtmax = 0;
-    let intmin = 0;
+    let intmin = Infinity;
     let intmax = 0;
 
+    console.log(points)
+    
     for (let i = 0; i < points.length; i++){
         if (points[i].RETENTIONTIME < rtmin){
             rtmin = points[i].RETENTIONTIME;
@@ -69,42 +46,49 @@ MsGraph.prototype.getDataRange = function(points){
             intmax = points[i].INTENSITY;
         }
     }
-    let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
-    "intmin": intmin, "intmax": intmax};
-    //console.log(dataRange)
-    return dataRange;
-}*/
+    this.dataRange.rtmin = rtmin;
+    this.dataRange.rtmax = rtmax;
+    this.dataRange.rtrange = rtmax - rtmin;
 
+    this.dataRange.intmin = intmin;
+    this.dataRange.intmax = intmax;
+}
 
 MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.linesArray = [];
 
-    this.dataRange.rtmin = minrt;
-    this.dataRange.rtmax = maxrt;
-    this.dataRange.rtrange = maxrt - minrt;
+    this.plotGroup.children = [];
+    this.pinGroup.children = [];
 
     this.dataRange.mzmin = minmz;
     this.dataRange.mzmax = maxmz;
     this.dataRange.mzrange = maxmz - minmz;
 
-    let updatedData = this.filterDataAndGetRange(this.currentData);
+    this.dataRange.rtmin = minrt;
+    this.dataRange.rtmax = maxrt;
+    this.dataRange.rtrange = maxrt - minrt;
 
-    this.dataRange = updatedData.dataRange;
+    this.getInteRange(this.currentData);
+
+    //console.log(this.currentData)
+    //console.log(this.dataRange)
+
     this.updateViewRange(this.dataRange);
 
     let zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
     this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
     
-    for (let i = 0; i < updatedData.filteredData.length; i++){
-        this.plotPoint(updatedData.filteredData[i]);
+    for (let i = 0; i < this.currentData.length; i++){
+        this.plotPoint(this.currentData[i]);
     }
+    //console.log(this.plotGroup);
+    
     //this.plotJumpMarker();
     this.viewRange["intscale"] = 1;
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
 
     this.updateViewRange(this.viewRange);
-    //console.log("newLines", this.linesArray);
 }
 MsGraph.prototype.addDataToGraph = function(points){
     this.currentData = points;//store loaded data
@@ -172,6 +156,8 @@ MsGraph.prototype.plotPoint = function(point) {
     var thisLogScale = this.LOG_SCALAR * Math.log(inten);
     var maxLogScale = Math.log(this.dataRange.intmax);
 
+    let scanID = document.getElementById('scanID1').innerText;
+
     // find line color and calculate geometry
     //var gradientscale = this.USE_LOG_SCALE_COLOR ? thisLogScale / maxLogScale : inten / this.dataRange.intmax;
     //gradientscale = Math.max(0, Math.min(gradientscale, 1)); // must be in range 0-1
@@ -200,7 +186,13 @@ MsGraph.prototype.plotPoint = function(point) {
             0, 0, 0,
             0, y, 0,
         ]), 3));
+
         var linemat = new THREE.LineBasicMaterial({color: 0x350fa8});
+
+        if (point.SPECTRAID == parseInt(scanID)){
+            linemat = new THREE.LineBasicMaterial({color: 0xED1111});
+            meshmat = new THREE.MeshBasicMaterial({color: 0xED1111});
+        }
         var line = new THREE.Line(linegeo, linemat);
         line.position.set(mz, 0, rt);
 
@@ -212,15 +204,13 @@ MsGraph.prototype.plotPoint = function(point) {
 
         drawObj = line;
     }
-
-    drawObj.maincolor = drawObj.material.color.clone();
     drawObj.pointid = id;
     drawObj.mz = mz;
     drawObj.rt = rt;
     drawObj.int = inten;
     drawObj.height = y;
     //drawObj.trace = trace;
-    //console.log("drawObj: ", drawObj)
+
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
     if (!this.useCylinders) {

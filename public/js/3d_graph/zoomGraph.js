@@ -19,7 +19,7 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
 }
 MsGraph.prototype.getMousePosition = function(event) {
     var el = this.renderer.domElement;
-  
+    //console.log(el)
   // find mouse position, normalized to a [-1,1] in both x/y-axes on screen
   var coord = {
     x: ((event.clientX - el.offsetLeft) / el.offsetWidth)  * 2 - 1,
@@ -44,6 +44,9 @@ MsGraph.prototype.onZoom = function(e){
     let newmzrange = this.viewRange.mzrange;
     let newrtrange = this.viewRange.rtrange;
 
+    e.preventDefault();
+	//e.stopPropagation();
+
     console.log("mouse pos: ", mousePos.x, mousePos.z);
     //reset view range based on scroll up or down
     if (e.deltaY < 0) {
@@ -55,12 +58,15 @@ MsGraph.prototype.onZoom = function(e){
 
     //figure out where the cursor is (near x axis, y axis, in the middle)
     if (mousePos.x <= 0.1 && mousePos.x >= -0.1){//rt range adjust
+        console.log("rt axis zoom")
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
     else if (mousePos.z <= 0.1 && mousePos.z >= -0.1){//mz range adjust
+        console.log("mz axis zoom")
         newmzrange = this.viewRange.mzrange * scaleFactor;
     }
     else if(mousePos.x > 0.1 && mousePos.x <= 1.1 && mousePos.z > 0.1 && mousePos.z <= 1.1){//intensity adjust
+        console.log("itnensity zoom")
         this.adjustPeakHeight(scaleFactor);
         return;
     }

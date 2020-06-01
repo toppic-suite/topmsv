@@ -7,7 +7,7 @@ function MsGraph(containerEl, graphEl) {
     // Adjusts the size of the baseline grid
     this.GRID_RANGE = 20;
     this.GRID_RANGE_VERTICAL = 6;
-    this.VIEW_SIZE = 20; // in world units; large enough to fit the graph and labels at reasonable angles
+    this.VIEW_SIZE = 18; // in world units; large enough to fit the graph and labels at reasonable angles
 
     this.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
     this.rangeTransform = new THREE.Vector3(1/this.GRID_RANGE, 1/this.GRID_RANGE_VERTICAL, 1/this.GRID_RANGE);
@@ -522,8 +522,8 @@ MsGraph.prototype.drawDataLabels = function() {
 
     var mzmintext = MsGraph.roundTo(this.viewRange.mzmin, this.ROUND_MZ);
     var mzmaxtext = MsGraph.roundTo(this.viewRange.mzmax, this.ROUND_MZ);
-    var rtmintext = MsGraph.roundTo(this.viewRange.rtmin, this.ROUND_RT);
-    var rtmaxtext = MsGraph.roundTo(this.viewRange.rtmax, this.ROUND_RT);
+    var rtmintext = MsGraph.roundTo((this.viewRange.rtmin/60).toFixed(4), this.ROUND_RT);
+    var rtmaxtext = MsGraph.roundTo((this.viewRange.rtmax/60).toFixed(4), this.ROUND_RT);
     var intmintext = MsGraph.roundTo(this.viewRange.intmin, this.ROUND_INT);
     var intmaxtext = MsGraph.roundTo(this.viewRange.intmax, this.ROUND_INT);
 
