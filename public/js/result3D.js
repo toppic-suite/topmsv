@@ -65,12 +65,22 @@ function loadPeakList1(scanID, prec_mz) {
                     if (this.readyState == 4 && this.status == 200) {
                         envList1_g = JSON.parse(this.responseText);
                         console.log("envList1_g", envList1_g);
-                        if (envList1_g !== 0){
-                            let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
-                        }else {
-                            let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                            load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, -1, -1, graph3D)
-                        }
+
+                        //get raw rt value
+                        var xhttpRT = new XMLHttpRequest();
+                        xhttpRT.onreadystatechange = function () {
+                            if (this.readyState == 4 && this.status == 200) {
+                                var rt = parseFloat(this.responseText);
+                                if (envList1_g !== 0){
+                                    let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
+                                }else {
+                                    let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
+                                    load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, 0, rt, graph3D)
+                                }    
+                            }
+                        };    
+                        xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+                        xhttpRT.send();
                     }
                 };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
@@ -85,6 +95,7 @@ function loadPeakList1(scanID, prec_mz) {
         alert("NULL");
     }
 }
+
 function getRT(scanNum) {
     var xhttpRT = new XMLHttpRequest();
     xhttpRT.onreadystatechange = function () {
@@ -118,14 +129,6 @@ function getRT(scanNum) {
 
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, msGraph){
     var xhttp = new XMLHttpRequest();
-
-    if (minrt < 0 || maxrt < 0){
-        //if invalid value is passed -- in case of startup, -1 is passed--assign default value
-        minrt = 0;
-        maxrt = 10;
-    }
-
-    //let range = {"mzmin": minMZ, "mzmax":maxMZ, "mzrange":maxMZ - minMZ, "rtmin":minRT, "rtmax":maxRT, "rtrange":maxRT-minRT, "intmin":0, "intmax:":0, "intrange":0};
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
     let dir = fullDir[0].concat("/");
