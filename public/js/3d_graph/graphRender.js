@@ -8,30 +8,11 @@ MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
-MsGraph.prototype.filterDataAndGetRange = function(points){
-    /*let mzmin = Infinity;
-    let mzmax = 0;
-    let rtmin = Infinity;
-    let rtmax = 0;*/
+MsGraph.prototype.getInteRange = function(points){
     let intmin = Infinity;
     let intmax = 0;
-    let filteredData = [];
-   // console.log(range)
 
     for (let i = 0; i < points.length; i++){
-        filteredData.push(points[i]);
-       /* if (points[i].MZ < mzmin){
-            mzmin = points[i].MZ;
-        }
-        if(points[i].MZ > mzmax){
-            mzmax = points[i].MZ;
-        };
-        if (points[i].RETENTIONTIME < rtmin){
-            rtmin = points[i].RETENTIONTIME;
-        }
-        if(points[i].RETENTIONTIME > rtmax){
-            rtmax = points[i].RETENTIONTIME;
-        };*/
         if (points[i].INTENSITY < intmin){
             intmin = points[i].INTENSITY;
         }
@@ -39,22 +20,18 @@ MsGraph.prototype.filterDataAndGetRange = function(points){
             intmax = points[i].INTENSITY;
         }
     }
-
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
-
-    //console.log("dataRange", this.dataRange)
-    return {"filteredData":filteredData, "dataRange":this.dataRange};
 }
-/*
-MsGraph.prototype.getDataRange = function(points){
-    let mzmin = points[0].MZ;
-    let mzmax = points[points.length -1].MZ;
-    let rtmin = 0;
+
+MsGraph.prototype.getInteRtRange = function(points){
+    let rtmin = Infinity;
     let rtmax = 0;
-    let intmin = 0;
+    let intmin = Infinity;
     let intmax = 0;
 
+    console.log(points)
+    
     for (let i = 0; i < points.length; i++){
         if (points[i].RETENTIONTIME < rtmin){
             rtmin = points[i].RETENTIONTIME;
@@ -69,34 +46,51 @@ MsGraph.prototype.getDataRange = function(points){
             intmax = points[i].INTENSITY;
         }
     }
-    let dataRange = {"mzmin": mzmin, "mzmax": mzmax, "mzrange": mzmax - mzmin, "rtmin": rtmin, "rtmax": rtmax, "rtrange": rtmax - rtmin, 
-    "intmin": intmin, "intmax": intmax};
-    //console.log(dataRange)
-    return dataRange;
-}*/
+    this.dataRange.rtmin = rtmin;
+    this.dataRange.rtmax = rtmax;
+    this.dataRange.rtrange = rtmax - rtmin;
+
+    this.dataRange.intmin = intmin;
+    this.dataRange.intmax = intmax;
+    
+}
 
 
 MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.linesArray = [];
+    
+    this.dataRange.mzmin = minmz;
+    this.dataRange.mzmax = maxmz;
+    this.dataRange.mzrange = maxmz - minmz;
+
+    /*if (minrt < 0 || maxrt < 1){
+        /*if min max rt < 0, it is the first graph drawn for that scan, based on mz and rt of ms1 graph
+        min max has to be calculated because rt data is not includd in ms1 graph data*/
+        /*this.getInteRtRange(this.currentData);
+    }*/
+    /*else{
+        this.dataRange.rtmin = minrt;
+        this.dataRange.rtmax = maxrt;
+        this.dataRange.rtrange = maxrt - minrt;
+
+        this.getInteRange(this.currentData);
+    }*/
 
     this.dataRange.rtmin = minrt;
     this.dataRange.rtmax = maxrt;
     this.dataRange.rtrange = maxrt - minrt;
 
-    this.dataRange.mzmin = minmz;
-    this.dataRange.mzmax = maxmz;
-    this.dataRange.mzrange = maxmz - minmz;
+    this.getInteRange(this.currentData);
 
-    let updatedData = this.filterDataAndGetRange(this.currentData);
+    console.log(this.dataRange)
 
-    this.dataRange = updatedData.dataRange;
     this.updateViewRange(this.dataRange);
 
     let zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
     this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
     
-    for (let i = 0; i < updatedData.filteredData.length; i++){
-        this.plotPoint(updatedData.filteredData[i]);
+    for (let i = 0; i < this.currentData.length; i++){
+        this.plotPoint(this.currentData[i]);
     }
     //this.plotJumpMarker();
     this.viewRange["intscale"] = 1;
