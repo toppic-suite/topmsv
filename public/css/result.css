@@ -31,6 +31,10 @@ div#input {
     position: relative;
     /*left: 53%;*/
 }
+.rangeTextBox{
+    width: 120%;
+    position: relative;
+}
 hr {
     margin-bottom: 7px;
     margin-top: 0px;
@@ -164,7 +168,18 @@ button#home {
     text-decoration: none;
     display: inline-block;
 }
-
+#request3dGraphRedraw{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button#next1 {
     position: relative;
     /*left: 84%;*/
