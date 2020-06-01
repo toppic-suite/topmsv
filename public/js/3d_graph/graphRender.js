@@ -52,12 +52,14 @@ MsGraph.prototype.getInteRtRange = function(points){
 
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
-    
 }
 
 MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.linesArray = [];
-    
+
+    this.plotGroup.children = [];
+    this.pinGroup.children = [];
+
     this.dataRange.mzmin = minmz;
     this.dataRange.mzmax = maxmz;
     this.dataRange.mzrange = maxmz - minmz;
@@ -68,7 +70,8 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
 
     this.getInteRange(this.currentData);
 
-    console.log(this.dataRange)
+    //console.log(this.currentData)
+    //console.log(this.dataRange)
 
     this.updateViewRange(this.dataRange);
 
@@ -78,14 +81,14 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
     for (let i = 0; i < this.currentData.length; i++){
         this.plotPoint(this.currentData[i]);
     }
+    //console.log(this.plotGroup);
+    
     //this.plotJumpMarker();
     this.viewRange["intscale"] = 1;
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
 
     this.updateViewRange(this.viewRange);
-    
-    
 }
 MsGraph.prototype.addDataToGraph = function(points){
     this.currentData = points;//store loaded data
@@ -153,6 +156,8 @@ MsGraph.prototype.plotPoint = function(point) {
     var thisLogScale = this.LOG_SCALAR * Math.log(inten);
     var maxLogScale = Math.log(this.dataRange.intmax);
 
+    let scanID = document.getElementById('scanID1').innerText;
+
     // find line color and calculate geometry
     //var gradientscale = this.USE_LOG_SCALE_COLOR ? thisLogScale / maxLogScale : inten / this.dataRange.intmax;
     //gradientscale = Math.max(0, Math.min(gradientscale, 1)); // must be in range 0-1
@@ -181,7 +186,13 @@ MsGraph.prototype.plotPoint = function(point) {
             0, 0, 0,
             0, y, 0,
         ]), 3));
+
         var linemat = new THREE.LineBasicMaterial({color: 0x350fa8});
+
+        if (point.SPECTRAID == parseInt(scanID)){
+            linemat = new THREE.LineBasicMaterial({color: 0xED1111});
+            meshmat = new THREE.MeshBasicMaterial({color: 0xED1111});
+        }
         var line = new THREE.Line(linegeo, linemat);
         line.position.set(mz, 0, rt);
 
@@ -193,15 +204,13 @@ MsGraph.prototype.plotPoint = function(point) {
 
         drawObj = line;
     }
-
-    drawObj.maincolor = drawObj.material.color.clone();
     drawObj.pointid = id;
     drawObj.mz = mz;
     drawObj.rt = rt;
     drawObj.int = inten;
     drawObj.height = y;
     //drawObj.trace = trace;
-    //console.log("drawObj: ", drawObj)
+
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
     if (!this.useCylinders) {
