@@ -175,10 +175,6 @@ addDatatoAxis = function(svg,spectrumParameters){
 						.text(data + "%")
 						.style("font-size","14px")
 	}
-	//return [currentMinPeakVal,currentMaxPeakVal];
-
-	 //signal event listner watching mz range change
-	 update3dGraph(minMz, maxMz);//trigger redrawing the graph (calls function in result3D.js)
 }
 drawPeaks = function(svg,spectrumParameters,peakdata){
 	let peaks = svg.append("g")
