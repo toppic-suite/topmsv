@@ -240,37 +240,48 @@
 			</div>
 
 			<hr>
-			<div class="container">
-				<div class="row">
-					<div class="col-sm-12">
-						<div class="col-sm-4">
-							<label for="scanID" id="scanRange">Retention time Range:</label>
-						</div>
-						<div class="col-sm-1">
-							<input type="text" id="rtRangeMin" name="rtRange" value=0>
-						</div>
-						<div class="col-sm-1">
-							<input type="text" id="rtRangeMax" name="rtRange" value=10>
-						</div>
+			<div>
+				<div>
+					<div class="scanleveltitle row">
 						<div class="col-sm-2">
-							<label for="scanID" id="scanRange">m/z Range:</label>
+							<strong>Retention Time:</strong>
+						</div>
+						<div class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-4">
+									<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" value=0 />
+								</div>
+								<div class="col-sm-1 rangeMarker">
+									<span> -</span>
+								</div>
+								<div class="col-sm-4">
+									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" value=10 />
+								</div>
+							</div>
 						</div>
 						<div class="col-sm-1">
-							<input type="text" id="mzRangeMin" name="mzRange">
+							<strong>m/z:</strong>
 						</div>
-						<div class="col-sm-1">
-							<input type="text" id="mzRangeMax" name="mzRange">
+						<div class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-4">
+									<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" value=500 />
+								</div>
+								<div class="col-sm-1 rangeMarker">
+									<span> -</span>
+								</div>
+								<div class="col-sm-4">
+									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" value=600 />
+								</div>
+								<div class="col-sm-2">
+									<button class="btn" type="submit" class="requestBtn" id="request3dGraphRedraw">Request</button>
+								</div>
+							</div>
 						</div>
-						<div class="col-sm-2">
-							<button class="btn" type="submit" id="request3dGraphRedraw">Request</button>
-						</div>
+
 					</div>
-					
-				</div>
-			<div class="row">
-				
-				
-				<div id="graph-container"></div>
+						
+			<div id="graph-container">
 			</div>
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">
