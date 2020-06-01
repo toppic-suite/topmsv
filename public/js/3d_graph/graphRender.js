@@ -55,26 +55,12 @@ MsGraph.prototype.getInteRtRange = function(points){
     
 }
 
-
 MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.linesArray = [];
     
     this.dataRange.mzmin = minmz;
     this.dataRange.mzmax = maxmz;
     this.dataRange.mzrange = maxmz - minmz;
-
-    /*if (minrt < 0 || maxrt < 1){
-        /*if min max rt < 0, it is the first graph drawn for that scan, based on mz and rt of ms1 graph
-        min max has to be calculated because rt data is not includd in ms1 graph data*/
-        /*this.getInteRtRange(this.currentData);
-    }*/
-    /*else{
-        this.dataRange.rtmin = minrt;
-        this.dataRange.rtmax = maxrt;
-        this.dataRange.rtrange = maxrt - minrt;
-
-        this.getInteRange(this.currentData);
-    }*/
 
     this.dataRange.rtmin = minrt;
     this.dataRange.rtmax = maxrt;
@@ -98,7 +84,8 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
     this.repositionPlot(this.viewRange);
 
     this.updateViewRange(this.viewRange);
-    //console.log("newLines", this.linesArray);
+    
+    
 }
 MsGraph.prototype.addDataToGraph = function(points){
     this.currentData = points;//store loaded data
