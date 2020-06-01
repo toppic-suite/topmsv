@@ -522,8 +522,8 @@ MsGraph.prototype.drawDataLabels = function() {
 
     var mzmintext = MsGraph.roundTo(this.viewRange.mzmin, this.ROUND_MZ);
     var mzmaxtext = MsGraph.roundTo(this.viewRange.mzmax, this.ROUND_MZ);
-    var rtmintext = MsGraph.roundTo(this.viewRange.rtmin, this.ROUND_RT);
-    var rtmaxtext = MsGraph.roundTo(this.viewRange.rtmax, this.ROUND_RT);
+    var rtmintext = MsGraph.roundTo((this.viewRange.rtmin/60).toFixed(4), this.ROUND_RT);
+    var rtmaxtext = MsGraph.roundTo((this.viewRange.rtmax/60).toFixed(4), this.ROUND_RT);
     var intmintext = MsGraph.roundTo(this.viewRange.intmin, this.ROUND_INT);
     var intmaxtext = MsGraph.roundTo(this.viewRange.intmax, this.ROUND_INT);
 

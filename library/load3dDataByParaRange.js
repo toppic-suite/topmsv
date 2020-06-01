@@ -20,7 +20,7 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
         }
         // console.log('Connected to the result database.');
     });
-    
+
     resultDb.all(sql, [maxrt, minrt, maxmz, minmz], (err, row) => {
         if (err) {
             console.error(err.message);
