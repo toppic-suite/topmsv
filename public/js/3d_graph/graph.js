@@ -143,19 +143,6 @@ MsGraph.prototype.init = function(){
     scene.add(this.labelgroup);
    // scene.add(this.ticklabelgroup);
 
-    // add segmentation systems
-    //this.dataBridge = new DataBridge(this);
-    //this.traceManager = new IsotopicTraceManager(this);
-    //this.editor = new SegmentEditor(this);
-    //this.bookmarks = new BookmarkManager(this);
-
-    // add rest of UI
-    //this.legend = new Legend(this.legendEl);
-    //this.toolbar = new Toolbar(this, this.containerEl);
-
-    // generate gradient cache
-   // this.makeGradientCache();
-
     this.updateViewRange(this.dataRange);
 
     renderer.setAnimationLoop(function() {
@@ -163,29 +150,8 @@ MsGraph.prototype.init = function(){
     });
 
     this.renderImmediate();
-
-    // every RENDER_THROTTLE ms, render the graph if it needs to be
-    /*setInterval((function() {
-        if (this.renderRequested) {
-            this.renderImmediate();
-        }
-    }).bind(this), this.RENDER_DELAY_THROTTLE);
-*/
-    //this.dataBridge.openFileWaitLoop();
 };
 
-// generate the gradient cache, which is slow and should only
-// be done when changing the overall color scheme
-/*
-MsGraph.prototype.makeGradientCache = function()
-{
-    this.gradientCache = [];
-    var cachesize = 200;
-    for (var i = 0; i < cachesize; i++) {
-        var gradientcolor = this.getGradientColor(i/cachesize);
-        this.gradientCache.push(new THREE.Color(gradientcolor));
-    }
-};*/
 
 /******** GEOMETRY/MATH FUNCTIONS *******/
 
@@ -261,17 +227,6 @@ MsGraph.emptyGroup = function(g) {
     }
 };
 
-// clears the points from the screen
-MsGraph.prototype.clearData = function() {
-	/*
-    MsGraph.emptyGroup(this.plotGroup);
-    MsGraph.emptyGroup(this.pinGroup);
-    MsGraph.emptyGroup(this.edgesGroup);
-    MsGraph.emptyGroup(this.ticksGroup);
-
-    this.linesArray = [];
-    this.dimensionMode = "unset";*/
-};
 
 /******* DATA RANGE AND VIEWING ANGLE FUNCTIONS ****/
 
@@ -340,7 +295,6 @@ MsGraph.prototype.constrainBounds = function(r) {
 // zooms the view to a specific view range.
 // alternatively, pass an object with properties named after the parameters
 MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
-    console.log(mzmin, mzrange, rtmin, rtrange)
     var r = mzmin;
 
     if (typeof mzmin === "number") {
@@ -351,7 +305,6 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
     }
     r = this.constrainBounds(r);
     this.updateViewRange(r);
-    console.log("should be same as above ", mzmin, mzrange, rtmin, rtrange)
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
     //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
 };
