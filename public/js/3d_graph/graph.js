@@ -121,7 +121,7 @@ MsGraph.prototype.init = function(){
     gridgroup.add(this.drawGrid());
 
 	// drag-to-zoom rectangle
-	
+	/*
     var dzRectGeo = new THREE.Geometry();
     for (var i=0; i<8; i++) { dzRectGeo.vertices.push(new THREE.Vector3()); }
     var dzRectMat = new THREE.LineBasicMaterial({ color: 0xff8000 });
@@ -130,7 +130,7 @@ MsGraph.prototype.init = function(){
     this.dragZoomRect.scale.set(this.GRID_RANGE, 1, -this.GRID_RANGE);
     this.dragZoomRect.position.set(0, 0, this.GRID_RANGE);
     gridgroup.add(this.dragZoomRect);
-
+*/
     this.ruler = new THREE.Group();
     this.ruler.visible = false;
     this.rulerGroup.add(this.ruler);
@@ -141,7 +141,7 @@ MsGraph.prototype.init = function(){
     scene.add(gridgroup);
     scene.add(this.datagroup);
     scene.add(this.labelgroup);
-    scene.add(this.ticklabelgroup);
+   // scene.add(this.ticklabelgroup);
 
     // add segmentation systems
     //this.dataBridge = new DataBridge(this);
@@ -154,7 +154,7 @@ MsGraph.prototype.init = function(){
     //this.toolbar = new Toolbar(this, this.containerEl);
 
     // generate gradient cache
-    this.makeGradientCache();
+   // this.makeGradientCache();
 
     this.updateViewRange(this.dataRange);
 
@@ -176,6 +176,7 @@ MsGraph.prototype.init = function(){
 
 // generate the gradient cache, which is slow and should only
 // be done when changing the overall color scheme
+/*
 MsGraph.prototype.makeGradientCache = function()
 {
     this.gradientCache = [];
@@ -184,7 +185,7 @@ MsGraph.prototype.makeGradientCache = function()
         var gradientcolor = this.getGradientColor(i/cachesize);
         this.gradientCache.push(new THREE.Color(gradientcolor));
     }
-};
+};*/
 
 /******** GEOMETRY/MATH FUNCTIONS *******/
 
@@ -233,47 +234,6 @@ MsGraph.roundTo = function(number, places) {
     return Math.round(number * power) / power;
 };
 
-// calculates the color representing val (0-1) based on a gradient
-MsGraph.prototype.getGradientColor = function(val) {
-    var redColor = 0;
-    var greenColor = 0;
-    var blueColor = 255;
-
-    // fraction of the value between target points
-    var frac = (val < 0.5) ? (val / 0.5) : ((val - 0.5) / 0.5);
-/*
-    // If colorblind mode is inactive
-    if (!this.toolbar.isColorblind()) {
-        if (val < 0.5) {
-            // green to blue
-            redColor = 10;
-            greenColor = Math.round(200 * (1 - frac));
-            blueColor = Math.round(255 * frac);
-        } else {
-            // blue to red
-            redColor = Math.round(255 * frac);
-            greenColor = 0;
-            blueColor = Math.round(255 * (1 - frac));
-        }
-    }
-
-    // If colorblind mode is active
-    else {
-        if (val < 0.5) {
-            // blue to yellow
-            redColor = Math.round(255 * frac);
-            greenColor = Math.round(255 * frac);
-            blueColor = Math.round(255 * (1 - frac));
-        } else {
-            // yellow to red
-            redColor = 255;
-            greenColor = Math.round(255 * (1 - frac));
-            blueColor = 0;
-        }
-    }
-*/
-    return "rgb(" + redColor + ", " + greenColor + ", " + blueColor +")";
-};
 
 /******** OBJECT MANAGEMENT AND UTILITIES *****/
 
@@ -380,6 +340,7 @@ MsGraph.prototype.constrainBounds = function(r) {
 // zooms the view to a specific view range.
 // alternatively, pass an object with properties named after the parameters
 MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
+    console.log(mzmin, mzrange, rtmin, rtrange)
     var r = mzmin;
 
     if (typeof mzmin === "number") {
@@ -390,7 +351,7 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
     }
     r = this.constrainBounds(r);
     this.updateViewRange(r);
-
+    console.log("should be same as above ", mzmin, mzrange, rtmin, rtrange)
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
     //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
 };
@@ -456,7 +417,7 @@ MsGraph.prototype.gotoTotalIonCurrent = function() {
     this.camera.position.set(30, 0, this.GRID_RANGE / 2);
     this.renderImmediate();
 };
-
+/*
 // calculates the mz,rt coordinates of the center of the graph
 MsGraph.prototype.getMidPoint = function() {
     var vr = this.viewRange;
@@ -465,7 +426,7 @@ MsGraph.prototype.getMidPoint = function() {
 
     // round to 3 decimal places
     return { mz: MsGraph.roundTo(mz, 3), rt: MsGraph.roundTo(rt, 3) };
-};
+};*/
 
 /******** RENDERING AND DRAWING FUNCTIONS *****/
 
