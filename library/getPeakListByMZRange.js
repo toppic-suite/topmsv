@@ -10,9 +10,9 @@ const BetterDB = require("better-sqlite3");
 function getPeakListByMZRange(dir, min, max, scan) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDB = new BetterDB(dbDir);
-    let stmt = resultDB.prepare('SELECT MZ AS mz, INTENSITY AS intensity ' +
+    let stmt = resultDB.prepare('SELECT PEAKS.MZ AS mz, PEAKS.INTENSITY AS intensity ' +
         'FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID = SPECTRA.ID ' +
-        'WHERE SPECTRA.SCAN = ? AND mz <= ? AND mz >= ?;');
+        'WHERE SPECTRA.SCAN = ? AND PEAKS.mz <= ? AND PEAKS.mz >= ?;');
     let peakList = stmt.all(scan, max, min);
     resultDB.close();
     return peakList;
