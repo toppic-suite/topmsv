@@ -19,20 +19,29 @@ var previewEdit = router.get("/previewEdit", function (req, res) {
 
     getPeakListByScanID(projectDir, scan_id, function (rows) {
         let peakList = calcDistribution.emass(monoMass,charge,rows);
-        // console.log(peakList);
+
         if (!peakList) {
             console.log('No peaks match!');
             // res.send(500, {errors: 'No peak match found!'});
             res.status(500).send({errors: 'No peak match found!'});
         } else {
             let peaksum = 0;
-            peakList.forEach(peak => {
-                peaksum = peaksum + peak.intensity;
-            });
+            for (let i = 0; i < peakList.length; i++) {
+                if (peakList[i].mz < 0 || peakList[i].intensity < 0) {
+                    peakList.splice(i, 1);
+                    i--;
+                    continue;
+                }
+                peaksum = peaksum + peakList[i].intensity;
+            }
+            // peakList.forEach(peak => {
+            //     peaksum = peaksum + peak.intensity;
+            // });
             let theoInteSum = peaksum.toFixed(5);
+            // console.log(peakList);
             // find the range of envlist
-            let minMZ = Math.floor(peakList[0].mz) - 20;
-            let maxMZ = Math.ceil(peakList[peakList.length -1].mz) + 20;
+            let minMZ = Math.floor(peakList[0].mz) - 5;
+            let maxMZ = Math.ceil(peakList[peakList.length -1].mz) + 5;
             let returnEnvList = [{}];
             returnEnvList[0].env_peaks = peakList;
             returnEnvList[0].mono_mass = monoMass;
@@ -52,6 +61,7 @@ var previewEdit = router.get("/previewEdit", function (req, res) {
             let oriEnvInfo = getEnvInfoSync(projectDir, envID);
             returnOriEnvList[0].mono_mass = oriEnvInfo.mono_mass;
             returnOriEnvList[0].charge = oriEnvInfo.charge;
+            // console.log("envIDList: ", envIDList);
             if(envIDList) {
                 envIDList.forEach(env => {
                     let tempObj = {};
@@ -62,13 +72,15 @@ var previewEdit = router.get("/previewEdit", function (req, res) {
                     tempObj.mono_mass = tempInfo.mono_mass;
                     if (env.envelope_id !== parseInt(envID,10)) {
                         returnEnvList.push(tempObj);
+                        returnOriEnvList.push(tempObj);
                     }
-                    returnOriEnvList.push(tempObj);
+
                 });
             }
             let originalPeakList = getPeakListByMZRange(projectDir, Math.floor(originalEnvPeaks[0].mz)-20, Math.ceil(peakList[peakList.length -1].mz) + 20, scan_id);
             let returnJSON = JSON.stringify({peaklist: resultList, envlist: returnEnvList, originalPeakList:originalPeakList, originalEnvPeaks: returnOriEnvList});
             // console.log(returnJSON);
+            // console.log("envlist ", returnEnvList);
             res.json(returnJSON);
             res.end();
         }

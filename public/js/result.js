@@ -1138,7 +1138,7 @@ function preview(dataObj) {
             envList_temp = data.envlist;
             console.log("type: ", typeof mono_mass);
             graph_preview1_g = addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass/data.envlist[0].charge + 1,null, graphFeatures);
-            graph_preview2_g = addSpectrum("previewSpectrum2", peakList_temp, envList_temp, mono_mass/charge + 1,null, graphFeatures);
+            graph_preview2_g = addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, mono_mass/charge + 1,null, graphFeatures);
         }
     });
     $('#previewModal').modal('show');
@@ -1155,7 +1155,7 @@ function updatePreview(scanID, envID, charge, mono_mass) {
         // dataType: 'json',
         success: function (res) {
             var data = (typeof res === "string") ? JSON.parse(res) : res;
-            // console.log("returnList preview", data);
+            console.log("returnList preview update", data);
             data.envlist[0].charge = parseInt(data.envlist[0].charge);
             data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
             data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
@@ -1169,7 +1169,7 @@ function updatePreview(scanID, envID, charge, mono_mass) {
             // graph_preview1_g.redraw(data.envlist[0].mono_mass + 1, graphFeatures);
             addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass /data.envlist[0].charge + 1, null, graphFeatures);
             // graph_preview2_g.redraw(parseFloat(mono_mass) + 1, graphFeatures);
-            addSpectrum("previewSpectrum2", peakList_temp, envList_temp, parseFloat(mono_mass)/parseInt(charge) + 1, null, graphFeatures);
+            addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, parseFloat(mono_mass)/parseInt(charge) + 1, null, graphFeatures);
         }
     });
 }
