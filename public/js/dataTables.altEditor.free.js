@@ -809,7 +809,8 @@
                     // envList_temp.envlist[0].mono_mass = parseFloat(data.envlist.mono_mass);
                     // preview(data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass);
                     // addSpectrum("spectrum2", data.peaklist, data.envlist, null);
-                    data = data.env;
+                    data = data.envlist.env;
+                    console.log("altEditor data: ", data);
                     var selector = this.modal_selector;
                     $(selector + ' .modal-body .alert').remove();
 
