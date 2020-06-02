@@ -83,9 +83,9 @@ SpectrumParameters = function() {
   }
   this.setColorToEnvelops = function(envelopes){
       if (envelopes === null) return null;
-      envelopes.sort(function(x,y){
-        return d3.ascending(x.env_peaks[0].mz, y.env_peaks[0].mz);
-      })
+      // envelopes.sort(function(x,y){
+      //   return d3.ascending(x.env_peaks[0].mz, y.env_peaks[0].mz);
+      // })
       let colorListsize = this.spectrumColorArray.length;
       let i = envelopes.length ;
       while(i--)

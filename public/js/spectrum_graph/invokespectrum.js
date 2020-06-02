@@ -17,6 +17,7 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ, ionData, graphFeatures){
 	peakData.peak_list = peakList ;
 	if(envelopeList != null)
 	{
+		peakData.envelope_list = specParameters.setColorToEnvelops(envelopeList) ;
 		peakData.envelope_list = sortEnvelopes(envelopeList) ;
 	}
 	id = "#"+id;
@@ -33,7 +34,7 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ, ionData, graphFeatures){
 	specParameters.svgHeight = graphFeatures.svgHeight;
 	specParameters.padding.head = graphFeatures.padding.head;
 
-	peakData.envelope_list = specParameters.setColorToEnvelops(envelopeList) ;
+	// peakData.envelope_list = specParameters.setColorToEnvelops(envelopeList) ;
 	let spectrumGraph = new SpectrumGraph(id,specParameters,peakData,ionData);
 	return spectrumGraph;
 }
