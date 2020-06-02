@@ -87,5 +87,14 @@ MsGraph.prototype.onZoom = function(e){
     let newmzmin = (mzPoint) - (newmzrange / this.viewRange.mzrange) * (mzPoint - this.viewRange.mzmin);
     let newrtmin = (rtPoint) - (newrtrange / this.viewRange.rtrange) * (rtPoint - this.viewRange.rtmin);
     
+    //if min value goes below zero in rt or mz, set to 0
+
+    if (newmzmin < 0){
+        newmzmin = 0;
+    }
+    if (newrtmin < 0){
+        newrtmin = 0;
+    }
+
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
