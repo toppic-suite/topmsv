@@ -30,8 +30,6 @@ MsGraph.prototype.getInteRtRange = function(points){
     let intmin = Infinity;
     let intmax = 0;
 
-    console.log(points)
-    
     for (let i = 0; i < points.length; i++){
         if (points[i].RETENTIONTIME < rtmin){
             rtmin = points[i].RETENTIONTIME;
@@ -72,6 +70,7 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
 
     //console.log(this.currentData)
     //console.log(this.dataRange)
+    //console.log(this.ticklabelgroup)
 
     this.updateViewRange(this.dataRange);
 
@@ -81,9 +80,7 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
     for (let i = 0; i < this.currentData.length; i++){
         this.plotPoint(this.currentData[i]);
     }
-    //console.log(this.plotGroup);
-    
-    //this.plotJumpMarker();
+
     this.viewRange["intscale"] = 1;
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
@@ -115,35 +112,6 @@ MsGraph.prototype.plotPoints = function(points) {
     this.updateViewRange(this.viewRange);
 };
 
-// plots an X over the location of the current bookmark
-MsGraph.prototype.plotJumpMarker = function() {
-    if (!this.lastJumpedTo) { return; }
-
-    var x = this.lastJumpedTo.mz;
-    var y = 0.1;
-    var z = this.lastJumpedTo.rt;
-    var length = 0.3;
-
-    // TODO: pick a better color
-    var material = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-    // create line 1 and 2, forming an X shape
-    var geo = new THREE.BufferGeometry();
-    var vertices = new Float32Array([
-        length, 0, length,
-        -length, 0, -length,
-        length, 0, -length,
-        -length, 0, length,
-    ]);
-    geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    var mark = new THREE.LineSegments(geo, material);
-    MsGraph.setOnTop(mark);
-    mark.position.set(x, y, z);
-
-    MsGraph.emptyGroup(this.markerGroup);
-    this.markerGroup.add(mark);
-};
-
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
     // point: an array of the following values
@@ -158,12 +126,6 @@ MsGraph.prototype.plotPoint = function(point) {
 
     let scanID = document.getElementById('scanID1').innerText;
 
-    // find line color and calculate geometry
-    //var gradientscale = this.USE_LOG_SCALE_COLOR ? thisLogScale / maxLogScale : inten / this.dataRange.intmax;
-    //gradientscale = Math.max(0, Math.min(gradientscale, 1)); // must be in range 0-1
-    
-    //var gradientindex = Math.floor((this.gradientCache.length - 1) * gradientscale);
-    
     var x = mz;
     var y = this.USE_LOG_SCALE_HEIGHT ? Math.min(thisLogScale, maxLogScale) : inten;
     var z = rt;
