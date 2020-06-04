@@ -20,7 +20,7 @@ MsGraph.prototype.onMouseOver = function(event){
     
     let curmz = mousePos.x * this.viewRange.mzrange + this.viewRange.mzmin;//current mz and rt that has a cursor pointed to
     let currt = mousePos.z * this.viewRange.rtrange + this.viewRange.rtmin;
-
+/*
    raycaster.setFromCamera( mousePos, this.resizedCamera );
   
    if (this.currentPeak != null){
@@ -45,21 +45,42 @@ MsGraph.prototype.onMouseOver = function(event){
             //break;
         }
         this.currentPeak = null;
-    }
+    }*/
     //search through this.lineArray
-/*
+
+    if (this.currentPeak != null){
+    this.currentPeak.material.color.setHex( this.currentPeak.origColor);
+   }
+
+    let closestD = Infinity;
+    let closestPeak = null;
+
     for (let i = 0; i < this.linesArray.length; i++){
-        if (Math.abs(this.linesArray[i].mz - curmz) < 0.1 && Math.abs(this.linesArray[i].rt - currt) < 0.1){
-            this.currentPeak = this.linesArray[i];
-            console.log(this.linesArray[i]);
-            document.getElementById('graph-hover-label').innerText = "m/z : " + this.linesArray[i].mz.toFixed(2) + ", intensity: " + this.linesArray[i].int.toFixed(2) + ", retention time: " + (this.linesArray[i].rt/60).toFixed(4); 
-            this.currentPeak.material.color.setHex(0xffcf00);
-            break;
+        if (Math.abs(this.linesArray[i].mz - curmz) < 0.1 || Math.abs(this.linesArray[i].rt - currt) < 0.1){
+            
+            //console.log("mz", this.currentPeak.mz , curmz)
+            //console.log("rt", this.currentPeak.rt , currt)
+
+            let mzD = Math.abs(this.linesArray[i].mz - curmz);
+            let rtD = Math.abs(this.linesArray[i].rt - currt);
+            let dist = Math.sqrt(mzD * mzD + rtD * rtD);
+            if (dist < closestD){
+                closestD = dist;
+                closestPeak = this.linesArray[i];
+            }
         }
     }
 
-    this.renderer.render(this.scene, this.resizedCamera);
+    if (closestPeak != null){
+        this.currentPeak = closestPeak;
+        this.currentPeak.origColor = this.currentPeak.material.color.getHex();
+        document.getElementById('graph-hover-label').innerText = "scan: " + closestPeak.scanID + ", m/z : " + closestPeak.mz.toFixed(2) + ", intensity: " + closestPeak.int.toFixed(2) + ", retention time: " + (closestPeak.rt/60).toFixed(4); 
+        closestPeak.material.color.setHex(0xffcf00);
+        this.renderer.render(this.scene, this.camera);
+    }
 
+    
+/*
  console.log(this.resizedCamera)
 	for ( var i = 0; i < 1; i++ ) {
         if (intersects[i].object.name == "peak"){
