@@ -114,6 +114,7 @@ MsGraph.prototype.plotPoints = function(points) {
 
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
+    console.log(point)
     // point: an array of the following values
     var id = point.ID;
     //var trace = point[1];
@@ -173,6 +174,7 @@ MsGraph.prototype.plotPoint = function(point) {
     drawObj.int = inten;
     drawObj.height = y;
     drawObj.name = "peak";
+    drawObj.scanID = point.SPECTRAID;
     //drawObj.trace = trace;
 
     this.linesArray.push(drawObj);
