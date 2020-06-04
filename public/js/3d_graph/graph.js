@@ -252,10 +252,11 @@ MsGraph.prototype.resizeCamera = function() {
         camera.top = vs / aspectRatio / 2;
         camera.bottom = vs / aspectRatio / -2;
     }
-
     // render the view to show the changes
     camera.updateProjectionMatrix();
     this.renderDelayed();
+
+    this.resizedCamera = camera;
 };
 
 // update labels and legend to reflect a new view range
