@@ -2,6 +2,7 @@
 //if it is near x axis, y axis, or else, adjust range accordingly
 MsGraph.prototype.zoomGraph = function(graph){
     graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
+    //graph.renderer.domElement.addEventListener( 'wheel', this.onZoom.bind(this), false );
 }
 MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
     this.linesArray = [];
@@ -17,26 +18,39 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
 
     this.updateViewRange(this.viewRange);
 }
+
 MsGraph.prototype.getMousePosition = function(event) {
     var el = this.renderer.domElement;
-    //console.log(el)
   // find mouse position, normalized to a [-1,1] in both x/y-axes on screen
-  var coord = {
+  //console.log("windowsize", window.innerHeight, window.innerWidth)
+ // console.log("clientWidthHeight: ", this.graphEl.clientWidth, this.graphEl.clientHeight);
+  //console.log("aspectRatio: ", this.renderer.getSize().width / this.renderer.getSize().height);
+  // console.log("resizedCamera", this.resizedCamera)
+  /*var coord = {
+    x: ((event.clientX) / this.graphEl.clientWidth)  * 2 - 1,
+    y: - ((event.clientY) / this.graphEl.clientHeight) * 2 + 1
+  };*/
+  coord = {
     x: ((event.clientX - el.offsetLeft) / el.offsetWidth)  * 2 - 1,
     y: - ((event.clientY - el.offsetTop) / el.offsetHeight) * 2 + 1
   };
   //console.log("offsetleft ", el.offsetLeft, " offsetTop ", el.offsetTop, " offsetWidth ", el.offsetWidth, " offsetHeight ", el.offsetHeight);
   var raycaster = new THREE.Raycaster();
-  raycaster.setFromCamera(coord, this.camera);
+  raycaster.setFromCamera(coord, this.resizedCamera);
 
   var pos = raycaster.ray.intersectPlane(this.graphPlane);
+
+  //console.log("pos ", pos);
+
   if (pos) {
     // convert world coordinates to graph-fractional coordinates
     pos.multiply(this.rangeTransform);
     pos.z = 1 - pos.z;
   }
+
   return pos;
 };
+
 MsGraph.prototype.onZoom = function(e){
     let mousePos = this.getMousePosition(e);
     let scaleFactor = 0;
@@ -44,10 +58,15 @@ MsGraph.prototype.onZoom = function(e){
     let newmzrange = this.viewRange.mzrange;
     let newrtrange = this.viewRange.rtrange;
 
+    let curmz = mousePos.x * this.viewRange.mzrange + this.viewRange.mzmin;
+    let currt = mousePos.z * this.viewRange.rtrange + this.viewRange.rtmin;
+
     e.preventDefault();
 	//e.stopPropagation();
 
-    console.log("mouse pos: ", mousePos.x, mousePos.z);
+    //console.log("mouse pos: ", mousePos.x, mousePos.z);
+   //console.log("mz and rt: ", curmz, currt/60)
+    //console.log("mzmin and rtmin", this.viewRange.mzmin, " ", this.viewRange.rtmin)
     //reset view range based on scroll up or down
     if (e.deltaY < 0) {
         scaleFactor = 0.75;
@@ -57,16 +76,16 @@ MsGraph.prototype.onZoom = function(e){
     }
 
     //figure out where the cursor is (near x axis, y axis, in the middle)
-    if (mousePos.x <= 0.1 && mousePos.x >= -0.1){//rt range adjust
-        console.log("rt axis zoom")
+    if (mousePos.x < 0.1 && mousePos.x > -0.1){//rt range adjust
+        //console.log("rt axis zoom")
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
-    else if (mousePos.z <= 0.1 && mousePos.z >= -0.1){//mz range adjust
-        console.log("mz axis zoom")
+    else if (mousePos.z < 0.1 && mousePos.z > -0.1){//mz range adjust
+        //console.log("mz axis zoom")
         newmzrange = this.viewRange.mzrange * scaleFactor;
     }
     else if(mousePos.x > 0.1 && mousePos.x <= 1.1 && mousePos.z > 0.1 && mousePos.z <= 1.1){//intensity adjust
-        console.log("itnensity zoom")
+       // console.log("itnensity zoom")
         this.adjustPeakHeight(scaleFactor);
         return;
     }
@@ -78,17 +97,14 @@ MsGraph.prototype.onZoom = function(e){
     if (newmzrange < 0.01){
         newmzrange = 0.01;
     }
-    // constrains points to within the graph bounds
-    let mzDist = Math.min(Math.max(mousePos.z, 0), 1);
-    let rtDist = Math.min(Math.max(mousePos.x, 0), 1);
 
-    let mzPoint = mzDist * this.viewRange.mzrange + this.viewRange.mzmin;;
-    let rtPoint = rtDist * this.viewRange.rtrange + this.viewRange.rtmin;
-    let newmzmin = (mzPoint) - (newmzrange / this.viewRange.mzrange) * (mzPoint - this.viewRange.mzmin);
-    let newrtmin = (rtPoint) - (newrtrange / this.viewRange.rtrange) * (rtPoint - this.viewRange.rtmin);
-    
-    //if min value goes below zero in rt or mz, set to 0
+    let mzscale = ((curmz - this.viewRange.mzmin)/(this.viewRange.mzmax - this.viewRange.mzmin));
+    let rtscale = ((currt - this.viewRange.rtmin)/(this.viewRange.rtmax - this.viewRange.rtmin));
 
+    let newmzmin = curmz - (mzscale * newmzrange);
+    let newrtmin = currt - (rtscale * newrtrange);
+
+    //if value goes below zero in rt or mz, set to 0
     if (newmzmin < 0){
         newmzmin = 0;
     }
