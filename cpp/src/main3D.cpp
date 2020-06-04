@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     } else if (strcmp(argv[2],"-r") == 0) {
         msreader.getScanRangeDB();
     } else if (strcmp(argv[2],"-f") == 0) {
-       //msreader.createDtabase();
-       msreader.createDtabasMultiLayer();
+       msreader.createDtabase();
+       //msreader.createDtabasMultiLayer();
     }
 }
