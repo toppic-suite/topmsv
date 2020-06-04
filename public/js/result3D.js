@@ -70,12 +70,18 @@ function loadPeakList1(scanID, prec_mz) {
                         var xhttpRT = new XMLHttpRequest();
                         xhttpRT.onreadystatechange = function () {
                             if (this.readyState == 4 && this.status == 200) {
-                                var rt = parseFloat(this.responseText);
+                                let rt = parseFloat(this.responseText);
+                                let minrt = rt - 7.5;
+                                let maxrt = rt + 7.5;
+
+                                if (minrt < 0){
+                                    minrt = 0;
+                                }
                                 if (envList1_g !== 0){
                                     let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                                    load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, 0, rt, true)
+                                    load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, true)
                                 }    
                             }
                         };    
@@ -134,35 +140,6 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz,true);
     xhttp.send();
 }
-/*
-function loadDataRangeByScan(callback, scanID, msGraph){
-    let fullDir = (document.getElementById("projectDir").value).split("/");
-
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
-    let response = {};
-
-    //scanID = ms1 scan ID
-
-    if (scanID !== '0') {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                peakList = JSON.parse(this.responseText);
-                //peakList = total peak list of scanID
-                //response["minmz"] = peakList[0].mz;
-                //response["minmz"] = peakList[0].mz;
-            }
-        };
-        xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-        xhttp.send();
-
-    }else{
-        alert("NULL");
-    }
-    callback(msGraph, response);//call load3dData
-
-}*/
 
 function init3dGraph(){
     graph3D.init();

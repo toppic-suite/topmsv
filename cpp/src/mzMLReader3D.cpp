@@ -106,14 +106,21 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
     "RETENTIONTIME   REAL     NOT NULL);");   <--------- PEAKS table */
 
   Grid GRID;//contains information on n, m in n*m grid
-  Range RANGE;
+  //Range RANGE;
 
   mzMLReader3D mzmlReader3D;
   
+  std::cout << "running callbackConvertData" << std::endl;
+
+  std::cout<< "RANGE.MZMAX: " << RANGE.MZMAX << std::endl;
+  std::cout<< "RANGE.RTMAX: " << RANGE.RTMAX << std::endl;
+
   /*get the max min mz and max min rt, to get the range of mz and rt
   then multiply the data by target range/ current range*/   
   double mzRange = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
   double rtRange = RANGE.RTMAX - RANGE.RTMIN;//range of rt in mzML
+
+  std::cout << "mzRange and rtRange assigned" << std::endl;
 
   int xIndex = ceil(std::stod(argv[2])/(GRID.LEVEL5[0]/mzRange));
   int yIndex = ceil(std::stod(argv[4])/(GRID.LEVEL5[1]/rtRange));
@@ -134,6 +141,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
       GRID.GRIDBLOCKS[xIndex][yIndex][1] = std::stod(argv[3]);
     }
   }
+  std::cout << "callbackConvertData finished" << std::endl;
   //GRIDBLOCKS now should be having one peak for each grid, unless there was no peak in that grid mz and rt range
   return 0;
 }
@@ -550,6 +558,7 @@ Use only one table.
 void mzMLReader3D::insertPeakDataToGridBlocks(){
   std::string sqlstr = "SELECT * FROM PEAKS;";
   sql = (char *)sqlstr.c_str();
+  std::cout << "running insertPeakDataToGrid" << std::endl;
   rc = sqlite3_exec(db, sql, callbackConvertData, db, &zErrMsg);//after this function, gridBlocks has a peak for each grid
   if( rc != SQLITE_OK ){
     std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
