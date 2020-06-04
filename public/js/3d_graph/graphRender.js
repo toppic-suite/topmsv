@@ -163,6 +163,7 @@ MsGraph.prototype.plotPoint = function(point) {
         pinhead.position.set(x, y, z);
         pinhead.rotateX(-Math.PI/2);
         line.pinhead = pinhead;
+        //line.name = ("peak");
 
         drawObj = line;
     }
@@ -171,6 +172,7 @@ MsGraph.prototype.plotPoint = function(point) {
     drawObj.rt = rt;
     drawObj.int = inten;
     drawObj.height = y;
+    drawObj.name = "peak";
     //drawObj.trace = trace;
 
     this.linesArray.push(drawObj);
@@ -282,7 +284,7 @@ MsGraph.prototype.repositionPlot = function(r) {
             text = MsGraph.roundTo(mz, self.ROUND_MZ);
             zoffset = 2.0;
         } else if (which == "rt") {
-            text = MsGraph.roundTo(rt, self.ROUND_RT);
+            text = MsGraph.roundTo(rt/60, self.ROUND_RT);
             xoffset = -1.5;
             zoffset = 0.2;
         }
@@ -338,24 +340,6 @@ MsGraph.prototype.repositionPlot = function(r) {
 
     this.redrawRuler();
     this.redrawGuard();
-};
-
-// updates the location of the drag-to-zoom rectangle
-MsGraph.prototype.updateDragZoomRect = function(xmin, xmax, zmin, zmax) {
-    var geo = this.dragZoomRect.geometry;
-    geo.vertices.splice(0);
-    
-    var vMinMin = new THREE.Vector3(xmin, 0, zmin);
-    var vMinMax = new THREE.Vector3(xmin, 0, zmax);
-    var vMaxMax = new THREE.Vector3(xmax, 0, zmax);
-    var vMaxMin = new THREE.Vector3(xmax, 0, zmin);
-    geo.vertices.push(
-        vMinMin.clone(), vMinMax.clone(), vMinMax.clone(), vMaxMax.clone(),
-        vMaxMax.clone(), vMaxMin.clone(), vMaxMin.clone(), vMinMin.clone()
-    );
-    
-    geo.verticesNeedUpdate = true;
-    this.renderImmediate();
 };
 
 // draws the ruler with the given gap between ticks at the given mz and rt

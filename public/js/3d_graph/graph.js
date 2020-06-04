@@ -63,6 +63,9 @@ MsGraph.prototype.init = function(){
     //enable panning
     this.panGraph(this);
 
+    //enable hover over peaks
+    this.hoverGraph(this);
+
     // camera
     var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
     camera.position.set(15, 15, 30);
@@ -77,13 +80,8 @@ MsGraph.prototype.init = function(){
     graphControls.mouseButtons = { ORBIT: THREE.MOUSE.RIGHT };
     graphControls.addEventListener( 'change', this.renderImmediate.bind(this) );
     graphControls.target.set(this.GRID_RANGE/2, 0, this.GRID_RANGE/2); // focus on the center of the grid
-    //graphControls.enableZoom = true;
     graphControls.enablePan = false;
     graphControls.enabled = true;
-
-    // keyboard/mouse shortcuts
-    //this.dataControls = new DataControls(this);
-    //this.dataControls.enabled = true;
 
     // make grouping constructs
     var gridgroup = new THREE.Group();
@@ -120,17 +118,6 @@ MsGraph.prototype.init = function(){
     gridgroup.add(surface);
     gridgroup.add(this.drawGrid());
 
-	// drag-to-zoom rectangle
-	/*
-    var dzRectGeo = new THREE.Geometry();
-    for (var i=0; i<8; i++) { dzRectGeo.vertices.push(new THREE.Vector3()); }
-    var dzRectMat = new THREE.LineBasicMaterial({ color: 0xff8000 });
-    this.dragZoomRect = new THREE.LineSegments(dzRectGeo, dzRectMat);
-    MsGraph.setOnTop(this.dragZoomRect);
-    this.dragZoomRect.scale.set(this.GRID_RANGE, 1, -this.GRID_RANGE);
-    this.dragZoomRect.position.set(0, 0, this.GRID_RANGE);
-    gridgroup.add(this.dragZoomRect);
-*/
     this.ruler = new THREE.Group();
     this.ruler.visible = false;
     this.rulerGroup.add(this.ruler);
@@ -141,7 +128,7 @@ MsGraph.prototype.init = function(){
     scene.add(gridgroup);
     scene.add(this.datagroup);
     scene.add(this.labelgroup);
-   // scene.add(this.ticklabelgroup);
+    scene.add(this.ticklabelgroup);
 
     this.updateViewRange(this.dataRange);
 
@@ -157,7 +144,6 @@ MsGraph.prototype.init = function(){
 
 // returns the mouse position as a Vector3 as a fraction of the viewing window
 // returns null if the mouse is outside of the plane of the graph
-
 
 // converts two vectors in fraction of visible space (e.g. from getMousePosition)
 // to an {mzmin,mzmax,rtmin,rtmax} object based on current view range
@@ -371,16 +357,6 @@ MsGraph.prototype.gotoTotalIonCurrent = function() {
     this.camera.position.set(30, 0, this.GRID_RANGE / 2);
     this.renderImmediate();
 };
-/*
-// calculates the mz,rt coordinates of the center of the graph
-MsGraph.prototype.getMidPoint = function() {
-    var vr = this.viewRange;
-    var mz = (vr.mzmin + vr.mzmax) / 2;
-    var rt = (vr.rtmin + vr.rtmax) / 2;
-
-    // round to 3 decimal places
-    return { mz: MsGraph.roundTo(mz, 3), rt: MsGraph.roundTo(rt, 3) };
-};*/
 
 /******** RENDERING AND DRAWING FUNCTIONS *****/
 
