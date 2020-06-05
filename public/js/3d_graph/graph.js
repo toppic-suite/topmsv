@@ -40,6 +40,9 @@ function MsGraph(containerEl, graphEl) {
     this.ROUND_INT = 3;
 
     this.currentData; //all data for current scan (so that no need to load all back when moving ms1 graph)
+
+    this.mzAxisZoom = false;
+    this.rtAxisZoom = false;
 }
 
 /******** SETUP FUNCTIONS ******/
@@ -54,6 +57,7 @@ MsGraph.prototype.init = function(){
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize(window.innerWidth, window.innerHeight * 0.3);
     renderer.setClearColor(0xF5F5F5, 0);
+    //renderer.setClearColor(0xF5F5F5, 1);
     this.graphEl.appendChild(renderer.domElement);
 
     var el = this.renderer.domElement;
@@ -65,17 +69,20 @@ MsGraph.prototype.init = function(){
     this.panGraph(this);
 
     //enable hover over peaks
-    this.hoverGraph(this);
+    //this.hoverGraph(this);
 
     // camera
-    var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
-    
+   // var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
+    var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
     camera.position.set(15, 15, 30);
     this.prevCameraPos = camera.position.clone();
 
     // window resizing
     window.addEventListener("resize", this.resizeCamera.bind(this));
     this.resizeCamera();
+
+    //set up threeEx.domevents event listener
+    this.domEvents = new THREEx.DomEvents(this.resizedCamera, this.renderer.domElement)
 
     // right-click rotation controls
     var graphControls = this.graphControls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -106,7 +113,7 @@ MsGraph.prototype.init = function(){
 
     this.datagroup.add(this.plotGroup);
     this.datagroup.add(this.pinGroup);
-    this.datagroup.add(this.edgesGroup);
+    //this.datagroup.add(this.edgesGroup);
     this.datagroup.add(this.ticksGroup);
     this.datagroup.add(this.markerGroup);
     this.datagroup.add(this.rulerGroup);
@@ -120,12 +127,50 @@ MsGraph.prototype.init = function(){
     gridgroup.add(surface);
     gridgroup.add(this.drawGrid());
 
+    //add two invisible lines on top of rt and mz axis for zooming
+    var axisMat = new THREE.LineBasicMaterial({color: 0x0000ff, linewidth:100});
+    
+    var rtpoints = [];
+    rtpoints.push( new THREE.Vector3( 0, 0, this.GRID_RANGE) );
+    rtpoints.push( new THREE.Vector3( 0, 0, 0 ) );
+    
+    var mzpoints = [];
+    mzpoints.push( new THREE.Vector3( 0, 0, this.GRID_RANGE) );
+    mzpoints.push( new THREE.Vector3( this.GRID_RANGE, 0, this.GRID_RANGE) );
+
+    var mzGeo = new THREE.BufferGeometry().setFromPoints( mzpoints );
+    var rtGeo = new THREE.BufferGeometry().setFromPoints( rtpoints );
+
+    var mzLine = new THREE.Line( mzGeo, axisMat );
+    var rtLine = new THREE.Line( rtGeo, axisMat );
+
+   // mzLine.visible = false;
+  //  rtLine.visible = false;
+
+    this.domEvents.addEventListener(mzLine, 'mouseover', (function(event){
+        //console.log("over mz")
+        this.mzAxisZoom = true;
+    }).bind(this), false);
+
+    this.domEvents.addEventListener(rtLine, 'mouseover', (function(event){
+        //console.log("over rt")
+        this.rtAxisZoom = true;
+    }).bind(this), false);
+
+    this.domEvents.addEventListener(mzLine, 'mouseout', (function(event){
+        this.mzAxisZoom = false;
+    }).bind(this), false);
+
+    this.domEvents.addEventListener(rtLine, 'mouseout', (function(event){
+        this.rtAxisZoom = false;
+    }).bind(this), false);
+
     this.ruler = new THREE.Group();
     this.ruler.visible = false;
     this.rulerGroup.add(this.ruler);
 
     gridgroup.add(this.guardGroup);
-
+    scene.add(mzLine, rtLine);
     // add objects to the scene
     scene.add(gridgroup);
     scene.add(this.datagroup);

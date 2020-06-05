@@ -68,10 +68,6 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
 
     this.getInteRange(this.currentData);
 
-    //console.log(this.currentData)
-    //console.log(this.dataRange)
-    //console.log(this.ticklabelgroup)
-
     this.updateViewRange(this.dataRange);
 
     let zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
@@ -176,13 +172,22 @@ MsGraph.prototype.plotPoint = function(point) {
     drawObj.name = "peak";
     drawObj.scanID = point.SPECTRAID;
     //drawObj.trace = trace;
+/*
+    //add event listener for each peak
+    this.domEvents.addEventListener(drawObj, 'mouseover', (function(e){
+        this.onMouseOver(e.target);
+    }).bind(this), false);
 
+    this.domEvents.addEventListener(drawObj, 'mouseout', (function(e){
+        this.onMouseOut(e.target);
+    }).bind(this), false);
+*/
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
     if (!this.useCylinders) {
         this.pinGroup.add(drawObj.pinhead);
     }
-    //console.log(inten)
+
 };
 
 // scales and positions the plot depending on the new viewing range
