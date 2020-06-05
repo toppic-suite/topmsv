@@ -114,7 +114,7 @@ MsGraph.prototype.plotPoints = function(points) {
 
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
-    console.log(point)
+    //console.log(point)
     // point: an array of the following values
     var id = point.ID;
     //var trace = point[1];
