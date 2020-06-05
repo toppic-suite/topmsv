@@ -23,12 +23,8 @@ MsGraph.prototype.getMousePosition = function(event) {
         x: ((event.clientX - el.offsetLeft) / el.offsetWidth)  * 2 - 1,
         y: - ((event.clientY - el.offsetTop) / el.offsetHeight) * 2 + 1
     };
-
-   // console.log("mouse pos raw ", event.clientX, event.clientY)
-
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(coord, this.resizedCamera);
-    //raycaster.setFromCamera(coord, this.camera);
 
     var pos = raycaster.ray.intersectPlane(this.graphPlane);
 
@@ -50,11 +46,10 @@ MsGraph.prototype.onZoom = function(e){
     let curmz = mousePos.x * this.viewRange.mzrange + this.viewRange.mzmin;//current mz and rt that has a cursor pointed to
     let currt = mousePos.z * this.viewRange.rtrange + this.viewRange.rtmin;
 
-    e.preventDefault();
-	//e.stopPropagation();
+    e.preventDefault();//disable scroll of browser
 
     //console.log("mouse pos: ", mousePos.x, mousePos.z);
-    console.log("mz and rt: ", curmz, currt/60)
+    //console.log("mz and rt: ", curmz, currt/60)
     //console.log("mzmin and rtmin", this.viewRange.mzmin, " ", this.viewRange.rtmin)
 
     //reset view range based on scroll up or down
@@ -67,15 +62,15 @@ MsGraph.prototype.onZoom = function(e){
 
     //figure out where the cursor is (near x axis, y axis, in the middle)
     if (mousePos.x <= 0.15 && mousePos.x >= -0.15){//rt range adjust
-        console.log("rt axis zoom")
+        //console.log("rt axis zoom")
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
     else if (mousePos.z <= 0.15 && mousePos.z >= -0.15){//mz range adjust
-        console.log("mz axis zoom")
+        //console.log("mz axis zoom")
         newmzrange = this.viewRange.mzrange * scaleFactor;
     }
     else if(mousePos.x > 0.1 && mousePos.x <= 1.1 && mousePos.z > 0.1 && mousePos.z <= 1.1){//intensity adjust
-        console.log("itnensity zoom")
+        //console.log("itnensity zoom")
         this.adjustPeakHeight(scaleFactor);
         return;
     }
@@ -91,7 +86,7 @@ MsGraph.prototype.onZoom = function(e){
 
     let newmzmin = curmz - (mzscale * newmzrange);//the closer curmz or currt is to the minmz and minrt, the less change in min value
     let newrtmin = currt - (rtscale * newrtrange);
-    //console.log(curmz, mzscale * newmzrange, newmzmin)
+
     //if value goes below zero in rt or mz, set to 0
     if (newmzmin < 0){
         newmzmin = 0;
