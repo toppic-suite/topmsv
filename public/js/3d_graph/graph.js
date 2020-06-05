@@ -47,15 +47,16 @@ function MsGraph(containerEl, graphEl) {
 // creates the graph scene and sets it up. Should be called
 // after the document is ready and all javascript has loaded
 MsGraph.prototype.init = function(){
-
     var scene = this.scene = new THREE.Scene();
 
     // rendering element
-    var renderer = this.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true } );
+    var renderer = this.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize(window.innerWidth, window.innerHeight * 0.3);
     renderer.setClearColor(0xF5F5F5, 0);
     this.graphEl.appendChild(renderer.domElement);
+
+    var el = this.renderer.domElement;
 
     //enable zoom
     this.zoomGraph(this);
@@ -67,7 +68,8 @@ MsGraph.prototype.init = function(){
     this.hoverGraph(this);
 
     // camera
-    var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
+    var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
+    
     camera.position.set(15, 15, 30);
     this.prevCameraPos = camera.position.clone();
 
@@ -481,7 +483,7 @@ MsGraph.prototype.drawGrid = function() {
     }
 
     gridgeo.vertices.push(new THREE.Vector3(0, y, this.GRID_RANGE));
-    gridgeo.vertices.push(new THREE.Vector3(0, this.GRID_RANGE_VERTICAL, this.GRID_RANGE));
+    gridgeo.vertices.push(new THREE.Vector3(0, 0, this.GRID_RANGE));
 
     return new THREE.LineSegments(gridgeo, gridmaterial);
 };
