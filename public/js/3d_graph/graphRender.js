@@ -156,10 +156,10 @@ MsGraph.prototype.plotPoint = function(point) {
         line.position.set(mz, 0, rt);
 
         // create the pinhead
-        var pinhead = new THREE.Mesh(MsGraph.PIN_GEO, meshmat);
+       /* var pinhead = new THREE.Mesh(MsGraph.PIN_GEO, meshmat);
         pinhead.position.set(x, y, z);
         pinhead.rotateX(-Math.PI/2);
-        line.pinhead = pinhead;
+        line.pinhead = pinhead;*/
         //line.name = ("peak");
 
         drawObj = line;
@@ -185,7 +185,7 @@ MsGraph.prototype.plotPoint = function(point) {
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
     if (!this.useCylinders) {
-        this.pinGroup.add(drawObj.pinhead);
+        //this.pinGroup.add(drawObj.pinhead);
     }
 
 };
