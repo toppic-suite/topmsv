@@ -171,6 +171,7 @@ MsGraph.prototype.plotPoint = function(point) {
     drawObj.height = y;
     drawObj.name = "peak";
     drawObj.scanID = point.SPECTRAID;
+
     //drawObj.trace = trace;
 /*
     //add event listener for each peak
@@ -215,11 +216,11 @@ MsGraph.prototype.repositionPlot = function(r) {
     this.markerGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
     this.plotGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
     // on the pinheads only, rt is the y axis because of rotation
-    this.pinGroup.children.forEach(function(p) { p.scale.set(mz_stretch, rt_stretch, 1); });
+    //this.pinGroup.children.forEach(function(p) { p.scale.set(mz_stretch, rt_stretch, 1); });
 
     // update the set of visible points
     var nVisible = 0;
-    var intmin = Infinity, intmax = 0;
+    var intmin = 0, intmax = 0;
     this.plotGroup.children.forEach(function(p) {
         p.visible = false;
         if (p.mz >= r.mzmin - 1e-4 && p.mz <= r.mzmax + 1e-4 && p.rt >= r.rtmin - 1e-4 && p.rt <= r.rtmax + 1e-4) {
@@ -227,9 +228,6 @@ MsGraph.prototype.repositionPlot = function(r) {
             p.visible = true;
             intmin = Math.min(intmin, p.int);
             intmax = Math.max(intmax, p.int);
-        }
-        if (p.pinhead) {
-            p.pinhead.visible = p.visible;
         }
     }, this);
     this.markerGroup.children.forEach(function(m) {
@@ -242,7 +240,7 @@ MsGraph.prototype.repositionPlot = function(r) {
 
     r.intmin = intmin;
     r.intmax = intmax;
-
+    
     // update edge indicators
     var edgesGroup = this.edgesGroup;
     var edgeMaterial = new THREE.LineBasicMaterial({ color: "red" });

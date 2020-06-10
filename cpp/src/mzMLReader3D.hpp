@@ -104,7 +104,7 @@ public:
 	int RT_GROUP5;
 
 	void insertPeakDataToGridBlocks();
-	void insertDataLayerTable(int layerNum);
+	void insertDataLayerTable(int layerNum, Range range);
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);
 	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
