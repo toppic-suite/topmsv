@@ -106,21 +106,20 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
     "RETENTIONTIME   REAL     NOT NULL);");   <--------- PEAKS table */
 
   Grid GRID;//contains information on n, m in n*m grid
-  //Range RANGE;
 
   mzMLReader3D mzmlReader3D;
   
   std::cout << "running callbackConvertData" << std::endl;
 
-  std::cout<< "RANGE.MZMAX: " << RANGE.MZMAX << std::endl;
-  std::cout<< "RANGE.RTMAX: " << RANGE.RTMAX << std::endl;
+  //std::cout<< "RANGE.MZMAX: " << RANGE.MZMAX << std::endl;
+  //std::cout<< "RANGE.RTMAX: " << RANGE.RTMAX << std::endl;
 
   /*get the max min mz and max min rt, to get the range of mz and rt
   then multiply the data by target range/ current range*/   
   double mzRange = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
   double rtRange = RANGE.RTMAX - RANGE.RTMIN;//range of rt in mzML
 
-  std::cout << "mzRange and rtRange assigned" << std::endl;
+  //std::cout << "mzRange and rtRange assigned" << std::endl;
 
   int xIndex = ceil(std::stod(argv[2])/(GRID.LEVEL5[0]/mzRange));
   int yIndex = ceil(std::stod(argv[4])/(GRID.LEVEL5[1]/rtRange));
@@ -580,7 +579,6 @@ Use only one table.
 void mzMLReader3D::insertPeakDataToGridBlocks(){
   std::string sqlstr = "SELECT * FROM PEAKS;";
   sql = (char *)sqlstr.c_str();
-  std::cout << "running insertPeakDataToGrid" << std::endl;
   rc = sqlite3_exec(db, sql, callbackConvertData, db, &zErrMsg);//after this function, gridBlocks has a peak for each grid
   if( rc != SQLITE_OK ){
     std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
@@ -589,11 +587,16 @@ void mzMLReader3D::insertPeakDataToGridBlocks(){
     // std::cout << "Operation done successfully" << std::endl;
   }
 }
-void mzMLReader3D::insertDataLayerTable(int layerNum){
+void mzMLReader3D::insertDataLayerTable(int layerNum, Range range){
+  //set mz, rt range 
+  RANGE.MZMIN = range.MZMIN;
+  RANGE.MZMAX = range.MZMAX;
+  RANGE.RTMIN = range.RTMIN;
+  RANGE.RTMAX = range.RTMAX;
+  
   insertPeakDataToGridBlocks();
   //check if vector is still there
   Grid GRID;
-
   std::cout << "grid block size : " << GRID.GRIDBLOCKS.size() << std::endl;
   for (int i = 0; i < GRID.GRIDBLOCKS.size(); i++){
     for (int h = 0; i < GRID.GRIDBLOCKS[i].size(); h++){
@@ -831,21 +834,21 @@ void mzMLReader3D::creatLayersTable() {
     t1 = clock();
     beginTransaction();
     createLayerTable(num2str(i));
-    openInsertLayerStmt(num2str(i));
+   /* openInsertLayerStmt(num2str(i));
     for (int j = 0; j < n; j++) {
       for (int k = 0; k < n; k++) {
         // std::cout << "Inserting region <" << j << "," << k << "> for layer " << i << " <" << n << "," << n << ">" << std::endl;
         insertPeaksLayerStmt(origin, j, k, mzsize, rtsize);
       }
     }
-    closeInsertLayerStmt();
+    closeInsertLayerStmt();*/
     endTransaction();
     std::cout <<"InsertLayer Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
     t1 = clock();
-    createIndexLayerTable(num2str(i));
+    //createIndexLayerTable(num2str(i));
     std::cout <<"CreateIndexLayer Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
     origin = num2str(i);
-    // std::cout << "Layer " << i << " table created." << std::endl;
+    //std::cout << "Layer " << i << " table created." << std::endl;
   }
 };
 void mzMLReader3D::getConfig() {

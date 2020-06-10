@@ -357,8 +357,8 @@ void msReader3D::getRangeFromRaw() {
     }
   }
   RANGE.COUNT = count;
-  std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
-  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
+  //std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
+  //std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
 }
 void msReader3D::createDtabaseOneTable() { //stmt
   clock_t t1 = clock();
@@ -598,12 +598,13 @@ void msReader3D::createDtabasMultiLayer() {
   }
  
   //up to here, same as current code for creating 2d db file 
-  
+  std::cout << "RANGE.MZMIN : " << RANGE.MZMIN << ", RANGE.MZMAX : " << RANGE.MZMAX << ", RANGE.RTMIN : " << RANGE.RTMIN << " RANGE.RTMAX: " << RANGE.RTMAX
+  << ", RANGE.INTMIN : " << RANGE.INTMIN << ", RANGE.INTMAX : " << RANGE.INTMAX << std::endl;
+
   //create peaks0, peaks1.. tables
   databaseReader.creatLayersTable();
-
   //add data to peaks0, peaks1.. tables
-  databaseReader.insertDataLayerTable(5);
+  databaseReader.insertDataLayerTable(5, RANGE);
 }
 
 void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {

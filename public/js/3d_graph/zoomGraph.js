@@ -8,7 +8,6 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
 
     for (let i = 0; i < this.currentData.length; i++){
         this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * scaleFactor;//multiply intensity by scaleFactor
-
         this.plotPoint(this.currentData[i]);
     }
     this.viewRange["intscale"] = this.viewRange["intscale"] + scaleFactor - 1;//because default value is 1, deduct 1 to start from 0.
@@ -26,8 +25,7 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     let curmz = mousePos.x * this.viewRange.mzrange + this.viewRange.mzmin;//current mz and rt that has a cursor pointed to
     let currt = mousePos.z * this.viewRange.rtrange + this.viewRange.rtmin;
 
-    //console.log(mousePos.x, mousePos.z) 
-    //console.log(curmz, currt/60)
+    //console.log(curmz, currt/60);
 
     //reset view range based on scroll up or down
     if (e.deltaY < 0) {
@@ -39,11 +37,11 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
 
     //figure out where the cursor is (near x axis, y axis)
     if (axisName == "rt"){
-        console.log("rt axis zoom")
+       // console.log("rt axis zoom")
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
     else if (axisName == "mz"){//mz range adjust
-        console.log("mz axis zoom")
+        //console.log("mz axis zoom")
         newmzrange = this.viewRange.mzrange * scaleFactor;
     }
 
@@ -79,28 +77,26 @@ MsGraph.prototype.getMousePosition = function(event) {
         x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
         y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
     };
-    //console.log("coord: ", coord)
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(coord, this.resizedCamera);
 
     var pos = raycaster.ray.intersectPlane(this.graphPlane);
-
+    console.log("before ", pos)
     if (pos) {
     //convert world coordinates to graph-fractional coordinates
         pos.multiply(this.rangeTransform);
         pos.z = 1 - pos.z;
     }
+    console.log("after" , pos)
     return pos;
 };
 MsGraph.prototype.onZoom = function(e){
     e.preventDefault();//disable scroll of browser
 
     if (this.mzAxisZoom){
-        console.log("on mz axis")
         this.onZoomFromEventListener(e, "mz");
     }
     else if(this.rtAxisZoom){
-        console.log("on rt axis")
         this.onZoomFromEventListener(e, "rt");
     }
     else{
