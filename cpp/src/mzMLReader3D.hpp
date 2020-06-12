@@ -34,17 +34,29 @@ struct Range{
 
 //value of n and m in n * m grid on graph
 //ratio is 10:3
-struct Grid{
+/*struct Grid{
 	vector<int> LEVEL0 = {100, 30};//3000 peaks
 	vector<int> LEVEL1 = {250, 75};//18750 peaks
 	vector<int> LEVEL2 = {500, 150};//75000 peaks
 	vector<int> LEVEL3 = {1000, 300};//300000 peaks
 	vector<int> LEVEL4 = {1600, 480};//768000 peaks
 	//vector<int> LEVEL5 = {2500, 750};//1875000 peaks
-	vector<int> LEVEL5 = {100, 30};//for test
+	
+  	static vector<vector<vector<double> > > GRIDBLOCKS;//3d vector
+};*/
+
+struct Grid{//for TEST
+	vector<int> LEVEL0 = {10, 3};//3000 peaks
+	vector<int> LEVEL1 = {25, 7};//18750 peaks
+	vector<int> LEVEL2 = {50, 15};//75000 peaks
+	vector<int> LEVEL3 = {100, 30};//300000 peaks
+	vector<int> LEVEL4 = {160, 48};//768000 peaks
+	vector<int> LEVEL5 = {250, 75};//1875000 peaks
+	
 	/*3d vector*/
   	static vector<vector<vector<double> > > GRIDBLOCKS;
 };
+
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
@@ -105,7 +117,7 @@ public:
 	int RT_GROUP5;
 
 	void insertPeakDataToGridBlocks();
-	void insertDataLayerTable(int layerNum, Range range);
+	void insertDataLayerTable(Range range);
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);
 	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
