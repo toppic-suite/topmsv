@@ -25,7 +25,7 @@ struct Range{
   double INTMIN;
   double INTMAX;
   int COUNT;
-  int LAYERCOUNT;
+  int LAYERCOUNT = 5;
   int MAXRETURN = 5000;
   vector<double> MZSIZE;
   vector<double> RTSIZE;
@@ -40,8 +40,8 @@ struct Grid{
 	vector<int> LEVEL2 = {500, 150};//75000 peaks
 	vector<int> LEVEL3 = {1000, 300};//300000 peaks
 	vector<int> LEVEL4 = {1600, 480};//768000 peaks
-	vector<int> LEVEL5 = {2500, 750};//1875000 peaks
-	
+	//vector<int> LEVEL5 = {2500, 750};//1875000 peaks
+	vector<int> LEVEL5 = {100, 30};//for test
 	/*3d vector*/
   	static vector<vector<vector<double> > > GRIDBLOCKS;
 };
@@ -80,6 +80,7 @@ public:
 	void updateSpStmt(int currentID, int prevID);
 	void updateSpSumStmt(int currentID, double peaksInteSum);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
+	void createIndexOnIdOnly();
 	void createIndex();
 
 	double MZ_GROUP1_SIZE;
