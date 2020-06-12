@@ -1,6 +1,7 @@
 #include "msReader3D.hpp" 
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 bool cmpPoints(Point p1, Point p2) {
   return p1.inten > p2.inten;
@@ -260,15 +261,6 @@ void msReader3D::createDtabase() { //stmt
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-
-  ofstream rangeData ("rangeData.txt");
-  if (rangeData.is_open()){
-    rangeData << RANGE.MZMIN << "\t" << RANGE.MZMAX << "\t" << RANGE.RTMIN << "\t" << RANGE.RTMAX << "\t"<< RANGE.INTMIN << "\t" << RANGE.INTMAX;
-    rangeData.close();
-  }
-  else{
-    std::cout << "cannot create rangeData.txt" << std::endl;
-  }
 }
 
 // get range of scan from database
@@ -357,8 +349,8 @@ void msReader3D::getRangeFromRaw() {
     }
   }
   RANGE.COUNT = count;
-  //std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
-  //std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
+  std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
+  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
 }
 void msReader3D::createDtabaseOneTable() { //stmt
   clock_t t1 = clock();
@@ -537,6 +529,14 @@ void msReader3D::createDtabasMultiLayer() {
   int levelOneScanID = 0;
   int levelTwoScanID = 0;
   double peaksInteSum = 0.000;
+
+  double rtmin = DBL_MAX;
+  double rtmax = 0;
+  double mzmin = DBL_MAX;
+  double mzmax = 0;
+  double intemin = DBL_MAX;
+  double intemax = 0;
+
   for(int i = 0; i < spSize; i++){
     // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
       SpectrumPtr s = sl->spectrum(i, true); // read with binary data
@@ -556,8 +556,18 @@ void msReader3D::createDtabasMultiLayer() {
         count++ ;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
         databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
-      }
 
+        //compare with min max values to find overall min max value
+        if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
+        if (pairs[j].mz > mzmax){mzmax = pairs[j].mz;}
+        if (pairs[j].intensity < intemin){intemin = pairs[j].intensity;}
+        if (pairs[j].intensity > intemax){intemax = pairs[j].intensity;}
+
+      }
+      //compare with min max values to find overall min max value
+      if (retentionTime < rtmin){rtmin = retentionTime;}
+      if (retentionTime > rtmax){rtmax = retentionTime;}
+      
       if (scanLevel == 2) {
         double prec_mz;
         int prec_charge;
@@ -598,13 +608,31 @@ void msReader3D::createDtabasMultiLayer() {
   }
  
   //up to here, same as current code for creating 2d db file 
-  std::cout << "RANGE.MZMIN : " << RANGE.MZMIN << ", RANGE.MZMAX : " << RANGE.MZMAX << ", RANGE.RTMIN : " << RANGE.RTMIN << " RANGE.RTMAX: " << RANGE.RTMAX
-  << ", RANGE.INTMIN : " << RANGE.INTMIN << ", RANGE.INTMAX : " << RANGE.INTMAX << std::endl;
+
+  //store min max values in RANGE
+  RANGE.MZMAX = mzmax;
+  RANGE.MZMIN = mzmin;
+  RANGE.INTMAX = intemax;
+  RANGE.INTMIN = intemin;
+  RANGE.RTMAX = rtmax;
+  RANGE.RTMIN = rtmin;
+
+  //create index on peak id (for copying to each layer later)
+  databaseReader.createIndexOnIdOnly();
+
+  std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
 
   //create peaks0, peaks1.. tables
   databaseReader.creatLayersTable();
+  std::cout << "tables create finished " << std::endl;
   //add data to peaks0, peaks1.. tables
   databaseReader.insertDataLayerTable(5, RANGE);
+  std::cout << "mzMLReader3D finished" << std::endl;
+
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+  std::cout << "Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 }
 
 void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
