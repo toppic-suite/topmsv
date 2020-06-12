@@ -622,12 +622,13 @@ void msReader3D::createDtabasMultiLayer() {
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-
   //create peaks0, peaks1.. tables
   databaseReader.creatLayersTable();
   std::cout << "tables create finished " << std::endl;
   //add data to peaks0, peaks1.. tables
-  databaseReader.insertDataLayerTable(5, RANGE);
+  databaseReader.insertDataLayerTable(RANGE);
+  
+  
   std::cout << "mzMLReader3D finished" << std::endl;
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
