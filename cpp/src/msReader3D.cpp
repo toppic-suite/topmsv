@@ -606,7 +606,8 @@ void msReader3D::createDtabasMultiLayer() {
         levelOneScanID = currentScanID;
       }
   }
- 
+  databaseReader.endTransaction();
+  
   //up to here, same as current code for creating 2d db file 
 
   //store min max values in RANGE
@@ -627,7 +628,8 @@ void msReader3D::createDtabasMultiLayer() {
   std::cout << "tables create finished " << std::endl;
   //add data to peaks0, peaks1.. tables
   databaseReader.insertDataLayerTable(RANGE);
-  
+  //create indices for multi tables
+  databaseReader.createIndexLayerTable(RANGE.LAYERCOUNT);
   
   std::cout << "mzMLReader3D finished" << std::endl;
 

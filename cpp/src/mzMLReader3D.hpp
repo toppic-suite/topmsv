@@ -46,12 +46,12 @@ struct Range{
 };*/
 
 struct Grid{//for TEST
-	vector<int> LEVEL0 = {10, 3};//3000 peaks
-	vector<int> LEVEL1 = {25, 7};//18750 peaks
-	vector<int> LEVEL2 = {50, 15};//75000 peaks
-	vector<int> LEVEL3 = {100, 30};//300000 peaks
-	vector<int> LEVEL4 = {160, 48};//768000 peaks
-	vector<int> LEVEL5 = {250, 75};//1875000 peaks
+	vector<int> LEVEL0 = {10, 3};//30 peaks
+	vector<int> LEVEL1 = {25, 7};//175 peaks
+	vector<int> LEVEL2 = {20, 10};//750 peaks
+	vector<int> LEVEL3 = {25, 10};//3000 peaks
+	vector<int> LEVEL4 = {30, 10};//7680 peaks
+	vector<int> LEVEL5 = {40, 10};//18750 peaks
 	
 	/*3d vector*/
   	static vector<vector<vector<double> > > GRIDBLOCKS;
@@ -129,7 +129,7 @@ public:
 	void closeInsertStmtOneTable();
 	void insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz, double intensity, double retentionTime);
 	void insertConfigOneTable();
-	void createIndexLayerTable(std::string num);
+	void createIndexLayerTable(int layerCount);
 	void createIndexOneTable();
 	void creatLayersTable();
 	void createLayerTable(std::string num);
