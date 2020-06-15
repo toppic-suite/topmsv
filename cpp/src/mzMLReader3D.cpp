@@ -932,7 +932,7 @@ void mzMLReader3D::insertPeaksLayerStmt(std::string origin, int j, int k, double
 void mzMLReader3D::createIndexLayerTable(int layerCount) {
   //for all layer tables, create index
   for (int i = 0; i <= layerCount; i++){
-    std::string sqlstr = "CREATE INDEX intensity_index ON PEAKS" + num2str(layerCount) + " (SPECTRAID);";
+    std::string sqlstr = "CREATE INDEX intensity_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (SPECTRAID);";
     sql = (char *)sqlstr.c_str();
     rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK ){
@@ -943,7 +943,7 @@ void mzMLReader3D::createIndexLayerTable(int layerCount) {
       // fprintf(stdout, "Records created successfully\n");
       std::cout << "Intensity_index created successfully" << std::endl;
     }
-    sqlstr = "CREATE INDEX rt_index ON PEAKS" + num2str(layerCount) + " (RETENTIONTIME);";
+    sqlstr = "CREATE INDEX rt_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (RETENTIONTIME);";
     sql = (char *)sqlstr.c_str();
     rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK ){
@@ -954,7 +954,7 @@ void mzMLReader3D::createIndexLayerTable(int layerCount) {
       // fprintf(stdout, "Records created successfully\n");
       std::cout << "Retention time_index created successfully" << std::endl;
     }
-    sqlstr = "CREATE INDEX mz_index ON PEAKS" + num2str(layerCount) + " (MZ);";
+    sqlstr = "CREATE INDEX mz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (MZ);";
     sql = (char *)sqlstr.c_str();
     rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK ){
