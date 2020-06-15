@@ -116,6 +116,7 @@ function getRT(scanNum) {
 }
 
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
+    //loading spectra data upon startup and range change
     var xhttp = new XMLHttpRequest();
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
