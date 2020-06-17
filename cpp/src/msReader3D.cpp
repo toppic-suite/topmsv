@@ -407,8 +407,6 @@ void msReader3D::createDtabaseOneTable() { //stmt
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-
-  
 }
 void msReader3D::getRangeDBOneTable() {
   int scanLevel = 1;
@@ -504,26 +502,44 @@ void msReader3D::createDtabaseOneTableRTree() { //stmt
 }
 
 void msReader3D::createDtabasMultiLayer() {
-  
-  //create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
+  /*create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
+  two databases are going to be used, one in local disk and one in memory only
+  as in-memory database can only be created as an empty db, follow same procedure as local disk db to insert data into the in-memory db
+  in-memory db will be used to populate a grid vector containing a single peak for each index, and closed when finished
+  multi layer tables are generated in local disk db, and peak are inserted to each layer table based on the grid vector created above.
+  local disk db closed when this function ends.
+  */
   clock_t t1 = clock();
   getRangeFromRaw();
   std::cout <<"Get range from raw data Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+
   databaseReader.openDatabase(file_name);
+  databaseReader.openDatabaseInMemory(file_name);
   std::cout <<"Open database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+
   databaseReader.creatTable();
-  std::cout <<"Create table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+  std::cout <<"Create table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+
+  databaseReader.creatTableInMemory();
+  std::cout <<"Create in memory table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+
   int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
   std::vector<Point> pointsList;
+
   databaseReader.beginTransaction();
+  databaseReader.beginTransactionInMemory();
   std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+
   databaseReader.openInsertStmt();
+  databaseReader.openInsertStmtInMemory();
+
   int levelOneID = 0;
   int levelTwoID = 0;
   int levelOneScanID = 0;
@@ -538,7 +554,6 @@ void msReader3D::createDtabasMultiLayer() {
   double intemax = 0;
 
   for(int i = 0; i < spSize; i++){
-    // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
       SpectrumPtr s = sl->spectrum(i, true); // read with binary data
       if (s == nullptr) {std::cout << "null"<<endl;}
       pwiz::msdata::SpectrumInfo spec_info(*s);
@@ -556,59 +571,22 @@ void msReader3D::createDtabasMultiLayer() {
         count++ ;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
         databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
-
+        databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+        
         //compare with min max values to find overall min max value
         if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
         if (pairs[j].mz > mzmax){mzmax = pairs[j].mz;}
         if (pairs[j].intensity < intemin){intemin = pairs[j].intensity;}
         if (pairs[j].intensity > intemax){intemax = pairs[j].intensity;}
-
       }
       //compare with min max values to find overall min max value
       if (retentionTime < rtmin){rtmin = retentionTime;}
       if (retentionTime > rtmax){rtmax = retentionTime;}
-      
-      if (scanLevel == 2) {
-        double prec_mz;
-        int prec_charge;
-        double prec_inte;
-        if (spec_info.precursors.size() == 0) {
-          prec_mz = 0;
-          prec_charge = 1;
-          prec_inte = 0.0;
-        } 
-        else {
-          prec_mz = spec_info.precursors[0].mz;
-          prec_charge = static_cast<int>(spec_info.precursors[0].charge);
-          prec_inte = spec_info.precursors[0].intensity;
-        }
-        if (prec_mz < 0) {
-          prec_mz = 0;
-        }
-        if (prec_charge  < 0) {
-          prec_charge = 1;
-        }
-        if (prec_inte < 0) {
-          prec_inte = 0.0;
-        }
-
-        databaseReader.insertSpStmt(currentID, getScan(sl->spectrumIdentity(i).id),retentionTime,scanLevel,prec_mz,prec_charge,prec_inte,peaksInteSum,NULL,levelTwoID);
-        // update prev's next
-        databaseReader.updateSpStmt(currentID,levelTwoID);
-        levelTwoID = currentID;
-        levelTwoScanID = currentScanID;
-        databaseReader.insertScanLevelPairStmt(levelOneScanID, levelTwoScanID);
-      }else if(scanLevel == 1){
-        databaseReader.insertSpStmt(currentID, getScan(sl->spectrumIdentity(i).id),retentionTime,scanLevel,NULL,NULL,NULL,peaksInteSum,NULL,levelOneID); 
-        // update prev's next
-        databaseReader.updateSpStmt(currentID,levelOneID);
-        levelOneID = currentID;
-        levelOneScanID = currentScanID;
-      }
   }
   databaseReader.endTransaction();
+  databaseReader.endTransactionInMemory();
   
-  //up to here, same as current code for creating 2d db file 
+  std::cout <<"insertion finished for PEAKS tables in both DB: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
   //store min max values in RANGE
   RANGE.MZMAX = mzmax;
@@ -617,25 +595,38 @@ void msReader3D::createDtabasMultiLayer() {
   RANGE.INTMIN = intemin;
   RANGE.RTMAX = rtmax;
   RANGE.RTMIN = rtmin;
+  RANGE.COUNT = count;
 
   //create index on peak id (for copying to each layer later)
   databaseReader.createIndexOnIdOnly();
-
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
   //create peaks0, peaks1.. tables
   databaseReader.creatLayersTable();
+  std::chrono::steady_clock::time_point endCreate = std::chrono::steady_clock::now();
+
   std::cout << "tables create finished " << std::endl;
+  std::cout << "Table create Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(endCreate - begin).count() << "ms" << std::endl;
+
   //add data to peaks0, peaks1.. tables
-  databaseReader.insertDataLayerTable(RANGE);
+  databaseReader.insertDataLayerTable(RANGE, file_name);
+
+  std::cout << "insert data finished " << std::endl;
+  std::chrono::steady_clock::time_point endInsert = std::chrono::steady_clock::now();
+  std::cout << "Insertion total Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(endInsert - endCreate).count() << "ms" << std::endl;
+
   //create indices for multi tables
   databaseReader.createIndexLayerTable(RANGE.LAYERCOUNT);
   
-  std::cout << "mzMLReader3D finished" << std::endl;
+  std::cout << "index created " << std::endl;
+  std::chrono::steady_clock::time_point endIndex = std::chrono::steady_clock::now();
+  std::cout << "Index creationTime = " << std::chrono::duration_cast<std::chrono::milliseconds>(endIndex - endInsert).count() << "ms" << std::endl;
 
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  std::cout << "mzMLReader3D finished" << std::endl;
+  std::cout << "TOTAL Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 
-  std::cout << "Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
+  databaseReader.closeDatabase();
 }
 
 void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {

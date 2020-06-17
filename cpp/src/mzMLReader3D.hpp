@@ -34,29 +34,28 @@ struct Range{
 
 //value of n and m in n * m grid on graph
 //ratio is 10:3
-/*struct Grid{
+struct Grid{
 	vector<int> LEVEL0 = {100, 30};//3000 peaks
 	vector<int> LEVEL1 = {250, 75};//18750 peaks
 	vector<int> LEVEL2 = {500, 150};//75000 peaks
 	vector<int> LEVEL3 = {1000, 300};//300000 peaks
 	vector<int> LEVEL4 = {1600, 480};//768000 peaks
-	//vector<int> LEVEL5 = {2500, 750};//1875000 peaks
+	vector<int> LEVEL5 = {2500, 750};//1875000 peaks
 	
   	static vector<vector<vector<double> > > GRIDBLOCKS;//3d vector
-};*/
-
+};
+/*
 struct Grid{//for TEST
 	vector<int> LEVEL0 = {10, 3};//30 peaks
-	vector<int> LEVEL1 = {25, 7};//175 peaks
-	vector<int> LEVEL2 = {20, 10};//750 peaks
-	vector<int> LEVEL3 = {25, 10};//3000 peaks
-	vector<int> LEVEL4 = {30, 10};//7680 peaks
-	vector<int> LEVEL5 = {40, 10};//18750 peaks
-	
-	/*3d vector*/
+	vector<int> LEVEL1 = {25, 7};//185 peaks
+	vector<int> LEVEL2 = {50, 15};//750 peaks
+	vector<int> LEVEL3 = {100, 30};//3000 peaks
+	vector<int> LEVEL4 = {160, 48};//7680 peaks
+	vector<int> LEVEL5 = {250, 75};//18750 peaks
+
   	static vector<vector<vector<double> > > GRIDBLOCKS;
 };
-
+*/
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
@@ -65,7 +64,9 @@ class mzMLReader3D
 {
 public:
 	std::string databaseName;
+	std::string databaseNameInMemory;
 	sqlite3 *db;
+	sqlite3 *dbInMemory;
 	char *zErrMsg = 0;
 	int  rc;
 	char *sql;
@@ -73,9 +74,13 @@ public:
 	bool isNew;
 	mzMLReader3D();
 	void setName(std::string fileName);
+	void setNameInMemory(std::string fileName);
+	void openDatabaseInMemory(std::string fileName);
 	void openDatabase(std::string fileName);
 	void closeDatabase();
+	void closeDatabaseInMemory();
 	void creatTable();
+	void creatTableInMemory();
 	void insertSp(int scanIndex, std::string scan, double retentionTime);
 	void insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void getRange();
@@ -84,16 +89,22 @@ public:
 	void getPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 	void beginTransaction();
 	void endTransaction();
+	void beginTransactionInMemory();
+	void endTransactionInMemory();
 	void synchronous();
 	void openInsertStmt();
+	void openInsertStmtInMemory();
 	void closeInsertStmt();
+	void closeInsertStmtInMemory();
 	void insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, double peaksInteSum, int next, int prev);
 	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
 	void updateSpStmt(int currentID, int prevID);
 	void updateSpSumStmt(int currentID, double peaksInteSum);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
+	void insertPeakStmtInMemory(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void createIndexOnIdOnly();
 	void createIndex();
+	void copyPeakIntoMemoryDb();
 
 	double MZ_GROUP1_SIZE;
 	double MZ_GROUP2_SIZE;
@@ -116,8 +127,8 @@ public:
 	int RT_GROUP4;
 	int RT_GROUP5;
 
-	void insertPeakDataToGridBlocks();
-	void insertDataLayerTable(Range range);
+	void insertPeakDataToGridBlocks(int peakCount);
+	void insertDataLayerTable(Range range, std::string file_name);
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);
 	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
