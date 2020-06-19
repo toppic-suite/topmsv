@@ -11,8 +11,8 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
     //assume that in mz range of 10, there are 10 peaks, 
     //assume that in rt range of 0.25, there are 5 scans
 
-    //const peakCount = [3000, 18750, 75000, 300000, 768000, 1875000];
-    const peakCount = [30, 185, 750, 3000, 7680, 18750];//max peaks in each table from mzMLReader3D.hpp
+    const peakCount = [3000, 18750, 75000, 300000, 768000, 1875000];
+    //const peakCount = [30, 185, 750, 3000, 7680, 18750];//max peaks in each table from mzMLReader3D.hpp
     
     let peakPerMz = 1;
     let scanPerRt = 20;
