@@ -34,6 +34,7 @@ struct Range{
 
 //value of n and m in n * m grid on graph
 //ratio is 10:3
+
 struct Grid{
 	vector<int> LEVEL0 = {100, 30};//3000 peaks
 	vector<int> LEVEL1 = {250, 75};//18750 peaks
@@ -41,21 +42,20 @@ struct Grid{
 	vector<int> LEVEL3 = {1000, 300};//300000 peaks
 	vector<int> LEVEL4 = {1600, 480};//768000 peaks
 	vector<int> LEVEL5 = {2500, 750};//1875000 peaks
-	
   	static vector<vector<vector<double> > > GRIDBLOCKS;//3d vector
 };
 /*
 struct Grid{//for TEST
 	vector<int> LEVEL0 = {10, 3};//30 peaks
-	vector<int> LEVEL1 = {25, 7};//185 peaks
+	vector<int> LEVEL1 = {25, 7};//175 peaks
 	vector<int> LEVEL2 = {50, 15};//750 peaks
 	vector<int> LEVEL3 = {100, 30};//3000 peaks
 	vector<int> LEVEL4 = {160, 48};//7680 peaks
 	vector<int> LEVEL5 = {250, 75};//18750 peaks
 
   	static vector<vector<vector<double> > > GRIDBLOCKS;
-};
-*/
+};*/
+
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
