@@ -611,7 +611,6 @@ void msReader3D::createDtabasMultiLayer() {
   //add data to peaks0, peaks1.. tables
   databaseReader.insertDataLayerTable(RANGE, file_name);
 
-  std::cout << "insert data finished " << std::endl;
   std::chrono::steady_clock::time_point endInsert = std::chrono::steady_clock::now();
   std::cout << "Insertion total Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(endInsert - endCreate).count() << "ms" << std::endl;
 
