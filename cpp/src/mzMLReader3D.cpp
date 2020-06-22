@@ -17,7 +17,7 @@ Grid GRID;
 /*initialize 3d vector with default values*/
 std::vector<std::vector<std::vector<double> > >  Grid::GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (GRID.LEVEL5[0], std::vector<std::vector<double> >(GRID.LEVEL5[1], std::vector<double>({-1, -1})));
   
-int filledGrid = 0;
+//int filledGrid = 0;
 
 std::string num2str(double num) {
   // std::cout << num << std::endl;
@@ -132,7 +132,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
       GRID.GRIDBLOCKS[xIndex][yIndex][0] = std::stoi(argv[0]);
       GRID.GRIDBLOCKS[xIndex][yIndex][1] = std::stod(argv[3]);
 
-      filledGrid++;
+      //filledGrid++;
     }
     else{
       //compare intensity
@@ -157,7 +157,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
       GRID.GRIDBLOCKS[xIndex][yIndex][0] = std::stoi(argv[0]);
       GRID.GRIDBLOCKS[xIndex][yIndex][1] = std::stod(argv[3]);
 
-      filledGrid++;
+      //filledGrid++;
     }
     else{
       //compare intensity
@@ -624,6 +624,7 @@ void mzMLReader3D::insertDataLayerTable(Range range, std::string file_name){
   RANGE.RTMAX = range.RTMAX;
 
   std::vector<std::vector<int>> gridRange = {GRID.LEVEL0, GRID.LEVEL1, GRID.LEVEL2, GRID.LEVEL3, GRID.LEVEL4, GRID.LEVEL5};
+
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
   insertPeakDataToGridBlocks(range.COUNT);//peaks assigned to GRID.GRIDBLOCKS
@@ -644,23 +645,22 @@ void mzMLReader3D::insertDataLayerTable(Range range, std::string file_name){
     int yRange = ceil(GRID.LEVEL5[1]/(float)gridRange[k][1]);
 
     std::vector<int> selectedPeakID;//highest peaks
-    std::vector<std::vector<int>> secondHighestPeaks;//secnd highest peaks, for use when peaks are less than table size 
+    //std::vector<std::vector<int>> secondHighestPeaks;//secnd highest peaks, for use when peaks are less than table size 
 
-    int totalRow = 0;
     while (y < GRID.LEVEL5[1]){
-      int pickedPeaks = 0;
+      //int pickedPeaks = 0;
       while (x < GRID.LEVEL5[0]){
         int highestInte = 0;
         int highestPeakId = -1;
-        int secondHighestInte = 0;
-        int secondHighestPeakId = -1;
+        //int secondHighestInte = 0;
+        //int secondHighestPeakId = -1;
 
         for (int curX = x; curX < x + xRange && curX < GRID.LEVEL5[0]; curX++){
           for (int curY = y; curY < y + yRange && curY < GRID.LEVEL5[1]; curY++){
             //check intensity
             if (GRID.GRIDBLOCKS[curX][curY][1] > highestInte){
-              secondHighestInte = highestInte;
-              secondHighestPeakId = highestPeakId;
+              //secondHighestInte = highestInte;
+              //secondHighestPeakId = highestPeakId;
 
               highestInte =  GRID.GRIDBLOCKS[curX][curY][1];
               highestPeakId = GRID.GRIDBLOCKS[curX][curY][0];
@@ -670,18 +670,17 @@ void mzMLReader3D::insertDataLayerTable(Range range, std::string file_name){
         if (highestPeakId >= 0){
           //insert and reset
           selectedPeakID.push_back(highestPeakId);
-          secondHighestPeaks.push_back({secondHighestInte, secondHighestPeakId});
-          pickedPeaks++;
+          //secondHighestPeaks.push_back({secondHighestInte, secondHighestPeakId});
+          //pickedPeaks++;
         }
         x = x + xRange;
       }
       //moving to next row in grid
-      totalRow++;
       y = y + yRange;
       x = 0;
     }
-    std::cout << "selectedPeaks : " << selectedPeakID.size() << std::endl;
-    
+    //std::cout << "selectedPeaks : " << selectedPeakID.size() << std::endl;
+    /*
     if (selectedPeakID.size() < (gridRange[k][0] * gridRange[k][1])){//if space left for more peaks
         std::sort(secondHighestPeaks.begin(), secondHighestPeaks.end());
         int peakDiff = gridRange[k][0] * gridRange[k][1] - selectedPeakID.size();
@@ -691,22 +690,19 @@ void mzMLReader3D::insertDataLayerTable(Range range, std::string file_name){
           selectedPeakID.push_back(secondHighestPeaks[p][1]);
         }
     }
-     std::cout << "selectedPeaks with extra peaks : " << selectedPeakID.size() << std::endl;
-    int fail =0;
+     std::cout << "selectedPeaks with extra peaks : " << selectedPeakID.size() << std::endl;*/
+    //int fail =0;
      beginTransaction();
      for (int a = 0; a < selectedPeakID.size(); a++){
        std::string sqlstr = "INSERT INTO PEAKS" + int2str(k) + "(ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME)" + 
           "SELECT * FROM PEAKS WHERE ID=" + int2str(selectedPeakID[a])+ ";";
           sql = (char *)sqlstr.c_str();
-          //std::cout << sql << std::endl;
           rc = sqlite3_exec(db, sql, callbackInsertPeak, db, &zErrMsg);
           
           if( rc != SQLITE_OK ){
             std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
             sqlite3_free(zErrMsg);
-            
-            fail++;
-            std::cout << "error inserting peak id : " << selectedPeakID[a] << std::endl;
+            //fail++;
           }else{
             insert++;
             //std::cout << "Operation done successfully - insertDataLayerTable" << std::endl;
@@ -714,9 +710,8 @@ void mzMLReader3D::insertDataLayerTable(Range range, std::string file_name){
      }
      endTransaction();
     std::cout << "total inserted peaks : " << insert << std::endl;
-    std::cout << "not inserted peaks : " << fail << std::endl;
+    //std::cout << "not inserted peaks : " << fail << std::endl;
   }
-  //std::cout << "grid with valid peak in GRID.GRIDBLOCKS : " << filledGrid << std::endl;
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   std::cout << "insert finished " << std::endl;
   std::cout << "Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - endGrid).count() << "ms" << std::endl;
