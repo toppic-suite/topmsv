@@ -74,6 +74,7 @@ MsGraph.prototype.init = function(){
     // camera
    // var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
     var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
+    
     camera.position.set(15, 15, 30);
     this.prevCameraPos = camera.position.clone();
 
