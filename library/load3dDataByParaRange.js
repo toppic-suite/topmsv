@@ -25,7 +25,8 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
         //find which level has the closet number of peaks with totalExpectedPeaks
         let diff = Math.abs(peakCount[i] - totalExpectedPeaks);
         if (diff < minDiff ){
-            tableNum = i;
+            //tableNum = i;
+            tableNum = peakCount.length - 1 - i;
             minDiff = diff;
         } 
     }
