@@ -13,6 +13,14 @@ MsGraph.prototype.panView = function(x,z){
     let viewRange = this.viewRange;
     let mzmin = viewRange.mzmin + (x * viewRange.mzrange);
     let rtmin = viewRange.rtmin + (z * viewRange.rtrange);
+
+    if (mzmin < 0){
+      mzmin = 0;
+    }
+    if (rtmin < 0){
+      rtmin = 0;
+    }
+
     this.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
 }
 MsGraph.prototype.onMouseDown = function(e){
