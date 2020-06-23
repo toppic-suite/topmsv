@@ -29,7 +29,7 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
             minDiff = diff;
         } 
     }
-    console.log("total expected peakcount is :" , totalExpectedPeaks);
+    //console.log("total expected peakcount is :" , totalExpectedPeaks);
     console.log("the selected table is PEAKS" , tableNum);
 
     let sql = `SELECT *

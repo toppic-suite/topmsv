@@ -204,7 +204,7 @@ MsGraph.prototype.repositionPlot = function(r) {
     //console.log("intScale: ", r.intscale)
    // console.log("multiply: ", this.GRID_RANGE_VERTICAL / heightScale * r.intscale)
     this.datagroup.scale.set(mz_squish, (this.GRID_RANGE_VERTICAL / heightScale) * r.intscale, rt_squish);
-
+        
     // Reposition the plot so that mzmin,rtmin is at the correct corner
     this.datagroup.position.set(-r.mzmin*mz_squish, 0, this.GRID_RANGE - r.rtmin*rt_squish);
 
@@ -215,8 +215,6 @@ MsGraph.prototype.repositionPlot = function(r) {
 
     this.markerGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
     this.plotGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
-    // on the pinheads only, rt is the y axis because of rotation
-    //this.pinGroup.children.forEach(function(p) { p.scale.set(mz_stretch, rt_stretch, 1); });
 
     // update the set of visible points
     var nVisible = 0;
