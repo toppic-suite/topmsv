@@ -11,8 +11,10 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
         this.plotPoint(this.currentData[i]);
     }
     this.viewRange["intscale"] = this.viewRange["intscale"] + scaleFactor - 1;//because default value is 1, deduct 1 to start from 0.
-    this.repositionPlot(this.viewRange);
-    this.updateViewRange(this.viewRange);
+    if (this.viewRange["intscale"] >= 0){//prevent peak from drawn under the graph
+        this.updateViewRange(this.viewRange);
+    }
+
 }
 MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     //zoom action detected by event listener in each axis
