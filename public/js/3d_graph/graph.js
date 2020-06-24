@@ -40,9 +40,12 @@ function MsGraph(containerEl, graphEl) {
     this.ROUND_INT = 3;
 
     this.currentData; //all data for current scan (so that no need to load all back when moving ms1 graph)
+    this.ms1Peaks;//ms1 peaks for each scan
 
     this.mzAxisZoom = false;
     this.rtAxisZoom = false;
+
+    this.maxPeaks = 3000;
 }
 
 /******** SETUP FUNCTIONS ******/
