@@ -562,7 +562,7 @@ void mzMLReader3D::createIndexOnIdOnly(){
   }
 }
 void mzMLReader3D::createIndex() {
-  std::string sqlstr = "CREATE INDEX intensity_index ON PEAKS (SPECTRAID);";
+  std::string sqlstr = "CREATE INDEX scanID_index ON PEAKS (SPECTRAID);";
   sql = (char *)sqlstr.c_str();
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
@@ -633,8 +633,8 @@ void mzMLReader3D::insertDataLayerTable(Range RANGE, std::string file_name){
   std::cout << "grid assignment finished " << std::endl;
   std::cout << "Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_grid - begin).count() << "ms" << std::endl;
 
-  //for (int k = 0; k <= range.LAYERCOUNT; k++){//from 0-5 (each layer table)
-  for (int k = 1; k <= 1; k++){//from 0-5 (each layer table)
+  for (int k = 0; k <= RANGE.LAYERCOUNT; k++){//from 0-5 (each layer table)
+  //for (int k = 1; k <= 1; k++){//from 0-5 (each layer table)
     int x = 0;
     int y = 0; 
     int insert = 0;//counter for inserted peaks
@@ -989,7 +989,7 @@ void mzMLReader3D::insertPeaksLayerStmt(std::string origin, int j, int k, double
 void mzMLReader3D::createIndexLayerTable(int layerCount) {
   //for all layer tables, create index
   for (int i = 0; i <= layerCount; i++){
-    std::string sqlstr = "CREATE INDEX intensity_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (SPECTRAID);";
+    std::string sqlstr = "CREATE INDEX scanID_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (SPECTRAID);";
     sql = (char *)sqlstr.c_str();
     rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK ){
