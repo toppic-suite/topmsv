@@ -71,8 +71,8 @@ function loadPeakList1(scanID, prec_mz) {
                         xhttpRT.onreadystatechange = function () {
                             if (this.readyState == 4 && this.status == 200) {
                                 let rt = parseFloat(this.responseText);
-                                let minrt = rt - 7.5;
-                                let maxrt = rt + 7.5;
+                                let minrt = rt - 30;
+                                let maxrt = rt + 30;
 
                                 if (minrt < 0){
                                     minrt = 0;
@@ -81,7 +81,8 @@ function loadPeakList1(scanID, prec_mz) {
                                     let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                                    load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, true)
+                                    //load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, true)
+                                    load3dDataOnScanChange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, true)
                                 }    
                             }
                         };    
@@ -114,10 +115,12 @@ function getRT(scanNum) {
     xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
     xhttpRT.send();
 }
-
-function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
-    //loading spectra data upon startup and range change
+function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
+    //same as load3dDataByParaRange, but this functions runs only when a scan changes
+    //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
+    //when a range changes in the same scan, call load3dDataByParaRange instead
     var xhttp = new XMLHttpRequest();
+    
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
     let dir = fullDir[0].concat("/");
@@ -125,9 +128,53 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
 
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
+            var scanID = $('#scanID1').text();
+            var peakData = JSON.parse(this.responseText);
+            var xhttp2 = new XMLHttpRequest();
+
+            xhttp2.onreadystatechange = function (){
+                if (this.readyState == 4 && this.status == 200) {
+                    var ms1PeakData = JSON.parse(this.responseText);
+                    var response = ms1PeakData.concat(peakData);
+
+                    graph3D.addNewScanDataToGraph(response, ms1PeakData);
+                    graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
+        
+                    if (updateTextBox){
+                        //update data range in textboxes if getting range from each scan, not by users
+                        document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
+                        document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
+                        document.getElementById('mzRangeMin').value = minmz;
+                        document.getElementById('mzRangeMax').value = parseInt(maxmz);
+                    }
+                    
+                }
+            }
+            xhttp2.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + "_3D.db" + "&scanID=" + scanID,true);
+            xhttp2.send();
+        }
+    }
+    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz,true);
+    xhttp.send();
+
+}
+function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
+    //loading spectra data upon startup and range change
+    var xhttp = new XMLHttpRequest();
+    
+    let fullDir = (document.getElementById("projectDir").value).split("/");
+    let fileName = (fullDir[fullDir.length -1].split("."))[0];
+    let dir = fullDir[0].concat("/");
+    dir = dir.concat(fullDir[1]);
+
+    var start = new Date();
+
+    xhttp.onreadystatechange = function (){
+        if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
+
             graph3D.addDataToGraph(response);
-            graph3D.drawDefaultGraph(minmz, maxmz, minrt, maxrt);
+            graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
 
             if (updateTextBox){
                 //update data range in textboxes if getting range from each scan, not by users
@@ -141,7 +188,6 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + "_3D.db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz,true);
     xhttp.send();
 }
-
 function init3dGraph(){
     graph3D.init();
 }

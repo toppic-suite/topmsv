@@ -51,8 +51,7 @@ MsGraph.prototype.getInteRtRange = function(points){
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
 }
-
-MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
+MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.linesArray = [];
 
     this.plotGroup.children = [];
@@ -76,15 +75,28 @@ MsGraph.prototype.drawDefaultGraph = function(minmz, maxmz, minrt, maxrt){//draw
     for (let i = 0; i < this.currentData.length; i++){
         this.plotPoint(this.currentData[i]);
     }
-
     this.viewRange["intscale"] = 1;
     // make sure the groups are plotted and update the view
     this.repositionPlot(this.viewRange);
-
     this.updateViewRange(this.viewRange);
 }
+/*this.maxPeaks is the max number of peaks on the graph. 
+    as ms1 peaks are always going to show in 3d grahph, add only a subset of peaks to the this.currentData
+    which contains peaks to be drawn on the graph*/
 MsGraph.prototype.addDataToGraph = function(points){
+    let peakCount = this.ms1Peaks.length;
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length) - 1);
+
+    this.currentData = this.ms1Peaks.concat(peaksToAdd);//store loaded data
+}
+MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks){
     this.currentData = points;//store loaded data
+    this.ms1Peaks = ms1Peaks;//store peak 1 data
+
+    let peakCount = ms1Peaks.length;
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length) - 1);
+
+    this.currentData = ms1Peaks.concat(peaksToAdd);
 }
 // plots multiple points on the graph and redraws it
 MsGraph.prototype.plotPoints = function(points) {
