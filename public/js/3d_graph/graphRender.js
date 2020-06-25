@@ -70,7 +70,7 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.updateViewRange(this.dataRange);
 
     let zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
-    this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
+    //this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
     
     for (let i = 0; i < this.currentData.length; i++){
         this.plotPoint(this.currentData[i]);
