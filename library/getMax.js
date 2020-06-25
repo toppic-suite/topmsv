@@ -6,10 +6,8 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {function} callback
  * @async
  */
-function getMax(dir, column, callback) {
-    //PEAKS table is already ordered by MZ
-
-    let sql = `SELECT max(` + column + `) FROM PEAKS;`;
+function getMax(dir, callback) {
+    let sql = `SELECT * FROM CONFIG;`;
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {

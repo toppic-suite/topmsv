@@ -7,9 +7,8 @@ var getMaxLib = require("../library/getMax");
 var getMax = router.get('/getMax', function (req, res) {
     console.log("Hello, getMax!");
     var projectDir = req.query.projectDir;
-    var columnName = req.query.colName;
-    getMaxLib(projectDir, columnName, function (err, row) {
-        res.write(row[Object.keys(row)[0]].toString())
+    getMaxLib(projectDir, function (err, row) {
+        res.write(JSON.stringify(row));
         res.end();
     })
 });

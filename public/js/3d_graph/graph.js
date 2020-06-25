@@ -57,8 +57,8 @@ function MsGraph(containerEl, graphEl) {
 // after the document is ready and all javascript has loaded
 MsGraph.prototype.init = function(maxMzRt){
     //set maximum mz rt value 
-    this.totalMaxMz = maxMzRt.maxMz;
-    this.totalMaxRt = maxMzRt.maxRt/60;
+    this.totalMaxMz = maxMzRt.MAXMZ;
+    this.totalMaxRt = maxMzRt.MAXRT/60;
 
     console.log(this.totalMaxMz, this.totalMaxRt)
 
