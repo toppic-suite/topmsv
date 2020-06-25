@@ -42,7 +42,7 @@ struct Grid{
 	vector<int> LEVEL3 = {1000, 300};//300000 peaks
 	vector<int> LEVEL4 = {1600, 480};//768000 peaks
 	vector<int> LEVEL5 = {2500, 750};//1875000 peaks
-  	static vector<vector<vector<double> > > GRIDBLOCKS;//3d vector
+  	vector<vector<vector<double> > > GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (LEVEL5[0], std::vector<std::vector<double> >(LEVEL5[1], std::vector<double>({-1, -1})));//3d vector
 };
 /*
 struct Grid{//for TEST
@@ -55,7 +55,6 @@ struct Grid{//for TEST
 
   	static vector<vector<vector<double> > > GRIDBLOCKS;
 };*/
-
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
@@ -72,6 +71,7 @@ public:
 	char *sql;
 	char *data;
 	bool isNew;
+
 	mzMLReader3D();
 	void setName(std::string fileName);
 	void setNameInMemory(std::string fileName);
@@ -127,8 +127,8 @@ public:
 	int RT_GROUP4;
 	int RT_GROUP5;
 
-	void insertPeakDataToGridBlocks(int peakCount);
-	void insertDataLayerTable(Range range, std::string file_name);
+	void insertPeakDataToGridBlocks();
+	void insertDataLayerTable(std::string file_name);
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);
 	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
@@ -140,7 +140,7 @@ public:
 	void closeInsertStmtOneTable();
 	void insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz, double intensity, double retentionTime);
 	void insertConfigOneTable();
-	void createIndexLayerTable(int layerCount);
+	void createIndexLayerTable();
 	void createIndexOneTable();
 	void creatLayersTable();
 	void createLayerTable(std::string num);
