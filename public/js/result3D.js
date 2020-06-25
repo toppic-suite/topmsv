@@ -125,30 +125,19 @@ function getMax(){
         var xhttp3 = new XMLHttpRequest();
         xhttp3.onreadystatechange = function (){
             if (this.readyState == 4 && this.status == 200) {
-                var maxMz = parseFloat(this.responseText);
+                var result = JSON.parse(this.responseText);
 
-                var xhttp4 = new XMLHttpRequest();
-                xhttp4.onreadystatechange = function (){
-                    if (this.readyState == 4 && this.status == 200) {
-                        var maxRt = parseFloat(this.responseText);
-                        var result = {"maxMz": maxMz, "maxRt": maxRt};
-
-                        if (maxMz != undefined && maxRt != undefined){
-                            resolve(result);
-                        }
-                        else{
-                            reject("max values are undefined")
-                        }
-                    }
+                if (result != undefined){
+                    resolve(result);
                 }
-                xhttp4.open("GET","getMax?projectDir=" + dir + "/" + fileName + "_3D.db" + "&colName=" + 'RETENTIONTIME',true);
-                xhttp4.send();
+                else{
+                    reject("max values are undefined")
+                }
             }
         }
         xhttp3.open("GET","getMax?projectDir=" + dir + "/" + fileName + "_3D.db" + "&colName=" + 'MZ',true);
         xhttp3.send();
-        });
-    
+    });
 }
 function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
