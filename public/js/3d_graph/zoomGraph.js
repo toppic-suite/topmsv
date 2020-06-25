@@ -63,6 +63,13 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     if (newrtmin < 0){
         newrtmin = 0;
     }
+    //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
+    if (newmzmin + newmzrange > this.totalMaxMz){
+        newmzrange = this.totalMaxMz - newmzmin;
+    }
+    if (newrtmin + newmzrange > this.totalMaxRt){
+        newrtrange = this.totalMaxRt - newrtmin;
+    }
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
 MsGraph.prototype.getMousePosition = function(event) {

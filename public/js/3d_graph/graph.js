@@ -46,13 +46,22 @@ function MsGraph(containerEl, graphEl) {
     this.rtAxisZoom = false;
 
     this.maxPeaks = 3000;
+
+    this.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
+    this.totalMaxRt = 0;
 }
 
 /******** SETUP FUNCTIONS ******/
 
 // creates the graph scene and sets it up. Should be called
 // after the document is ready and all javascript has loaded
-MsGraph.prototype.init = function(){
+MsGraph.prototype.init = function(maxMzRt){
+    //set maximum mz rt value 
+    this.totalMaxMz = maxMzRt.maxMz;
+    this.totalMaxRt = maxMzRt.maxRt/60;
+
+    console.log(this.totalMaxMz, this.totalMaxRt)
+
     var scene = this.scene = new THREE.Scene();
 
     // rendering element

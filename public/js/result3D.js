@@ -115,6 +115,41 @@ function getRT(scanNum) {
     xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
     xhttpRT.send();
 }
+function getMax(){
+    return new Promise(function(resolve, reject){
+        let fullDir = (document.getElementById("projectDir").value).split("/");
+        let fileName = (fullDir[fullDir.length -1].split("."))[0];
+        let dir = fullDir[0].concat("/");
+        dir = dir.concat(fullDir[1]);
+
+        var xhttp3 = new XMLHttpRequest();
+        xhttp3.onreadystatechange = function (){
+            if (this.readyState == 4 && this.status == 200) {
+                var maxMz = parseFloat(this.responseText);
+
+                var xhttp4 = new XMLHttpRequest();
+                xhttp4.onreadystatechange = function (){
+                    if (this.readyState == 4 && this.status == 200) {
+                        var maxRt = parseFloat(this.responseText);
+                        var result = {"maxMz": maxMz, "maxRt": maxRt};
+
+                        if (maxMz != undefined && maxRt != undefined){
+                            resolve(result);
+                        }
+                        else{
+                            reject("max values are undefined")
+                        }
+                    }
+                }
+                xhttp4.open("GET","getMax?projectDir=" + dir + "/" + fileName + "_3D.db" + "&colName=" + 'RETENTIONTIME',true);
+                xhttp4.send();
+            }
+        }
+        xhttp3.open("GET","getMax?projectDir=" + dir + "/" + fileName + "_3D.db" + "&colName=" + 'MZ',true);
+        xhttp3.send();
+        });
+    
+}
 function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
     //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
@@ -134,6 +169,7 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
 
             xhttp2.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
+
                     var ms1PeakData = JSON.parse(this.responseText);
                     var response = ms1PeakData.concat(peakData);
 
@@ -147,7 +183,6 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
                         document.getElementById('mzRangeMin').value = minmz;
                         document.getElementById('mzRangeMax').value = parseInt(maxmz);
                     }
-                    
                 }
             }
             xhttp2.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + "_3D.db" + "&scanID=" + scanID,true);
@@ -166,8 +201,6 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
     let dir = fullDir[0].concat("/");
     dir = dir.concat(fullDir[1]);
-
-    var start = new Date();
 
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
@@ -189,7 +222,18 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     xhttp.send();
 }
 function init3dGraph(){
-    graph3D.init();
+    var promise = getMax();
+    var min = document.getElementById("rangeMin").value;
+    
+    promise.then(function(result){//to make sure max values are fetched before creating graph
+        graph3D.init(result);
+
+        showEnvTable(min);
+        findNextLevelOneScan(min);
+        loadInteSumList();
+    }, function(err){
+        console.log(err);
+    })
 }
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
@@ -807,7 +851,7 @@ redrawRequestButton.addEventListener('click', function(){
 
 //function running on startup
 $( document ).ready(function() {
-    var min = document.getElementById("rangeMin").value;
+    
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
         $("#envInfo").hide();
@@ -815,14 +859,9 @@ $( document ).ready(function() {
     }
     $('#envFileInfo').hide();
 
-	showEnvTable(min);
-    findNextLevelOneScan(min);
-    loadInteSumList();
-
-    //graph3D = new MsGraph(document.body, document.querySelector("#graph-container"))
     graph3D = new MsGraph('body', document.querySelector("#graph-container"));
     init3dGraph();
-    
+
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
         // console.log(scanRef);
