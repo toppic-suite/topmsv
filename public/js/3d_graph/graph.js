@@ -60,8 +60,6 @@ MsGraph.prototype.init = function(maxMzRt){
     this.totalMaxMz = maxMzRt.MZMAX;
     this.totalMaxRt = maxMzRt.RTMAX;
 
-    console.log(this.totalMaxMz, this.totalMaxRt)
-
     var scene = this.scene = new THREE.Scene();
 
     // rendering element
