@@ -30,7 +30,6 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
             minDiff = diff;
         } 
     }
-    //console.log("total expected peakcount is :" , totalExpectedPeaks);
     console.log("the selected table is PEAKS" , tableNum);
 
     let sql = `SELECT *
@@ -38,7 +37,8 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
                 ` WHERE RETENTIONTIME <= ? 
                 AND RETENTIONTIME >= ?
                 AND MZ <= ?
-                AND MZ >= ?;`;
+                AND MZ >= ?
+                ORDER BY INTENSITY DESC;`;
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
