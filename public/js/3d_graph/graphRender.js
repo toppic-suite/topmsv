@@ -8,6 +8,10 @@ MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
 }
+MsGraph.prototype.clearGraph = function() {
+    this.linesArray = [];
+    this.plotGroup.children = [];
+}
 MsGraph.prototype.getInteRange = function(points){
     let intmin = Infinity;
     let intmax = 0;
@@ -52,10 +56,7 @@ MsGraph.prototype.getInteRtRange = function(points){
     this.dataRange.intmax = intmax;
 }
 MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
-    this.linesArray = [];
-
-    this.plotGroup.children = [];
-    this.pinGroup.children = [];
+    this.clearGraph();
 
     this.dataRange.mzmin = minmz;
     this.dataRange.mzmax = maxmz;
@@ -110,9 +111,6 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
     this.ms1Peaks = ms1Peaks;//store peak 1 data
     let peakCount = ms1Peaks.length;
 
-
-    console.log(ms1Peaks)
-
     if (peakCount >= this.maxPeaks)//if current scan has more than max peak possible
     {
         //limit peaks so that peaks stay within the max peaks count
@@ -134,31 +132,8 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
     }
     console.log("peakCount : ", this.currentData.length);
 }
-// plots multiple points on the graph and redraws it
-MsGraph.prototype.plotPoints = function(points) {
-    this.dataRange = this.getDataRange(points);
-    this.updateViewRange(this.dataRange);
-    
-    // determine if cylinders should be used and their radius
-    var zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
-    this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
-
-    this.linesArray = [];
-
-    for (let i = 0; i < points.length; i++){
-        this.plotPoint(points[i]);
-    }
-    //this.plotJumpMarker();
-    this.viewRange["intscale"] = 1;
-    // make sure the groups are plotted and update the view
-    this.repositionPlot(this.viewRange);
-    
-    this.updateViewRange(this.viewRange);
-};
-
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
-    //console.log(point)
     // point: an array of the following values
     var id = point.ID;
     //var trace = point[1];
@@ -239,8 +214,6 @@ MsGraph.prototype.repositionPlot = function(r) {
     // each point back out by the inverse of the squish amount.
     var mz_stretch = 1/mz_squish;
     var rt_stretch = 1/rt_squish;
-    
-    console.log("plotgroup children", this.plotGroup.children)
 
     this.markerGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
     this.plotGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
@@ -370,8 +343,8 @@ MsGraph.prototype.repositionPlot = function(r) {
         }
     }
 
-    this.redrawRuler();
-    this.redrawGuard();
+    //this.redrawRuler();
+    //this.redrawGuard();
 
     console.log("after repositionPlot length : ", this.plotGroup.children.length);
 };
