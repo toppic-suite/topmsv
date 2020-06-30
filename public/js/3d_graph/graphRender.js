@@ -85,52 +85,32 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     which contains peaks to be drawn on the graph*/
 MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
     let peakCount = this.ms1Peaks.length;
-    if (peakCount >= this.maxPeaks)//if current scan has more than max peak possible
-    {
-        //limit peaks so that peaks stay within the max peaks count
-        this.currentData = this.ms1Peaks.splice(0, this.maxPeaks - 1);
-    }
-    else
-    {
-        let curMs1Peaks = [];
-        //from ms1 data, extract only those that are in current mz and rt range
-        for (let i =0; i < peakCount; i++){
-            if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
-            {
-                curMs1Peaks.push(this.ms1Peaks[i]);
-            }
-        }
-        let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
+    let curMs1Peaks = [];
     
-        this.currentData = curMs1Peaks.concat(peaksToAdd);//store loaded data
+    //from ms1 data, extract only those that are in current mz and rt range
+    for (let i = 0; i < peakCount && i < this.maxPeaks; i++){
+        if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
+        {
+            curMs1Peaks.push(this.ms1Peaks[i]);
+        }
     }
-    console.log("peakCount : ", this.currentData.length);
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
+    this.currentData = curMs1Peaks.concat(peaksToAdd);//store loaded data
 }
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
-    this.currentData = points;//store loaded data
     this.ms1Peaks = ms1Peaks;//store peak 1 data
     let peakCount = ms1Peaks.length;
+    let curMs1Peaks = [];
 
-    if (peakCount >= this.maxPeaks)//if current scan has more than max peak possible
-    {
-        //limit peaks so that peaks stay within the max peaks count
-        this.currentData = this.ms1Peaks.splice(0, this.maxPeaks - 1);
-    }
-    else
-    {
-        let curMs1Peaks = [];
-        //from ms1 data, extract only those that are in current mz and rt range
-        for (let i =0; i < peakCount; i++){
-            if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
-            {
-                curMs1Peaks.push(this.ms1Peaks[i]);
-            }
+    //from ms1 data, extract only those that are in current mz and rt range
+    for (let i = 0; i < peakCount && i < this.maxPeaks; i++){
+        if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
+        {
+            curMs1Peaks.push(this.ms1Peaks[i]);
         }
-        let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
-    
-        this.currentData = ms1Peaks.concat(peaksToAdd);
     }
-    console.log("peakCount : ", this.currentData.length);
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
+    this.currentData = curMs1Peaks.concat(peaksToAdd);
 }
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
@@ -345,8 +325,6 @@ MsGraph.prototype.repositionPlot = function(r) {
 
     //this.redrawRuler();
     //this.redrawGuard();
-
-    console.log("after repositionPlot length : ", this.plotGroup.children.length);
 };
 
 // draws the ruler with the given gap between ticks at the given mz and rt
