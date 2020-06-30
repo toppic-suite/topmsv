@@ -66,13 +66,12 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.dataRange.rtrange = maxrt - minrt;
 
     this.getInteRange(this.currentData);
-
     this.updateViewRange(this.dataRange);
 
-    let zoom = Math.max(this.viewRange.mzrange / this.dataRange.mzrange, this.viewRange.rtrange / this.dataRange.rtrange);
-    //this.CYLINDER_RADIUS_CURRENT = (MsGraph.CYLINDER_RADIUS_MAX - MsGraph.CYLINDER_RADIUS_MIN) * (1-zoom) + MsGraph.CYLINDER_RADIUS_MIN;
-    
-    for (let i = 0; i < this.currentData.length; i++){
+    console.log("at drawGraph, currentData.length : ", this.currentData.length);
+
+    for (let i = 0; i < this.currentData.length; i++)
+    {
         this.plotPoint(this.currentData[i]);
     }
     this.viewRange["intscale"] = 1;
@@ -83,20 +82,57 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
 /*this.maxPeaks is the max number of peaks on the graph. 
     as ms1 peaks are always going to show in 3d grahph, add only a subset of peaks to the this.currentData
     which contains peaks to be drawn on the graph*/
-MsGraph.prototype.addDataToGraph = function(points){
+MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
     let peakCount = this.ms1Peaks.length;
-    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length) - 1);
-
-    this.currentData = this.ms1Peaks.concat(peaksToAdd);//store loaded data
+    if (peakCount >= this.maxPeaks)//if current scan has more than max peak possible
+    {
+        //limit peaks so that peaks stay within the max peaks count
+        this.currentData = this.ms1Peaks.splice(0, this.maxPeaks - 1);
+    }
+    else
+    {
+        let curMs1Peaks = [];
+        //from ms1 data, extract only those that are in current mz and rt range
+        for (let i =0; i < peakCount; i++){
+            if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
+            {
+                curMs1Peaks.push(this.ms1Peaks[i]);
+            }
+        }
+        let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
+    
+        this.currentData = curMs1Peaks.concat(peaksToAdd);//store loaded data
+    }
+    console.log("peakCount : ", this.currentData.length);
 }
-MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks){
+MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
     this.currentData = points;//store loaded data
     this.ms1Peaks = ms1Peaks;//store peak 1 data
-
     let peakCount = ms1Peaks.length;
-    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length) - 1);
 
-    this.currentData = ms1Peaks.concat(peaksToAdd);
+
+    console.log(ms1Peaks)
+
+    if (peakCount >= this.maxPeaks)//if current scan has more than max peak possible
+    {
+        //limit peaks so that peaks stay within the max peaks count
+        this.currentData = this.ms1Peaks.splice(0, this.maxPeaks - 1);
+    }
+    else
+    {
+        let curMs1Peaks = [];
+        //from ms1 data, extract only those that are in current mz and rt range
+        for (let i =0; i < peakCount; i++){
+            if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
+            {
+                curMs1Peaks.push(this.ms1Peaks[i]);
+            }
+        }
+        let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
+    
+        this.currentData = ms1Peaks.concat(peaksToAdd);
+    }
+    console.log("peakCount : ", this.currentData.length);
 }
 // plots multiple points on the graph and redraws it
 MsGraph.prototype.plotPoints = function(points) {
@@ -167,13 +203,6 @@ MsGraph.prototype.plotPoint = function(point) {
         var line = new THREE.Line(linegeo, linemat);
         line.position.set(mz, 0, rt);
 
-        // create the pinhead
-       /* var pinhead = new THREE.Mesh(MsGraph.PIN_GEO, meshmat);
-        pinhead.position.set(x, y, z);
-        pinhead.rotateX(-Math.PI/2);
-        line.pinhead = pinhead;*/
-        //line.name = ("peak");
-
         drawObj = line;
     }
     drawObj.pointid = id;
@@ -184,22 +213,8 @@ MsGraph.prototype.plotPoint = function(point) {
     drawObj.name = "peak";
     drawObj.scanID = point.SPECTRAID;
 
-    //drawObj.trace = trace;
-/*
-    //add event listener for each peak
-    this.domEvents.addEventListener(drawObj, 'mouseover', (function(e){
-        this.onMouseOver(e.target);
-    }).bind(this), false);
-
-    this.domEvents.addEventListener(drawObj, 'mouseout', (function(e){
-        this.onMouseOut(e.target);
-    }).bind(this), false);
-*/
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
-    if (!this.useCylinders) {
-        //this.pinGroup.add(drawObj.pinhead);
-    }
 
 };
 
@@ -224,6 +239,8 @@ MsGraph.prototype.repositionPlot = function(r) {
     // each point back out by the inverse of the squish amount.
     var mz_stretch = 1/mz_squish;
     var rt_stretch = 1/rt_squish;
+    
+    console.log("plotgroup children", this.plotGroup.children)
 
     this.markerGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
     this.plotGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
@@ -355,6 +372,8 @@ MsGraph.prototype.repositionPlot = function(r) {
 
     this.redrawRuler();
     this.redrawGuard();
+
+    console.log("after repositionPlot length : ", this.plotGroup.children.length);
 };
 
 // draws the ruler with the given gap between ticks at the given mz and rt

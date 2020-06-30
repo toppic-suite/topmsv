@@ -9,7 +9,8 @@ const sqlite3 = require('sqlite3').verbose();
 function load3dDataByScan(dir, scan, callback) {
     let sql = `SELECT *
                 FROM PEAKS
-                WHERE SPECTRAID = ? ;`;
+                WHERE SPECTRAID = ? 
+                ORDER BY INTENSITY DESC;`;
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {

@@ -162,7 +162,7 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
                     var ms1PeakData = JSON.parse(this.responseText);
                     var response = ms1PeakData.concat(peakData);
 
-                    graph3D.addNewScanDataToGraph(response, ms1PeakData);
+                    graph3D.addNewScanDataToGraph(response, ms1PeakData, minmz, maxmz, minrt, maxrt);
                     graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
         
                     if (updateTextBox){
@@ -194,8 +194,8 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var response = JSON.parse(this.responseText);
-
-            graph3D.addDataToGraph(response);
+            //console.log("returend data length : ", response.length);
+            graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
             graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
 
             if (updateTextBox){
