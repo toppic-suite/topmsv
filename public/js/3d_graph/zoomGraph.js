@@ -4,7 +4,7 @@ MsGraph.prototype.zoomGraph = function(graph){
     graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
 }
 MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
-    this.linesArray = [];
+    this.clearGraph();
 
     for (let i = 0; i < this.currentData.length; i++){
         this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * scaleFactor;//multiply intensity by scaleFactor
