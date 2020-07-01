@@ -349,8 +349,7 @@ void msReader3D::getRangeFromRaw() {
     }
   }
   RANGE.COUNT = count;
-  std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
-  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
+  
 }
 /*void msReader3D::createDtabaseOneTable() { //stmt
   clock_t t1 = clock();
@@ -501,7 +500,19 @@ void msReader3D::createDtabaseOneTableRTree() { //stmt
   databaseReader.closeDatabase();
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }*/
+void msReader3D::calculateLayer(){
+  /*calculate how many layers this mzML should have, based on number of total peaks*/
+  int peaks_cnt = RANGE.COUNT;
+  int layer_cnt = 0;
 
+  while (peaks_cnt > 3000){//smallest table has 3000 peaks
+    std::cout << "layer " << layer_cnt << ", peaks : " << peaks_cnt << std::endl;
+    layer_cnt++;
+    peaks_cnt = peaks_cnt / (RANGE.GRIDSCALEFACTOR * 2);//approx. number of peaks in each layer table
+  }
+  RANGE.LAYERCOUNT = layer_cnt + 1;
+}
+  
 void msReader3D::createDtabasMultiLayer() {
   /*create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
   two databases are going to be used, one in local disk and one in memory only
@@ -592,7 +603,12 @@ void msReader3D::createDtabasMultiLayer() {
   RANGE.INTMIN = intemin;
   RANGE.RTMAX = rtmax;
   RANGE.RTMIN = rtmin;
-  RANGE.COUNT = count;
+  RANGE.COUNT = count;//peakCount
+
+  std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
+  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
+  
+  calculateLayer();//calculate how many layers to be created
 
   databaseReader.setRange(RANGE);
   databaseReader.insertConfigOneTable();//range from getRange was not accurate
@@ -610,7 +626,7 @@ void msReader3D::createDtabasMultiLayer() {
   t1 = clock();
   //add data to peaks0, peaks1.. tables
   databaseReader.insertDataLayerTable(file_name);
-
+/*
   std::cout << "Insertion total Time = " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
   t1 = clock();
@@ -621,7 +637,7 @@ void msReader3D::createDtabasMultiLayer() {
 
   std::cout << "total time elapsed = " << (clock() - t0) * 1.0 / CLOCKS_PER_SEC << std::endl; 
   std::cout << "mzMLReader3D finished" << std::endl;
-
+*/
   databaseReader.closeDatabase();
 }
 
