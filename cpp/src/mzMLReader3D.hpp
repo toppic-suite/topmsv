@@ -25,7 +25,8 @@ struct Range{
   double INTMIN;
   double INTMAX;
   int COUNT;
-  int LAYERCOUNT = 4;
+  int LAYERCOUNT;
+  int GRIDSCALEFACTOR = 2;//set the size difference between each layer (it is n in --> peaks1 table = (peaks0 table width * n) * (peaks0 table height * n))
   int MAXRETURN = 5000;
   vector<double> MZSIZE;
   vector<double> RTSIZE;
@@ -49,13 +50,15 @@ struct Range{
 struct Grid{
 	int LAYERCOUNT = 4;//should match the highest level of vectors below
 	//vector size is *2 then *2.5 then *2 then *2.5...
-	vector<int> LEVEL0 = {100, 30};//3000 peaks
+	/*vector<int> LEVEL0 = {100, 30};//3000 peaks
 	vector<int> LEVEL1 = {250, 75};//18750 peaks
 	vector<int> LEVEL2 = {500, 150};//75000 peaks
 	vector<int> LEVEL3 = {1250, 375};//468750 peaks
 	vector<int> LEVEL4 = {2500, 750};//1875000 peaks
-
-  	vector<vector<vector<double> > > GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (LEVEL4[0], std::vector<std::vector<double> >(LEVEL4[1], std::vector<double>({-1, -1})));//3d vector
+	*/
+	vector<vector<int>> GRIDSIZES;
+	vector<vector<vector<double> > > GRIDBLOCKS;
+  //	vector<vector<vector<double> > > GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (LEVEL4[0], std::vector<std::vector<double> >(LEVEL4[1], std::vector<double>({-1, -1})));//3d vector
 };
 /*
 struct Grid{//for TEST
@@ -141,6 +144,7 @@ public:
 	int RT_GROUP5;
 
 	void insertPeakDataToGridBlocks();
+	void calculateGridRange();
 	void insertDataLayerTable(std::string file_name);
 	void setRange(Range tmpRange);
 	void setGroup(double mz, double rt);

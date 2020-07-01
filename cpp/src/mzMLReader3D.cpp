@@ -20,7 +20,10 @@ Grid GRID;
 //std::vector<std::vector<std::vector<double> > >  GRID.GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (GRID.LEVEL5[0], std::vector<std::vector<double> >(GRID.LEVEL5[1], std::vector<double>({-1, -1})));
   
 int filledGrid = 0;
+int overlap = 0;
+int overlapCount = 0;
 
+bool sortAsce (std::vector<int> i, std::vector<int> j) { return (i[0] < j[0]); }
 std::string num2str(double num) {
   // std::cout << num << std::endl;
   stringstream stream;
@@ -114,34 +117,35 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
     "RETENTIONTIME   REAL     NOT NULL);");   <--------- PEAKS table */
 
   /*get the max min mz and max min rt, to get the range of mz and rt
-  then multiply the data by target range/ current range*/   
+  then multiply the data by target range/ current range */
 
   double mz_range = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
   double rt_range = RANGE.RTMAX - RANGE.RTMIN;//range of rt in mzML
  
   //NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin
 
-  int xindex = floor(((std::stod(argv[2]) - RANGE.MZMIN) * (GRID.LEVEL4[0] - 1)) / mz_range);
-  int yindex = floor(((std::stod(argv[4]) - RANGE.RTMIN) * (GRID.LEVEL4[1] - 1)) / rt_range);
+  int grid_width = GRID.GRIDSIZES[GRID.GRIDSIZES.size() - 1][0];
+  int grid_height = GRID.GRIDSIZES[GRID.GRIDSIZES.size() - 1][1];
+
+  int xindex = floor(((std::stod(argv[2]) - RANGE.MZMIN) * (grid_width - 1)) / mz_range);
+  int yindex = floor(((std::stod(argv[4]) - RANGE.RTMIN) * (grid_height - 1)) / rt_range);
 
   if (xindex < GRID.GRIDBLOCKS.size() && yindex < GRID.GRIDBLOCKS[0].size()){
     /*see if the grid block at [xIndex][yIndex] already has a peak.
     if it has a peak, the value at the index is FALSE. If it does not have a peak yet, the value is TRUE.
-    if TRUE, insert the peak into the corresponding table and set the value at [xIndex][yIndex] to be FALSE
-  */
+    if TRUE, insert the peak into the corresponding table and set the value at [xIndex][yIndex] to be FALSE*/
+  
     if (GRID.GRIDBLOCKS[xindex][yindex][0] < 0){//if gridBlock does not have a peak yet
       //store the intensity and ID
       GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
       GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
-
-      filledGrid++;
     }
     else{
       //compare intensity
       if (std::stod(argv[3]) > GRID.GRIDBLOCKS[xindex][yindex][1]){
         GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
         GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
-      }
+      } 
     }
   }
   else{
@@ -638,36 +642,63 @@ void mzMLReader3D::insertPeakDataToGridBlocks(){
     //std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
   }
 }
+void mzMLReader3D::calculateGridRange(){
+  /*RANGE.LAYERCOUNT is number of layer tables this mzML file would have. 
+  RANGE.COUNT is total number of peaks in mzML
+  RANGE.GRIDSCALEFACTOR is size difference of each level of layer x,y axis 
+  (2 * 4 -> 4 * 8 has GRIDSCALEFACTOR of 2)
+  add x y size of grid to GRIDSIZES vector for each layer
+   */
+  int peak_cnt = RANGE.COUNT;
+  int graph_x = 10;//ratio of 3d graph plane is 10 * 3
+  int graph_y = 3;
 
+  for (int i = 0; i < RANGE.LAYERCOUNT; i++){//0 is skipped because table with all peaks is not generated (using PEAKS instead)
+    int graph_scale = 1;
+    while ((graph_x * graph_scale) * (graph_y * graph_scale) < peak_cnt){
+      graph_scale++; 
+    }
+    GRID.GRIDSIZES.push_back({graph_x * (graph_scale), graph_y * (graph_scale)});
+    peak_cnt = peak_cnt / (RANGE.GRIDSCALEFACTOR * 2);//total peaks in this layer
+  }
+  std::sort(GRID.GRIDSIZES.begin(), GRID.GRIDSIZES.end(), sortAsce);
+  for (int i = 0; i < GRID.GRIDSIZES.size(); i++){
+    std::cout << "GRID SIZE : " << GRID.GRIDSIZES[i][0] << " " << GRID.GRIDSIZES[i][1] << std::endl;
+  }
+}
 void mzMLReader3D::insertDataLayerTable(std::string file_name){
-  std::vector<std::vector<int>> grid_range = {GRID.LEVEL0, GRID.LEVEL1, GRID.LEVEL2, GRID.LEVEL3, GRID.LEVEL4};
+  calculateGridRange();
+
+  int largest_grid_x = GRID.GRIDSIZES[GRID.GRIDSIZES.size() - 1][0];
+  int largest_grid_y = GRID.GRIDSIZES[GRID.GRIDSIZES.size() - 1][1];
+
+  GRID.GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (largest_grid_x, std::vector<std::vector<double> >(largest_grid_y, std::vector<double>({-1, -1})));
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
   insertPeakDataToGridBlocks();//peaks assigned to GRID.GRIDBLOCKS
-
   closeDatabaseInMemory();//close in-memory database. local disk db is still open.
 
   std::chrono::steady_clock::time_point end_grid = std::chrono::steady_clock::now();
 
-  for (int k = 0; k <= RANGE.LAYERCOUNT; k++){//from 0-5 (each layer table)
+  for (int k = 0; k < RANGE.LAYERCOUNT; k++){//from 0-5 (each layer table)
   //for (int k = 0; k <= 0; k++){//from 0-5 (each layer table)
     int x = 0;
     int y = 0; 
     int insert = 0;//counter for inserted peaks
 
-    int xrange = ceil(GRID.LEVEL4[0]/(float)grid_range[k][0]);//without float cast, 250/100 = 2
-    int yrange = ceil(GRID.LEVEL4[1]/(float)grid_range[k][1]);
+    int xrange = ceil(largest_grid_x/(float)GRID.GRIDSIZES[k][0]);//without float cast, 250/100 = 2
+    int yrange = ceil(largest_grid_y/(float)GRID.GRIDSIZES[k][1]);
 
    std::vector<int> selected_peak_ID;//highest peaks
 
-    while (y < GRID.LEVEL4[1]){
-      while (x < GRID.LEVEL4[0]){
+    while (y < largest_grid_y){
+      while (x < largest_grid_x){
         int highest_inte = 0;
         int highest_peak_Id = -1;
 
-        for (int cur_x = x; cur_x < x + xrange && cur_x < GRID.LEVEL4[0]; cur_x++){
-          for (int cur_y = y; cur_y < y + yrange && cur_y < GRID.LEVEL4[1]; cur_y++){
+        for (int cur_x = x; cur_x < x + xrange && cur_x < largest_grid_x; cur_x++){
+          for (int cur_y = y; cur_y < y + yrange && cur_y < largest_grid_y; cur_y++){
             //check intensity
             if (GRID.GRIDBLOCKS[cur_x][cur_y][1] > highest_inte){
               highest_inte =  GRID.GRIDBLOCKS[cur_x][cur_y][1];
@@ -685,8 +716,7 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
       y = y + yrange;
       x = 0;
     }
-    //std::cout << "selectedPeaks : " << selected_peak_ID.size() << std::endl;
-    /*
+   /*
     if (selectedPeakID.size() < (gridRange[k][0] * gridRange[k][1])){//if space left for more peaks
         std::sort(secondHighestPeaks.begin(), secondHighestPeaks.end());
         int peakDiff = gridRange[k][0] * gridRange[k][1] - selectedPeakID.size();
@@ -695,9 +725,8 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
           //std::cout << "p : " << p << std::endl;
           selectedPeakID.push_back(secondHighestPeaks[p][1]);
         }
-    }
-     std::cout << "selectedPeaks with extra peaks : " << selectedPeakID.size() << std::endl;*/
-    //int fail =0;
+    }*/
+    std::cout << "peaks in PEAKS" << k << ": " << selected_peak_ID.size() << std::endl;
      beginTransaction();
      for (int a = 0; a < selected_peak_ID.size(); a++){
        std::string sqlstr = "INSERT INTO PEAKS" + int2str(k) + "(ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME)" + 
@@ -708,15 +737,12 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
           if( rc != SQLITE_OK ){
             std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
             sqlite3_free(zErrMsg);
-            //fail++;
           }else{
-            insert++;
+            //insert++;
             //std::cout << "Operation done successfully - insertDataLayerTable" << std::endl;
           }
      }
      endTransaction();
-    // std::cout << "total inserted peaks : " << insert << std::endl;
-    //std::cout << "not inserted peaks : " << fail << std::endl;
   }
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   //std::cout << "insert finished " << std::endl;
@@ -932,7 +958,8 @@ void mzMLReader3D::insertConfigOneTable() {
 void mzMLReader3D::creatLayersTable() {
   std::string origin = "";
   clock_t t1 = clock();
-  for (int i = RANGE.LAYERCOUNT; i > -1; i--) {
+
+  for (int i = 0; i < RANGE.LAYERCOUNT; i++) {
     t1 = clock();
     beginTransaction();
     createLayerTable(num2str(i));
