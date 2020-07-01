@@ -1,4 +1,5 @@
 let graph3D;//3d graph
+let totalPeakCount;
 
 function getRelatedScan2(scanID) {
     var xhttp = new XMLHttpRequest();
