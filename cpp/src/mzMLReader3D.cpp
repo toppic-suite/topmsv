@@ -121,8 +121,8 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
  
   //NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin
 
-  int xindex = floor(((std::stod(argv[2]) - RANGE.MZMIN) * (GRID.LEVEL5[0] - 1)) / mz_range);
-  int yindex = floor(((std::stod(argv[4]) - RANGE.RTMIN) * (GRID.LEVEL5[1] - 1)) / rt_range);
+  int xindex = floor(((std::stod(argv[2]) - RANGE.MZMIN) * (GRID.LEVEL4[0] - 1)) / mz_range);
+  int yindex = floor(((std::stod(argv[4]) - RANGE.RTMIN) * (GRID.LEVEL4[1] - 1)) / rt_range);
 
   if (xindex < GRID.GRIDBLOCKS.size() && yindex < GRID.GRIDBLOCKS[0].size()){
     /*see if the grid block at [xIndex][yIndex] already has a peak.
@@ -640,7 +640,7 @@ void mzMLReader3D::insertPeakDataToGridBlocks(){
 }
 
 void mzMLReader3D::insertDataLayerTable(std::string file_name){
-  std::vector<std::vector<int>> grid_range = {GRID.LEVEL0, GRID.LEVEL1, GRID.LEVEL2, GRID.LEVEL3, GRID.LEVEL4, GRID.LEVEL5};
+  std::vector<std::vector<int>> grid_range = {GRID.LEVEL0, GRID.LEVEL1, GRID.LEVEL2, GRID.LEVEL3, GRID.LEVEL4};
 
   std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -649,8 +649,6 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
   closeDatabaseInMemory();//close in-memory database. local disk db is still open.
 
   std::chrono::steady_clock::time_point end_grid = std::chrono::steady_clock::now();
-  //std::cout << "grid assignment finished " << std::endl;
-  //std::cout << "Time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end_grid - begin).count() << "ms" << std::endl;
 
   for (int k = 0; k <= RANGE.LAYERCOUNT; k++){//from 0-5 (each layer table)
   //for (int k = 0; k <= 0; k++){//from 0-5 (each layer table)
@@ -658,18 +656,18 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
     int y = 0; 
     int insert = 0;//counter for inserted peaks
 
-    int xrange = ceil(GRID.LEVEL5[0]/(float)grid_range[k][0]);//without float cast, 250/100 = 2
-    int yrange = ceil(GRID.LEVEL5[1]/(float)grid_range[k][1]);
+    int xrange = ceil(GRID.LEVEL4[0]/(float)grid_range[k][0]);//without float cast, 250/100 = 2
+    int yrange = ceil(GRID.LEVEL4[1]/(float)grid_range[k][1]);
 
    std::vector<int> selected_peak_ID;//highest peaks
 
-    while (y < GRID.LEVEL5[1]){
-      while (x < GRID.LEVEL5[0]){
+    while (y < GRID.LEVEL4[1]){
+      while (x < GRID.LEVEL4[0]){
         int highest_inte = 0;
         int highest_peak_Id = -1;
 
-        for (int cur_x = x; cur_x < x + xrange && cur_x < GRID.LEVEL5[0]; cur_x++){
-          for (int cur_y = y; cur_y < y + yrange && cur_y < GRID.LEVEL5[1]; cur_y++){
+        for (int cur_x = x; cur_x < x + xrange && cur_x < GRID.LEVEL4[0]; cur_x++){
+          for (int cur_y = y; cur_y < y + yrange && cur_y < GRID.LEVEL4[1]; cur_y++){
             //check intensity
             if (GRID.GRIDBLOCKS[cur_x][cur_y][1] > highest_inte){
               highest_inte =  GRID.GRIDBLOCKS[cur_x][cur_y][1];

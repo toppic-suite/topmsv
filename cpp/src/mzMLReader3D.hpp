@@ -25,7 +25,7 @@ struct Range{
   double INTMIN;
   double INTMAX;
   int COUNT;
-  int LAYERCOUNT = 5;
+  int LAYERCOUNT = 4;
   int MAXRETURN = 5000;
   vector<double> MZSIZE;
   vector<double> RTSIZE;
@@ -35,14 +35,27 @@ struct Range{
 //value of n and m in n * m grid on graph
 //ratio is 10:3
 
-struct Grid{
+/*struct Grid{
 	vector<int> LEVEL0 = {100, 30};//3000 peaks
 	vector<int> LEVEL1 = {250, 75};//18750 peaks
 	vector<int> LEVEL2 = {500, 150};//75000 peaks
 	vector<int> LEVEL3 = {1000, 300};//300000 peaks
 	vector<int> LEVEL4 = {1600, 480};//768000 peaks
 	vector<int> LEVEL5 = {2500, 750};//1875000 peaks
+	vector<int> LEVEL6 = {3000, 1200};//3600000 peaks 
+
   	vector<vector<vector<double> > > GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (LEVEL5[0], std::vector<std::vector<double> >(LEVEL5[1], std::vector<double>({-1, -1})));//3d vector
+};*/
+struct Grid{
+	int LAYERCOUNT = 4;//should match the highest level of vectors below
+	//vector size is *2 then *2.5 then *2 then *2.5...
+	vector<int> LEVEL0 = {100, 30};//3000 peaks
+	vector<int> LEVEL1 = {250, 75};//18750 peaks
+	vector<int> LEVEL2 = {500, 150};//75000 peaks
+	vector<int> LEVEL3 = {1250, 375};//468750 peaks
+	vector<int> LEVEL4 = {2500, 750};//1875000 peaks
+
+  	vector<vector<vector<double> > > GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (LEVEL4[0], std::vector<std::vector<double> >(LEVEL4[1], std::vector<double>({-1, -1})));//3d vector
 };
 /*
 struct Grid{//for TEST
