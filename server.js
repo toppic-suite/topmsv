@@ -399,7 +399,7 @@ app.use('/', require("./router/projects3D"));
 //app.use('/', require("./router/load3dData"));
 app.use('/', require("./router/load3dDataByScan"));
 app.use('/', require("./router/load3dDataByParaRange"));
-//app.use('/', require("./router/loadDataRange"));
+app.use('/', require("./router/getPeaksPerTable"));
 app.use('/', require("./router/getMax"));
 
 
