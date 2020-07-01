@@ -211,9 +211,6 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     //loading spectra data upon startup and range change
 
     let tableNum = calculateTableNum(minrt, maxrt, minmz, maxmz);
-
-    console.log("tableNum : ", tableNum);
-
     var xhttp = new XMLHttpRequest();
     
     let fullDir = (document.getElementById("projectDir").value).split("/");
