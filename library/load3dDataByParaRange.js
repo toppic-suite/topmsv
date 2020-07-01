@@ -11,7 +11,7 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
     //assume that in mz range of 10, there are 10 peaks, 
     //assume that in rt range of 0.25, there are 5 scans
 
-    const peakCount = [3000, 18750, 75000, 300000, 768000, 1875000];//max peaks in each table from mzMLReader3D.hpp
+    const peakCount = [3000, 18750, 75000, 468750, 1875000];//max peaks in each table from mzMLReader3D.hpp
     
     let peakPerMz = 1;
     let scanPerRt = 20;
@@ -20,18 +20,27 @@ function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
     let totalExpectedPeaks = expectedPeaks * expectedScans; 
     let minDiff = Infinity;
     let tableNum = 0;
-
-    for (let i = 0; i < peakCount.length; i++){
-        //find which level has the closet number of peaks with totalExpectedPeaks
-        let diff = Math.abs(peakCount[i] - totalExpectedPeaks);
-        if (diff < minDiff ){
-            //tableNum = i;
-            tableNum = peakCount.length - 1 - i;
-            minDiff = diff;
-        } 
+    
+    if (totalExpectedPeaks >= peakCount[0])
+    {
+        for (let i = 0; i < peakCount.length; i++)
+        {
+            //find which level has the closet number of peaks with totalExpectedPeaks
+            let diff = Math.abs(peakCount[i] - totalExpectedPeaks);
+            if (diff < minDiff )
+            {
+                tableNum = peakCount.length - 1 - i;
+                minDiff = diff;
+            } 
+        }
+        console.log("the selected table is PEAKS" , tableNum);
     }
-    console.log("the selected table is PEAKS" , tableNum);
-
+    else
+    {
+        console.log("the selected table is PEAKS");
+        tableNum = ''//if range very small, always use the largest table
+    }
+    
     let sql = `SELECT *
                 FROM PEAKS` + tableNum.toString() + 
                 ` WHERE RETENTIONTIME <= ? 
