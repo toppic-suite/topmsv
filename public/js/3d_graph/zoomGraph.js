@@ -14,7 +14,6 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
     if (this.viewRange["intscale"] >= 0){//prevent peak from drawn under the graph
         this.updateViewRange(this.viewRange);
     }
-
 }
 MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     //zoom action detected by event listener in each axis

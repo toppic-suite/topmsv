@@ -63,18 +63,18 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.dataRange.rtrange = maxrt - minrt;
 
     this.getInteRange(this.currentData);
-    this.updateViewRange(this.dataRange);
 
-    //console.log("at drawGraph, currentData.length : ", this.currentData.length);
+    console.log("at drawGraph, currentData.length : ", this.currentData.length);
 
     for (let i = 0; i < this.currentData.length; i++)
     {
         this.plotPoint(this.currentData[i]);
     }
     this.viewRange["intscale"] = 1;
+
     // make sure the groups are plotted and update the view
-    this.repositionPlot(this.viewRange);
-    this.updateViewRange(this.viewRange);
+    //this.repositionPlot(this.dataRange);
+    this.updateViewRange(this.dataRange);
 }
 /*this.maxPeaks is the max number of peaks on the graph. 
     as ms1 peaks are always going to show in 3d grahph, add only a subset of peaks to the this.currentData
@@ -82,7 +82,6 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
 MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
     let peakCount = this.ms1Peaks.length;
     let curMs1Peaks = [];
-    
     //from ms1 data, extract only those that are in current mz and rt range
     for (let i = 0; i < peakCount && i < this.maxPeaks; i++){
         if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
@@ -90,7 +89,7 @@ MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
             curMs1Peaks.push(this.ms1Peaks[i]);
         }
     }
-    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
     this.currentData = curMs1Peaks.concat(peaksToAdd);//store loaded data
 }
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
@@ -179,41 +178,27 @@ MsGraph.prototype.repositionPlot = function(r) {
     var mz_stretch = 1/mz_squish;
     var rt_stretch = 1/rt_squish;
 
-    this.markerGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
+    //this.markerGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
     this.plotGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
 
     // update the set of visible points
-    var intmin = 0, intmax = 0;
-    this.plotGroup.children.forEach(function(p) {
+    //var intmin = 0, intmax = 0;
+    /*this.plotGroup.children.forEach(function(p) {
         p.visible = false;
         if (p.mz >= r.mzmin - 1e-4 && p.mz <= r.mzmax + 1e-4 && p.rt >= r.rtmin - 1e-4 && p.rt <= r.rtmax + 1e-4) {
             p.visible = true;
             intmin = Math.min(intmin, p.int);
             intmax = Math.max(intmax, p.int);
         }
-    }, this);
-    this.markerGroup.children.forEach(function(m) {
-        var p = m.position;
-        var inRange = p.x >= r.mzmin - 1e-4 && p.x <= r.mzmax + 1e-4 && p.z >= r.rtmin - 1e-4 && p.z <= r.rtmax + 1e-4;
-        m.visible = inRange;
-    });
-    
-    r.intmin = intmin;
-    r.intmax = intmax;
+    }, this);*/
+
+    //r.intmin = intmin;
+    //r.intmax = intmax;
 
     // update tick marks
     var self = this;
     MsGraph.emptyGroup(self.ticklabelgroup);
-    var markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
-    // draws a tick mark at the given location
-    var makeTickMark = function(mzmin, mzmax, rtmin, rtmax) {
-        var markGeo = new THREE.Geometry();
-        markGeo.vertices.push(new THREE.Vector3(mzmin, 0, rtmin));
-        markGeo.vertices.push(new THREE.Vector3(mzmax, 0, rtmax));
-        var markLine = new THREE.Line(markGeo, markMaterial);
-        self.ticksGroup.add(markLine);
-    };
-
+    
     // draws a tick label for the given location
     var makeTickLabel = function(which, mz, rt) {
         var text;
@@ -233,12 +218,23 @@ MsGraph.prototype.repositionPlot = function(r) {
         label.position.set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
         self.ticklabelgroup.add(label);
     };
-
+    
+    MsGraph.emptyGroup(self.ticksGroup);
+    
     // calculate tick frequency
     var mzSpacing = Math.pow(10, Math.floor(Math.log(r.mzrange)/Math.log(10) - 0.5));
     var rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5));
 
-    MsGraph.emptyGroup(self.ticksGroup);
+    var markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
+    // draws a tick mark at the given location
+    var makeTickMark = function(mzmin, mzmax, rtmin, rtmax) {
+        var markGeo = new THREE.Geometry();
+        markGeo.vertices.push(new THREE.Vector3(mzmin, 0, rtmin));
+        markGeo.vertices.push(new THREE.Vector3(mzmax, 0, rtmax));
+        var markLine = new THREE.Line(markGeo, markMaterial);
+        
+        self.ticksGroup.add(markLine);
+    };
 
     // properly check if floating-point "value" is a multiple
     // of "divisor" within a tolerance
@@ -252,6 +248,7 @@ MsGraph.prototype.repositionPlot = function(r) {
 
     var mzFirst = r.mzmin - (r.mzmin % mzSpacing);
     rt = r.rtmin;
+
     for (mz = mzFirst + mzSpacing; mz < r.mzmax; mz += mzSpacing) {
         // This little gem makes it so that tick marks that are a multiple
         // of (10 * the spacing value) are longer than the others
@@ -276,57 +273,5 @@ MsGraph.prototype.repositionPlot = function(r) {
             makeTickLabel("rt", mz, rt);
         }
     }
-    this.redrawRuler();
+
 };
-
-// draws the ruler with the given gap between ticks at the given mz and rt
-MsGraph.prototype.drawRuler = function(gap, mz, rt) {
-    // reset ruler parameters
-    var ruler = this.ruler;
-    ruler.gap = gap;
-    ruler.mz = mz;
-    ruler.rt = rt;
-    ruler.position.set(mz, 0, rt);
-    MsGraph.emptyGroup(ruler);
-
-    var vr = this.viewRange;
-
-    var rulerWidth = (this.RULER_TICKS - 1) * gap;
-    var leftEdge = mz - gap;
-
-    // if the ruler is positioned outside of the graph, don't draw it
-    if (!isFinite(leftEdge) || leftEdge + rulerWidth < vr.mzmin || leftEdge > vr.mzmax) { return; }
-    if (!isFinite(rt) || rt < vr.rtmin || rt > vr.rtmax) { return; }
-
-    var mat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-    var addLine = function (width, height, x) {
-        var geo = new THREE.PlaneGeometry(width, height);
-        var obj = new THREE.Mesh(geo, mat);
-
-        // plane geometry isn't at the angle we want
-        obj.rotateX(Math.PI/2);
-
-        // 'position' is the center of the plane, but we want 'x' to be the left edge
-        obj.position.set(x + width/2, 0, 0);
-        MsGraph.setOnTop(obj);
-        ruler.add(obj);
-    };
-
-    // calculate ratios to keep a consistent "physical" size on placement
-    var verticalRatio = this.viewRange.rtrange / this.GRID_RANGE;
-    var horizontalRatio = this.viewRange.mzrange / this.GRID_RANGE;
-
-    // draw the horizontal bar
-    addLine(rulerWidth, 0.1 * verticalRatio, -gap);
-
-    // draw each vertical bar
-    for(var i = 0; i < this.RULER_TICKS; i += 1) {
-        addLine(0.1 * horizontalRatio, this.viewRange.rtrange / 10, (i-1) * gap)
-    }
-}
-
-// redraws and resizes the ruler at its current location
-MsGraph.prototype.redrawRuler = function() {
-    var ruler = this.ruler;
-    this.drawRuler(ruler.gap, ruler.mz, ruler.rt);
-}
