@@ -74,7 +74,7 @@ MsGraph.prototype.init = function(maxMzRt){
     //this.hoverGraph(this);
 
     // camera
-   // var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
+    //var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
     var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
     
     camera.position.set(15, 15, 30);
@@ -139,8 +139,8 @@ MsGraph.prototype.init = function(maxMzRt){
     var mzLine = new THREE.Line( mzGeo, axisMat );
     var rtLine = new THREE.Line( rtGeo, axisMat );
 
-   // mzLine.visible = false;
-  //  rtLine.visible = false;
+    // mzLine.visible = false;
+    // rtLine.visible = false;
 
     this.domEvents.addEventListener(mzLine, 'mouseover', (function(event){
         //console.log("over mz")
@@ -163,7 +163,6 @@ MsGraph.prototype.init = function(maxMzRt){
     this.ruler = new THREE.Group();
     this.ruler.visible = false;
     this.rulerGroup.add(this.ruler);
-
     
     // add objects to the scene
     scene.add(gridgroup);
@@ -181,7 +180,6 @@ MsGraph.prototype.init = function(maxMzRt){
     this.renderImmediate();
 };
 
-
 /******** GEOMETRY/MATH FUNCTIONS *******/
 // Converts mz, rt coordinate to normal space (0 to GRID_RANGE)
 MsGraph.prototype.mzRtToGridSpace = function(mz, rt) {
@@ -198,7 +196,6 @@ MsGraph.roundTo = function(number, places) {
     var power = Math.pow(10, places);
     return Math.round(number * power) / power;
 };
-
 
 /******** OBJECT MANAGEMENT AND UTILITIES *****/
 
@@ -263,7 +260,6 @@ MsGraph.prototype.updateViewRange = function(newViewRange) {
     this.viewRange = newViewRange;
 
     this.repositionPlot(this.viewRange);
-
     this.drawDataLabels();
     this.renderImmediate();
 };
@@ -301,8 +297,8 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
             rtmin: rtmin, rtmax: rtmin + rtrange, rtrange: rtrange,
         };
     }
-    r = this.constrainBounds(r);
-    this.updateViewRange(r);
+   // r = this.constrainBounds(r);
+    //this.updateViewRange(r);
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
 };
 
@@ -311,7 +307,7 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
 // render the graph immediately (i.e. can't wait for timed update)
 MsGraph.prototype.renderImmediate = function() {
     this.renderer.render( this.scene, this.camera );
-    //this.legend.updateCamera(this.camera.position, this.camera.rotation);
+
     this.renderRequested = false;
 };
 
@@ -346,7 +342,6 @@ MsGraph.prototype.drawDataLabels = function() {
         var obj = this.labelgroup.children.pop();
         MsGraph.disposeObject(obj);
     }
-
     var mzmintext = MsGraph.roundTo(this.viewRange.mzmin, this.ROUND_MZ);
     var mzmaxtext = MsGraph.roundTo(this.viewRange.mzmax, this.ROUND_MZ);
     var rtmintext = MsGraph.roundTo((this.viewRange.rtmin/60).toFixed(4), this.ROUND_RT);
