@@ -287,7 +287,6 @@ function init3dGraph(){
         promise2.then(function(peakData){//to make sure max values are fetched before creating graph
             rowCount = JSON.parse(peakData);
             graph3D.init(maxData);
-             let i = calculateTableNum(0,0,0,0);
             showEnvTable(min);
             findNextLevelOneScan(min);
             loadInteSumList();
@@ -906,10 +905,21 @@ redrawRequestButton.addEventListener('click', function(){
     let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
     let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
     let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
-
-    //reload data and redraw graph
-    load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, false);
-
+    
+    //error handing
+    if (minRT > maxRT){
+        alert("Invalid Range : Minimum retention time is bigger than maximum.");
+    } 
+    else if (minMZ > maxMZ){
+        alert("Invalid Range : Minimum m/z is bigger than maximum");
+    }
+    else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
+        alert("Invalid Value Found : Please make sure the range has valid values.");
+    }
+    else{
+        //reload data and redraw graph
+        load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, false);
+    }
 }, false);
 
 //function running on startup
