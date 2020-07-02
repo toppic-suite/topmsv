@@ -105,7 +105,7 @@ MsGraph.prototype.onZoom = function(e){
         //reset view range based on scroll up or down
         let scaleFactor = 0;
 
-        if (e.deltaY < 0) {
+        if (e.deltaY > 0) {
             scaleFactor = 0.75;
         }
         else{

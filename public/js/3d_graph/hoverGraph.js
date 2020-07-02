@@ -4,21 +4,6 @@ MsGraph.prototype.hoverGraph = function(graph){
    this.currentPeak = null;
    graph.renderer.domElement.addEventListener('mousemove', this.onMouseOver.bind(this), false);
 }
-/*
-MsGraph.prototype.onMouseOver = function(peak){
-    console.log(peak.mz, peak.rt)
-    this.currentPeak = peak;
-    this.currentPeak.origColor = this.currentPeak.material.color.getHex();
-    document.getElementById('graph-hover-label').innerText = "scan: " + peak.scanID + ", m/z : " + peak.mz.toFixed(2) + ", intensity: " + peak.int.toFixed(2) + ", retention time: " + (peak.rt/60).toFixed(4); 
-    
-    peak.material.color.setHex(0xffcf00);
-    peak.pinhead.material.color.setHex(0xffcf00);
-    this.renderer.render(this.scene, this.camera);
-    return;
-}
-MsGraph.prototype.onMouseOut = function(peak){
-    peak.material.color.setHex( peak.origColor);
-}*/
 
 MsGraph.prototype.onMouseOver = function(event){
     let mousePos = this.getMousePosition(event);
@@ -46,7 +31,6 @@ MsGraph.prototype.onMouseOver = function(event){
         }
     }
     if (closestPeak != null){//if a peak is under the cursor, highlight and display its information
-       // console.log(curmz, currt)
         this.currentPeak = closestPeak;
         this.currentPeak.origColor = this.currentPeak.material.color.getHex();
         document.getElementById('graph-hover-label').innerText = "scan: " + closestPeak.scanID + ", m/z : " + closestPeak.mz.toFixed(2) + ", intensity: " + closestPeak.int.toFixed(2) + ", retention time: " + (closestPeak.rt/60).toFixed(4); 

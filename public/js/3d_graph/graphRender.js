@@ -1,9 +1,5 @@
 // graphpoints.js : draws and manages the points on the screen and panning/zooming
 
-MsGraph.PIN_GEO = new THREE.CircleBufferGeometry(0.1, 8);
-MsGraph.CYLINDER_RADIUS_MAX = 0.1;
-MsGraph.CYLINDER_RADIUS_MIN = 0.065;
-
 MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
@@ -116,7 +112,6 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
 MsGraph.prototype.plotPoint = function(point) {
     // point: an array of the following values
     var id = point.ID;
-    //var trace = point[1];
     var mz = point.MZ;
     var rt = point.RETENTIONTIME;
     var inten = point.INTENSITY;
@@ -134,32 +129,23 @@ MsGraph.prototype.plotPoint = function(point) {
 
     var meshmat = new THREE.MeshBasicMaterial({color: 0x350fa8});
 
-    if (this.useCylinders) {
-        // cylinders are single objects that act as thick lines and as pinheads (from above)
-        var cylgeo = new THREE.CylinderBufferGeometry(this.CYLINDER_RADIUS_CURRENT, this.CYLINDER_RADIUS_CURRENT, y);
-        var cyl = new THREE.Mesh(cylgeo, meshmat);
-        // y position is "center" of cylinder on long axis
-        cyl.position.set(mz, y/2, rt);
-        drawObj = cyl;
-    } else {
-        // thin lines and pinheads on the other hand are separate objects
-        var linegeo = new THREE.BufferGeometry();
-        linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
-            0, 0, 0,
-            0, y, 0,
-        ]), 3));
+    var linegeo = new THREE.BufferGeometry();
+    linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+        0, 0, 0,
+        0, y, 0,
+    ]), 3));
 
-        var linemat = new THREE.LineBasicMaterial({color: 0x350fa8});
+    var linemat = new THREE.LineBasicMaterial({color: 0x350fa8});
 
-        if (point.SPECTRAID == parseInt(scanID)){
-            linemat = new THREE.LineBasicMaterial({color: 0xED1111});
-            meshmat = new THREE.MeshBasicMaterial({color: 0xED1111});
-        }
-        var line = new THREE.Line(linegeo, linemat);
-        line.position.set(mz, 0, rt);
-
-        drawObj = line;
+    if (point.SPECTRAID == parseInt(scanID)){
+        linemat = new THREE.LineBasicMaterial({color: 0xED1111});
+        meshmat = new THREE.MeshBasicMaterial({color: 0xED1111});
     }
+    var line = new THREE.Line(linegeo, linemat);
+    line.position.set(mz, 0, rt);
+
+    drawObj = line;
+    
     drawObj.pointid = id;
     drawObj.mz = mz;
     drawObj.rt = rt;
@@ -170,7 +156,6 @@ MsGraph.prototype.plotPoint = function(point) {
 
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
-
 };
 
 // scales and positions the plot depending on the new viewing range
@@ -183,8 +168,7 @@ MsGraph.prototype.repositionPlot = function(r) {
     // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
     var mz_squish = this.GRID_RANGE / r.mzrange;
     var rt_squish = - this.GRID_RANGE / r.rtrange;
-    //console.log("intScale: ", r.intscale)
-   // console.log("multiply: ", this.GRID_RANGE_VERTICAL / heightScale * r.intscale)
+
     this.datagroup.scale.set(mz_squish, (this.GRID_RANGE_VERTICAL / heightScale) * r.intscale, rt_squish);
         
     // Reposition the plot so that mzmin,rtmin is at the correct corner
@@ -199,12 +183,10 @@ MsGraph.prototype.repositionPlot = function(r) {
     this.plotGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
 
     // update the set of visible points
-    var nVisible = 0;
     var intmin = 0, intmax = 0;
     this.plotGroup.children.forEach(function(p) {
         p.visible = false;
         if (p.mz >= r.mzmin - 1e-4 && p.mz <= r.mzmax + 1e-4 && p.rt >= r.rtmin - 1e-4 && p.rt <= r.rtmax + 1e-4) {
-            nVisible++;
             p.visible = true;
             intmin = Math.min(intmin, p.int);
             intmax = Math.max(intmax, p.int);
@@ -216,37 +198,9 @@ MsGraph.prototype.repositionPlot = function(r) {
         m.visible = inRange;
     });
     
-    this.nPointsVisible = nVisible;
-
     r.intmin = intmin;
     r.intmax = intmax;
-    
-    // update edge indicators
-    var edgesGroup = this.edgesGroup;
-    var edgeMaterial = new THREE.LineBasicMaterial({ color: "red" });
-    // draws a line for the edge of the data to indicate can't pan any more
-    var makeEdgeLine = function(mzmin, mzmax, rtmin, rtmax) {
-        var edgeGeo = new THREE.Geometry();
-        edgeGeo.vertices.push(new THREE.Vector3(mzmin, 0, rtmin));
-        edgeGeo.vertices.push(new THREE.Vector3(mzmax, 0, rtmax));
-        var edgeLine = new THREE.Line(edgeGeo, edgeMaterial);
-        edgesGroup.add(edgeLine);
-    };
 
-    MsGraph.emptyGroup(edgesGroup);
-    if (r.mzmin <= this.dataRange.mzmin + 1e-4) {
-        makeEdgeLine(r.mzmin, r.mzmin, r.rtmin, r.rtmax);
-    }
-    if (r.mzmax >= this.dataRange.mzmax - 1e-4) {
-        makeEdgeLine(r.mzmax, r.mzmax, r.rtmin, r.rtmax);
-    }
-    if (r.rtmin <= this.dataRange.rtmin + 1e-4) {
-        makeEdgeLine(r.mzmin, r.mzmax, r.rtmin, r.rtmin);
-    }
-    if (r.rtmax >= this.dataRange.rtmax - 1e-4) {
-        makeEdgeLine(r.mzmin, r.mzmax, r.rtmax, r.rtmax);
-    }
-    
     // update tick marks
     var self = this;
     MsGraph.emptyGroup(self.ticklabelgroup);
@@ -322,9 +276,7 @@ MsGraph.prototype.repositionPlot = function(r) {
             makeTickLabel("rt", mz, rt);
         }
     }
-
-    //this.redrawRuler();
-    //this.redrawGuard();
+    this.redrawRuler();
 };
 
 // draws the ruler with the given gap between ticks at the given mz and rt
@@ -378,48 +330,3 @@ MsGraph.prototype.redrawRuler = function() {
     var ruler = this.ruler;
     this.drawRuler(ruler.gap, ruler.mz, ruler.rt);
 }
-
-// draws a segmentation guard at the given mz with the given width
-MsGraph.prototype.drawGuard = function(mz, width) {
-    // reset guard parameters
-    var guard = this.guardGroup;
-    guard.mz = mz;
-    guard.width = width;
-    MsGraph.emptyGroup(guard);
-
-    var vr = this.viewRange;
-
-    // if the guard is positioned outside of the graph, don't draw it
-    if (!isFinite(mz) || mz < vr.mzmin || mz > vr.mzmax) { return; }
-
-    var x1 = this.mzRtToGridSpace(mz - width/2).x;
-    var x2 = this.mzRtToGridSpace(mz + width/2).x;
-    var z1 = 0;
-    var z2 = this.GRID_RANGE;
-
-    var geo = new THREE.BufferGeometry();
-    var vertices = new Float32Array([
-        x1, 0, z1,
-        x1, 0, z2,
-        x2, 0, z1,
-        x2, 0, z2
-    ]);
-    geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-
-    var material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    var lines = new THREE.LineSegments(geo, material);
-    MsGraph.setOnTop(lines);
-    guard.add(lines);
-};
-
-// set the width of the segmentation guard without changing its position
-MsGraph.prototype.setGuardWidth = function(newWidth) {
-    this.guardGroup.width = newWidth;
-    this.redrawGuard();
-};
-
-// redraws the guard at its current position
-MsGraph.prototype.redrawGuard = function() {
-    var guard = this.guardGroup;
-    this.drawGuard(guard.mz, guard.width);
-};
