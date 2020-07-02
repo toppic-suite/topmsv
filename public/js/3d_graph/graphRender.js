@@ -104,7 +104,7 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
             curMs1Peaks.push(this.ms1Peaks[i]);
         }
     }
-    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length) - 1);
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
     this.currentData = curMs1Peaks.concat(peaksToAdd);
 }
 // plots a single point on the graph
