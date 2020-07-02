@@ -6,7 +6,6 @@ MsGraph.prototype.panGraph = function(graph){
     this.mdelta = new THREE.Vector3();
 
     graph.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
-    //graph.renderer.domElement.addEventListener('mousemove', this.onMousemove.bind(this), false);
     graph.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this), false);
 }
 MsGraph.prototype.panView = function(x,z){
