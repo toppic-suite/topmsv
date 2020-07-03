@@ -7,7 +7,6 @@ var load3dDataByScan = router.get('/load3dDataByScan', function (req, res) {
     var projectDir = req.query.projectDir;
     var scanNum = req.query.scanID;
     load3dDataByScanLib(projectDir, scanNum, function (err, rows) {
-		console.log("rows count: ", rows.length)
         res.write(JSON.stringify(rows));
         res.end();
    });

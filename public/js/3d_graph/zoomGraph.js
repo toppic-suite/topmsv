@@ -1,20 +1,24 @@
 //on mouse wheel event, get mouse point
 //if it is near x axis, y axis, or else, adjust range accordingly
+
+let IsScrolling = false;
+
 MsGraph.prototype.zoomGraph = function(graph){
     graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
 }
 MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
-    this.linesArray = [];
+    this.clearGraph();
 
     for (let i = 0; i < this.currentData.length; i++){
         this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * scaleFactor;//multiply intensity by scaleFactor
-
         this.plotPoint(this.currentData[i]);
     }
     this.viewRange["intscale"] = this.viewRange["intscale"] + scaleFactor - 1;//because default value is 1, deduct 1 to start from 0.
-    this.repositionPlot(this.viewRange);
-    this.updateViewRange(this.viewRange);
+    if (this.viewRange["intscale"] >= 0){//prevent peak from drawn under the graph
+        this.updateViewRange(this.viewRange);
+    }
 }
+
 MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     //zoom action detected by event listener in each axis
     let scaleFactor = 0;
@@ -26,9 +30,6 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     let curmz = mousePos.x * this.viewRange.mzrange + this.viewRange.mzmin;//current mz and rt that has a cursor pointed to
     let currt = mousePos.z * this.viewRange.rtrange + this.viewRange.rtmin;
 
-    //console.log(mousePos.x, mousePos.z) 
-    //console.log(curmz, currt/60)
-
     //reset view range based on scroll up or down
     if (e.deltaY < 0) {
         scaleFactor = 0.7;
@@ -39,11 +40,9 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
 
     //figure out where the cursor is (near x axis, y axis)
     if (axisName == "rt"){
-        console.log("rt axis zoom")
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
     else if (axisName == "mz"){//mz range adjust
-        console.log("mz axis zoom")
         newmzrange = this.viewRange.mzrange * scaleFactor;
     }
 
@@ -67,24 +66,115 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     if (newrtmin < 0){
         newrtmin = 0;
     }
+    //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
+    if (newmzmin + newmzrange > this.totalMaxMz){
+        newmzrange = this.totalMaxMz - newmzmin;
+    }
+    if (newrtmin + newrtrange > this.totalMaxRt){
+        newrtrange = this.totalMaxRt - newrtmin;
+    }
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
+/*
+MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
+    //zoom action detected by event listener in each axis
+    let scaleFactor = 0;
+    let mousePos = this.getMousePosition(e);
+
+    var currentViewRange = this.viewRange;
+    var newmzrange = currentViewRange.mzrange;
+    var newrtrange = currentViewRange.rtrange;
+    var newmzmin = currentViewRange.mzmin;
+    var newrtmin = currentViewRange.rtmin;
+
+    // mz/rtDist = fractional position of mouse
+    var mzDist = mousePos.x;
+    var rtDist = mousePos.z;
+
+    if (e.deltaY < 0) {
+        scaleFactor = 0.7;
+    }
+    else{
+        scaleFactor = 1.3;
+    }
+    // constrains points to within the graph bounds
+    mzDist = Math.min(Math.max(mzDist, 0), 1);
+    rtDist = Math.min(Math.max(rtDist, 0), 1);
+
+    // calculate a new range based on the view
+    /*if (axisName == "rt"){
+        newrtrange = this.viewRange.rtrange * scaleFactor;
+    }
+    else{
+        newmzrange = this.viewRange.mzrange * scaleFactor;
+    }
+    
+    if (event.deltaY < 0) {
+        if (axisName == "rt"){
+            newrtrange = this.viewRange.rtrange * 0.8;
+        }
+        else{
+            newmzrange = this.viewRange.mzrange * 0.8;
+        }
+      } else {
+        if (axisName == "rt"){
+            newrtrange = this.viewRange.rtrange * 1.2;
+        }
+        else{
+            newmzrange = this.viewRange.mzrange * 1.2;
+        }
+      }
+      /*
+      if (event.deltaY < 0) {
+        console.log("going down")
+        newmzrange = currentViewRange.mzrange * 0.7;
+        newrtrange = currentViewRange.rtrange * 0.7;
+      } else {
+        console.log("going up")
+        newmzrange = currentViewRange.mzrange * 1.3;
+        newrtrange = currentViewRange.rtrange * 1.3;
+      }
+    var mzPoint = mzDist * currentViewRange.mzrange + currentViewRange.mzmin;
+    var rtPoint = rtDist * currentViewRange.rtrange + currentViewRange.rtmin;
+    newmzmin = (mzPoint) - (newmzrange / currentViewRange.mzrange) * (mzPoint - currentViewRange.mzmin);
+    newrtmin = (rtPoint) - (newrtrange / currentViewRange.rtrange) * (rtPoint - currentViewRange.rtmin);
+    if (newmzmin < 0){
+        newmzmin = 0;
+    }
+    if (newrtmin < 0){
+        newrtmin = 0;
+    }
+    //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
+    if (newmzmin + newmzrange > this.totalMaxMz){
+        newmzrange = this.totalMaxMz - newmzmin;
+    }
+    if (newrtmin + newrtrange > this.totalMaxRt){
+        newrtrange = this.totalMaxRt - newrtmin;
+    }
+    let wait = this.delayWheelEvent(newmzmin, newmzrange, newrtmin, newrtrange);
+    //wait for setViewingArea to finish before exiting
+    wait.then(function(){
+        return;
+    })
+}
+MsGraph.prototype.delayWheelEvent = function(newmzmin, newmzrange, newrtmin, newrtrange){
+    return new Promise(function(resolve, reject){
+        this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange); 
+    }.bind(this));
+}*/
 MsGraph.prototype.getMousePosition = function(event) {
     var el = this.renderer.domElement;
     let canvasPosition = this.renderer.domElement.getBoundingClientRect();
 
     //find mouse position, normalized to a [-1,1] in both x/y-axes on screen
-
     var coord = {
         x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
         y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
     };
-    //console.log("coord: ", coord)
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(coord, this.resizedCamera);
 
     var pos = raycaster.ray.intersectPlane(this.graphPlane);
-
     if (pos) {
     //convert world coordinates to graph-fractional coordinates
         pos.multiply(this.rangeTransform);
@@ -96,18 +186,16 @@ MsGraph.prototype.onZoom = function(e){
     e.preventDefault();//disable scroll of browser
 
     if (this.mzAxisZoom){
-        console.log("on mz axis")
         this.onZoomFromEventListener(e, "mz");
     }
     else if(this.rtAxisZoom){
-        console.log("on rt axis")
         this.onZoomFromEventListener(e, "rt");
     }
     else{
         //reset view range based on scroll up or down
         let scaleFactor = 0;
 
-        if (e.deltaY < 0) {
+        if (e.deltaY > 0) {
             scaleFactor = 0.75;
         }
         else{
