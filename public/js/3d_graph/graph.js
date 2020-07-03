@@ -20,15 +20,7 @@ function MsGraph(containerEl, graphEl) {
     // number of ruler ticks to render
     this.RULER_TICKS = 5;
 
-    this.gradientCache = [];
-
     this.dataRange = { mzmin: 0, mzmax: 1, mzrange: 1, rtmin: 0, rtmax: 1, rtrange: 1, intmin: 0, intmax: 1000, intrange: 1000 };
-
-    this.POINTS_PLOTTED_LIMIT = 6000; // points that can be displayed on the screen
-
-    this.nPointsVisible = 0;
-
-    this.dimensionMode = "3D";
 
     this.labels = {};
 
@@ -40,16 +32,26 @@ function MsGraph(containerEl, graphEl) {
     this.ROUND_INT = 3;
 
     this.currentData; //all data for current scan (so that no need to load all back when moving ms1 graph)
+    this.ms1Peaks;//ms1 peaks for each scan
 
     this.mzAxisZoom = false;
     this.rtAxisZoom = false;
+
+    this.maxPeaks = 3000;
+
+    this.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
+    this.totalMaxRt = 0;
 }
 
 /******** SETUP FUNCTIONS ******/
 
 // creates the graph scene and sets it up. Should be called
 // after the document is ready and all javascript has loaded
-MsGraph.prototype.init = function(){
+MsGraph.prototype.init = function(maxMzRt){
+    //set maximum mz rt value 
+    this.totalMaxMz = maxMzRt.MZMAX;
+    this.totalMaxRt = maxMzRt.RTMAX;
+
     var scene = this.scene = new THREE.Scene();
 
     // rendering element
@@ -72,8 +74,9 @@ MsGraph.prototype.init = function(){
     //this.hoverGraph(this);
 
     // camera
-   // var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
+    //var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
     var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
+    
     camera.position.set(15, 15, 30);
     this.prevCameraPos = camera.position.clone();
 
@@ -93,30 +96,18 @@ MsGraph.prototype.init = function(){
     graphControls.enabled = true;
 
     // make grouping constructs
-    var gridgroup = new THREE.Group();
+    this.gridgroup = new THREE.Group();
     this.datagroup = new THREE.Group();
     this.labelgroup = new THREE.Group();
+    this.ticksGroup = new THREE.Group();
+    this.ticklabelgroup = new THREE.Group();
 
     // plotting objects
     this.linesArray = [];
     this.plotGroup = new THREE.Group();
-    this.pinGroup = new THREE.Group();
-    this.edgesGroup = new THREE.Group();
-    this.ticksGroup = new THREE.Group();
-    this.markerGroup = new THREE.Group();
-    this.ticklabelgroup = new THREE.Group();
-    this.rulerGroup = new THREE.Group();
-    this.guardGroup = new THREE.Group();
-
-    // "flatten" the pins to the graph
-    this.pinGroup.scale.set(1, 1/1000, 1);
-
+  
     this.datagroup.add(this.plotGroup);
-    this.datagroup.add(this.pinGroup);
-    //this.datagroup.add(this.edgesGroup);
     this.datagroup.add(this.ticksGroup);
-    this.datagroup.add(this.markerGroup);
-    this.datagroup.add(this.rulerGroup);
 
     // graph "surface" (gray underside)
     var surfaceGeo = new THREE.PlaneGeometry(this.GRID_RANGE, this.GRID_RANGE);
@@ -124,8 +115,8 @@ MsGraph.prototype.init = function(){
     var surface = new THREE.Mesh(surfaceGeo, surfaceMat);
     surface.rotateX(Math.PI/2);
     surface.position.set(this.GRID_RANGE / 2, -0.05, this.GRID_RANGE / 2);
-    gridgroup.add(surface);
-    gridgroup.add(this.drawGrid());
+    this.gridgroup.add(surface);
+    this.gridgroup.add(this.drawGrid());
 
     //add two invisible lines on top of rt and mz axis for zooming
     var axisMat = new THREE.LineBasicMaterial({color: 0x0000ff, linewidth:100});
@@ -144,8 +135,8 @@ MsGraph.prototype.init = function(){
     var mzLine = new THREE.Line( mzGeo, axisMat );
     var rtLine = new THREE.Line( rtGeo, axisMat );
 
-   // mzLine.visible = false;
-  //  rtLine.visible = false;
+    // mzLine.visible = false;
+    // rtLine.visible = false;
 
     this.domEvents.addEventListener(mzLine, 'mouseover', (function(event){
         //console.log("over mz")
@@ -165,14 +156,9 @@ MsGraph.prototype.init = function(){
         this.rtAxisZoom = false;
     }).bind(this), false);
 
-    this.ruler = new THREE.Group();
-    this.ruler.visible = false;
-    this.rulerGroup.add(this.ruler);
-
-    gridgroup.add(this.guardGroup);
-    scene.add(mzLine, rtLine);
     // add objects to the scene
-    scene.add(gridgroup);
+    scene.add(this.gridgroup);
+    scene.add(mzLine, rtLine);
     scene.add(this.datagroup);
     scene.add(this.labelgroup);
     scene.add(this.ticklabelgroup);
@@ -186,37 +172,7 @@ MsGraph.prototype.init = function(){
     this.renderImmediate();
 };
 
-
 /******** GEOMETRY/MATH FUNCTIONS *******/
-
-// returns the mouse position as a Vector3 as a fraction of the viewing window
-// returns null if the mouse is outside of the plane of the graph
-
-// converts two vectors in fraction of visible space (e.g. from getMousePosition)
-// to an {mzmin,mzmax,rtmin,rtmax} object based on current view range
-MsGraph.prototype.vectorsToMzRt = function(vec1, vec2) {
-    var vr = this.viewRange;
-
-    var mzmin = vec1.x * vr.mzrange + vr.mzmin;
-    var rtmin = vec1.z * vr.rtrange + vr.rtmin;
-    var mzmax = vec2.x * vr.mzrange + vr.mzmin;
-    var rtmax = vec2.z * vr.rtrange + vr.rtmin;
-
-    // swap max/mins if the rectangle was dragged "backwards"
-    if (mzmax < mzmin) {
-        var tmz = mzmin;
-        mzmin = mzmax;
-        mzmax = tmz;
-    }
-    if (rtmax < rtmin) {
-        var trt = rtmin;
-        rtmin = rtmax;
-        rtmax = trt;
-    }
-
-    return { mzmin: mzmin, mzmax: mzmax, rtmin: rtmin, rtmax: rtmax };
-};
-
 // Converts mz, rt coordinate to normal space (0 to GRID_RANGE)
 MsGraph.prototype.mzRtToGridSpace = function(mz, rt) {
     var vr = this.viewRange;
@@ -232,7 +188,6 @@ MsGraph.roundTo = function(number, places) {
     var power = Math.pow(10, places);
     return Math.round(number * power) / power;
 };
-
 
 /******** OBJECT MANAGEMENT AND UTILITIES *****/
 
@@ -295,13 +250,9 @@ MsGraph.prototype.resizeCamera = function() {
 // update labels and legend to reflect a new view range
 MsGraph.prototype.updateViewRange = function(newViewRange) {
     this.viewRange = newViewRange;
-    //this.legend.updateViewRect(newViewRange, this.dataRange);
-
-    this.repositionPlot(this.viewRange);
-
+    this.repositionPlot(newViewRange);
     this.drawDataLabels();
     this.renderImmediate();
-    //this.renderDelayed();
 };
 
 // prevent user from going outside the data range or zooming in so far that math breaks down
@@ -338,91 +289,18 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
         };
     }
     r = this.constrainBounds(r);
+    //this.repositionPlot(r);
     this.updateViewRange(r);
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
-    //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
-};
-MsGraph.prototype.setViewingAreaNoDataLoad = function(mzmin, mzrange, rtmin, rtrange) {
-    var r = mzmin;
-
-    if (typeof mzmin === "number") {
-        r = {
-            mzmin: mzmin, mzmax: mzmin + mzrange, mzrange: mzrange,
-            rtmin: rtmin, rtmax: rtmin + rtrange, rtrange: rtrange,
-        };
-    }
-    r = this.constrainBounds(r);
-    this.updateViewRange(r);
-    this.drawDefaultGraph(mzmin, mzmin + mzrange, rtmin, rtmin + rtrange);
-    //load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
-    //console.log("setViewingArea: mzmax = ", mzmin + mzrange);
-};
-
-MsGraph.prototype.setWindowArea = function(mzmin, mzmax, rtmin, rtmax) {
-    var r = mzmin;
-
-    if (typeof mzmin === "number") {
-        r = {
-            mzmin: mzmin, mzmax: mzmax, mzrange: mzmax - mzmin,
-            rtmin: rtmin, rtmax: rtmax, rtrange: rtmax - rtmin,
-        };
-    }
-    r = this.constrainBounds(r);
-    this.updateViewRange(r);
-
-    this.toolbar.disableNoiseButton();
-    this.dataBridge.requestPointsFromServer();
-};
-
-// pans the data view. x and z should be what percentage of the grid to pan by
-MsGraph.prototype.panView = function(x, z) {
-    var viewRange = this.viewRange;
-    var mzmin = viewRange.mzmin + (x * viewRange.mzrange);
-    var rtmin = viewRange.rtmin + (z * viewRange.rtrange);
-    this.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
-}
-
-// enables and disables the 2d/3d view locking
-MsGraph.prototype.toggleTopView = function(lockstatus) {
-    if (lockstatus || this.toolbar.is2dSelected()) {
-        if (this.camera.position.y < 26.6) {
-            this.prevCameraPos = this.camera.position.clone();
-        }
-        this.camera.position.set(10, 27, 10);
-        this.graphControls.enableRotate = false;
-    } else {
-        if (this.camera.position.y > 26.6) {
-            this.camera.position.copy(this.prevCameraPos);
-        }
-        this.graphControls.enableRotate = true;
-    }
-    this.renderImmediate();
-};
-
-// goes to the total ion current camera angle
-MsGraph.prototype.gotoTotalIonCurrent = function() {
-    this.camera.position.set(30, 0, this.GRID_RANGE / 2);
-    this.renderImmediate();
 };
 
 /******** RENDERING AND DRAWING FUNCTIONS *****/
 
 // render the graph immediately (i.e. can't wait for timed update)
 MsGraph.prototype.renderImmediate = function() {
-	//console.log("what is this", this);
-
-    // if camera is positioned directly above the plot use 2D, otherwise 3D
-    var newDimensionMode = (this.camera.position.y >= 24.5) ? "2D" : "3D";
-
-    // if the mode has changed, toggle between lines and squares
-    if (this.dimensionMode !== newDimensionMode) {
-        this.plotGroup.visible = (newDimensionMode === "3D" || this.useCylinders);
-        this.pinGroup.visible = !this.plotGroup.visible;
-        this.dimensionMode = newDimensionMode;
-    }
 
     this.renderer.render( this.scene, this.camera );
-    //this.legend.updateCamera(this.camera.position, this.camera.rotation);
+
     this.renderRequested = false;
 };
 
@@ -457,30 +335,13 @@ MsGraph.prototype.drawDataLabels = function() {
         var obj = this.labelgroup.children.pop();
         MsGraph.disposeObject(obj);
     }
-
     var mzmintext = MsGraph.roundTo(this.viewRange.mzmin, this.ROUND_MZ);
     var mzmaxtext = MsGraph.roundTo(this.viewRange.mzmax, this.ROUND_MZ);
     var rtmintext = MsGraph.roundTo((this.viewRange.rtmin/60).toFixed(4), this.ROUND_RT);
     var rtmaxtext = MsGraph.roundTo((this.viewRange.rtmax/60).toFixed(4), this.ROUND_RT);
-    var intmintext = MsGraph.roundTo(this.viewRange.intmin, this.ROUND_INT);
-    var intmaxtext = MsGraph.roundTo(this.viewRange.intmax, this.ROUND_INT);
 
     var mztext = "m/z";
     var rttext = "retention time";
-
-    this.containerEl.find(".status-p-visible").text(this.nPointsVisible);
-
-    this.containerEl.find(".status-r-mzmin").text(mzmintext);
-    this.containerEl.find(".status-r-mzmax").text(mzmaxtext);
-    this.containerEl.find(".status-r-rtmin").text(rtmintext);
-    this.containerEl.find(".status-r-rtmax").text(rtmaxtext);
-    this.containerEl.find(".status-r-intmin").text(intmintext);
-    this.containerEl.find(".status-r-intmax").text(intmaxtext);
-
-    //var prog = this.dataRange.progress;
-    //this.containerEl.find(".status-progress").text(prog ? (MsGraph.roundTo(prog*100, 2) + "% (press A to recompute)") : "unknown (press A to recompute)");
-
-    //this.containerEl.find(".status-group").text(this.editor.getGroupStatusText());
 
     this.labels.mzMin = MsGraph.makeTextSprite(mzmintext, {r: 0, g: 0, b: 0}, 16);
     this.labels.mzMax = MsGraph.makeTextSprite(mzmaxtext,{r: 0, g: 0, b: 0}, 16);
@@ -532,5 +393,4 @@ MsGraph.prototype.drawGrid = function() {
 
     return new THREE.LineSegments(gridgeo, gridmaterial);
 };
-
 
