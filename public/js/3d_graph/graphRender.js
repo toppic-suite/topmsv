@@ -156,49 +156,38 @@ MsGraph.prototype.plotPoint = function(point) {
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
 };
-
 // scales and positions the plot depending on the new viewing range
 MsGraph.prototype.repositionPlot = function(r) {
     // set plot positions and scales
     var heightScale = this.USE_LOG_SCALE_HEIGHT ? Math.log(this.dataRange.intmax) : this.dataRange.intmax;
-
     // This step allows points to be plotted at their normal mz,rt locations in plotPoint,
     // but keeping them in the grid. Scaling datagroup transforms the coordinate system
     // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
     var mz_squish = this.GRID_RANGE / r.mzrange;
     var rt_squish = - this.GRID_RANGE / r.rtrange;
+    var inte_squish = (this.GRID_RANGE_VERTICAL / heightScale) * r.intscale;
 
-    this.datagroup.scale.set(mz_squish, (this.GRID_RANGE_VERTICAL / heightScale) * r.intscale, rt_squish);
-        
+    if (this.dataRange.intmax < 1){
+        //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
+        inte_squish = 0;
+    }
+    this.datagroup.scale.set(mz_squish, inte_squish, rt_squish);
+    
     // Reposition the plot so that mzmin,rtmin is at the correct corner
     this.datagroup.position.set(-r.mzmin*mz_squish, 0, this.GRID_RANGE - r.rtmin*rt_squish);
-
-    // Scaling datagroup also "squishes" everything inside, so individually stretch
-    // each point back out by the inverse of the squish amount.
-    var mz_stretch = 1/mz_squish;
-    var rt_stretch = 1/rt_squish;
-
-    //this.markerGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
-    this.plotGroup.children.forEach(function(p) { p.scale.set(mz_stretch, 1, rt_stretch); });
-
-    // update the set of visible points
-    //var intmin = 0, intmax = 0;
-    /*this.plotGroup.children.forEach(function(p) {
-        p.visible = false;
-        if (p.mz >= r.mzmin - 1e-4 && p.mz <= r.mzmax + 1e-4 && p.rt >= r.rtmin - 1e-4 && p.rt <= r.rtmax + 1e-4) {
-            p.visible = true;
-            intmin = Math.min(intmin, p.int);
-            intmax = Math.max(intmax, p.int);
-        }
-    }, this);*/
-
-    //r.intmin = intmin;
-    //r.intmax = intmax;
-
     // update tick marks
     var self = this;
     MsGraph.emptyGroup(self.ticklabelgroup);
-    
+    var markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
+    // draws a tick mark at the given location
+    var makeTickMark = function(mzmin, mzmax, rtmin, rtmax) {
+        var markGeo = new THREE.Geometry();
+        markGeo.vertices.push(new THREE.Vector3(mzmin, 0, rtmin));
+        markGeo.vertices.push(new THREE.Vector3(mzmax, 0, rtmax));
+        var markLine = new THREE.Line(markGeo, markMaterial);
+        self.ticksGroup.add(markLine);
+    };
+
     // draws a tick label for the given location
     var makeTickLabel = function(which, mz, rt) {
         var text;
@@ -218,23 +207,12 @@ MsGraph.prototype.repositionPlot = function(r) {
         label.position.set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
         self.ticklabelgroup.add(label);
     };
-    
-    MsGraph.emptyGroup(self.ticksGroup);
-    
+
     // calculate tick frequency
     var mzSpacing = Math.pow(10, Math.floor(Math.log(r.mzrange)/Math.log(10) - 0.5));
     var rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5));
 
-    var markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
-    // draws a tick mark at the given location
-    var makeTickMark = function(mzmin, mzmax, rtmin, rtmax) {
-        var markGeo = new THREE.Geometry();
-        markGeo.vertices.push(new THREE.Vector3(mzmin, 0, rtmin));
-        markGeo.vertices.push(new THREE.Vector3(mzmax, 0, rtmax));
-        var markLine = new THREE.Line(markGeo, markMaterial);
-        
-        self.ticksGroup.add(markLine);
-    };
+    MsGraph.emptyGroup(self.ticksGroup);
 
     // properly check if floating-point "value" is a multiple
     // of "divisor" within a tolerance
@@ -248,7 +226,6 @@ MsGraph.prototype.repositionPlot = function(r) {
 
     var mzFirst = r.mzmin - (r.mzmin % mzSpacing);
     rt = r.rtmin;
-
     for (mz = mzFirst + mzSpacing; mz < r.mzmax; mz += mzSpacing) {
         // This little gem makes it so that tick marks that are a multiple
         // of (10 * the spacing value) are longer than the others
@@ -273,5 +250,4 @@ MsGraph.prototype.repositionPlot = function(r) {
             makeTickLabel("rt", mz, rt);
         }
     }
-
 };
