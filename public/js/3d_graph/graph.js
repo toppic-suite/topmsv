@@ -96,22 +96,18 @@ MsGraph.prototype.init = function(maxMzRt){
     graphControls.enabled = true;
 
     // make grouping constructs
-    var gridgroup = new THREE.Group();
+    this.gridgroup = new THREE.Group();
     this.datagroup = new THREE.Group();
     this.labelgroup = new THREE.Group();
+    this.ticksGroup = new THREE.Group();
+    this.ticklabelgroup = new THREE.Group();
 
     // plotting objects
     this.linesArray = [];
     this.plotGroup = new THREE.Group();
-    this.ticksGroup = new THREE.Group();
-    this.markerGroup = new THREE.Group();
-    this.ticklabelgroup = new THREE.Group();
-    this.rulerGroup = new THREE.Group();
-
+  
     this.datagroup.add(this.plotGroup);
     this.datagroup.add(this.ticksGroup);
-    this.datagroup.add(this.markerGroup);
-    this.datagroup.add(this.rulerGroup);
 
     // graph "surface" (gray underside)
     var surfaceGeo = new THREE.PlaneGeometry(this.GRID_RANGE, this.GRID_RANGE);
@@ -119,8 +115,8 @@ MsGraph.prototype.init = function(maxMzRt){
     var surface = new THREE.Mesh(surfaceGeo, surfaceMat);
     surface.rotateX(Math.PI/2);
     surface.position.set(this.GRID_RANGE / 2, -0.05, this.GRID_RANGE / 2);
-    gridgroup.add(surface);
-    gridgroup.add(this.drawGrid());
+    this.gridgroup.add(surface);
+    this.gridgroup.add(this.drawGrid());
 
     //add two invisible lines on top of rt and mz axis for zooming
     var axisMat = new THREE.LineBasicMaterial({color: 0x0000ff, linewidth:100});
@@ -160,12 +156,8 @@ MsGraph.prototype.init = function(maxMzRt){
         this.rtAxisZoom = false;
     }).bind(this), false);
 
-    this.ruler = new THREE.Group();
-    this.ruler.visible = false;
-    this.rulerGroup.add(this.ruler);
-    
     // add objects to the scene
-    scene.add(gridgroup);
+    scene.add(this.gridgroup);
     scene.add(mzLine, rtLine);
     scene.add(this.datagroup);
     scene.add(this.labelgroup);
@@ -258,8 +250,7 @@ MsGraph.prototype.resizeCamera = function() {
 // update labels and legend to reflect a new view range
 MsGraph.prototype.updateViewRange = function(newViewRange) {
     this.viewRange = newViewRange;
-
-    this.repositionPlot(this.viewRange);
+    this.repositionPlot(newViewRange);
     this.drawDataLabels();
     this.renderImmediate();
 };
@@ -297,8 +288,9 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
             rtmin: rtmin, rtmax: rtmin + rtrange, rtrange: rtrange,
         };
     }
-   // r = this.constrainBounds(r);
-    //this.updateViewRange(r);
+    r = this.constrainBounds(r);
+    //this.repositionPlot(r);
+    this.updateViewRange(r);
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
 };
 
@@ -306,6 +298,7 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
 
 // render the graph immediately (i.e. can't wait for timed update)
 MsGraph.prototype.renderImmediate = function() {
+
     this.renderer.render( this.scene, this.camera );
 
     this.renderRequested = false;
