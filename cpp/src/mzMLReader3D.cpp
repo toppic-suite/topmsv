@@ -662,9 +662,6 @@ void mzMLReader3D::calculateGridRange(){
     peak_cnt = peak_cnt / (RANGE.GRIDSCALEFACTOR * 2);//total peaks in this layer
   }
   std::sort(GRID.GRIDSIZES.begin(), GRID.GRIDSIZES.end(), sortAsce);
-  for (int i = 0; i < GRID.GRIDSIZES.size(); i++){
-    std::cout << "GRID SIZE : " << GRID.GRIDSIZES[i][0] << " " << GRID.GRIDSIZES[i][1] << std::endl;
-  }
 }
 void mzMLReader3D::insertDataLayerTable(std::string file_name){
   calculateGridRange();
@@ -726,7 +723,6 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
           selectedPeakID.push_back(secondHighestPeaks[p][1]);
         }
     }*/
-    std::cout << "peaks in PEAKS" << k << ": " << selected_peak_ID.size() << std::endl;
      beginTransaction();
      for (int a = 0; a < selected_peak_ID.size(); a++){
        std::string sqlstr = "INSERT INTO PEAKS" + int2str(k) + "(ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME)" + 
