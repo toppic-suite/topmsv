@@ -26,7 +26,6 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, callba
         if (err) {
             console.error(err.message);
         }
-        console.log(row)
         return callback(null, row);
     });
     resultDb.close();
