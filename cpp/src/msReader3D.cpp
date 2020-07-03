@@ -506,7 +506,6 @@ void msReader3D::calculateLayer(){
   int layer_cnt = 0;
 
   while (peaks_cnt > 3000){//smallest table has 3000 peaks
-    std::cout << "layer " << layer_cnt << ", peaks : " << peaks_cnt << std::endl;
     layer_cnt++;
     peaks_cnt = peaks_cnt / (RANGE.GRIDSCALEFACTOR * 2);//approx. number of peaks in each layer table
   }
