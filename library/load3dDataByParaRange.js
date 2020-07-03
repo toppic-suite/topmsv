@@ -6,13 +6,14 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {function} callback
  * @async
  */
-function load3dDataByParaRange(dir, minrt, maxrt, minmz, maxmz, callback) {
+function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, callback) {
     let sql = `SELECT *
-                FROM PEAKS
-                WHERE RETENTIONTIME <= ? 
+                FROM PEAKS` + tableNum + 
+                ` WHERE RETENTIONTIME <= ? 
                 AND RETENTIONTIME >= ?
                 AND MZ <= ?
-                AND MZ >= ?;`;
+                AND MZ >= ?
+                ORDER BY INTENSITY DESC;`;
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {

@@ -1,16 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
- * Get scan of next level one. Async mode.
+ * Get maximum and minimum mz and rt for this mzML file.
  * @param {string} dir
  * @param {number} scanNum
  * @param {function} callback
  * @async
  */
-function load3dDataByScan(dir, scan, callback) {
-    let sql = `SELECT *
-                FROM PEAKS
-                WHERE SPECTRAID = ? 
-                ORDER BY INTENSITY DESC;`;
+function getMax(dir, callback) {
+    let sql = `SELECT * FROM CONFIG;`;
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
@@ -18,8 +15,7 @@ function load3dDataByScan(dir, scan, callback) {
         }
         // console.log('Connected to the result database.');
     });
-    
-    resultDb.all(sql, [scan], (err, row) => {
+    resultDb.get(sql, (err, row) => {
         if (err) {
             console.error(err.message);
         }
@@ -27,4 +23,4 @@ function load3dDataByScan(dir, scan, callback) {
     });
     resultDb.close();
 }
-module.exports = load3dDataByScan;
+module.exports = getMax;

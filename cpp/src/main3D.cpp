@@ -1,5 +1,6 @@
 #include "msReader3D.hpp"
 #include <time.h>
+#include <iostream>
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
@@ -13,7 +14,8 @@ int main(int argc, char* argv[]) {
     } else if (strcmp(argv[2],"-r") == 0) {
         msreader.getScanRangeDB();
     } else if (strcmp(argv[2],"-f") == 0) {
-       msreader.createDtabase();
-       //msreader.createDtabasMultiLayer();
+       //msreader.createDtabase();
+       std::cout << "mzMLReader 3D running" << std::endl;
+       msreader.createDtabasMultiLayer();
     }
 }
