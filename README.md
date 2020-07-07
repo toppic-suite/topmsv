@@ -17,6 +17,8 @@ sudo apt-get install nodejs
 sudo apt-get install npm
 
 # install pm2 and set it as a daemon on system startup
+sudo npm install -g bufferutil
+sudo npm install -g  utf-8-validate
 sudo npm install -g pm2
 sudo pm2 startup systemd
 
