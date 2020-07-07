@@ -649,19 +649,43 @@ void mzMLReader3D::calculateGridRange(){
   (2 * 4 -> 4 * 8 has GRIDSCALEFACTOR of 2)
   add x y size of grid to GRIDSIZES vector for each layer
    */
-  int peak_cnt = RANGE.COUNT;
+  
   int graph_x = 10;//ratio of 3d graph plane is 10 * 3
   int graph_y = 3;
 
-  for (int i = 0; i < RANGE.LAYERCOUNT; i++){//0 is skipped because table with all peaks is not generated (using PEAKS instead)
+  std::cout << "layercount = " << RANGE.LAYERCOUNT << std::endl;
+  /*for (int i = 0; i < RANGE.LAYERCOUNT; i++){
     int graph_scale = 1;
-    while ((graph_x * graph_scale) * (graph_y * graph_scale) < peak_cnt){
+    while ((graph_x * graph_scale) * (graph_y * graph_scale) < peaks_cnt){
       graph_scale++; 
     }
     GRID.GRIDSIZES.push_back({graph_x * (graph_scale), graph_y * (graph_scale)});
-    peak_cnt = peak_cnt / (RANGE.GRIDSCALEFACTOR * 2);//total peaks in this layer
+    peaks_cnt = peaks_cnt / (RANGE.GRIDSCALEFACTOR * 2);//total peaks in this layer
+    if (peaks_cnt < RANGE.MINPEAKS){
+      //if peaks to be plotted is smaller than the smallest table capacity, add the smallest table size and stop.
+      GRID.GRIDSIZES.push_back({graph_x * 10, graph_y * 10});//100 * 30 
+      break;
+    }
+  }*/
+  
+  if (RANGE.MAXPEAK[RANGE.MAXPEAK.size() - 1] > RANGE.MINPEAKS * 2){
+      //add smaller table if current smallest table is still large (if more than MINPEAKS * 2);
+      GRID.GRIDSIZES.push_back({graph_x * 10, graph_y * 10});//100 * 30
+    } 
+  
+  for (int i = RANGE.MAXPEAK.size() - 1; i >= 0; i--){
+    int peaks_cnt = RANGE.MAXPEAK[i];
+    int graph_scale = 1;
+
+    while ((graph_x * graph_scale) * (graph_y * graph_scale) < peaks_cnt){
+      graph_scale++; 
+    }
+    GRID.GRIDSIZES.push_back({graph_x * (graph_scale), graph_y * (graph_scale)});
   }
-  std::sort(GRID.GRIDSIZES.begin(), GRID.GRIDSIZES.end(), sortAsce);
+  
+  
+  /*
+  std::sort(GRID.GRIDSIZES.begin(), GRID.GRIDSIZES.end(), sortAsce);*/
   for (int i = 0; i < GRID.GRIDSIZES.size(); i++){
     std::cout << "GRID SIZE : " << GRID.GRIDSIZES[i][0] << " " << GRID.GRIDSIZES[i][1] << std::endl;
   }
@@ -680,7 +704,7 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
   closeDatabaseInMemory();//close in-memory database. local disk db is still open.
 
   std::chrono::steady_clock::time_point end_grid = std::chrono::steady_clock::now();
-
+  
   for (int k = 0; k < RANGE.LAYERCOUNT; k++){//from 0-5 (each layer table)
   //for (int k = 0; k <= 0; k++){//from 0-5 (each layer table)
     int x = 0;
@@ -716,16 +740,6 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
       y = y + yrange;
       x = 0;
     }
-   /*
-    if (selectedPeakID.size() < (gridRange[k][0] * gridRange[k][1])){//if space left for more peaks
-        std::sort(secondHighestPeaks.begin(), secondHighestPeaks.end());
-        int peakDiff = gridRange[k][0] * gridRange[k][1] - selectedPeakID.size();
-        //std::cout << "peakDiff : " << peakDiff << std::endl; 
-        for (int p = 0; p < peakDiff && p < secondHighestPeaks.size(); p++){
-          //std::cout << "p : " << p << std::endl;
-          selectedPeakID.push_back(secondHighestPeaks[p][1]);
-        }
-    }*/
     std::cout << "peaks in PEAKS" << k << ": " << selected_peak_ID.size() << std::endl;
      beginTransaction();
      for (int a = 0; a < selected_peak_ID.size(); a++){
@@ -1034,7 +1048,7 @@ void mzMLReader3D::insertPeaksLayerStmt(std::string origin, int j, int k, double
 };
 void mzMLReader3D::createIndexLayerTable() {
   //for all layer tables, create index
-  for (int i = 0; i <= RANGE.LAYERCOUNT; i++){
+  for (int i = 0; i < RANGE.LAYERCOUNT; i++){
     std::string sqlstr = "CREATE INDEX scanID_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (SPECTRAID);";
     sql = (char *)sqlstr.c_str();
     rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);

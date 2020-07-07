@@ -500,18 +500,40 @@ void msReader3D::createDtabaseOneTableRTree() { //stmt
   databaseReader.closeDatabase();
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }*/
+
+/*void msReader3D::calculateLayer(){
+  /*calculate how many layers this mzML should have, based on number of total peaks*/
+ /* int peaks_cnt = RANGE.COUNT;
+  int layer_cnt = 0;
+
+  while (peaks_cnt >= RANGE.MINPEAKS){
+    std::cout << "layer " << layer_cnt << " has peaks " << peaks_cnt << std::endl;
+    layer_cnt++;
+    peaks_cnt = peaks_cnt / (RANGE.GRIDSCALEFACTOR * 2);//approx. number of peaks in each layer table
+  }
+  RANGE.LAYERCOUNT = layer_cnt; //add 1 to add the smallest table (100 * 30)
+}*/
 void msReader3D::calculateLayer(){
   /*calculate how many layers this mzML should have, based on number of total peaks*/
   int peaks_cnt = RANGE.COUNT;
   int layer_cnt = 0;
 
-  while (peaks_cnt > 3000){//smallest table has 3000 peaks
-    std::cout << "layer " << layer_cnt << ", peaks : " << peaks_cnt << std::endl;
+  while (peaks_cnt >= RANGE.MINPEAKS){
+    std::cout << "layer " << layer_cnt << " has peaks " << peaks_cnt << std::endl;
     layer_cnt++;
-    peaks_cnt = peaks_cnt / (RANGE.GRIDSCALEFACTOR * 2);//approx. number of peaks in each layer table
+    RANGE.MAXPEAK.push_back(peaks_cnt);
+    peaks_cnt = peaks_cnt / (RANGE.GRIDSCALEFACTOR * 2);//total peaks in this layer
   }
-  RANGE.LAYERCOUNT = layer_cnt + 1;
+  RANGE.LAYERCOUNT = layer_cnt; 
+
+  //if the smallest table so far is between RANGE.MINPEAKS and RANGE.MINPEAKS * 2, done.
+  //if it is bigger than RANGE.MINPEAKS * 2, create another table with RANGE.MINPEAKS peaks
+  //in order to speed up loading by making new smallest table with minimum peaks
+  if (RANGE.MAXPEAK[RANGE.MAXPEAK.size() - 1] > RANGE.MINPEAKS * 2){
+    RANGE.LAYERCOUNT = RANGE.LAYERCOUNT + 1;
+  }
 }
+
   
 void msReader3D::createDtabasMultiLayer() {
   /*create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
