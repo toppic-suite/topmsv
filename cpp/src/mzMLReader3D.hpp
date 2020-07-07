@@ -25,9 +25,11 @@ struct Range{
   double INTMIN;
   double INTMAX;
   int COUNT;
-  int LAYERCOUNT;
+  int LAYERCOUNT = 5;
   int GRIDSCALEFACTOR = 2;//set the size difference between each layer (it is n in --> peaks1 table = (peaks0 table width * n) * (peaks0 table height * n))
+  int MINPEAKS = 3000; //minimum peak needed to create a new table 
   int MAXRETURN = 5000;
+  vector<int> MAXPEAK;//maximum num of peaks in each table
   vector<double> MZSIZE;
   vector<double> RTSIZE;
   std::string TARGET = "";
