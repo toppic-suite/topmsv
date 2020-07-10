@@ -408,7 +408,7 @@ void msReader3D::getRangeFromRaw() {
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }*/
 void msReader3D::getRangeDBOneTable() {
-  int scanLevel = 1;
+  /*int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
   double mzmin = 0;
@@ -426,10 +426,10 @@ void msReader3D::getRangeDBOneTable() {
   t1 = clock();
   databaseReader.closeDatabase();
   // std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  t1 = clock();
+  t1 = clock();*/
 };
 void msReader3D::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
-  int scanLevel = 1;
+  /*int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
   clock_t t1 = clock();
@@ -441,7 +441,7 @@ void msReader3D::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin,
   t1 = clock();
   databaseReader.closeDatabase();
   // std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  t1 = clock();
+  t1 = clock();*/
 };
 /*
 void msReader3D::createDtabaseOneTableRTree() { //stmt
@@ -516,7 +516,7 @@ void msReader3D::createDtabaseOneTableRTree() { //stmt
 void msReader3D::calculateLayer(){
   /*calculate how many layers this mzML should have, based on number of total peaks*/
   int peaks_cnt = RANGE.COUNT;
-  int layer_cnt = 0;
+  int layer_cnt = 1;
 
   while (peaks_cnt >= RANGE.MINPEAKS){
     std::cout << "layer " << layer_cnt << " has peaks " << peaks_cnt << std::endl;
@@ -534,7 +534,6 @@ void msReader3D::calculateLayer(){
   }
 }
 
-  
 void msReader3D::createDtabasMultiLayer() {
   /*create 3d tables (peaks0, peaks1, peaks2...) in addition to original 2d tables
   two databases are going to be used, one in local disk and one in memory only
@@ -630,28 +629,32 @@ void msReader3D::createDtabasMultiLayer() {
   std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
   std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
   
-  calculateLayer();//calculate how many layers to be created
+  std::cout <<"End Insert to PEAKS0: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
 
   databaseReader.setRange(RANGE);
   databaseReader.insertConfigOneTable();//range from getRange was not accurate
   databaseReader.endTransaction();
   databaseReader.endTransactionInMemory();
   
+  std::cout <<"End Insert to CONFIG: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+
   //create index on peak id (for copying to each layer later)
   databaseReader.createIndexOnIdOnly();
 
-  t1 = clock();
+  //t1 = clock();
   //create peaks0, peaks1.. tables
-  databaseReader.creatLayersTable();
-  std::cout << "Table create Time = " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  //databaseReader.creatLayersTable();
+  //std::cout << "Table create Time = " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
   t1 = clock();
   //add data to peaks0, peaks1.. tables
-  databaseReader.insertDataLayerTable(file_name);
-/*
-  std::cout << "Insertion total Time = " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  databaseReader.insertDataLayerTable();
 
+  std::cout << "Insertion total Time = " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+  
   //create indices for multi tables
   databaseReader.createIndexLayerTable();
 
@@ -659,12 +662,12 @@ void msReader3D::createDtabasMultiLayer() {
 
   std::cout << "total time elapsed = " << (clock() - t0) * 1.0 / CLOCKS_PER_SEC << std::endl; 
   std::cout << "mzMLReader3D finished" << std::endl;
-*/
+
   databaseReader.closeDatabase();
 }
 
 void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
-  int scanLevel = 1;
+  /*int scanLevel = 1;
   int count = 0;
   int spSize = sl->size();
   clock_t t1 = clock();
@@ -676,5 +679,5 @@ void msReader3D::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double r
   t1 = clock();
   databaseReader.closeDatabase();
   // std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  t1 = clock();
+  t1 = clock();*/
 };
