@@ -656,7 +656,7 @@ void msReader3D::createDtabasMultiLayer() {
   t1 = clock();
   
   //create indices for multi tables
-  databaseReader.createIndexLayerTable();
+  //databaseReader.createIndexLayerTable();
 
   std::cout << "Index creationTime = " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
