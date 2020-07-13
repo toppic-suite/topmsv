@@ -25,11 +25,19 @@ struct Range{
   double INTMIN;
   double INTMAX;
   int COUNT;
-  int LAYERCOUNT;
+  int LAYERCOUNT = 5;
   int GRIDSCALEFACTOR = 2;//set the size difference between each layer (it is n in --> peaks1 table = (peaks0 table width * n) * (peaks0 table height * n))
+  int MINPEAKS = 3000; //minimum peak needed to create a new table 
   int MAXRETURN = 5000;
-  vector<double> MZSIZE;
-  vector<double> RTSIZE;
+  vector<int> MAXPEAK;//maximum num of peaks in each table
+  //vector<double> MZSIZE;
+  //vector<double> RTSIZE;
+  double MZSCALE = 4;
+
+  double SCANSCALE = 0.5;
+  double MZSIZE = 0.1;
+  int SCANCNT = 5000;
+
   std::string TARGET = "";
 };
 
@@ -60,17 +68,6 @@ struct Grid{
 	vector<vector<vector<double> > > GRIDBLOCKS;
   //	vector<vector<vector<double> > > GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (LEVEL4[0], std::vector<std::vector<double> >(LEVEL4[1], std::vector<double>({-1, -1})));//3d vector
 };
-/*
-struct Grid{//for TEST
-	vector<int> LEVEL0 = {10, 3};//30 peaks
-	vector<int> LEVEL1 = {25, 7};//175 peaks
-	vector<int> LEVEL2 = {50, 15};//750 peaks
-	vector<int> LEVEL3 = {100, 30};//3000 peaks
-	vector<int> LEVEL4 = {160, 48};//7680 peaks
-	vector<int> LEVEL5 = {250, 75};//18750 peaks
-
-  	static vector<vector<vector<double> > > GRIDBLOCKS;
-};*/
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
@@ -143,16 +140,17 @@ public:
 	int RT_GROUP4;
 	int RT_GROUP5;
 
+	void resetRange();
 	void insertPeakDataToGridBlocks();
-	void calculateGridRange();
-	void insertDataLayerTable(std::string file_name);
+	void createSmallestTable(int table_cnt, std::vector<int> &prev_peak_ID);
+	void assignDataToGrid(std::vector<int> &prev_peak_ID, std::vector<int> &selected_peak_ID);
+	void assignDataToGrid(int table_cnt, std::vector<int> &selected_peak_ID);
+	void insertPeaksToEachLayer(int table_cnt, int scan_id);
+	void insertDataLayerTable();
 	void setRange(Range tmpRange);
-	void setGroup(double mz, double rt);
-	std::string getGroup(double mzmin, double mzmax, double rtmin, double rtmax);
 	void creatTableOneTable();
 	void insertPeakOneTable(int peakIndex, int scanIndex, double intensity, double mz);
 	void getRangeOneTable();
-	void getPeaksOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 	void openInsertStmtOneTable();
 	void closeInsertStmtOneTable();
 	void insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz, double intensity, double retentionTime);
@@ -171,7 +169,7 @@ public:
 	void closeInsertLayerStmtRTree();
 	void insertAllPeaksLayerStmtRTree();
 	void insertPeaksLayerStmtRTree(std::string origin, int j, int k, double mzsize, double rtsize);
-	void getPeaksOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
+	
 };
 
 
