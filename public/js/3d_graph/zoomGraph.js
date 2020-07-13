@@ -32,10 +32,10 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
 
     //reset view range based on scroll up or down
     if (e.deltaY < 0) {
-        scaleFactor = 0.7;
+        scaleFactor = 0.8;
     }
     else{
-        scaleFactor = 1.3;
+        scaleFactor = 1.2;
     }
 
     //figure out where the cursor is (near x axis, y axis)
@@ -91,49 +91,19 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     var mzDist = mousePos.x;
     var rtDist = mousePos.z;
 
-    if (e.deltaY < 0) {
-        scaleFactor = 0.7;
-    }
-    else{
-        scaleFactor = 1.3;
-    }
     // constrains points to within the graph bounds
     mzDist = Math.min(Math.max(mzDist, 0), 1);
     rtDist = Math.min(Math.max(rtDist, 0), 1);
 
-    // calculate a new range based on the view
-    /*if (axisName == "rt"){
-        newrtrange = this.viewRange.rtrange * scaleFactor;
-    }
-    else{
-        newmzrange = this.viewRange.mzrange * scaleFactor;
-    }
-    
     if (event.deltaY < 0) {
-        if (axisName == "rt"){
-            newrtrange = this.viewRange.rtrange * 0.8;
-        }
-        else{
-            newmzrange = this.viewRange.mzrange * 0.8;
-        }
-      } else {
-        if (axisName == "rt"){
-            newrtrange = this.viewRange.rtrange * 1.2;
-        }
-        else{
-            newmzrange = this.viewRange.mzrange * 1.2;
-        }
-      }
-      /*
-      if (event.deltaY < 0) {
-        console.log("going down")
+       // console.log("going down")
         newmzrange = currentViewRange.mzrange * 0.7;
         newrtrange = currentViewRange.rtrange * 0.7;
-      } else {
-        console.log("going up")
+    } else {
+       // console.log("going up")
         newmzrange = currentViewRange.mzrange * 1.3;
         newrtrange = currentViewRange.rtrange * 1.3;
-      }
+    }
     var mzPoint = mzDist * currentViewRange.mzrange + currentViewRange.mzmin;
     var rtPoint = rtDist * currentViewRange.rtrange + currentViewRange.rtmin;
     newmzmin = (mzPoint) - (newmzrange / currentViewRange.mzrange) * (mzPoint - currentViewRange.mzmin);
@@ -151,12 +121,15 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     if (newrtmin + newrtrange > this.totalMaxRt){
         newrtrange = this.totalMaxRt - newrtmin;
     }
+    this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange); 
+    /*
     let wait = this.delayWheelEvent(newmzmin, newmzrange, newrtmin, newrtrange);
     //wait for setViewingArea to finish before exiting
     wait.then(function(){
         return;
     })
-}
+}*/
+/*
 MsGraph.prototype.delayWheelEvent = function(newmzmin, newmzrange, newrtmin, newrtrange){
     return new Promise(function(resolve, reject){
         this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange); 
