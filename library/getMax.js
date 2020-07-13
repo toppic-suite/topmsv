@@ -15,7 +15,7 @@ function getMax(dir, callback) {
         }
         // console.log('Connected to the result database.');
     });
-    resultDb.get(sql, (err, row) => {
+    resultDb.all(sql, (err, row) => {
         if (err) {
             console.error(err.message);
         }
