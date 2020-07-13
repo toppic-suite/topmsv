@@ -312,7 +312,7 @@ void mzMLReader3D::creatTable() {
    }
    /* Create SQL statement */
    sql = (char*)("CREATE TABLE CONFIG("  \
-         "ID  INT PRIMARY KEY     NOT NULL," \
+         "ID  INTEGER PRIMARY KEY     NOT NULL," \
          "MZMIN           REAL     NOT NULL," \
          "MZMAX           REAL     NOT NULL," \
          "RTMIN           REAL     NOT NULL," \
@@ -699,6 +699,15 @@ Use only one table.
 Use only one table.
 Use only one table.
 */
+void mzMLReader3D::resetRange(){
+  RANGE.MZMIN = 0;
+  RANGE.MZMAX = 0;
+  RANGE.RTMIN = 0;
+  RANGE.RTMAX = 0;
+  RANGE.INTMIN = 0;
+  RANGE.INTMAX = 0;
+  RANGE.COUNT = 0;
+}
 void mzMLReader3D::insertPeakDataToGridBlocks(){
   
   Range *RANGE_ptr = &RANGE;
@@ -760,18 +769,6 @@ void mzMLReader3D::calculateGridRange(){
   }
 }*/
 
-  /*
-  starting with initial m/z range of 0.01 for each grid block, and total scan number of 5000
-  RANGE.COUNT is the total number in this mzML
-  How to create PEAKS 1 table
-  iterate while scan number is < 5000 
-  total m/z range / 0.01 => one dimensional vector 
-  for one scan, one vector, clean vector afterwards
-
-  next table, check how many peaks
-  if similar to scan, reduce scan
-  use another vector and so on
-  */
   //insert all data from PEAKS0 to a vector
   //keep peak_id, scan_id, intensity
   //use the vector to assign peaks --> store in a vector
@@ -790,10 +787,15 @@ void mzMLReader3D::createSmallestTable(int table_cnt, std::vector<int> &prev_pea
     int cnt = 0;
     createLayerTable(int2str(table_cnt));
     beginTransaction();
+
     for (int i = 0; i < prev_peak_ID.size(); i = i + interval){
       insertPeaksToEachLayer(table_cnt, prev_peak_ID[i]);
       cnt++;
     }
+    resetRange();
+    RANGE.COUNT = cnt;
+    insertConfigOneTable();
+
     endTransaction();
     std::cout << "peak table " << table_cnt << " has peaks " << cnt << std::endl;
 
@@ -877,8 +879,10 @@ void mzMLReader3D::insertDataLayerTable(){
             insertPeaksToEachLayer(table_cnt, scan_id);
           }
         }
-        //insert to config table
       }
+      resetRange();
+      RANGE.COUNT = peak_cnt;
+      insertConfigOneTable();
       endTransaction();
       if (RANGE.SCANCNT >= peak_cnt){//if peak count became small, adjust total scan count as well
         RANGE.SCANCNT = floor(peak_cnt * RANGE.SCANSCALE); 
@@ -902,7 +906,9 @@ void mzMLReader3D::insertDataLayerTable(){
         for (int i = 0; i < selected_peak_ID.size(); i++){
           insertPeaksToEachLayer(table_cnt, selected_peak_ID[i]);
         }
-        //insert to config table
+        resetRange();
+        RANGE.COUNT = peak_cnt;
+        insertConfigOneTable();
         endTransaction();
       }
       else{
@@ -1110,14 +1116,15 @@ void mzMLReader3D::insertPeakStmtOneTable(int peakIndex, int scanIndex, double m
 };
 void mzMLReader3D::insertConfigOneTable() {
   /* Create SQL statement */
-  std::string sqlstr = "INSERT INTO CONFIG (ID,MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT,LAYERCOUNT) VALUES (1," +
+  std::string sqlstr = "INSERT INTO CONFIG (MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT,LAYERCOUNT) VALUES ("+
     num2str(RANGE.MZMIN) + ", " + num2str(RANGE.MZMAX) + ", " + num2str(RANGE.RTMIN) + ", " + num2str(RANGE.RTMAX) + ", " +
-    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + num2str(RANGE.COUNT) + ", " + num2str(RANGE.LAYERCOUNT) + " ); ";
+    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + int2str(RANGE.COUNT) + ", " + num2str(RANGE.LAYERCOUNT) + " ); ";
   sql = (char *)sqlstr.c_str();
-  //std::cout << sql << std::endl;
+  std::cout << sql << std::endl;
   /* Execute SQL statement */
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
     sqlite3_free(zErrMsg);
   }
 };

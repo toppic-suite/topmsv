@@ -32,9 +32,9 @@ struct Range{
   vector<int> MAXPEAK;//maximum num of peaks in each table
   //vector<double> MZSIZE;
   //vector<double> RTSIZE;
-  double MZSCALE = 4;
+  //double MZSCALE = 4;
 
-  //double MZSCALE = 10;
+	double MZSCALE = 10;
 
   double SCANSCALE = 0.5;
   double MZSIZE = 0.1;
@@ -142,6 +142,7 @@ public:
 	int RT_GROUP4;
 	int RT_GROUP5;
 
+	void resetRange();
 	void insertPeakDataToGridBlocks();
 	void createSmallestTable(int table_cnt, std::vector<int> &prev_peak_ID);
 	void assignDataToGrid(std::vector<int> &prev_peak_ID, std::vector<int> &selected_peak_ID);
