@@ -254,10 +254,8 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
 
     let xRatio = (maxmz - minmz) / totalMzRange;
     let yRatio = (maxrt - minrt) / totalRtRange;
-
-    let ratio = xRatio * yRatio;
-
-    let peakCnt = 3000 / ratio;
+    
+    let peakCnt = 3000 / (xRatio * yRatio);
     
     let diff = Number.MAX_VALUE;
     console.log("xRatio, yRatio : ", xRatio, yRatio)
