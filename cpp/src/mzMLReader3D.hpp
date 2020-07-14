@@ -32,9 +32,10 @@ struct Range{
   vector<int> MAXPEAK;//maximum num of peaks in each table
   //vector<double> MZSIZE;
   //vector<double> RTSIZE;
-  double MZSCALE = 4;
+  double MZSCALE = 10;
 
-  double SCANSCALE = 0.5;
+  //double SCANSCALE = 0.5;
+  double SCANSCALE = 1;
   double MZSIZE = 0.1;
   int SCANCNT = 5000;
 
