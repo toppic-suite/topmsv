@@ -506,8 +506,8 @@ void msReader3D::createDtabaseOneTableRTree() { //stmt
  /* int peaks_cnt = RANGE.COUNT;
   int layer_cnt = 0;
 
+
   while (peaks_cnt >= RANGE.MINPEAKS){
-    std::cout << "layer " << layer_cnt << " has peaks " << peaks_cnt << std::endl;
     layer_cnt++;
     peaks_cnt = peaks_cnt / (RANGE.GRIDSCALEFACTOR * 2);//approx. number of peaks in each layer table
   }

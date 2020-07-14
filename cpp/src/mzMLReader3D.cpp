@@ -762,21 +762,7 @@ void mzMLReader3D::calculateGridRange(){
     }
     GRID.GRIDSIZES.push_back({graph_x * (graph_scale), graph_y * (graph_scale)});
   }
-  
-  /*
-  for (int i = 0; i < GRID.GRIDSIZES.size(); i++){
-    //std::cout << "GRID SIZE : " << GRID.GRIDSIZES[i][0] << " " << GRID.GRIDSIZES[i][1] << std::endl;
-  }
-}*/
 
-  //insert all data from PEAKS0 to a vector
-  //keep peak_id, scan_id, intensity
-  //use the vector to assign peaks --> store in a vector
-  //create a table and insert the data
-  //store the information to a config table
-  //start again from assigning peaks
-
-  //as a result, grid with all data is created, fitting the size of PEAKS1 table
 void mzMLReader3D::createSmallestTable(int table_cnt, std::vector<int> &prev_peak_ID){
   /*input : peak ID of the current smallest table
     output : one more table created or not, based on how big the currnet smallest table is*/
@@ -981,6 +967,7 @@ void mzMLReader3D::insertDataLayerTable(std::string file_name){
     std::cout <<"assignment for PEAKS" << k << " finished: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
     t1 = clock();
     //std::cout << "peaks in PEAKS" << k << ": " << selected_peak_ID.size() << std::endl;
+
      beginTransaction();
      for (int a = 0; a < selected_peak_ID.size(); a++){
        std::string sqlstr = "INSERT INTO PEAKS" + int2str(k) + "(ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME)" + 

@@ -64,8 +64,6 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
 
     this.getInteRange(this.currentData);
 
-    //console.log("at drawGraph, currentData.length : ", this.currentData.length);
-
     for (let i = 0; i < this.currentData.length; i++)
     {
         this.plotPoint(this.currentData[i]);
