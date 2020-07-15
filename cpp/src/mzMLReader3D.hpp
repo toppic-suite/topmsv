@@ -106,6 +106,7 @@ public:
 	void beginTransactionInMemory();
 	void endTransactionInMemory();
 	void synchronous();
+	void openInsertStmtBothMs();
 	void openInsertStmt();
 	void openInsertStmtInMemory();
 	void closeInsertStmt();
@@ -114,6 +115,7 @@ public:
 	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
 	void updateSpStmt(int currentID, int prevID);
 	void updateSpSumStmt(int currentID, double peaksInteSum);
+	void insertPeakStmtBothMs(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void insertPeakStmtInMemory(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void createIndexOnIdOnly();
