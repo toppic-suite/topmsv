@@ -573,6 +573,7 @@ void msReader3D::createDtabasMultiLayer() {
 
   databaseReader.openInsertStmt();
   databaseReader.openInsertStmtInMemory();
+  databaseReader.openInsertStmtBothMs();
 
   int levelOneID = 0;
   int levelTwoID = 0;
@@ -604,9 +605,14 @@ void msReader3D::createDtabasMultiLayer() {
       for (int j=0; j<pairs.size(); j++) {
         count++ ;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
-        databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
-        databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
-        
+        if (scanLevel == 1){//PEAKS0 contains level 1 data only
+          databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+          databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+        }
+
+        databaseReader.insertPeakStmtBothMs(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+        //insert both scan level data into TOTALPEAKS
+
         //compare with min max values to find overall min max value
         if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
         if (pairs[j].mz > mzmax){mzmax = pairs[j].mz;}
@@ -616,6 +622,46 @@ void msReader3D::createDtabasMultiLayer() {
       //compare with min max values to find overall min max value
       if (retentionTime < rtmin){rtmin = retentionTime;}
       if (retentionTime > rtmax){rtmax = retentionTime;}
+
+      //ms2 data
+      if (scanLevel == 2) {
+        // prec_mz, prec_charge, prec_inte
+        double prec_mz;
+        int prec_charge;
+        double prec_inte;
+        if (spec_info.precursors.size() == 0) {
+          prec_mz = 0;
+          prec_charge = 1;
+          prec_inte = 0.0;
+        } 
+        else {
+          prec_mz = spec_info.precursors[0].mz;
+          prec_charge = static_cast<int>(spec_info.precursors[0].charge);
+          prec_inte = spec_info.precursors[0].intensity;
+        }
+        if (prec_mz < 0) {
+          prec_mz = 0;
+        }
+        if (prec_charge  < 0) {
+          prec_charge = 1;
+        }
+        if (prec_inte < 0) {
+          prec_inte = 0.0;
+        }
+        databaseReader.insertSpStmt(currentID, getScan(sl->spectrumIdentity(i).id),retentionTime,scanLevel,prec_mz,prec_charge,prec_inte,peaksInteSum,NULL,levelTwoID);
+        // update prev's next
+        databaseReader.updateSpStmt(currentID,levelTwoID);
+        levelTwoID = currentID;
+        levelTwoScanID = currentScanID;
+        //databaseReader.insertScanLevelPairStmt(levelOneScanID, levelTwoScanID);
+      }else if(scanLevel == 1){
+        databaseReader.insertSpStmt(currentID, getScan(sl->spectrumIdentity(i).id),retentionTime,scanLevel,NULL,NULL,NULL,peaksInteSum,NULL,levelOneID); 
+        // update prev's next
+        databaseReader.updateSpStmt(currentID,levelOneID);
+        levelOneID = currentID;
+        levelOneScanID = currentScanID;
+      }
+      
   }
   //store min max values in RANGE
   RANGE.MZMAX = mzmax;
