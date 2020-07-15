@@ -258,9 +258,7 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
     let peakCnt = 3000 / (xRatio * yRatio);
     
     let diff = Number.MAX_VALUE;
-    console.log("xRatio, yRatio : ", xRatio, yRatio)
-    //console.log("mzrange : ", maxmz - minmz)
-   // console.log("rtrange : ", maxrt-minrt);
+   
     console.log("peakCnt : ", peakCnt);
 
     //find which table has the closet number of peaks

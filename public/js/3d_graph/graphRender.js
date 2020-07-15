@@ -62,6 +62,8 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.dataRange.rtmax = maxrt;
     this.dataRange.rtrange = maxrt - minrt;
 
+    console.log("total peaks on the graph ", this.currentData.length);
+
     this.getInteRange(this.currentData);
 
     for (let i = 0; i < this.currentData.length; i++)

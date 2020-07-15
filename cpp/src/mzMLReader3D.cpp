@@ -828,7 +828,7 @@ void mzMLReader3D::calculateGridRange(){
     GRID.GRIDSIZES.push_back({graph_x * (graph_scale), graph_y * (graph_scale)});
   }
 */
-void mzMLReader3D::createSmallestTable(int table_cnt, std::vector<int> &prev_peak_ID){
+void mzMLReader3D::createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_ID){
   /*input : peak ID of the current smallest table
     output : one more table created or not, based on how big the currnet smallest table is*/
   if (prev_peak_ID.size() > RANGE.MINPEAKS * 2){
@@ -849,7 +849,7 @@ void mzMLReader3D::createSmallestTable(int table_cnt, std::vector<int> &prev_pea
 
     endTransaction();
     std::cout << "peak table " << table_cnt << " has peaks " << cnt << std::endl;
-
+    table_cnt++;
   }
 }
 
@@ -865,11 +865,11 @@ void mzMLReader3D::assignDataToGrid(int table_cnt,std::vector<int> &selected_pea
   float ygrid_cnt = RANGE.SCANCNT * RANGE.SCANSCALE;//how many blocks on y axis
 
   //index of 2d vector
-  //int xrange = pow(RANGE.MZSCALE, table_cnt - 1);
-  int xrange = RANGE.MZSCALE * (table_cnt - 1);
+  int xrange = pow(RANGE.MZSCALE, table_cnt - 1);
+  //int xrange = RANGE.MZSCALE * (table_cnt - 1);
   int yrange = ceil(GRID.GRIDBLOCKS[0].size() / ygrid_cnt); 
 
-  //std::cout << "grid size : " << xgrid_cnt << " * " << ygrid_cnt << std::endl;
+  std::cout << "m/z : " << xrange * RANGE.MZSIZE<< std::endl;
   std::cout << "xrange, yrange : " << xrange << " " << yrange << std::endl;
 
   while (y < GRID.GRIDBLOCKS[0].size()){
@@ -897,9 +897,9 @@ void mzMLReader3D::assignDataToGrid(int table_cnt,std::vector<int> &selected_pea
     x = 0;
   }
 }
-void mzMLReader3D::assignDataToGrid(std::vector<int> &prev_peak_ID, std::vector<int> &selected_peak_ID){
+/*void mzMLReader3D::assignDataToGrid(std::vector<int> &prev_peak_ID, std::vector<int> &selected_peak_ID){
   /*input : number of table to be created (PEAKS1, PEAKS2...) and a vector containing peak ID to insert to the table
-  output : vector is filled with peak IDs to insert*/
+  output : vector is filled with peak IDs to insert
   std::cout << "prev_peak_id size : " << prev_peak_ID.size() << std::endl;
 
   int interval = RANGE.MZSCALE;//peak in every nth index (=interval) would be copied to the vector"
@@ -907,7 +907,7 @@ void mzMLReader3D::assignDataToGrid(std::vector<int> &prev_peak_ID, std::vector<
   for (int i = 0; i < prev_peak_ID.size(); i = i + interval){
     selected_peak_ID.push_back(prev_peak_ID[i]);
   }
-}
+}*/
 void mzMLReader3D::insertPeaksToEachLayer(int table_cnt, int scan_id){
   std::string sqlstr = "INSERT INTO PEAKS" + int2str(table_cnt) + "(ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME)" + 
   "SELECT * FROM PEAKS" + int2str(table_cnt - 1) + " WHERE ID=" + int2str(scan_id)+ ";";
@@ -988,6 +988,8 @@ void mzMLReader3D::insertDataLayerTable(){
         RANGE.COUNT = peak_cnt;
         insertConfigOneTable();
         endTransaction();
+
+        table_cnt++;
       }
       else{
         createSmallestTable(table_cnt, prev_peak_ID);//create one more table if current smallest table is still big
@@ -996,7 +998,7 @@ void mzMLReader3D::insertDataLayerTable(){
         RANGE.SCANCNT = floor(peak_cnt * RANGE.SCANSCALE); 
         std::cout << "RANGE.SCANCNT " << RANGE.SCANCNT << std::endl;
       }
-      table_cnt++;
+      
     } 
   RANGE.LAYERCOUNT = table_cnt;
   }
@@ -1199,7 +1201,6 @@ void mzMLReader3D::insertConfigOneTable() {
     num2str(RANGE.MZMIN) + ", " + num2str(RANGE.MZMAX) + ", " + num2str(RANGE.RTMIN) + ", " + num2str(RANGE.RTMAX) + ", " +
     num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + int2str(RANGE.COUNT) + ", " + num2str(RANGE.LAYERCOUNT) + " ); ";
   sql = (char *)sqlstr.c_str();
-  std::cout << sql << std::endl;
   /* Execute SQL statement */
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
