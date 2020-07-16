@@ -178,14 +178,19 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
     let dir = fullDir[0].concat("/");
     dir = dir.concat(fullDir[1]);
 
+    let t0 = new Date();
+
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
+            console.log("load3dByParaRange finished : ", new Date - t0);
             var scanID = $('#scanID1').text();
             var peakData = JSON.parse(this.responseText);
             var xhttp2 = new XMLHttpRequest();
-
+            
+            t0 = new Date();
             xhttp2.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
+                    console.log("load3dDataByScan finished : ", new Date - t0);
                     var ms1PeakData = JSON.parse(this.responseText);
 
                     graph3D.addNewScanDataToGraph(peakData, ms1PeakData, minmz, maxmz, minrt, maxrt);
@@ -220,11 +225,15 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     dir = dir.concat(fullDir[1]);
     
     clearTimeout(this.requestCancelId);
+
+    let t0 = new Date();
     this.requestCancelId = setTimeout((function(){
         xhttp.onreadystatechange = function (){
             if (this.readyState == 4 && this.status == 200) {
                 var response = JSON.parse(this.responseText);
-    
+
+                console.log("load3dDataByParaRange : ", new Date() - t0);
+                console.log("data length ", response.length);
                 graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
                 graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
     
@@ -259,8 +268,7 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
     
     let diff = Number.MAX_VALUE;
    
-    console.log("peakCnt : ", peakCnt);
-
+    
     //find which table has the closet number of peaks
     for (let i = 0; i < configData.length; i++){
         if (Math.abs(configData[i].COUNT - peakCnt) < diff){
