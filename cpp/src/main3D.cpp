@@ -10,9 +10,9 @@ int main(int argc, char* argv[]) {
     }
     msReader3D msreader(argv[1]);
     if (strcmp(argv[2],"-s") == 0) {
-        msreader.getPeaksFromScanDB(atoi(argv[3]));
+        //msreader.getPeaksFromScanDB(atoi(argv[3]));
     } else if (strcmp(argv[2],"-r") == 0) {
-        msreader.getScanRangeDB();
+        //msreader.getScanRangeDB();
     } else if (strcmp(argv[2],"-f") == 0) {
        //msreader.createDtabase();
        std::cout << "mzMLReader 3D running" << std::endl;
