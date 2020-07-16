@@ -62,24 +62,32 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.dataRange.rtmax = maxrt;
     this.dataRange.rtrange = maxrt - minrt;
 
-    console.log("total peaks on the graph ", this.currentData.length);
+    //console.log("total peaks on the graph ", this.currentData.length);
 
     this.getInteRange(this.currentData);
+
+    let t1 = new Date();
 
     for (let i = 0; i < this.currentData.length; i++)
     {
         this.plotPoint(this.currentData[i]);
     }
+
+    console.log("plotPoint : ", new Date() - t1);
+    t1 = new Date();
+
     this.viewRange["intscale"] = 1;
 
     // make sure the groups are plotted and update the view
     //this.repositionPlot(this.dataRange);
     this.updateViewRange(this.dataRange);
+    console.log("updateViewRange : ", new Date() - t1);
 }
 /*this.maxPeaks is the max number of peaks on the graph. 
     as ms1 peaks are always going to show in 3d grahph, add only a subset of peaks to the this.currentData
     which contains peaks to be drawn on the graph*/
 MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
+    let t0 = new Date();
     let peakCount = this.ms1Peaks.length;
     let curMs1Peaks = [];
     //from ms1 data, extract only those that are in current mz and rt range
@@ -91,8 +99,11 @@ MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
     }
     let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
     this.currentData = curMs1Peaks.concat(peaksToAdd);//store loaded data
+    console.log("addNewScanDatatoGrph : ", new Date - t0);
 }
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
+    let t0 = new Date();
+
     this.ms1Peaks = ms1Peaks;//store peak 1 data
     let peakCount = ms1Peaks.length;
     let curMs1Peaks = [];
@@ -106,6 +117,7 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
     }
     let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
     this.currentData = curMs1Peaks.concat(peaksToAdd);
+    console.log("addNewScanDatatoGrph : ", new Date - t0);
 }
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
