@@ -15,8 +15,7 @@ function MsGraph(containerEl, graphEl) {
     this.LOG_SCALAR = 1;
     this.USE_LOG_SCALE_COLOR = true;
     this.USE_LOG_SCALE_HEIGHT = false;
-    this.USE_CYLINDER_THRESHOLD = 0;
-
+ 
     // number of ruler ticks to render
     this.RULER_TICKS = 5;
 
@@ -24,7 +23,6 @@ function MsGraph(containerEl, graphEl) {
 
     this.labels = {};
 
-    this.RENDER_DELAY_THROTTLE = 100;
     this.renderRequested = false;
 
     this.ROUND_MZ = 3;

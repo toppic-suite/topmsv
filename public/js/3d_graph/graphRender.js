@@ -62,12 +62,18 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.dataRange.rtmax = maxrt;
     this.dataRange.rtrange = maxrt - minrt;
 
+    //console.log("total peaks on the graph ", this.currentData.length);
+
     this.getInteRange(this.currentData);
+
+    let t1 = new Date();
 
     for (let i = 0; i < this.currentData.length; i++)
     {
         this.plotPoint(this.currentData[i]);
     }
+    t1 = new Date();
+
     this.viewRange["intscale"] = 1;
 
     // make sure the groups are plotted and update the view
