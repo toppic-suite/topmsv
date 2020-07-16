@@ -182,7 +182,6 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
 
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
-            console.log("load3dByParaRange finished : ", new Date - t0);
             var scanID = $('#scanID1').text();
             var peakData = JSON.parse(this.responseText);
             var xhttp2 = new XMLHttpRequest();
@@ -190,7 +189,6 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
             t0 = new Date();
             xhttp2.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
-                    console.log("load3dDataByScan finished : ", new Date - t0);
                     var ms1PeakData = JSON.parse(this.responseText);
 
                     graph3D.addNewScanDataToGraph(peakData, ms1PeakData, minmz, maxmz, minrt, maxrt);
@@ -232,8 +230,6 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
             if (this.readyState == 4 && this.status == 200) {
                 var response = JSON.parse(this.responseText);
 
-                console.log("load3dDataByParaRange : ", new Date() - t0);
-                console.log("data length ", response.length);
                 graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
                 graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
     
@@ -283,42 +279,7 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
     console.log("current table number : ", tableNum);
     return tableNum;
 }
-/*
-function calculateTableNum(minrt, maxrt, minmz, maxmz){
-    //based on mz rt range, select which table to use
-    //assume that in mz range of 10, there are 10 peaks, 
-    //assume that in rt range of 0.25, there are 5 scans
-    let peakPerMz = 1;
-    let scanPerRt = 20;
-    let expectedPeaks = Math.ceil((maxmz - minmz) * peakPerMz);
-    let expectedScans = Math.ceil((maxrt - minrt) * scanPerRt);
-    let totalExpectedPeaks = expectedPeaks * expectedScans; 
-    let minDiff = Infinity;
-    let tableNum;
-    let peakCount = rowCount;
 
-    if (totalExpectedPeaks >= peakCount[0])
-    {
-        for (let i = 0; i < peakCount.length; i++)
-        {
-            //find which level has the closet number of peaks with totalExpectedPeaks
-            let diff = Math.abs(peakCount[i] - totalExpectedPeaks);
-            if (diff < minDiff )
-            {
-                tableNum = peakCount.length - 1 - i;
-                minDiff = diff;
-            } 
-        }
-        console.log("the selected table is PEAKS" , tableNum);
-        tableNum = tableNum.toString();
-    }
-    else
-    {
-        console.log("the selected table is PEAKS");
-        tableNum = ''//if range very small, always use the largest table
-    }
-    return tableNum;
-}*/
 function init3dGraph(){
     let promise = getMax();
     let min = document.getElementById("rangeMin").value;
@@ -329,16 +290,6 @@ function init3dGraph(){
         findNextLevelOneScan(min);
         loadInteSumList();
         configData = data;
-        /*let promise2 = getPeaksPerTable(totalLayer);
-        promise2.then(function(peakData){//to make sure max values are fetched before creating graph
-            rowCount = JSON.parse(peakData);
-            graph3D.init(maxData);
-            showEnvTable(min);
-            findNextLevelOneScan(min);
-            loadInteSumList();
-        }, function(err){
-            console.log(err);
-        })*/
 
     }, function(err){
         console.log(err);
