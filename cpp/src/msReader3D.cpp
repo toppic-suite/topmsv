@@ -603,11 +603,11 @@ void msReader3D::createDtabasMultiLayer() {
       s->getMZIntensityPairs(pairs);
       peaksInteSum = 0.000;
       for (int j=0; j<pairs.size(); j++) {
-        count++ ;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
         if (scanLevel == 1){//PEAKS0 contains level 1 data only
           databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
           databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+          count++ ;
         }
 
         databaseReader.insertPeakStmtBothMs(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);

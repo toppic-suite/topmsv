@@ -30,14 +30,11 @@ struct Range{
   int MINPEAKS = 3000; //minimum peak needed to create a new table 
   int MAXRETURN = 5000;
   vector<int> MAXPEAK;//maximum num of peaks in each table
-  //vector<double> MZSIZE;
-  //vector<double> RTSIZE;
-  double MZSCALE = 1.5;
+  double MZSCALE = 1.5;//number to scale m/z range of a grid block
 
-  //double SCANSCALE = 0.5;
-  double SCANSCALE = 1;
-  double MZSIZE = 0.1;
-  int SCANCNT = 5000;
+  double SCANSCALE = 1;//number to scale m/z range of a grid block. This number becomes smaller when peak count < SCANCNT
+  double MZSIZE = 0.1;//initial mz size of a grid block
+  int SCANCNT = 5000;//total length of y in entire grid x * y. So initial rt size of a grid block is 1
 
   std::string TARGET = "";
 };
@@ -45,7 +42,6 @@ struct Range{
 //value of n and m in n * m grid on graph
 
 struct Grid{
-	//int LAYERCOUNT = 4;//should match the highest level of vectors below
 	vector<vector<int>> GRIDSIZES;
 	vector<vector<vector<double> > > GRIDBLOCKS;
 };
@@ -126,7 +122,6 @@ public:
 	void resetRange();
 	void insertPeakDataToGridBlocks();
 	void createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_ID);
-	//void assignDataToGrid(std::vector<int> &prev_peak_ID, std::vector<int> &selected_peak_ID);
 	void assignDataToGrid(int table_cnt, std::vector<int> &selected_peak_ID);
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
 	void insertDataLayerTable();
