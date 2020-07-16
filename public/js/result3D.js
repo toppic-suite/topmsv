@@ -178,12 +178,15 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
     let dir = fullDir[0].concat("/");
     dir = dir.concat(fullDir[1]);
 
+    let t0 = new Date();
+
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var scanID = $('#scanID1').text();
             var peakData = JSON.parse(this.responseText);
             var xhttp2 = new XMLHttpRequest();
-
+            
+            t0 = new Date();
             xhttp2.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
                     var ms1PeakData = JSON.parse(this.responseText);
@@ -220,11 +223,13 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     dir = dir.concat(fullDir[1]);
     
     clearTimeout(this.requestCancelId);
+
+    let t0 = new Date();
     this.requestCancelId = setTimeout((function(){
         xhttp.onreadystatechange = function (){
             if (this.readyState == 4 && this.status == 200) {
                 var response = JSON.parse(this.responseText);
-    
+
                 graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
                 graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
     
@@ -254,15 +259,12 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
 
     let xRatio = (maxmz - minmz) / totalMzRange;
     let yRatio = (maxrt - minrt) / totalRtRange;
-
-    let peakCnt = (3000 * totalMzRange * totalRtRange) / ((maxmz - minmz) * (maxrt - minrt));
+    
+    let peakCnt = 3000 / (xRatio * yRatio);
     
     let diff = Number.MAX_VALUE;
-    console.log("xRatio, yRatio : ", xRatio, yRatio)
-    //console.log("mzrange : ", maxmz - minmz)
-   // console.log("rtrange : ", maxrt-minrt);
-    console.log("peakCnt : ", peakCnt);
-
+   
+    
     //find which table has the closet number of peaks
     for (let i = 0; i < configData.length; i++){
         if (Math.abs(configData[i].COUNT - peakCnt) < diff){
@@ -277,42 +279,7 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
     console.log("current table number : ", tableNum);
     return tableNum;
 }
-/*
-function calculateTableNum(minrt, maxrt, minmz, maxmz){
-    //based on mz rt range, select which table to use
-    //assume that in mz range of 10, there are 10 peaks, 
-    //assume that in rt range of 0.25, there are 5 scans
-    let peakPerMz = 1;
-    let scanPerRt = 20;
-    let expectedPeaks = Math.ceil((maxmz - minmz) * peakPerMz);
-    let expectedScans = Math.ceil((maxrt - minrt) * scanPerRt);
-    let totalExpectedPeaks = expectedPeaks * expectedScans; 
-    let minDiff = Infinity;
-    let tableNum;
-    let peakCount = rowCount;
 
-    if (totalExpectedPeaks >= peakCount[0])
-    {
-        for (let i = 0; i < peakCount.length; i++)
-        {
-            //find which level has the closet number of peaks with totalExpectedPeaks
-            let diff = Math.abs(peakCount[i] - totalExpectedPeaks);
-            if (diff < minDiff )
-            {
-                tableNum = peakCount.length - 1 - i;
-                minDiff = diff;
-            } 
-        }
-        console.log("the selected table is PEAKS" , tableNum);
-        tableNum = tableNum.toString();
-    }
-    else
-    {
-        console.log("the selected table is PEAKS");
-        tableNum = ''//if range very small, always use the largest table
-    }
-    return tableNum;
-}*/
 function init3dGraph(){
     let promise = getMax();
     let min = document.getElementById("rangeMin").value;
@@ -323,16 +290,6 @@ function init3dGraph(){
         findNextLevelOneScan(min);
         loadInteSumList();
         configData = data;
-        /*let promise2 = getPeaksPerTable(totalLayer);
-        promise2.then(function(peakData){//to make sure max values are fetched before creating graph
-            rowCount = JSON.parse(peakData);
-            graph3D.init(maxData);
-            showEnvTable(min);
-            findNextLevelOneScan(min);
-            loadInteSumList();
-        }, function(err){
-            console.log(err);
-        })*/
 
     }, function(err){
         console.log(err);
