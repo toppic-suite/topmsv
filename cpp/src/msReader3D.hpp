@@ -39,25 +39,6 @@ public:
 	mzMLReader3D databaseReader;
 	Range RANGE;
 
-	void getScans(int scanLevel);
-	void getSinglePeaks(int scan);
-	void getScanRangeDB();
-	void getRange();
-	void getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void createDtabase_normal();
-	void createDtabase();
-	void getRangeDB();
-	void getPeaksFromScanDB(int scan);
-	void getAllPeaksDB(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void getRangeFromRaw();
-	void createDtabaseOneTable();
-	void getRangeDBOneTable();
-	void getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void createDtabaseOneTableRTree();
-	void calculateLayer();
 	void createDtabasMultiLayer();
-	void getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 };
-
-
 #endif

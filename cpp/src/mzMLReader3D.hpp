@@ -26,11 +26,8 @@ struct Range{
   double INTMAX;
   int COUNT;
   int LAYERCOUNT = 5;
-  int GRIDSCALEFACTOR = 2;//set the size difference between each layer (it is n in --> peaks1 table = (peaks0 table width * n) * (peaks0 table height * n))
   int MINPEAKS = 3000; //minimum peak needed to create a new table 
-  int MAXRETURN = 5000;
-  vector<int> MAXPEAK;//maximum num of peaks in each table
-  double MZSCALE = 1.5;//number to scale m/z range of a grid block
+  double MZSCALE = 2;//number to scale m/z range of a grid block
 
   double SCANSCALE = 1;//number to scale m/z range of a grid block. This number becomes smaller when peak count < SCANCNT
   double MZSIZE = 0.1;//initial mz size of a grid block
@@ -71,53 +68,23 @@ public:
 	void closeDatabaseInMemory();
 	void creatTable();
 	void creatTableInMemory();
-	void insertSp(int scanIndex, std::string scan, double retentionTime);
-	void insertPeakFor3DViz(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
-	void getRange();
 	void getScanRange();
-	void getPeaksFromScan(int scan);
-	void getPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 	void beginTransaction();
 	void endTransaction();
 	void beginTransactionInMemory();
 	void endTransactionInMemory();
-	void synchronous();
 	void openInsertStmtBothMs();
 	void openInsertStmt();
 	void openInsertStmtInMemory();
 	void closeInsertStmt();
 	void closeInsertStmtInMemory();
 	void insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, double peaksInteSum, int next, int prev);
-	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
 	void updateSpStmt(int currentID, int prevID);
 	void updateSpSumStmt(int currentID, double peaksInteSum);
 	void insertPeakStmtBothMs(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void insertPeakStmtInMemory(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
 	void createIndexOnIdOnly();
-	void createIndex();
-	void copyPeakIntoMemoryDb();
-
-	double MZ_GROUP1_SIZE;
-	double MZ_GROUP2_SIZE;
-	double MZ_GROUP3_SIZE;
-	double MZ_GROUP4_SIZE;
-	double MZ_GROUP5_SIZE;
-	double RT_GROUP1_SIZE;
-	double RT_GROUP2_SIZE;
-	double RT_GROUP3_SIZE;
-	double RT_GROUP4_SIZE;
-	double RT_GROUP5_SIZE;
-	int MZ_GROUP1;
-	int MZ_GROUP2;
-	int MZ_GROUP3;
-	int MZ_GROUP4;
-	int MZ_GROUP5;
-	int RT_GROUP1;
-	int RT_GROUP2;
-	int RT_GROUP3;
-	int RT_GROUP4;
-	int RT_GROUP5;
 
 	void resetRange();
 	void insertPeakDataToGridBlocks();
@@ -126,28 +93,13 @@ public:
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
 	void insertDataLayerTable();
 	void setRange(Range tmpRange);
-	void creatTableOneTable();
 	void insertPeakOneTable(int peakIndex, int scanIndex, double intensity, double mz);
 	void getRangeOneTable();
-	void openInsertStmtOneTable();
-	void closeInsertStmtOneTable();
-	void insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz, double intensity, double retentionTime);
 	void insertConfigOneTable();
-	void createIndexLayerTable();
-	void createIndexOneTable();
-	void creatLayersTable();
 	void createLayerTable(std::string num);
-	void getConfig();
 	void openInsertLayerStmt(std::string num);
-	void closeInsertLayerStmt();
-	void insertPeaksLayerStmt(std::string origin, int j, int k, double mzsize, double rtsize);
-	void creatLayersTableRTree();
-	void createLayerTableRTree(std::string num);
-	void openInsertLayerStmtRTree(std::string num);
-	void closeInsertLayerStmtRTree();
-	void insertAllPeaksLayerStmtRTree();
-	void insertPeaksLayerStmtRTree(std::string origin, int j, int k, double mzsize, double rtsize);
-	
+	void closeInsertLayerStmt();	
+	void createIndexLayerTable();
 };
 
 
