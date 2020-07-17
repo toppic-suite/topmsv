@@ -62,18 +62,15 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.dataRange.rtmax = maxrt;
     this.dataRange.rtrange = maxrt - minrt;
 
-    //console.log("total peaks on the graph ", this.currentData.length);
+    console.log("total peaks on the graph ", this.currentData.length);
 
     this.getInteRange(this.currentData);
-
-    let t1 = new Date();
 
     for (let i = 0; i < this.currentData.length; i++)
     {
         this.plotPoint(this.currentData[i]);
+        
     }
-    t1 = new Date();
-
     this.viewRange["intscale"] = 1;
 
     // make sure the groups are plotted and update the view
@@ -110,6 +107,54 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
     }
     let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
     this.currentData = curMs1Peaks.concat(peaksToAdd);
+}
+MsGraph.prototype.plotPointAsCircle = function(){
+    //console.log(this.dataRange)
+    let mzRange = this.dataRange.mzmax - this.dataRange.mzmin;
+    let rtRange = (this.dataRange.rtmax - this.dataRange.rtmin)/60;
+
+    let xSize = mzRange / 100;
+    let ySize = rtRange / 50;
+
+    //console.log(xSize, ySize)
+    //called from renderImmediate when view is perpendicular
+    let scanID = document.getElementById('scanID1').innerText;
+
+    let prevGroup = this.datagroup.getObjectByName("cylinderGroup");
+    //this.datagroup.remove(prevGroup);
+
+    if (prevGroup == undefined){
+        this.cylinderGroup = new THREE.Group();//when view angle is perpendicular
+        this.cylinderGroup.name = "cylinderGroup";
+        this.datagroup.add(this.cylinderGroup);
+    }
+    else{
+        this.cylinderGroup = prevGroup;
+    }
+
+    for (let i = 0; i < this.currentData.length; i++)
+    {   
+        var point = this.currentData[i];
+        var geometry = new THREE.CylinderBufferGeometry(xSize, ySize, 1, 0);
+        //var geometry = new THREE.CircleBufferGeometry( 50, 32 );
+        var material = new THREE.MeshBasicMaterial( { color: 0x350fa8 } );
+   
+        if (point.SPECTRAID == parseInt(scanID)){
+            material = new THREE.MeshBasicMaterial({color: 0xED1111});
+        }
+        var circle = new THREE.Mesh( geometry, material );
+
+        circle.position.set(point.MZ, 0, point.RETENTIONTIME);
+
+        circle.pointid = point.ID;
+        circle.mz = point.MZ;
+        circle.rt = point.RETENTIONTIME;
+        circle.int = point.INTENSITY;
+        circle.height = 10;
+        circle.name = "point";
+        circle.scanID = point.SPECTRAID;
+        this.cylinderGroup.add(circle);
+    }
 }
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
