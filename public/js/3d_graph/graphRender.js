@@ -114,7 +114,7 @@ MsGraph.prototype.plotPointAsCircle = function(){
     let rtRange = (this.dataRange.rtmax - this.dataRange.rtmin)/60;
 
     let xSize = mzRange / 100;
-    let ySize = rtRange / 50;
+    let ySize = rtRange;
 
     //console.log(xSize, ySize)
     //called from renderImmediate when view is perpendicular
@@ -135,8 +135,8 @@ MsGraph.prototype.plotPointAsCircle = function(){
     for (let i = 0; i < this.currentData.length; i++)
     {   
         var point = this.currentData[i];
-        var geometry = new THREE.CylinderBufferGeometry(xSize, ySize, 1, 0);
-        //var geometry = new THREE.CircleBufferGeometry( 50, 32 );
+        //var geometry = new THREE.CylinderBufferGeometry(xSize, ySize, 1, 0);
+        var geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
         var material = new THREE.MeshBasicMaterial( { color: 0x350fa8 } );
    
         if (point.SPECTRAID == parseInt(scanID)){
@@ -155,6 +155,18 @@ MsGraph.prototype.plotPointAsCircle = function(){
         circle.scanID = point.SPECTRAID;
         this.cylinderGroup.add(circle);
     }
+    //repositioning m/z and rt from repositionPlot
+    var heightScale = this.USE_LOG_SCALE_HEIGHT ? Math.log(this.dataRange.intmax) : this.dataRange.intmax;
+    var mz_squish = this.GRID_RANGE / this.dataRange.mzrange;
+    var rt_squish = - this.GRID_RANGE / this.dataRange.rtrange;
+    var inte_squish = (this.GRID_RANGE_VERTICAL / heightScale) * this.dataRange.intscale;
+
+    if (this.dataRange.intmax < 1){
+        //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
+        inte_squish = 0;
+    }
+    // Reposition the plot so that mzmin,rtmin is at the correct corner
+    this.datagroup.position.set(-this.dataRange.mzmin*mz_squish, inte_squish, this.GRID_RANGE - this.dataRange.rtmin*rt_squish);
 }
 // plots a single point on the graph
 MsGraph.prototype.plotPoint = function(point) {
