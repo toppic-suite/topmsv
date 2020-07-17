@@ -229,7 +229,8 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
         xhttp.onreadystatechange = function (){
             if (this.readyState == 4 && this.status == 200) {
                 var response = JSON.parse(this.responseText);
-
+                console.log("load3ddatabypararange time ", new Date() - t0);
+                //console.log(response[0], response[1], response[2])
                 graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
                 graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
     
