@@ -3,6 +3,7 @@
 function MsGraph(containerEl, graphEl) {
     this.containerEl = $(containerEl);
     this.graphEl = graphEl;
+    this.scene = new THREE.Scene();
 
     // Adjusts the size of the baseline grid
     this.GRID_RANGE = 20;
@@ -50,7 +51,7 @@ MsGraph.prototype.init = function(maxMzRt){
     this.totalMaxMz = maxMzRt.MZMAX;
     this.totalMaxRt = maxMzRt.RTMAX;
 
-    var scene = this.scene = new THREE.Scene();
+    var scene = this.scene;
 
     // rendering element
     var renderer = this.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
@@ -73,7 +74,7 @@ MsGraph.prototype.init = function(maxMzRt){
 
     // camera
     //var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
-    var camera = this.camera = new THREE.OrthographicCamera( 1, 1, 1, 1, - 300, 300 );
+    var camera = this.camera = new THREE.OrthographicCamera( 5000, 5000, 5000, 5000, 0, 5000 );
     
     camera.position.set(15, 15, 30);
     this.prevCameraPos = camera.position.clone();
@@ -105,8 +106,9 @@ MsGraph.prototype.init = function(maxMzRt){
     this.plotGroup = new THREE.Group();
   
     this.datagroup.add(this.plotGroup);
+    //this.datagroup.add(this.cylinderGroup);
     this.datagroup.add(this.ticksGroup);
-
+    
     // graph "surface" (gray underside)
     var surfaceGeo = new THREE.PlaneGeometry(this.GRID_RANGE, this.GRID_RANGE);
     var surfaceMat = new THREE.MeshBasicMaterial({ color: 0xbbbbbb, side: THREE.DoubleSide });
@@ -160,14 +162,13 @@ MsGraph.prototype.init = function(maxMzRt){
     scene.add(this.datagroup);
     scene.add(this.labelgroup);
     scene.add(this.ticklabelgroup);
-
     this.updateViewRange(this.dataRange);
 
     renderer.setAnimationLoop(function() {
         graphControls.update();
     });
 
-    this.renderImmediate();
+    //this.renderImmediate();
 };
 
 /******** GEOMETRY/MATH FUNCTIONS *******/
@@ -296,9 +297,15 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
 
 // render the graph immediately (i.e. can't wait for timed update)
 MsGraph.prototype.renderImmediate = function() {
-
+    //if camera angle is perpendicular to the graph plane
+    if (this.camera.position.y > 25.495){
+        this.plotPointAsCircle();
+    }
+    else{
+        let prevGroup = this.datagroup.getObjectByName("cylinderGroup");
+        this.datagroup.remove(prevGroup);
+    }
     this.renderer.render( this.scene, this.camera );
-
     this.renderRequested = false;
 };
 

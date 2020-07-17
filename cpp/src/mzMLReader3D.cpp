@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <chrono>
 #include <math.h> 
 #include <algorithm>
 
@@ -10,17 +9,13 @@ sqlite3_stmt *stmtPeak;
 sqlite3_stmt *stmtPeakBothMs;
 sqlite3_stmt *stmtPeakInMemory;
 sqlite3_stmt *stmtSp;
-sqlite3_stmt *stmtLevelPair;
 sqlite3_stmt *stmtUpdate;
 sqlite3_stmt *stmtSpSumUpdate;
 
 Range RANGE;
 Grid GRID;
 
-int peakInGrid = 0;
-int overlapPeak = 0;
-int totalPeaks = 0;
-
+int peakInGrid;
 /*initialize 3d vector with default values*/
 //std::vector<std::vector<std::vector<double> > >  GRID.GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (GRID.LEVEL5[0], std::vector<std::vector<double> >(GRID.LEVEL5[1], std::vector<double>({-1, -1})));
 
@@ -45,35 +40,6 @@ int callback(void *NotUsed, int argc, char **argv, char **azColName) {
   std::cout << std::endl;
   return 0;
 };
-int callbackRange(void *NotUsed, int argc, char **argv, char **azColName) {
-  for (int i = 0; i < argc; i++) {
-    if (i > 1 && i < 4) {
-      std::cout << std::stod(argv[i])/60 << "\t"; 
-    } else {
-      std::cout << argv[i] << "\t"; 
-    }
-  }
-  return 0;
-};
-int callbackConfig(void *NotUsed, int argc, char **argv, char **azColName) {
-  RANGE.MZMIN = std::stod(argv[0]);
-  RANGE.MZMAX = std::stod(argv[1]);
-  RANGE.RTMIN = std::stod(argv[2]);
-  RANGE.RTMAX = std::stod(argv[3]);
-  RANGE.INTMIN = std::stod(argv[4]);
-  RANGE.INTMAX = std::stod(argv[5]);
-  RANGE.COUNT = std::stoi(argv[6]);
-  RANGE.LAYERCOUNT = std::stoi(argv[7]);
-  return 0;
-};
-int callbackPeakFromScan(void *NotUsed, int argc, char**argv, char **azColName) {
-  std::cout << argv[0] << "," << argv[1] << std::endl ;
-  return 0;
-}
-int callbackPeak(void *NotUsed, int argc, char **argv, char **azColName) {
-  std::cout << argv[0] << "," << argv[1] << "," << std::stod(argv[2])/60 << "," << argv[3] << "\t" ;
-  return 0;
-};
 int callbackInsertPeak(void *NotUsed, int argc, char **argv, char **azColName) {
   sqlite3_reset(stmtPeak);
   sqlite3_bind_int(stmtPeak,1,std::stoi(argv[0]));
@@ -92,41 +58,15 @@ int callbackInsertPeak(void *NotUsed, int argc, char **argv, char **azColName) {
   }
   return 0;
 };
-int callbackInsertPeakRTree(void *NotUsed, int argc, char **argv, char **azColName) {
-  sqlite3_reset(stmtPeak);
-  sqlite3_bind_int(stmtPeak,1,std::stoi(argv[0]));
-  sqlite3_bind_int(stmtPeak,2,std::stoi(argv[1]));
-  sqlite3_bind_double(stmtPeak,3,std::stod(argv[1]));
-  sqlite3_bind_double(stmtPeak,4,std::stod(argv[2]));
-  sqlite3_bind_double(stmtPeak,5,std::stod(argv[2]));
-  int r = sqlite3_step(stmtPeak);
-  if (r != SQLITE_DONE) {
-    // std::cout << sqlite3_errmsg(db) << std::endl;
-    std::cout << argv[0] << "," << argv[1] << "," << argv[2] << "," << argv[3] << "," << argv[4] << "\t" ;
-    std::cout << "callbackInsertPeak error" << std::endl;
-  }
-  return 0;
-};
-
 int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
-  /*ID  INT PRIMARY KEY     NOT NULL," \ 
-    "SPECTRAID       INT      NOT NULL," \
-    "MZ              REAL     NOT NULL," \
-    "INTENSITY       REAL     NOT NULL," \
-    "RETENTIONTIME   REAL     NOT NULL);");   <--------- PEAKS table*/ 
-
   /*input : row from PEAKS0 table, with a column structure as above
     output : GRID.GRIDBLOCKS is filled with peaks assigned to a grid for PEAKS1 (second largest) table*/
 
   double mz_range = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
   int grid_width = floor(mz_range / RANGE.MZSIZE);
 
-  //NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin
-
   int xindex = floor(((std::stod(argv[2]) - RANGE.MZMIN) * (grid_width - 1))/ mz_range);
   int yindex = std::stoi(argv[1]) - 1;
-
-  totalPeaks++;
 
   if (xindex < GRID.GRIDBLOCKS.size() && yindex < RANGE.SCANCNT){
     /*see if the grid block at [xIndex][yIndex] already has a peak.
@@ -143,10 +83,8 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
       //compare intensity
       if (std::stod(argv[3]) > GRID.GRIDBLOCKS[xindex][yindex][1]){
         GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
-        GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
-        
+        GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);   
       } 
-      overlapPeak++;
     }
   }
   else{
@@ -162,6 +100,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
         GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
         GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
         peakInGrid++;
+
       }
       else{
         //compare intensity
@@ -169,8 +108,6 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
           GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
           GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
         }
-          overlapPeak++;
-
       }
     }
   }
@@ -325,20 +262,6 @@ void mzMLReader3D::creatTableInMemory() {
       // fprintf(stdout, "Table created successfully\n");
       // std::cout << "Table PEAKS created successfully" << std::endl;
    }
-};
-void mzMLReader3D::getScanRange() {
-  /* Create SQL statement */
-  sql = (char*)("SELECT MIN(SCAN),MAX(SCAN) FROM SPECTRA;");
-  /* Execute SQL statement */
-  rc = sqlite3_exec(db, sql, callbackRange, (void*)data, &zErrMsg);
-  if( rc != SQLITE_OK ){
-    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-    sqlite3_free(zErrMsg);
-  }else{
-    // std::cout << "Operation done successfully" << std::endl;
-  }
-  std::cout << "\t";
-  std::cout << std::endl;
 };
 void mzMLReader3D::beginTransaction() {
   std::string sqlstr = "BEGIN;";
@@ -537,8 +460,6 @@ void mzMLReader3D::resetRange(){
   RANGE.COUNT = 0;
 }
 void mzMLReader3D::insertPeakDataToGridBlocks(){
-  
-  Range *RANGE_ptr = &RANGE;
   std::string sqlstr = "SELECT * FROM PEAKS0;";
   sql = (char *)sqlstr.c_str();
   rc = sqlite3_exec(dbInMemory, sql, callbackConvertData, dbInMemory, &zErrMsg);//after this function, gridBlocks has a peak for each grid
@@ -580,14 +501,10 @@ void mzMLReader3D::assignDataToGrid(int table_cnt,std::vector<int> &selected_pea
  
   int x = 0;
   int y = 0; 
-  int insert = 0;
 
   //index of 2d vector
   int xrange = pow(RANGE.MZSCALE, table_cnt); //number to multiply RANGE.MZSIZE (0.1) --> x size of a single grid block 
   int yrange = ceil(GRID.GRIDBLOCKS[0].size() / RANGE.SCANCNT * RANGE.SCANSCALE); //y size of a single grid block 
-
-   //std::cout << "m/z : " << xrange * RANGE.MZSIZE<< std::endl;
-  //std::cout << "xrange, yrange : " << xrange << " " << yrange << std::endl;
 
   while (y < GRID.GRIDBLOCKS[0].size()){
     while (x < GRID.GRIDBLOCKS.size()){
