@@ -165,7 +165,7 @@ function getPeaksPerTable(totalLayer){
     });
 }
 
-function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
+function load3dDataOnScanChange(minmz, maxmz, minscan, maxscan, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
     //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
     //when a range changes in the same scan, call load3dDataByParaRange instead
@@ -196,10 +196,12 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
         
                     if (updateTextBox){
                         //update data range in textboxes if getting range from each scan, not by users
-                        document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-                        document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-                        document.getElementById('mzRangeMin').value = minmz;
-                        document.getElementById('mzRangeMax').value = parseInt(maxmz);
+                        //document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
+                        //document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
+                        document.getElementById('scanRangeMin').value = minscan;
+                        document.getElementById('scanRangeMax').value = maxscan;
+                        document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
+                        document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
                     }
                 }
             }
@@ -207,11 +209,13 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
             xhttp2.send();
         }
     }
-    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+    //xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minScan=" + minscan + "&maxScan=" + maxscan + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+
     xhttp.send();
 
 }
-function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
+function load3dDataByParaRange(minmz, maxmz, minscan, maxscan, updateTextBox){
     //loading spectra data upon startup and range change
 
     let tableNum = calculateTableNum(minrt, maxrt, minmz, maxmz);
@@ -236,14 +240,14 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     
                 if (updateTextBox){
                     //update data range in textboxes if getting range from each scan, not by users
-                    document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-                    document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
+                    document.getElementById('scanRangeMin').value = minscan;
+                    document.getElementById('scanRangeMax').value = maxscan;
                     document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
                     document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
                 }
             }
         }
-        xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+        xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minScan=" + minscan + "&maxScan=" + maxscan + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
         xhttp.send();
     }).bind(this), 100);
 
@@ -265,7 +269,6 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
     
     let diff = Number.MAX_VALUE;
    
-    
     //find which table has the closet number of peaks
     for (let i = 0; i < configData.length; i++){
         if (Math.abs(configData[i].COUNT - peakCnt) < diff){
@@ -900,24 +903,24 @@ next1.addEventListener('click', function () {
 //listener for rt range and mz range change in 3d graph
 let redrawRequestButton = document.getElementById('request3dGraphRedraw');
 redrawRequestButton.addEventListener('click', function(){
-    let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
-    let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
+    let minScan = parseFloat(document.getElementById('scanRangeMin').value);
+    let maxScan = parseFloat(document.getElementById('scanRangeMax').value);
     let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
     let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
     
     //error handing
-    if (minRT > maxRT){
+    if (minScan > maxScan){
         alert("Invalid Range : Minimum retention time is bigger than maximum.");
     } 
     else if (minMZ > maxMZ){
         alert("Invalid Range : Minimum m/z is bigger than maximum");
     }
-    else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
+    else if (isNaN(minScan) || isNaN(maxScan) || isNaN(minMZ) || isNaN(maxMZ)){
         alert("Invalid Value Found : Please make sure the range has valid values.");
     }
     else{
         //reload data and redraw graph
-        load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, false);
+        load3dDataByParaRange(minMZ, maxMZ, minScan, maxScan, false);
     }
 }, false);
 
