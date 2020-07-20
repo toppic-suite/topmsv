@@ -25,6 +25,7 @@ struct Range{
   double RTMAX;
   double INTMIN;
   double INTMAX;
+  int SCANCOUNT;
   int COUNT;
   int LAYERCOUNT = 5;
   int MAXRETURN = 5000;
@@ -33,9 +34,9 @@ struct Range{
   int MINPEAKS = 3000; //minimum peak needed to create a new table 
   double MZSCALE = 2;//number to scale m/z range of a grid block
 
-  double SCANSCALE = 1;//number to scale m/z range of a grid block. This number becomes smaller when peak count < SCANCNT
+  double SCANSCALE = 1;//number to scale m/z range of a grid block. This number becomes smaller when peak count < SCANSIZE
   double MZSIZE = 0.1;//initial mz size of a grid block
-  int SCANCNT = 5000;//total length of y in entire grid x * y. So initial rt size of a grid block is 1
+  int SCANSIZE = 5000;//total length of y in entire grid x * y. So initial rt size of a grid block is 1
   std::string TARGET = "";
 };
 struct Grid{

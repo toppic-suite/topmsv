@@ -291,6 +291,7 @@ void msReader::createDtabase() { //stmt
   RANGE.RTMAX = rtmax;
   RANGE.RTMIN = rtmin;
   RANGE.COUNT = ms1count;//peakCount
+  RANGE.SCANCOUNT = spSize;
 
   std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
   std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;

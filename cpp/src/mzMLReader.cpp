@@ -10,7 +10,7 @@ sqlite3_stmt *stmtLevelPair;
 sqlite3_stmt *stmtUpdate;
 sqlite3_stmt *stmtSpSumUpdate;
 
-int peakInGrid = 0;
+int peak_in_grid = 0;
 
 std::string num2str(double num) {
   // std::cout << num << std::endl;
@@ -72,6 +72,7 @@ int callbackInsertPeak(void *NotUsed, int argc, char **argv, char **azColName) {
   sqlite3_bind_double(stmtPeak,3,std::stod(argv[2]));
   sqlite3_bind_double(stmtPeak,4,std::stod(argv[3]));
   sqlite3_bind_double(stmtPeak,5,std::stod(argv[4]));
+
   int r = sqlite3_step(stmtPeak);
   if (r != SQLITE_DONE) {
     // std::cout << sqlite3_errmsg(db) << std::endl;
@@ -105,7 +106,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
   int xindex = floor(((std::stod(argv[2]) - RANGE.MZMIN) * (grid_width - 1))/ mz_range);
   int yindex = std::stoi(argv[1]) - 1;
 
-  if (xindex < GRID.GRIDBLOCKS.size() && yindex < RANGE.SCANCNT){
+  if (xindex < GRID.GRIDBLOCKS.size() && yindex < RANGE.SCANSIZE){
     /*see if the grid block at [xIndex][yIndex] already has a peak.
     if it has a peak, the value at the index is FALSE. If it does not have a peak yet, the value is TRUE.
     if TRUE, insert the peak into the corresponding table and set the value at [xIndex][yIndex] to be FALSE*/
@@ -114,7 +115,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
       //store the intensity and ID
       GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
       GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
-      peakInGrid++;
+      peak_in_grid++;
     }
     else{
       //compare intensity
@@ -126,7 +127,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
   }
   else{
     //if xIndex or yIndex are out of range, compare with the last index in GRIDBLOCKS
-    if (yindex >= RANGE.SCANCNT){
+    if (yindex >= RANGE.SCANSIZE){
       return 0;//skip this scan if it is bigger than current scan limit;
     }
     else if (xindex >= GRID.GRIDBLOCKS.size()){
@@ -136,7 +137,7 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
         //store the intensity and ID
         GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
         GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
-        peakInGrid++;
+        peak_in_grid++;
 
       }
       else{
@@ -282,6 +283,7 @@ void mzMLReader::creatTable() {
          "INTMIN          REAL     NOT NULL," \
          "INTMAX          REAL     NOT NULL," \
          "COUNT           INT     NOT NULL," \
+         "SCANCOUNT       INT     NOT NULL," \
          "LAYERCOUNT      INT     NOT NULL);");
 
    /* Execute SQL statement */
@@ -771,7 +773,7 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
 
   //index of 2d vector
   int xrange = pow(RANGE.MZSCALE, table_cnt); //number to multiply RANGE.MZSIZE (0.1) --> x size of a single grid block 
-  int yrange = ceil(GRID.GRIDBLOCKS[0].size() / RANGE.SCANCNT * RANGE.SCANSCALE); //y size of a single grid block 
+  int yrange = ceil(GRID.GRIDBLOCKS[0].size() / RANGE.SCANSIZE * RANGE.SCANSCALE); //y size of a single grid block 
 
   while (y < GRID.GRIDBLOCKS[0].size()){
     while (x < GRID.GRIDBLOCKS.size()){
@@ -816,19 +818,19 @@ void mzMLReader::insertDataLayerTable(){
   double mz_range = RANGE.MZMAX - RANGE.MZMIN;//range of mz in mzmML
   int grid_width = floor(mz_range / RANGE.MZSIZE);
 
-  GRID.GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (grid_width, std::vector<std::vector<double> >(RANGE.SCANCNT, std::vector<double>({-1, -1})));  
+  GRID.GRIDBLOCKS = std::vector<std::vector<std::vector<double> > > (grid_width, std::vector<std::vector<double> >(RANGE.SCANSIZE, std::vector<double>({-1, -1})));  
   std::cout << "grid size : " << GRID.GRIDBLOCKS.size() << " * " << GRID.GRIDBLOCKS[0].size() << std::endl;
   
   clock_t t1 = clock();
   insertPeakDataToGridBlocks();//peaks assigned to GRID.GRIDBLOCKS
   closeDatabaseInMemory();//close in-memory database. local disk db is still open.
 
-  std::cout << "total peak in the GRIDBLOCKS is " << peakInGrid << std::endl;
+  std::cout << "total peak in the GRIDBLOCKS is " << peak_in_grid << std::endl;
   std::cout <<"insertPeakDataToGridBlocks finished: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 
   int xrange = GRID.GRIDBLOCKS.size();
-  int peak_cnt = peakInGrid;//number of peaks in grid blocks (exclude empty grid blocks);
+  int peak_cnt = peak_in_grid;//number of peaks in grid blocks (exclude empty grid blocks);
   int table_cnt = 1;
 
   std::vector<int> prev_peak_ID;//peakID in previous table
@@ -853,15 +855,15 @@ void mzMLReader::insertDataLayerTable(){
       RANGE.COUNT = peak_cnt;
       insertConfigOneTable();
       endTransaction();
-      if (RANGE.SCANCNT >= peak_cnt){//if peak count became small, adjust total scan count as well
-        RANGE.SCANCNT = floor(peak_cnt * RANGE.SCANSCALE); 
+      if (RANGE.SCANSIZE >= GRID.GRIDBLOCKS.size()){//if peak count became small, adjust total scan count as well
+        RANGE.SCANSCALE = RANGE.SCANSCALE * 2;
+        RANGE.SCANSIZE = floor(RANGE.SCANSIZE / RANGE.SCANSCALE); 
       }
       table_cnt++;
     }
     else if (table_cnt > 1){
       std::vector<int> selected_peak_ID;//peaks to insert to the table
 
-      //assignDataToGrid(prev_peak_ID, selected_peak_ID);
       assignDataToGrid(table_cnt, selected_peak_ID);
 
       peak_cnt = selected_peak_ID.size();
@@ -885,11 +887,13 @@ void mzMLReader::insertDataLayerTable(){
       else{
         createSmallestTable(table_cnt, prev_peak_ID);//create one more table if current smallest table is still big
       }
-        if (RANGE.SCANCNT >= peak_cnt){//if peak count became small, adjust total scan count as well
-        RANGE.SCANCNT = floor(peak_cnt * RANGE.SCANSCALE); 
-        std::cout << "RANGE.SCANCNT " << RANGE.SCANCNT << std::endl;
+        int xrange = pow(RANGE.MZSCALE, table_cnt);
+        int xlength = GRID.GRIDBLOCKS.size() / xrange;
+        if (RANGE.SCANSIZE >= xlength){//if peak count became small, adjust total scan count as well
+          RANGE.SCANSCALE = RANGE.SCANSCALE * 2;
+          RANGE.SCANSIZE = floor(RANGE.SCANSIZE / RANGE.SCANSCALE); 
+          std::cout << "RANGE.SCANSIZE " << RANGE.SCANSIZE << std::endl;
       }
-      
     } 
   RANGE.LAYERCOUNT = table_cnt;
   }
@@ -1062,9 +1066,9 @@ void mzMLReader::insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz,
 };
 void mzMLReader::insertConfigOneTable() {
   /* Create SQL statement */
-  std::string sqlstr = "INSERT INTO CONFIG (MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT,LAYERCOUNT) VALUES (" +
+  std::string sqlstr = "INSERT INTO CONFIG (MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT,SCANCOUNT,LAYERCOUNT) VALUES (" +
     num2str(RANGE.MZMIN) + ", " + num2str(RANGE.MZMAX) + ", " + num2str(RANGE.RTMIN) + ", " + num2str(RANGE.RTMAX) + ", " +
-    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + num2str(RANGE.COUNT) + ", " + num2str(RANGE.LAYERCOUNT) + " ); ";
+    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + num2str(RANGE.COUNT) + ", " + num2str(RANGE.SCANCOUNT) + num2str(RANGE.LAYERCOUNT) + " ); ";
   sql = (char *)sqlstr.c_str();
   /* Execute SQL statement */
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
@@ -1158,7 +1162,7 @@ void mzMLReader::createIndexLayerTable() {
       // fprintf(stdout, "Records created successfully\n");
       std::cout << "Scan_id_index created successfully" << std::endl;
     }
-    sqlstr = "CREATE INDEX rtmz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (RETENTIONTIME, MZ);";
+    sqlstr = "CREATE INDEX scanIDmz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (SPECTRAID, MZ);";
     sql = (char *)sqlstr.c_str();
     rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK ){
