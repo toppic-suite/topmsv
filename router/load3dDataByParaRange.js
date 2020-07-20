@@ -6,11 +6,11 @@ var load3dDataByParaRange = router.get('/load3dDataByParaRange', function (req, 
     console.log("Hello, load3dDataByParaRange!");
     var projectDir = req.query.projectDir;
     var tableNum = req.query.tableNum;
-    var minRT = req.query.minRT;
-    var maxRT = req.query.maxRT;
+    var minScan = req.query.minScan;
+    var maxScan = req.query.maxScan;
     var minMZ = req.query.minMZ;
     var maxMZ = req.query.maxMZ;
-    load3dDataByParaRangeLib(projectDir, tableNum, minRT, maxRT, minMZ, maxMZ, function (err, rows) {
+    load3dDataByParaRangeLib(projectDir, tableNum, minScan, maxScan, minMZ, maxMZ, function (err, rows) {
         res.write(JSON.stringify(rows));
         res.end();
    });
