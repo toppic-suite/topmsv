@@ -173,6 +173,7 @@ void msReader::createDtabase() { //stmt
   t1 = clock();
   int scanLevel = 1;
   int count = 0;
+  int ms1count = 0;
   int spSize = sl->size();
   std::vector<Point> pointsList;
   databaseReader.beginTransaction();
@@ -218,7 +219,7 @@ void msReader::createDtabase() { //stmt
         if (scanLevel == 1){//PEAKS0 contains level 1 data only
           databaseReader.insertPeakStmtMs1(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
           databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
-          count++ ;
+          ms1count++ ;
         }
         //compare with min max values to find overall min max value
         if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
@@ -277,11 +278,39 @@ void msReader::createDtabase() { //stmt
     // }
   }
   databaseReader.closeInsertStmt();
+  databaseReader.closeInsertStmtMs1Only();
+  databaseReader.closeInsertStmtInMemory();
   std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
-  databaseReader.endTransaction();
-  std::cout <<"End Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+
+  //store min max values in RANGE
+  RANGE.MZMAX = mzmax;
+  RANGE.MZMIN = mzmin;
+  RANGE.INTMAX = intemax;
+  RANGE.INTMIN = intemin;
+  RANGE.RTMAX = rtmax;
+  RANGE.RTMIN = rtmin;
+  RANGE.COUNT = ms1count;//peakCount
+
+  std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
+  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
+  
+  std::cout <<"End Insert to PEAKS0: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+
+  databaseReader.setRange(RANGE);
+  databaseReader.insertConfigOneTable();
+  databaseReader.endTransaction();
+  databaseReader.endTransactionInMemory();
+  
+  std::cout <<"End Insert to CONFIG: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+
+  //create index on peak id (for copying to each layer later)
+  databaseReader.createIndexOnIdOnly();
+  databaseReader.insertDataLayerTable();
+  databaseReader.createIndexLayerTable();
+
   databaseReader.createIndex();
   std::cout <<"Creat Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
