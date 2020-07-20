@@ -111,9 +111,8 @@ var upload = router.post('/upload', function (req, res) {
                                 res.write('<h2>Link: </h2>');
                                 res.write(message.text);
 
-                                let app = './cpp/bin/mzMLReader';
                                 let parameter = des_file + ' -f';
-                                submitTask(id, app, parameter,1);
+                                submitTask(id, './cpp/bin/mzMLReader', parameter, 1);
 
                                 app = 'node';
                                 let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
@@ -238,9 +237,9 @@ var upload = router.post('/upload', function (req, res) {
                             res.write('<h2>Link: </h2>');
                             res.write(message.text);
 
-                            let app = './cpp/bin/mzMLReader';
                             let parameter = des_file + ' -f';
-                            submitTask(id, app, parameter, 1);
+
+                            submitTask(id, './cpp/bin/mzMLReader', parameter, 1);
 
                             res.end();
                             break;
