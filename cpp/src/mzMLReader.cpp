@@ -225,7 +225,7 @@ void mzMLReader::creatTable() {
          "ID INT PRIMARY KEY     NOT NULL," \
          "SPECTRAID     INT      NOT NULL REFERENCES SPEACTRA(ID)," \
          "MZ            REAL     NOT NULL," \
-         "INTENSITY     REAL     NOT NULL)," \
+         "INTENSITY     REAL     NOT NULL," \
          "RETENTIONTIME     REAL     NOT NULL);");
 
    /* Execute SQL statement */
@@ -238,7 +238,24 @@ void mzMLReader::creatTable() {
       // fprintf(stdout, "Table created successfully\n");
       // std::cout << "Table PEAKS created successfully" << std::endl;
    }
-  
+  /* Create SQL statement */
+   sql = (char*)("CREATE TABLE PEAKS0("  \
+         "ID INT PRIMARY KEY     NOT NULL," \
+         "SPECTRAID     INT      NOT NULL REFERENCES SPEACTRA(ID)," \
+         "MZ            REAL     NOT NULL," \
+         "INTENSITY     REAL     NOT NULL," \
+         "RETENTIONTIME     REAL     NOT NULL);");
+
+   /* Execute SQL statement */
+   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+   if( rc != SQLITE_OK ){
+      // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+      std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+      sqlite3_free(zErrMsg);
+   }else{
+      // fprintf(stdout, "Table created successfully\n");
+       //std::cout << "Table PEAKS0 created successfully" << std::endl;
+   }
   // create a table for levelOne and levelTwo pair
    /* Create SQL statement */
    sql = (char*)("CREATE TABLE ScanPairs("  \
@@ -254,6 +271,28 @@ void mzMLReader::creatTable() {
    }else{
       // fprintf(stdout, "Table created successfully\n");
       // std::cout << "Table PEAKS created successfully" << std::endl;
+   }
+   /* Create SQL statement */
+   sql = (char*)("CREATE TABLE CONFIG("  \
+         "ID  INTEGER PRIMARY KEY     NOT NULL," \
+         "MZMIN           REAL     NOT NULL," \
+         "MZMAX           REAL     NOT NULL," \
+         "RTMIN           REAL     NOT NULL," \
+         "RTMAX           REAL     NOT NULL," \
+         "INTMIN          REAL     NOT NULL," \
+         "INTMAX          REAL     NOT NULL," \
+         "COUNT           INT     NOT NULL," \
+         "LAYERCOUNT      INT     NOT NULL);");
+
+   /* Execute SQL statement */
+   rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+   if( rc != SQLITE_OK ){
+      // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+      std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+      sqlite3_free(zErrMsg);
+   }else{
+      // fprintf(stdout, "Table created successfully\n");
+      std::cout << "One table CONFIG created successfully" << std::endl;
    }
 };
 void mzMLReader::creatTableInMemory() {
@@ -273,7 +312,7 @@ void mzMLReader::creatTableInMemory() {
       sqlite3_free(zErrMsg);
    }else{
       // fprintf(stdout, "Table created successfully\n");
-      // std::cout << "Table PEAKS created successfully" << std::endl;
+       std::cout << "in memory Table PEAKS0 created successfully" << std::endl;
    }
 };
 void mzMLReader::insertSp(int scanIndex, std::string scan, double retentionTime) {
@@ -485,7 +524,7 @@ void mzMLReader::openInsertStmt() {
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtLevelPair, 0);
 
-  sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY) VALUES (? ,? ,?, ?); ";
+  sqlstr = "INSERT INTO PEAKS (ID,SPECTRAID,MZ,INTENSITY,RETENTIONTIME) VALUES (? ,? ,?, ?, ?); ";
   sql = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db, sql, sqlstr.length(), &stmtPeak, 0);
 
@@ -856,32 +895,8 @@ void mzMLReader::insertDataLayerTable(){
   }
 }
 void mzMLReader::setRange(Range tmpRange) {
-  /*RANGE = tmpRange;
-  double maxBlock = RANGE.COUNT/RANGE.MAXRETURN;
-  int layerCount = ceil(log(maxBlock)/log(4)) + 1;
-  layerCount = layerCount > 0 ? layerCount : 1;
-  RANGE.LAYERCOUNT = layerCount;
-  for (int i = 0; i < layerCount; i++) {
-    RANGE.MZSIZE.push_back((RANGE.MZMAX - RANGE.MZMIN)/pow(2,i));
-    RANGE.RTSIZE.push_back((RANGE.RTMAX - RANGE.RTMIN)/pow(2,i));
-  }*/
-  // MZMIN = mzmin;
-  // MZMAX = mzmax;
-  // RTMIN = rtmin;
-  // RTMAX = rtmax;
-  // MZ_GROUP1_SIZE = (MZMAX - MZMIN)/2;
-  // MZ_GROUP2_SIZE = (MZMAX - MZMIN)/4;
-  // MZ_GROUP3_SIZE = (MZMAX - MZMIN)/8;
-  // MZ_GROUP4_SIZE = (MZMAX - MZMIN)/16;
-  // MZ_GROUP5_SIZE = (MZMAX - MZMIN)/32;
-  // RT_GROUP1_SIZE = (RTMAX - RTMIN)/2;
-  // RT_GROUP2_SIZE = (RTMAX - RTMIN)/4;
-  // RT_GROUP3_SIZE = (RTMAX - RTMIN)/8;
-  // RT_GROUP4_SIZE = (RTMAX - RTMIN)/16;
-  // RT_GROUP5_SIZE = (RTMAX - RTMIN)/32;
-  // std::cout << "Set range: " << RANGE.MZMIN << " " << RANGE.MZMAX << " " << RANGE.RTMIN << " " << RANGE.RTMAX << std::endl;
-  return;
-};
+  RANGE = tmpRange;
+}
 void mzMLReader::setGroup(double mz, double rt) {
   // std::string group_str = "";
   // double mz_range = mz - MZMIN;
@@ -925,11 +940,11 @@ void mzMLReader::creatTableOneTable() {
       sqlite3_free(zErrMsg);
    }else{
       // fprintf(stdout, "Table created successfully\n");
-      std::cout << "One table PEAKS created successfully" << std::endl;
+      //std::cout << "One table PEAKS created successfully" << std::endl;
    }
    /* Create SQL statement */
    sql = (char*)("CREATE TABLE CONFIG("  \
-         "ID  INT PRIMARY KEY     NOT NULL," \
+         "ID  INTEGER PRIMARY KEY     NOT NULL," \
          "MZMIN           REAL     NOT NULL," \
          "MZMAX           REAL     NOT NULL," \
          "RTMIN           REAL     NOT NULL," \
@@ -947,7 +962,7 @@ void mzMLReader::creatTableOneTable() {
       sqlite3_free(zErrMsg);
    }else{
       // fprintf(stdout, "Table created successfully\n");
-      std::cout << "One table CONFIG created successfully" << std::endl;
+     // std::cout << "One table CONFIG created successfully" << std::endl;
    }
 };
 void mzMLReader::getRangeOneTable() {
@@ -1047,17 +1062,15 @@ void mzMLReader::insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz,
 };
 void mzMLReader::insertConfigOneTable() {
   /* Create SQL statement */
-  std::string sqlstr = "INSERT INTO CONFIG (ID,MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT,LAYERCOUNT) VALUES (1," +
+  std::string sqlstr = "INSERT INTO CONFIG (MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT,LAYERCOUNT) VALUES (" +
     num2str(RANGE.MZMIN) + ", " + num2str(RANGE.MZMAX) + ", " + num2str(RANGE.RTMIN) + ", " + num2str(RANGE.RTMAX) + ", " +
     num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + num2str(RANGE.COUNT) + ", " + num2str(RANGE.LAYERCOUNT) + " ); ";
   sql = (char *)sqlstr.c_str();
-  std::cout << sql << std::endl;
   /* Execute SQL statement */
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
     sqlite3_free(zErrMsg);
   }
-
 };
 /*
 void mzMLReader::creatLayersTable() {
