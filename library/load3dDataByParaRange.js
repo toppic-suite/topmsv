@@ -26,7 +26,7 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, callba
         if (err) {
             console.error("error during db generation", err.message);
         }
-        // console.log('Connected to the result database.');
+       // console.log('Connected to the result database.');
     });
 
     resultDb.all(sql, [maxrt, minrt, maxmz, minmz], (err, row) => {

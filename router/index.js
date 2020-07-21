@@ -7,7 +7,7 @@ var express = require("express");
 var router = express.Router();
 var getProjectsGuest = require("../library/getProjectGuest");
 
-var index3D = router.get('/', function (req, res) {
+var index = router.get('/', function (req, res) {
     if (req.session.token) {
         res.cookie('token', req.session.token);
     }else {
@@ -36,12 +36,12 @@ var index3D = router.get('/', function (req, res) {
             } else {
                 row.seqStatus = 'No';
             }
-            row.projectLink = '/data3D?id=' + row.projectCode;
+            row.projectLink = '/data?id=' + row.projectCode;
         });
-        res.render('pages/home3D', {
+        res.render('pages/home', {
             projects: rows
         });
     });
 });
 
-module.exports = index3D;
+module.exports = index;

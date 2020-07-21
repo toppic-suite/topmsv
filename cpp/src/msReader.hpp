@@ -1,7 +1,6 @@
 #ifndef MSREADER_HPP_
 #define MSREADER_HPP_
 
-
 #include <iostream>
 #include <memory>
 #include <cmath>
@@ -30,8 +29,6 @@ public:
 	pwiz::msdata::DefaultReaderList readers_;
 	MSDataFilePtr msd_ptr_;
 	pwiz::msdata::SpectrumListPtr spec_list_ptr_;
-
-
 
 	msReader(std::string filename);
 	std::string file_name;
