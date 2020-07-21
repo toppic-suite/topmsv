@@ -39,7 +39,7 @@ function MsGraph(containerEl, graphEl) {
     this.maxPeaks = 3000;
 
     this.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
-    this.totalMaxScan = 0;
+    this.totalMaxRt = 0;
 }
 
 /******** SETUP FUNCTIONS ******/
@@ -49,9 +49,8 @@ function MsGraph(containerEl, graphEl) {
 MsGraph.prototype.init = function(maxMzRt){
     //set maximum mz rt value 
     this.totalMaxMz = maxMzRt.MZMAX;
-    //this.totalMaxRt = maxMzRt.RTMAX;
-    this.totalMaxScan = maxMzRt.SCANCOUNT;
-
+    this.totalMaxRt = maxMzRt.RTMAX;
+   
     var scene = this.scene;
 
     // rendering element

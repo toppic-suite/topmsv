@@ -777,13 +777,7 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
 
   if (GRID.GRIDBLOCKS.size() / xrange < RANGE.SCANSIZE){
     RANGE.SCANSCALE = RANGE.SCANSCALE * RANGE.SCANSCALEFACTOR;
-    
-    /*if (RANGE.SCANSCALE == 1){
-      RANGE.SCANSCALE = 2;
-    }
-    else{
-      RANGE.SCANSCALE = RANGE.SCANSCALE + RANGE.SCANSCALEFACTOR;
-    }*/
+
     yrange = RANGE.SCANSCALE;
 
     std::cout << "scanScale = " << RANGE.SCANSCALE << std::endl;
@@ -1180,7 +1174,7 @@ void mzMLReader::createIndexLayerTable() {
       // fprintf(stdout, "Records created successfully\n");
      // std::cout << "Scan_id_index created successfully" << std::endl;
     }
-    sqlstr = "CREATE INDEX scanIDmz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (SPECTRAID, MZ);";
+    sqlstr = "CREATE INDEX rtmz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (RETENTIONTIME, MZ);";
     sql = (char *)sqlstr.c_str();
     rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK ){

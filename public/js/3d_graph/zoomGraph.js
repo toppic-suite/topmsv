@@ -70,8 +70,8 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     if (newmzmin + newmzrange > this.totalMaxMz){
         newmzrange = this.totalMaxMz - newmzmin;
     }
-    if (newrtmin + newrtrange > this.totalMaxScan){
-        newrtrange = this.totalMaxScan - newrtmin;
+    if (newrtmin + newrtrange > this.totalMaxRt){
+        newrtrange = this.totalMaxRt - newrtmin;
     }
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
@@ -118,8 +118,8 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     if (newmzmin + newmzrange > this.totalMaxMz){
         newmzrange = this.totalMaxMz - newmzmin;
     }
-    if (newrtmin + newrtrange > this.totalMaxScan){
-        newrtrange = this.totalMaxScan - newrtmin;
+    if (newrtmin + newrtrange > this.totalMaxRt){
+        newrtrange = this.totalMaxRt - newrtmin;
     }
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange); 
     /*
