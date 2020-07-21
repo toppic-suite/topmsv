@@ -15,7 +15,6 @@ int main(int argc, char* argv[]) {
         msreader.getScanRangeDB();
     } else if (strcmp(argv[2],"-f") == 0) {
         std::cout << "mzMLReader running" << std::endl;
-        msreader.createDtabase();
-        //msreader.createDtabasMultiLayer();
+        msreader.createDtabase();//create db for 2d and 3d viz
     }
 }
