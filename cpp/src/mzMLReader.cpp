@@ -772,8 +772,24 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
   int y = 0; 
 
   //index of 2d vector
-  int xrange = pow(RANGE.MZSCALE, table_cnt); //number to multiply RANGE.MZSIZE (0.1) --> x size of a single grid block 
-  int yrange = ceil(GRID.GRIDBLOCKS[0].size() / RANGE.SCANSIZE * RANGE.SCANSCALE); //y size of a single grid block 
+  int xrange = pow(RANGE.MZSCALE, table_cnt - 1); //number to multiply RANGE.MZSIZE (0.1) --> x size of a single grid block 
+  int yrange = RANGE.SCANSCALE; //y size of a single grid block 
+
+  if (GRID.GRIDBLOCKS.size() / xrange < RANGE.SCANSIZE){
+    RANGE.SCANSCALE = RANGE.SCANSCALE * RANGE.SCANSCALEFACTOR;
+    
+    /*if (RANGE.SCANSCALE == 1){
+      RANGE.SCANSCALE = 2;
+    }
+    else{
+      RANGE.SCANSCALE = RANGE.SCANSCALE + RANGE.SCANSCALEFACTOR;
+    }*/
+    yrange = RANGE.SCANSCALE;
+
+    std::cout << "scanScale = " << RANGE.SCANSCALE << std::endl;
+  }
+  std::cout << "grid " << GRID.GRIDBLOCKS.size() / xrange << " * " << GRID.GRIDBLOCKS[0].size() / RANGE.SCANSCALE << std::endl;
+  std::cout << "xrange : " << RANGE.MZSIZE * xrange << " yrange : " << yrange << std::endl; 
 
   while (y < GRID.GRIDBLOCKS[0].size()){
     while (x < GRID.GRIDBLOCKS.size()){
@@ -855,10 +871,11 @@ void mzMLReader::insertDataLayerTable(){
       RANGE.COUNT = peak_cnt;
       insertConfigOneTable();
       endTransaction();
+      /*
       if (RANGE.SCANSIZE >= GRID.GRIDBLOCKS.size()){//if peak count became small, adjust total scan count as well
         RANGE.SCANSCALE = RANGE.SCANSCALE * 2;
         RANGE.SCANSIZE = floor(RANGE.SCANSIZE / RANGE.SCANSCALE); 
-      }
+      }*/
       table_cnt++;
     }
     else if (table_cnt > 1){
@@ -886,14 +903,14 @@ void mzMLReader::insertDataLayerTable(){
       }
       else{
         createSmallestTable(table_cnt, prev_peak_ID);//create one more table if current smallest table is still big
-      }
+      }/*
         int xrange = pow(RANGE.MZSCALE, table_cnt);
         int xlength = GRID.GRIDBLOCKS.size() / xrange;
         if (RANGE.SCANSIZE >= xlength){//if peak count became small, adjust total scan count as well
           RANGE.SCANSCALE = RANGE.SCANSCALE * 2;
           RANGE.SCANSIZE = floor(RANGE.SCANSIZE / RANGE.SCANSCALE); 
           std::cout << "RANGE.SCANSIZE " << RANGE.SCANSIZE << std::endl;
-      }
+      }*/
     } 
   RANGE.LAYERCOUNT = table_cnt;
   }
@@ -1068,11 +1085,12 @@ void mzMLReader::insertConfigOneTable() {
   /* Create SQL statement */
   std::string sqlstr = "INSERT INTO CONFIG (MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT,SCANCOUNT,LAYERCOUNT) VALUES (" +
     num2str(RANGE.MZMIN) + ", " + num2str(RANGE.MZMAX) + ", " + num2str(RANGE.RTMIN) + ", " + num2str(RANGE.RTMAX) + ", " +
-    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + num2str(RANGE.COUNT) + ", " + num2str(RANGE.SCANCOUNT) + num2str(RANGE.LAYERCOUNT) + " ); ";
+    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + num2str(RANGE.COUNT) + ", " + num2str(RANGE.SCANCOUNT) + ", " + num2str(RANGE.LAYERCOUNT) + " ); ";
   sql = (char *)sqlstr.c_str();
   /* Execute SQL statement */
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
     sqlite3_free(zErrMsg);
   }
 };
@@ -1160,7 +1178,7 @@ void mzMLReader::createIndexLayerTable() {
       sqlite3_free(zErrMsg);
     }else{
       // fprintf(stdout, "Records created successfully\n");
-      std::cout << "Scan_id_index created successfully" << std::endl;
+     // std::cout << "Scan_id_index created successfully" << std::endl;
     }
     sqlstr = "CREATE INDEX scanIDmz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (SPECTRAID, MZ);";
     sql = (char *)sqlstr.c_str();
@@ -1171,7 +1189,7 @@ void mzMLReader::createIndexLayerTable() {
       sqlite3_free(zErrMsg);
     }else{
       // fprintf(stdout, "Records created successfully\n");
-      std::cout << "Retention time_index created successfully" << std::endl;
+      //std::cout << "Retention time_index created successfully" << std::endl;
     }
     /*
     sqlstr = "CREATE INDEX mz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (MZ);";
