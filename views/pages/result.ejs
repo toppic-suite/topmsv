@@ -43,6 +43,11 @@
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+	
+	<!--js files related to 3d graph-->
+	<script type="text/javascript" src ="js/3d_graph/three.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src ="js/3d_graph/OrbitControls.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src='js/3d_graph/threex.domevents.js' crossorigin="anonymous"></script>
 </head>
 <body class="container">
 
@@ -166,6 +171,7 @@
 <!--									<button id="uploadSequence" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Result</button>-->
 									<button id="uploadSequence" type="button" class="btn">Sequence</button>
 								</div>
+
 							</div>
 						</div>
 					</div>
@@ -201,7 +207,7 @@
 						</div>
 					</div>
 				</div>
-
+				
 				<div class="scanleveltitle row">
 					<div class="col-sm-4">
 						<div class="row">
@@ -235,6 +241,54 @@
 			</div>
 
 			<hr>
+			<div>
+				<div>
+					<div class="scanleveltitle row">
+						<div class="col-sm-2">
+							<strong>Retention Time:</strong>
+						</div>
+						<div class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-4">
+									<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+								</div>
+								<div class="col-sm-1 rangeMarker">
+									<span> -</span>
+								</div>
+								<div class="col-sm-4">
+									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-1">
+							<strong>m/z:</strong>
+						</div>
+						<div class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-4">
+									<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+								</div>
+								<div class="col-sm-1 rangeMarker">
+									<span> -</span>
+								</div>
+								<div class="col-sm-4">
+									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+								</div>
+								<div class="col-sm-2">
+									<button class="btn" type="submit" class="requestBtn" id="request3dGraphRedraw">Request</button>
+								</div>
+							</div>
+						</div>
+
+					</div>
+						
+			<div class="col-md-11 col2" id="graph-container">
+			</div>
+
+			<div class="hover-label-container">
+				<span id="graph-hover-label"></span>
+			</div>
+
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">
 					<div class="col-sm-7">
@@ -357,5 +411,14 @@
 	</main>
 	<script type="text/javascript" src="js/result.js"></script>
 	<script src="js/dataTables.altEditor.free.js"></script>
+	
+<!--js files related to 3d graph-->
+
+	<script src="js/3d_graph/graph.js"></script>
+	<script src="js/3d_graph/graphRender.js"></script>
+	<script src="js/3d_graph/zoomGraph.js"></script>
+	<script src="js/3d_graph/panGraph.js"></script>
+	<script src="js/3d_graph/hoverGraph.js"></script>
+	<!--<script src="js/3d_graph/initCanvas.js"></script>-->
 </body>
 </html>
