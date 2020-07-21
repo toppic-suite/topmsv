@@ -198,8 +198,8 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
                         //update data range in textboxes if getting range from each scan, not by users
                         document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
                         document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-                        document.getElementById('mzRangeMin').value = minmz;
-                        document.getElementById('mzRangeMax').value = parseInt(maxmz);
+                        document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
+                        document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
                     }
                 }
             }
@@ -243,6 +243,7 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
                 }
             }
         }
+
         xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
         xhttp.send();
     }).bind(this), 100);
