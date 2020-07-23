@@ -156,7 +156,11 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
         }
     }
 });
-checkWaitTasks.start();
+const dbPath = __dirname + "/db/" + "projectDB.db";
+if (fs.existsSync(dbPath)){//check waiting tasks only when this is not the first time app is running
+    checkWaitTasks.start();
+}
+
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 app.use(compression());
