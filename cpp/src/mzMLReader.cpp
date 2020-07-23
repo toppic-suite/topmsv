@@ -640,17 +640,6 @@ void mzMLReader::insertPeakStmtInMemory(int peakIndex, int scanIndex, double int
   }
 };
 void mzMLReader::createIndex() {
-  /*std::string sqlstr = "CREATE INDEX intensity_index ON PEAKS (SPECTRAID);";
-  sql = (char *)sqlstr.c_str();
-  rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
-  if( rc != SQLITE_OK ){
-    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
-    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-    sqlite3_free(zErrMsg);
-  }else{
-    // fprintf(stdout, "Records created successfully\n");
-    std::cout << "Intensity_index created successfully" << std::endl;
-  }*/
   std::string sqlstr = "CREATE INDEX scan_index ON SPECTRA (SCAN);";
   sql = (char *)sqlstr.c_str();
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
