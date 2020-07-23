@@ -33,10 +33,14 @@ struct Range{
   //vector<double> RTSIZE;
   int MINPEAKS = 3000; //minimum peak needed to create a new table 
   double MZSCALE = 2;//number to scale m/z range of a grid block
+  double MZSIZE = 0.1;//initial mz size of a grid block
+
+  double RTSCALE = 2;
+  double RTSIZE = 1;
 
   double SCANSCALEFACTOR = 2;
   double SCANSCALE = 1;//number to scale m/z range of a grid block. This number becomes smaller when peak count < SCANSIZE
-  double MZSIZE = 0.1;//initial mz size of a grid block
+  
   int SCANSIZE = 5000;//total length of y in entire grid x * y. So initial rt size of a grid block is 1
   std::string TARGET = "";
 };
