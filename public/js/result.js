@@ -83,7 +83,7 @@ function loadPeakList1(scanID, prec_mz) {
                                     let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                                        load3dDataOnScanChange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, true)
+                                        load3dDataOnScanChange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, rt, true)
                                 }    
                             }
                         };    
@@ -165,7 +165,7 @@ function getPeaksPerTable(totalLayer){
     });
 }
 
-function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
+function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
     //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
     //when a range changes in the same scan, call load3dDataByParaRange instead
@@ -178,15 +178,12 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
     let dir = fullDir[0].concat("/");
     dir = dir.concat(fullDir[1]);
 
-    let t0 = new Date();
-
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var scanID = $('#scanID1').text();
             var peakData = JSON.parse(this.responseText);
             var xhttp2 = new XMLHttpRequest();
             
-            t0 = new Date();
             xhttp2.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
                     var ms1PeakData = JSON.parse(this.responseText);
@@ -203,7 +200,7 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
                     }
                 }
             }
-            xhttp2.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + ".db" + "&scanID=" + scanID,true);
+            xhttp2.open("GET","load3dDataByRT?projectDir=" + dir + "/" + fileName + ".db" + "&RT=" + rt,true);
             xhttp2.send();
         }
     }
