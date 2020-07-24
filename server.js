@@ -396,7 +396,7 @@ app.use('/', require("./router/envlist"));
 app.use('/', require("./router/envtable"));
 
 /*routers used for 3d visualization */
-app.use('/', require("./router/load3dDataByScan"));
+app.use('/', require("./router/load3dDataByRT"));
 app.use('/', require("./router/load3dDataByParaRange"));
 app.use('/', require("./router/getPeaksPerTable"));
 app.use('/', require("./router/getMax"));

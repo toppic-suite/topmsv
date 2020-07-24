@@ -116,12 +116,11 @@ MsGraph.prototype.plotPointAsCircle = function(){
     let xSize = mzRange / 100;
     let ySize = rtRange;
 
-    //console.log(xSize, ySize)
     //called from renderImmediate when view is perpendicular
     let scanID = document.getElementById('scanID1').innerText;
+    let rt = document.getElementById("scan1RT").innerText;
 
     let prevGroup = this.datagroup.getObjectByName("cylinderGroup");
-    //this.datagroup.remove(prevGroup);
 
     if (prevGroup == undefined){
         this.cylinderGroup = new THREE.Group();//when view angle is perpendicular
@@ -139,7 +138,7 @@ MsGraph.prototype.plotPointAsCircle = function(){
         var geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
         var material = new THREE.MeshBasicMaterial( { color: 0x350fa8 } );
    
-        if (point.SPECTRAID == parseInt(scanID)){
+        if ((point.RETENTIONTIME/60).toFixed(4) == rt){
             material = new THREE.MeshBasicMaterial({color: 0xED1111});
         }
         var circle = new THREE.Mesh( geometry, material );
@@ -180,6 +179,7 @@ MsGraph.prototype.plotPoint = function(point) {
     var maxLogScale = Math.log(this.dataRange.intmax);
 
     let scanID = document.getElementById('scanID1').innerText;
+    let currt = document.getElementById("scan1RT").innerText;
 
     var x = mz;
     var y = this.USE_LOG_SCALE_HEIGHT ? Math.min(thisLogScale, maxLogScale) : inten;
@@ -197,7 +197,7 @@ MsGraph.prototype.plotPoint = function(point) {
 
     var linemat = new THREE.LineBasicMaterial({color: 0x350fa8});
 
-    if (point.SPECTRAID == parseInt(scanID)){
+    if ((point.RETENTIONTIME/60).toFixed(4) == currt){
         linemat = new THREE.LineBasicMaterial({color: 0xED1111});
         meshmat = new THREE.MeshBasicMaterial({color: 0xED1111});
     }
