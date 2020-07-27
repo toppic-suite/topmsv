@@ -761,7 +761,7 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
 
   //index of 2d vector
   int xrange = pow(RANGE.MZSCALE, table_cnt - 1);
-  int yrange = pow(RANGE.RTSCALE, table_cnt - 1);  
+  int yrange = RANGE.RTSCALE;  
 
   std::cout << "grid " << GRID.GRIDBLOCKS.size() / xrange << " * " << GRID.GRIDBLOCKS[0].size() / yrange << std::endl;
   std::cout << "xrange : " << RANGE.MZSIZE * xrange << " yrange : " << yrange << std::endl; 
@@ -789,6 +789,13 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
     //moving to next row in grid
     y = y + yrange;
     x = 0;
+  }
+  if (GRID.GRIDBLOCKS.size() / xrange < GRID.GRIDBLOCKS[0].size() / yrange){ // if x < y in the grid, next run y will be reduced
+    RANGE.RTSCALE = RANGE.RTSCALE * RANGE.RTSCALEFACTOR;
+
+    yrange = RANGE.RTSCALE;
+
+    std::cout << "RTSCALE = " << RANGE.RTSCALE << std::endl;
   }
 }
 void mzMLReader::insertPeaksToEachLayer(int table_cnt, int scan_id){
