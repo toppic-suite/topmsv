@@ -156,6 +156,10 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
         }
     }
 });
+/*const dbPath = __dirname + "/db/" + "projectDB.db";
+if (fs.existsSync(dbPath)){//check waiting tasks only when this is not the first time app is running
+    checkWaitTasks.start();
+}*/
 checkWaitTasks.start();
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -392,7 +396,7 @@ app.use('/', require("./router/envlist"));
 app.use('/', require("./router/envtable"));
 
 /*routers used for 3d visualization */
-app.use('/', require("./router/load3dDataByScan"));
+app.use('/', require("./router/load3dDataByRT"));
 app.use('/', require("./router/load3dDataByParaRange"));
 app.use('/', require("./router/getPeaksPerTable"));
 app.use('/', require("./router/getMax"));
