@@ -227,7 +227,7 @@ MsGraph.prototype.repositionPlot = function(r) {
     var mz_squish = this.GRID_RANGE / r.mzrange;
     var rt_squish = - this.GRID_RANGE / r.rtrange;
     var inte_squish = (this.GRID_RANGE_VERTICAL / heightScale) * r.intscale;
-
+    //console.log("intensity scale ", inte_squish)
     if (this.dataRange.intmax < 1){
         //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
         inte_squish = 0;
