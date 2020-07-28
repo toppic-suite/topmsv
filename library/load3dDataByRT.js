@@ -6,11 +6,12 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {function} callback
  * @async
  */
-function load3dDataByScan(dir, scan, callback) {
+function load3dDataByRT(dir, rt, callback) {
     let sql = `SELECT *
                 FROM PEAKS0
-                WHERE SPECTRAID = ? 
+                WHERE RETENTIONTIME = ? 
                 ORDER BY INTENSITY DESC;`;
+
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
@@ -19,7 +20,7 @@ function load3dDataByScan(dir, scan, callback) {
         // console.log('Connected to the result database.');
     });
     
-    resultDb.all(sql, [scan], (err, row) => {
+    resultDb.all(sql, [rt], (err, row) => {
         if (err) {
             console.error(err.message);
         }
@@ -27,4 +28,4 @@ function load3dDataByScan(dir, scan, callback) {
     });
     resultDb.close();
 }
-module.exports = load3dDataByScan;
+module.exports = load3dDataByRT;
