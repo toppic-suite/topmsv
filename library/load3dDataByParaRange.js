@@ -20,6 +20,7 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, callba
                 AND RETENTIONTIME >= ?
                 AND MZ <= ?
                 AND MZ >= ?
+                ORDER BY INTENSITY DESC
                 LIMIT 3000;`;           
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
