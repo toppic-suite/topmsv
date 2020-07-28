@@ -115,14 +115,14 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
     if (GRID.GRIDBLOCKS[xindex][yindex][0] < 0){//if gridBlock does not have a peak yet
       //store the intensity and ID
       GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
-      GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
+      GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[2]);
       peak_in_grid++;
     }
     else{
       //compare intensity
-      if (std::stod(argv[3]) > GRID.GRIDBLOCKS[xindex][yindex][1]){
+      if (std::stod(argv[2]) > GRID.GRIDBLOCKS[xindex][yindex][1]){
         GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
-        GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);   
+        GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[2]);   
       } 
     }
   }
@@ -137,15 +137,15 @@ int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
     if (GRID.GRIDBLOCKS[xindex][yindex][0] < 0){//if gridBlock does not have a peak yet
       //store the intensity and ID
       GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
-      GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
+      GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[2]);
 
       peak_in_grid++;
     }
     else{
       //compare intensity
-      if (std::stod(argv[3]) > GRID.GRIDBLOCKS[xindex][yindex][1]){
+      if (std::stod(argv[2]) > GRID.GRIDBLOCKS[xindex][yindex][1]){
         GRID.GRIDBLOCKS[xindex][yindex][0] = std::stoi(argv[0]);
-        GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[3]);
+        GRID.GRIDBLOCKS[xindex][yindex][1] = std::stod(argv[2]);
       }
     }
   }
@@ -768,7 +768,7 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
 
   while (y < GRID.GRIDBLOCKS[0].size()){
     while (x < GRID.GRIDBLOCKS.size()){
-      int highestInte = 0;
+      double highestInte = 0;
       int highestPeakId = -1;
 
       for (int cur_x = x; cur_x < x + xrange && cur_x < GRID.GRIDBLOCKS.size(); cur_x++){
