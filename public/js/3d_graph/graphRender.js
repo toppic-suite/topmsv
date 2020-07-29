@@ -8,10 +8,18 @@ MsGraph.prototype.clearGraph = function() {
     this.linesArray = [];
     this.plotGroup.children = [];
 }
+MsGraph.prototype.displayGraphData = function(){
+    //display highest intensity, sum of intensity, total peak count in the current grph
+    let highestInte = "Highest Intensity: " + this.dataRange.intmax;
+    let sumInte = "Sum of Intensity: " + this.intensitySum;
+    let peakCount = "Total Peaks on Graph: " + this.currentData.length;
+    let sep = "\n";
+    document.getElementById('graph-metadata').innerText = highestInte + sep + sumInte + sep + peakCount + sep;
+}
 MsGraph.prototype.getInteRange = function(points){
     let intmin = Infinity;
     let intmax = 0;
-
+    this.intensitySum = 0;
     for (let i = 0; i < points.length; i++){
         if (points[i].INTENSITY < intmin){
             intmin = points[i].INTENSITY;
@@ -19,12 +27,12 @@ MsGraph.prototype.getInteRange = function(points){
         if(points[i].INTENSITY > intmax){
             intmax = points[i].INTENSITY;
         }
+        this.intensitySum = this.intensitySum + points[i].INTENSITY;
     }
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
 }
-
-MsGraph.prototype.getInteRtRange = function(points){
+/*MsGraph.prototype.getInteRtRange = function(points){
     let rtmin = Infinity;
     let rtmax = 0;
     let intmin = Infinity;
@@ -50,7 +58,7 @@ MsGraph.prototype.getInteRtRange = function(points){
 
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
-}
+}*/
 MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
     this.clearGraph();
 
@@ -75,6 +83,7 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
 
     // make sure the groups are plotted and update the view
     //this.repositionPlot(this.dataRange);
+    this.displayGraphData();//display metadata about the graph
     this.updateViewRange(this.dataRange);
 }
 /*this.maxPeaks is the max number of peaks on the graph. 
