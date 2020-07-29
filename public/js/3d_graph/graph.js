@@ -40,6 +40,8 @@ function MsGraph(containerEl, graphEl) {
 
     this.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
     this.totalMaxRt = 0;
+
+    this.intensitySum = 0; //for display near the graph
 }
 
 /******** SETUP FUNCTIONS ******/
