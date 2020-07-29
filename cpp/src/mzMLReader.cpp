@@ -761,7 +761,8 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
 
   //index of 2d vector
   int xrange = pow(RANGE.MZSCALE, table_cnt - 1);
-  int yrange = RANGE.RTSCALE;  
+  int yrange = pow(RANGE.RTSCALE, table_cnt - 1);
+  //int yrange = RANGE.RTSCALE;  
 
   std::cout << "grid " << GRID.GRIDBLOCKS.size() / xrange << " * " << GRID.GRIDBLOCKS[0].size() / yrange << std::endl;
   std::cout << "xrange : " << RANGE.MZSIZE * xrange << " yrange : " << yrange << std::endl; 
@@ -794,14 +795,14 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
     //moving to next row in grid
     y = y + yrange;
     x = 0;
-  }
+  }/*
   if (GRID.GRIDBLOCKS.size() / xrange < GRID.GRIDBLOCKS[0].size() / yrange){ // if x < y in the grid, next run y will be reduced
     RANGE.RTSCALE = RANGE.RTSCALE * RANGE.RTSCALEFACTOR;
 
     yrange = RANGE.RTSCALE;
 
     std::cout << "RTSCALE = " << RANGE.RTSCALE << std::endl;
-  }
+  }*/
 }
 void mzMLReader::insertPeaksToEachLayer(int table_cnt, int scan_id){
   std::string sqlstr = "INSERT INTO PEAKS" + int2str(table_cnt) + "(ID,MZ,INTENSITY,RETENTIONTIME)" + 
@@ -1157,30 +1158,6 @@ void mzMLReader::createIndexLayerTable() {
       // fprintf(stdout, "Records created successfully\n");
       //std::cout << "Retention time_index created successfully" << std::endl;
     }
-    /*
-    sqlstr = "CREATE INDEX mz_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (MZ);";
-    sql = (char *)sqlstr.c_str();
-    rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
-    if( rc != SQLITE_OK ){
-      // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
-      std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-      sqlite3_free(zErrMsg);
-    }else{
-      // fprintf(stdout, "Records created successfully\n");
-      std::cout << "Mz_index created successfully" << std::endl;
-    }*/
-    /*
-    sqlstr = "CREATE INDEX inte_index" + num2str(i) + " ON PEAKS" + num2str(i) + " (INTENSITY);";
-    sql = (char *)sqlstr.c_str();
-    rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
-    if( rc != SQLITE_OK ){
-      // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
-      std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
-      sqlite3_free(zErrMsg);
-    }else{
-      // fprintf(stdout, "Records created successfully\n");
-      std::cout << "Inte_index created successfully" << std::endl;
-    }*/
   }
 };
 void mzMLReader::insertPeaksLayerStmt(std::string origin, int j, int k, double mzsize, double rtsize) {
@@ -1205,6 +1182,7 @@ void mzMLReader::insertPeaksLayerStmt(std::string origin, int j, int k, double m
   // std::cout << sqlstr << std::endl;
   
 };
+/*
 void mzMLReader::createIndexLayerTable(std::string num) {
   std::string sqlstr = "CREATE INDEX peaks_index" + num + " ON PEAKS" + num + " (MZ,RETENTIONTIME,INTENSITY);";
   sql = (char *)sqlstr.c_str();
@@ -1217,7 +1195,7 @@ void mzMLReader::createIndexLayerTable(std::string num) {
     // fprintf(stdout, "Records created successfully\n");
     std::cout << "Peaks_index" + num + " created successfully" << std::endl;
   }
-};
+};*/
 void mzMLReader::createIndexOneTable() {
   std::string sqlstr = "CREATE INDEX intensity_index ON PEAKS (INTENSITY);";
   sql = (char *)sqlstr.c_str();
