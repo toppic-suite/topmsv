@@ -174,7 +174,6 @@ void msReader::createDtabase() { //stmt
   t1 = clock();
   int scanLevel = 1;
   int count = 0;
-  int ms1count = 0;
   int spSize = sl->size();
   std::vector<Point> pointsList;
   databaseReader.beginTransaction();
@@ -198,6 +197,9 @@ void msReader::createDtabase() { //stmt
   double intemin = DBL_MAX;
   double intemax = 0;
 
+  int ms1scancount = 0;
+  int ms1peakcount = 0;
+
   for(int i = 0; i < spSize; i++){
     // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
       SpectrumPtr s = sl->spectrum(i, true); // read with binary data
@@ -213,6 +215,11 @@ void msReader::createDtabase() { //stmt
       vector<MZIntensityPair> pairs;
       s->getMZIntensityPairs(pairs);
       peaksInteSum = 0.000;
+
+      if (scanLevel == 1){
+        ms1scancount++;//calculate ms1 scan count
+      }
+
       for (int j=0; j<pairs.size(); j++) {
         count++ ;
         // std::cout << count << std::endl;
@@ -220,7 +227,7 @@ void msReader::createDtabase() { //stmt
         if (scanLevel == 1){//PEAKS0 contains level 1 data only
           databaseReader.insertPeakStmtMs1(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
           databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
-          ms1count++ ;
+          ms1peakcount++ ;
         }
         //compare with min max values to find overall min max value
         if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
@@ -291,11 +298,12 @@ void msReader::createDtabase() { //stmt
   RANGE.INTMIN = intemin;
   RANGE.RTMAX = rtmax;
   RANGE.RTMIN = rtmin;
-  RANGE.COUNT = ms1count;//peakCount
+  RANGE.COUNT = ms1peakcount;//peakCount
   RANGE.SCANCOUNT = spSize;
+  RANGE.RTSIZE = int((RANGE.RTMAX - RANGE.RTMIN) / ms1scancount);
 
   std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
-  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << std::endl;
+  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << "\tmzsize:" << RANGE.MZSIZE << "\trtsize:" << RANGE.RTSIZE << std::endl;
   
   std::cout <<"End Insert to PEAKS0: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
