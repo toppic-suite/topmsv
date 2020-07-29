@@ -36,7 +36,7 @@ struct Range{
   double MZSIZE = 0.1;//initial mz size of a grid block
 
   double RTSCALEFACTOR = 2;
-  double RTSCALE = 1;
+  double RTSCALE = 2;
   double RTSIZE = 1;
 
   int SCANSIZE = 5000;//total length of y in entire grid x * y. So initial rt size of a grid block is 1
@@ -137,7 +137,7 @@ public:
 	void closeInsertStmtOneTable();
 	void insertPeakStmtOneTable(int peakIndex, int scanIndex, double mz, double intensity, double retentionTime);
 	void insertConfigOneTable();
-	void createIndexLayerTable(std::string num);
+	//void createIndexLayerTable(std::string num);
 	void createIndexOneTable();
 	//void creatLayersTable();
 	void createLayerTable(std::string num);
