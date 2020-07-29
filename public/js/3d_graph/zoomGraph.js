@@ -37,12 +37,15 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     else{
         scaleFactor = 1.2;
     }
-
     //figure out where the cursor is (near x axis, y axis)
     if (axisName == "rt"){
         newrtrange = this.viewRange.rtrange * scaleFactor;
     }
     else if (axisName == "mz"){//mz range adjust
+        newmzrange = this.viewRange.mzrange * scaleFactor;
+    }
+    else if (axisName == "both"){//if adjusting both
+        newrtrange = this.viewRange.rtrange * scaleFactor;
         newmzrange = this.viewRange.mzrange * scaleFactor;
     }
 
@@ -165,6 +168,7 @@ MsGraph.prototype.onZoom = function(e){
         this.onZoomFromEventListener(e, "rt");
     }
     else{
+        /*
         //reset view range based on scroll up or down
         let scaleFactor = 0;
 
@@ -174,6 +178,7 @@ MsGraph.prototype.onZoom = function(e){
         else{
             scaleFactor = 1.5;
         }
-        this.adjustPeakHeight(scaleFactor);
+        this.adjustPeakHeight(scaleFactor);*/
+        this.onZoomFromEventListener(e, "both");
     }
 }
