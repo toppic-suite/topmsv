@@ -168,7 +168,19 @@ button#home {
     text-decoration: none;
     display: inline-block;
 }
-#request3dGraphRedraw{
+button#request3dGraphRedraw{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#save3dGraph{
     position: relative;
     /*left: 54.5%;*/
     /*font-size: 100%;*/
