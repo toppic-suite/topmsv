@@ -65,11 +65,15 @@ MsGraph.prototype.init = function(maxMzRt){
 
     var el = this.renderer.domElement;
 
+    /*initiate graph interactions*/
     //enable zoom
     this.zoomGraph(this);
 
     //enable panning
     this.panGraph(this);
+
+    //enable keyboard input
+    document.addEventListener("keydown", this.processKeyInput.bind(this), false);
 
     //enable hover over peaks
     //this.hoverGraph(this);
@@ -400,4 +404,16 @@ MsGraph.prototype.drawGrid = function() {
 
     return new THREE.LineSegments(gridgeo, gridmaterial);
 };
-
+/******** keyboard input process ******/
+MsGraph.prototype.processKeyInput = function(e){
+    //using -, + key in the keyboard
+    if (e.keyCode == 107 || e.keyCode == 187){
+        //if increasing intensity
+        let scaleFactor = 1.2;
+        this.adjustPeakHeight(scaleFactor);
+    }
+    else if (e.keyCode == 109 || e.keyCode == 189){
+        let scaleFactor = 0.8;
+        this.adjustPeakHeight(scaleFactor);
+    }
+}
