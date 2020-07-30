@@ -208,6 +208,7 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     xhttp.send();
 
 }
+/*
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     //loading spectra data upon startup and range change
 
@@ -244,8 +245,37 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
         xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
         xhttp.send();
     }).bind(this), 100);
+}*/
+function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
+    //loading spectra data upon startup and range change
 
+    let tableNum = calculateTableNum(minrt, maxrt, minmz, maxmz);
+    var xhttp = new XMLHttpRequest();
     
+    let fullDir = (document.getElementById("projectDir").value).split("/");
+    let fileName = (fullDir[fullDir.length -1].split("."))[0];
+    let dir = fullDir[0].concat("/");
+    dir = dir.concat(fullDir[1]);
+
+    let t0 = new Date();
+    xhttp.onreadystatechange = function (){
+        if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            console.log("load3ddatabypararange time ", new Date() - t0);
+            graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
+            graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
+
+            if (updateTextBox){
+                //update data range in textboxes if getting range from each scan, not by users
+                document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
+                document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
+                document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
+                document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
+            }
+        }
+    }
+    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+    xhttp.send(); 
 }
 function calculateTableNum(minrt, maxrt, minmz, maxmz){
     /*decide which table to query based on what is the ratio is between current range and whole graph
