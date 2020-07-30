@@ -7,7 +7,7 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function getMax(dir, callback) {
-    let sql = `SELECT * FROM CONFIG;`;
+    let sql = `SELECT * FROM CONFIG WHERE ID=1;`;
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
