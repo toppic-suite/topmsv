@@ -242,58 +242,57 @@
 
 			<hr>
 			<div>
-				<div>
-					<div class="scanleveltitle row">
-						<div class="col-sm-2">
-							<strong>Retention Time:</strong>
-						</div>
-						<div class="col-sm-3">
-							<div class="row">
-								<div class="col-sm-4">
-									<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
-								</div>
-								<div class="col-sm-1 rangeMarker">
-									<span> -</span>
-								</div>
-								<div class="col-sm-4">
-									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-1">
-							<strong>m/z:</strong>
-						</div>
-						<div class="col-sm-3">
-							<div class="row">
-								<div class="col-sm-4">
-									<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
-								</div>
-								<div class="col-sm-1 rangeMarker">
-									<span> -</span>
-								</div>
-								<div class="col-sm-4">
-									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
-								</div>
-								<div class="col-sm-2">
-									<button class="btn" type="submit" class="requestBtn" id="request3dGraphRedraw">Request</button>
-								</div>
-							</div>
-						</div>
-
+				<div class="scanleveltitle row">
+					<div class="col-sm-2">
+						<div><strong>Retention Time:</strong></div>
 					</div>
-			<div>
-				<div class="graph-metadata-container">
-				<span id="graph-metadata"></span>
-			</div>			
+					<div class="col-sm-3">
+						<div class="col-sm-5">
+							<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+						</div>
+						<div class="col-sm-2 rangeMarker">
+							<span>-</span>
+						</div>
+						<div class="col-sm-5">
+							<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+						</div>
+					</div>
+					<div class="col-sm-1">
+						<div><strong>m/z:</strong></div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-5">
+							<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+						</div>
+						<div class="col-sm-2 rangeMarker">
+							<span>-</span>
+						</div>
+						<div class="col-sm-5">
+							<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+						</div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-6">
+							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+						</div>
+						<div class="col-sm-6">
+							<button class="btn" type="submit" id="save3dGraph">Save as Image</button>
+						</div>
+					</div>
+					
+				</div>
+				<div>
+					<div class="graph-metadata-container">
+					<span id="graph-metadata"></span>
+				</div>			
 
-			<div class="col-md-11 col2" id="graph-container"></div>
-			</div>
-			
-
-			<div class="hover-label-container">
-				<span id="graph-hover-label"></span>
-			</div>
-
+				<div class="col-md-11 col2" id="graph-container"></div>
+				</div>
+				
+				<div class="hover-label-container">
+					<span id="graph-hover-label"></span>
+				</div>
+			</div>	
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">
 					<div class="col-sm-7">
@@ -418,12 +417,15 @@
 	<script src="js/dataTables.altEditor.free.js"></script>
 	
 <!--js files related to 3d graph-->
-
 	<script src="js/3d_graph/graph.js"></script>
 	<script src="js/3d_graph/graphRender.js"></script>
 	<script src="js/3d_graph/zoomGraph.js"></script>
 	<script src="js/3d_graph/panGraph.js"></script>
 	<script src="js/3d_graph/hoverGraph.js"></script>
-	<!--<script src="js/3d_graph/initCanvas.js"></script>-->
+	<script src="js/3d_graph/downloadGraph.js"></script>
+<!--library related to image download-->
+	<script src="js/download/FileSaver.js"></script>
+	<script src="js/download/saveImage.js"></script>
+	<script src="js/canvas-toBlob.js"></script>
 </body>
 </html>
