@@ -686,7 +686,7 @@ void mzMLReader::createIndex() {
   }*/
 };
 void mzMLReader::createIndexOnIdOnly(){
-  std::string sqlstr = "CREATE INDEX rt_index ON PEAKS0 (RETENTIONTIME);";
+  std::string sqlstr = "CREATE INDEX scanID_index ON PEAKS (SPECTRAID);";
   sql = (char *)sqlstr.c_str();
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
   if( rc != SQLITE_OK ){
@@ -695,7 +695,7 @@ void mzMLReader::createIndexOnIdOnly(){
     sqlite3_free(zErrMsg);
   }else{
     // fprintf(stdout, "Records created successfully\n");
-    std::cout << "rt_index created successfully" << std::endl;
+    std::cout << "scanID_index created successfully" << std::endl;
   }
 }
 /*
