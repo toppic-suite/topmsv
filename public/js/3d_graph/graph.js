@@ -42,6 +42,8 @@ function MsGraph(containerEl, graphEl) {
     this.totalMaxRt = 0;
 
     this.intensitySum = 0; //for display near the graph
+    
+    this.imageAddress;
 }
 
 /******** SETUP FUNCTIONS ******/
@@ -59,11 +61,11 @@ MsGraph.prototype.init = function(maxMzRt){
     var renderer = this.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize(window.innerWidth, window.innerHeight * 0.3);
-    renderer.setClearColor(0xF5F5F5, 0);
-    //renderer.setClearColor(0xF5F5F5, 1);
+    renderer.setClearColor(0xEEEEEE, 1);
+    
     this.graphEl.appendChild(renderer.domElement);
 
-    var el = this.renderer.domElement;
+    this.renderer.domElement.id = "canvas3D";
 
     //enable zoom
     this.zoomGraph(this);
@@ -308,6 +310,7 @@ MsGraph.prototype.renderImmediate = function() {
         this.datagroup.remove(prevGroup);
     }
     this.renderer.render( this.scene, this.camera );
+    this.imageAddress = this.renderer.domElement.toDataURL();
     this.renderRequested = false;
 };
 
