@@ -296,8 +296,7 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
         };
     }
     r = this.constrainBounds(r);
-    //this.repositionPlot(r);
-    this.updateViewRange(r);
+    //this.updateViewRange(r);
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, graph3D);
 };
 

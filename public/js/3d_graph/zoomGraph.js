@@ -79,60 +79,6 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
 /*
-MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
-    //zoom action detected by event listener in each axis
-    let scaleFactor = 0;
-    let mousePos = this.getMousePosition(e);
-
-    var currentViewRange = this.viewRange;
-    var newmzrange = currentViewRange.mzrange;
-    var newrtrange = currentViewRange.rtrange;
-    var newmzmin = currentViewRange.mzmin;
-    var newrtmin = currentViewRange.rtmin;
-
-    // mz/rtDist = fractional position of mouse
-    var mzDist = mousePos.x;
-    var rtDist = mousePos.z;
-
-    // constrains points to within the graph bounds
-    mzDist = Math.min(Math.max(mzDist, 0), 1);
-    rtDist = Math.min(Math.max(rtDist, 0), 1);
-
-    if (event.deltaY < 0) {
-       // console.log("going down")
-        newmzrange = currentViewRange.mzrange * 0.7;
-        newrtrange = currentViewRange.rtrange * 0.7;
-    } else {
-       // console.log("going up")
-        newmzrange = currentViewRange.mzrange * 1.3;
-        newrtrange = currentViewRange.rtrange * 1.3;
-    }
-    var mzPoint = mzDist * currentViewRange.mzrange + currentViewRange.mzmin;
-    var rtPoint = rtDist * currentViewRange.rtrange + currentViewRange.rtmin;
-    newmzmin = (mzPoint) - (newmzrange / currentViewRange.mzrange) * (mzPoint - currentViewRange.mzmin);
-    newrtmin = (rtPoint) - (newrtrange / currentViewRange.rtrange) * (rtPoint - currentViewRange.rtmin);
-    if (newmzmin < 0){
-        newmzmin = 0;
-    }
-    if (newrtmin < 0){
-        newrtmin = 0;
-    }
-    //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
-    if (newmzmin + newmzrange > this.totalMaxMz){
-        newmzrange = this.totalMaxMz - newmzmin;
-    }
-    if (newrtmin + newrtrange > this.totalMaxRt){
-        newrtrange = this.totalMaxRt - newrtmin;
-    }
-    this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange); 
-    /*
-    let wait = this.delayWheelEvent(newmzmin, newmzrange, newrtmin, newrtrange);
-    //wait for setViewingArea to finish before exiting
-    wait.then(function(){
-        return;
-    })
-}*/
-/*
 MsGraph.prototype.delayWheelEvent = function(newmzmin, newmzrange, newrtmin, newrtrange){
     return new Promise(function(resolve, reject){
         this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange); 
@@ -168,17 +114,6 @@ MsGraph.prototype.onZoom = function(e){
         this.onZoomFromEventListener(e, "rt");
     }
     else{
-        /*
-        //reset view range based on scroll up or down
-        let scaleFactor = 0;
-
-        if (e.deltaY > 0) {
-            scaleFactor = 0.75;
-        }
-        else{
-            scaleFactor = 1.5;
-        }
-        this.adjustPeakHeight(scaleFactor);*/
         this.onZoomFromEventListener(e, "both");
     }
 }
