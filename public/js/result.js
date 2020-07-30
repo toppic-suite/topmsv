@@ -56,12 +56,14 @@ function getScanID(ID) {
 let peakList1_g;
 let envList1_g;
 function loadPeakList1(scanID, prec_mz) {
+    let t0 = new Date();
     if (scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 getRT(scanID);
                 peakList1_g = JSON.parse(this.responseText);
+                
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
@@ -177,15 +179,17 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
     let dir = fullDir[0].concat("/");
     dir = dir.concat(fullDir[1]);
-
+    
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var scanID = $('#scanID1').text();
             var peakData = JSON.parse(this.responseText);
             var xhttp2 = new XMLHttpRequest();
-            
+            let t0 = new Date();    
+
             xhttp2.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
+                    console.log("loadingScanData: ", new Date() - t0);
                     var ms1PeakData = JSON.parse(this.responseText);
 
                     graph3D.addNewScanDataToGraph(peakData, ms1PeakData, minmz, maxmz, minrt, maxrt);
@@ -208,44 +212,6 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     xhttp.send();
 
 }
-/*
-function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
-    //loading spectra data upon startup and range change
-
-    let tableNum = calculateTableNum(minrt, maxrt, minmz, maxmz);
-    var xhttp = new XMLHttpRequest();
-    
-    let fullDir = (document.getElementById("projectDir").value).split("/");
-    let fileName = (fullDir[fullDir.length -1].split("."))[0];
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
-    
-    clearTimeout(this.requestCancelId);
-
-    let t0 = new Date();
-    this.requestCancelId = setTimeout((function(){
-        xhttp.onreadystatechange = function (){
-            if (this.readyState == 4 && this.status == 200) {
-                var response = JSON.parse(this.responseText);
-                console.log("load3ddatabypararange time ", new Date() - t0);
-                //console.log(response[0], response[1], response[2])
-                graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
-                graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
-    
-                if (updateTextBox){
-                    //update data range in textboxes if getting range from each scan, not by users
-                    document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-                    document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-                    document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
-                    document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
-                }
-            }
-        }
-
-        xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
-        xhttp.send();
-    }).bind(this), 100);
-}*/
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     //loading spectra data upon startup and range change
 
@@ -310,16 +276,26 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
 }
 
 function init3dGraph(){
+    let t0 = new Date();
+    let t1 = new Date();
+
     let promise = getMax();
     let min = document.getElementById("rangeMin").value;
     
     promise.then(function(data){//to make sure max values are fetched before creating graph
+        console.log("getMax: ", new Date() - t0)
+        t0 = new Date();
+
         graph3D.init(data[0]);
+        console.log("graph3DInit :" , new Date() - t0);
+        t0 = new Date();
+
         showEnvTable(min);
         findNextLevelOneScan(min);
         loadInteSumList();
-        configData = data;
 
+        configData = data;
+        console.log("total init time: " , new Date() - t1);
     }, function(err){
         console.log(err);
     })
