@@ -751,7 +751,7 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
     while (x < GRID.GRIDBLOCKS.size()){
       double highestInte = 0;
       int highestPeakId = -1;
-
+      //std::vector<std::vector<int>> highest;
       for (int cur_x = x; cur_x < x + xrange && cur_x < GRID.GRIDBLOCKS.size(); cur_x++){
         for (int cur_y = y; cur_y < y + yrange && cur_y < GRID.GRIDBLOCKS[0].size(); cur_y++){
           //check intensity
@@ -781,9 +781,14 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
             else if (rt < RANGE.RTMIN){
               RANGE.RTMIN = rt;
             };
+
           }
         }
       }
+      //std::cout << "highest peak-intensity pairs " << std::endl;
+      //for (int i = 0; i < highest.size();i++){
+        //std::cout << highest[i][0] << " " << highest[i][1] << std::endl;
+     // }
       if (highestPeakId >= 0){
         //insert and reset
         selected_peak_ID.push_back(highestPeakId);
