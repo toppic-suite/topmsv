@@ -299,7 +299,7 @@ void msReader::createDtabase() { //stmt
   RANGE.RTMAX = rtmax;
   RANGE.RTMIN = rtmin;
   RANGE.COUNT = ms1peakcount;//peakCount
-  RANGE.SCANCOUNT = spSize;
+  RANGE.SCANCOUNT = ms1scancount;
   RANGE.RTSIZE = int((RANGE.RTMAX - RANGE.RTMIN) / ms1scancount);
 
   std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
