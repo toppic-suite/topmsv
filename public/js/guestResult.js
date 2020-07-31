@@ -56,12 +56,14 @@ function getScanID(ID) {
 let peakList1_g;
 let envList1_g;
 function loadPeakList1(scanID, prec_mz) {
+    let t0 = new Date();
     if (scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 getRT(scanID);
                 peakList1_g = JSON.parse(this.responseText);
+                
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
@@ -83,7 +85,7 @@ function loadPeakList1(scanID, prec_mz) {
                                     let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                                        load3dDataOnScanChange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, true)
+                                        load3dDataOnScanChange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, rt, true)
                                 }    
                             }
                         };    
@@ -165,7 +167,7 @@ function getPeaksPerTable(totalLayer){
     });
 }
 
-function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
+function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
     //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
     //when a range changes in the same scan, call load3dDataByParaRange instead
@@ -177,18 +179,17 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
     let dir = fullDir[0].concat("/");
     dir = dir.concat(fullDir[1]);
-
-    let t0 = new Date();
-
+    
     xhttp.onreadystatechange = function (){
         if (this.readyState == 4 && this.status == 200) {
             var scanID = $('#scanID1').text();
             var peakData = JSON.parse(this.responseText);
             var xhttp2 = new XMLHttpRequest();
-            
-            t0 = new Date();
+            let t0 = new Date();    
+
             xhttp2.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
+                    console.log("loadingScanData: ", new Date() - t0);
                     var ms1PeakData = JSON.parse(this.responseText);
 
                     graph3D.addNewScanDataToGraph(peakData, ms1PeakData, minmz, maxmz, minrt, maxrt);
@@ -203,7 +204,7 @@ function load3dDataOnScanChange(minmz, maxmz, minrt, maxrt, updateTextBox){
                     }
                 }
             }
-            xhttp2.open("GET","load3dDataByScan?projectDir=" + dir + "/" + fileName + ".db" + "&scanID=" + scanID,true);
+            xhttp2.open("GET","load3dDataByRT?projectDir=" + dir + "/" + fileName + ".db" + "&RT=" + rt,true);
             xhttp2.send();
         }
     }
@@ -221,34 +222,26 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, updateTextBox){
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
     let dir = fullDir[0].concat("/");
     dir = dir.concat(fullDir[1]);
-    
-    clearTimeout(this.requestCancelId);
 
     let t0 = new Date();
-    this.requestCancelId = setTimeout((function(){
-        xhttp.onreadystatechange = function (){
-            if (this.readyState == 4 && this.status == 200) {
-                var response = JSON.parse(this.responseText);
-                console.log("load3ddatabypararange time ", new Date() - t0);
-                //console.log(response[0], response[1], response[2])
-                graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
-                graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
-    
-                if (updateTextBox){
-                    //update data range in textboxes if getting range from each scan, not by users
-                    document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-                    document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-                    document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
-                    document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
-                }
+    xhttp.onreadystatechange = function (){
+        if (this.readyState == 4 && this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            console.log("load3ddatabypararange time ", new Date() - t0);
+            graph3D.addDataToGraph(response, minmz, maxmz, minrt, maxrt);
+            graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
+
+            if (updateTextBox){
+                //update data range in textboxes if getting range from each scan, not by users
+                document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
+                document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
+                document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
+                document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
             }
         }
-
-        xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
-        xhttp.send();
-    }).bind(this), 100);
-
-    
+    }
+    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+    xhttp.send(); 
 }
 function calculateTableNum(minrt, maxrt, minmz, maxmz){
     /*decide which table to query based on what is the ratio is between current range and whole graph
@@ -283,16 +276,26 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
 }
 
 function init3dGraph(){
+    let t0 = new Date();
+    let t1 = new Date();
+
     let promise = getMax();
     let min = document.getElementById("rangeMin").value;
     
     promise.then(function(data){//to make sure max values are fetched before creating graph
+        console.log("getMax: ", new Date() - t0)
+        t0 = new Date();
+
         graph3D.init(data[0]);
+        console.log("graph3DInit :" , new Date() - t0);
+        t0 = new Date();
+
         showEnvTable(min);
         findNextLevelOneScan(min);
         loadInteSumList();
-        configData = data;
 
+        configData = data;
+        console.log("total init time: " , new Date() - t1);
     }, function(err){
         console.log(err);
     })
