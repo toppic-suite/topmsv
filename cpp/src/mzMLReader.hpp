@@ -27,7 +27,7 @@ struct Range{
   double INTMAX;
   int SCANCOUNT;
   int COUNT;
-  int LAYERCOUNT = 5;
+  int LAYERCOUNT = 0;
   int MAXRETURN = 5000;
   //vector<double> MZSIZE;
   //vector<double> RTSIZE;
