@@ -903,8 +903,6 @@ void mzMLReader::insertDataLayerTable(){
       beginTransaction();
 
       RANGE.COUNT = peak_cnt;
-      std::cout << "peak_cnt : " << peak_cnt << " in PEAKS" << table_cnt << std::endl;
-      std::cout << "RANGE.COUNT : " << RANGE.COUNT << std::endl;
 
       insertConfigOneTable();
       createLayerTable(int2str(table_cnt));
@@ -959,8 +957,6 @@ void mzMLReader::insertDataLayerTable(){
       if (peak_cnt >= RANGE.MINPEAKS){
         beginTransaction();
         RANGE.COUNT = peak_cnt;
-        std::cout << "peak_cnt : " << peak_cnt << " in PEAKS" << table_cnt << std::endl;
-        std::cout << "RANGE.COUNT : " << RANGE.COUNT << std::endl;
         insertConfigOneTable();
 
         prev_peak_ID = selected_peak_ID;
