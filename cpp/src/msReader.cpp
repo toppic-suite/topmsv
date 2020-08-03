@@ -318,7 +318,7 @@ void msReader::createDtabase() { //stmt
   
   t1 = clock();
   databaseReader.insertDataLayerTable();
-  std::cout <<"End Insert to CONFIG: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  std::cout <<"End Insert to all layer tables: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   
   t1 = clock();
   

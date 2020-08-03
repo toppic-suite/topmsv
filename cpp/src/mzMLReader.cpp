@@ -21,7 +21,7 @@ std::string num2str(double num) {
 std::string int2str(int num) {
   // std::cout << num << std::endl;
   stringstream stream;
-  stream<<num;
+  stream<<std::fixed<<num;
   return stream.str();
 };
 
@@ -288,7 +288,7 @@ void mzMLReader::creatTable() {
          "RTMAX           REAL     NOT NULL," \
          "INTMIN          REAL     NOT NULL," \
          "INTMAX          REAL     NOT NULL," \
-         "COUNT       INT     NOT NULL);");
+         "COUNT           INT     NOT NULL);");
 
    /* Execute SQL statement */
    rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
@@ -899,9 +899,14 @@ void mzMLReader::insertDataLayerTable(){
 
   while (peak_cnt >= RANGE.MINPEAKS){
     if (table_cnt == 1){
-      createLayerTable(int2str(table_cnt));
       resetRange();
       beginTransaction();
+
+      RANGE.COUNT = peak_cnt;
+
+      insertConfigOneTable();
+      createLayerTable(int2str(table_cnt));
+      
       for (int a = 0; a < GRID.GRIDBLOCKS.size(); a++){
         for (int b = 0; b < GRID.GRIDBLOCKS[a].size(); b++){
           int scan_id = GRID.GRIDBLOCKS[a][b][0];
@@ -935,9 +940,6 @@ void mzMLReader::insertDataLayerTable(){
           }
         }
       }
-      std::cout << RANGE.MZMAX << " " << RANGE.MZMIN << " " << RANGE.INTMAX << " " << RANGE.INTMIN << " "<< RANGE.RTMAX << " "<< RANGE.RTMIN << std::endl;
-      RANGE.COUNT = peak_cnt;
-      insertConfigOneTable();
       endTransaction();
       table_cnt++;
     }
@@ -953,15 +955,16 @@ void mzMLReader::insertDataLayerTable(){
       std::cout << "peak_cnt : " << peak_cnt << " in PEAKS" << table_cnt << std::endl;
       
       if (peak_cnt >= RANGE.MINPEAKS){
+        beginTransaction();
+        RANGE.COUNT = peak_cnt;
+        insertConfigOneTable();
+
         prev_peak_ID = selected_peak_ID;
         createLayerTable(int2str(table_cnt));
-        beginTransaction();
+        
         for (int i = 0; i < selected_peak_ID.size(); i++){
           insertPeaksToEachLayer(table_cnt, selected_peak_ID[i]);
         }
-        std::cout << RANGE.MZMAX << " " << RANGE.MZMIN << " " << RANGE.INTMAX << " " << RANGE.INTMIN << " "<< RANGE.RTMAX << " "<< RANGE.RTMIN << std::endl;
-        RANGE.COUNT = peak_cnt;
-        insertConfigOneTable();
         endTransaction();
 
         table_cnt++;
@@ -1143,7 +1146,7 @@ void mzMLReader::insertConfigOneTable() {
   /* Create SQL statement */
   std::string sqlstr = "INSERT INTO CONFIG (MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT) VALUES (" +
     num2str(RANGE.MZMIN) + ", " + num2str(RANGE.MZMAX) + ", " + num2str(RANGE.RTMIN) + ", " + num2str(RANGE.RTMAX) + ", " +
-    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + num2str(RANGE.COUNT)+ " ); ";
+    num2str(RANGE.INTMIN) + ", " + num2str(RANGE.INTMAX) + ", " + int2str(RANGE.COUNT)+ " ); ";
   sql = (char *)sqlstr.c_str();
   /* Execute SQL statement */
   rc = sqlite3_exec(db, sql, 0, 0, &zErrMsg);
