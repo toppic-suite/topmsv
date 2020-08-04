@@ -1,6 +1,5 @@
 let graph3D;//3d graph
 let configData;
-let maxPeak = 3000;
 
 function getRelatedScan2(scanID) {
     var xhttp = new XMLHttpRequest();
