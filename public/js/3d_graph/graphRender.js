@@ -87,7 +87,8 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
 /*this.maxPeaks is the max number of peaks on the graph. 
     as ms1 peaks are always going to show in 3d grahph, add only a subset of peaks to the this.currentData
     which contains peaks to be drawn on the graph*/
-MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
+
+/*MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
     let peakCount = this.ms1Peaks.length;
     let curMs1Peaks = [];
     //from ms1 data, extract only those that are in current mz and rt range
@@ -99,7 +100,9 @@ MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
     }
     let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
     this.currentData = curMs1Peaks.concat(peaksToAdd);//store loaded data
-}
+    console.log("curent scan peak : ", curMs1Peaks.length, " other scan peak : ", peaksToAdd.length);
+}*/
+/*
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
     this.ms1Peaks = ms1Peaks;//store peak 1 data
     let peakCount = ms1Peaks.length;
@@ -114,6 +117,14 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
     }
     let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
     this.currentData = curMs1Peaks.concat(peaksToAdd);
+    console.log("curent scan peak : ", curMs1Peaks.length, " other scan peak : ", peaksToAdd.length);
+}*/
+MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
+    let peakCount = ms1Peaks.length;
+    
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length));
+    this.currentData = ms1Peaks.concat(peaksToAdd);
+    console.log("curent scan peak : ", peakCount, " other scan peak : ", peaksToAdd.length);
 }
 MsGraph.prototype.plotPointAsCircle = function(){
     //console.log(this.dataRange)
