@@ -36,7 +36,7 @@ function MsGraph(containerEl, graphEl) {
     this.mzAxisZoom = false;
     this.rtAxisZoom = false;
 
-    this.maxPeaks = 3000;
+    this.maxPeaks = 6000;
 
     this.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
     this.totalMaxRt = 0;
