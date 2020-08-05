@@ -6,11 +6,12 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {function} callback
  * @async
  */
-function load3dDataByRT(dir, rt, callback) {
+function load3dDataByRT(dir, rt, tableNum, minmz, maxmz, callback) {
     let sql = `SELECT *
-                FROM PEAKS0
-                WHERE RETENTIONTIME = ? 
-                ORDER BY INTENSITY DESC;`;
+                FROM PEAKS` + tableNum + 
+                ` WHERE RETENTIONTIME = ?
+                AND MZ >= ?
+                AND MZ <= ?;`;
 
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
@@ -20,7 +21,7 @@ function load3dDataByRT(dir, rt, callback) {
         // console.log('Connected to the result database.');
     });
     
-    resultDb.all(sql, [rt], (err, row) => {
+    resultDb.all(sql, [rt, minmz, maxmz], (err, row) => {
         if (err) {
             console.error(err.message);
         }
