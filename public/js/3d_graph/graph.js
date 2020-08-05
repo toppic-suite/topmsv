@@ -40,6 +40,7 @@ function MsGraph(containerEl, graphEl) {
 
     this.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
     this.totalMaxRt = 0;
+    this.totalMinRt = 0;
 
     this.intensitySum = 0; //for display near the graph
     
@@ -54,6 +55,7 @@ MsGraph.prototype.init = function(maxMzRt){
     //set maximum mz rt value 
     this.totalMaxMz = maxMzRt.MZMAX;
     this.totalMaxRt = maxMzRt.RTMAX;
+    this.totalMinRt = maxMzRt.RTMIN;
    
     var scene = this.scene;
 
@@ -105,6 +107,7 @@ MsGraph.prototype.init = function(maxMzRt){
     // make grouping constructs
     this.gridgroup = new THREE.Group();
     this.datagroup = new THREE.Group();
+    this.markergroup = new THREE.Group();
     this.labelgroup = new THREE.Group();
     this.ticksGroup = new THREE.Group();
     this.ticklabelgroup = new THREE.Group();
@@ -143,8 +146,8 @@ MsGraph.prototype.init = function(maxMzRt){
     var mzLine = new THREE.Line( mzGeo, axisMat );
     var rtLine = new THREE.Line( rtGeo, axisMat );
 
-    // mzLine.visible = false;
-    // rtLine.visible = false;
+    mzLine.visible = false;
+    rtLine.visible = false;
 
     this.domEvents.addEventListener(mzLine, 'mouseover', (function(event){
         //console.log("over mz")
@@ -170,6 +173,7 @@ MsGraph.prototype.init = function(maxMzRt){
     scene.add(this.datagroup);
     scene.add(this.labelgroup);
     scene.add(this.ticklabelgroup);
+    scene.add(this.markergroup);
     this.updateViewRange(this.dataRange);
 
     renderer.setAnimationLoop(function() {
