@@ -6,7 +6,7 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {function} callback
  * @async
  */
-function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, callback) {
+function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, currt, callback) {
     /*let sql = `SELECT *
                 FROM PEAKS` + tableNum + 
                 ` WHERE RETENTIONTIME <= ? 
