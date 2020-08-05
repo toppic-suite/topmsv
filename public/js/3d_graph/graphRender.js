@@ -89,7 +89,6 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
 }
 MsGraph.prototype.drawCurrentScanMarker = function(rt){
     //draw a red line horizontal to x axis where y = current scan retention time
-    console.log("--drawCurrentScanMarker")
     var linegeo = new THREE.Geometry();
         
     linegeo.vertices.push(new THREE.Vector3(0, 0.1, 0));
@@ -103,7 +102,6 @@ MsGraph.prototype.drawCurrentScanMarker = function(rt){
     this.markergroup.add(marker);
     
     marker.position.set(0, 0, rt);
-    console.log("rawRT ", rt);
 }
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
     let peakCount = ms1Peaks.length;
@@ -239,10 +237,7 @@ MsGraph.prototype.repositionPlot = function(r) {
     // Reposition the plot so that mzmin,rtmin is at the correct corner
     this.datagroup.position.set(-r.mzmin*mz_squish, 0, this.GRID_RANGE - r.rtmin*rt_squish);
     this.markergroup.position.set(0, 0, this.GRID_RANGE - r.rtmin*rt_squish);
-    
-    console.log("marker group scale : ", 1,1,rt_squish)
-    console.log("markergroup position: ",0, 0, this.GRID_RANGE - r.rtmin*rt_squish )
-    
+
     // update tick marks
     var self = this;
     MsGraph.emptyGroup(self.ticklabelgroup);
