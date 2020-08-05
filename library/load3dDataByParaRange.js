@@ -16,8 +16,7 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, currt,
                 ORDER BY INTENSITY DESC;`;*/
     let sql = `SELECT *
                 FROM PEAKS` + tableNum + 
-                ` WHERE NOT RETENTIONTIME = ?
-                AND RETENTIONTIME <= ? 
+                ` WHERE RETENTIONTIME <= ? 
                 AND RETENTIONTIME >= ?
                 AND MZ <= ?
                 AND MZ >= ?
@@ -31,7 +30,7 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, currt,
        // console.log('Connected to the result database.');
     });
 
-    resultDb.all(sql, [currt, maxrt, minrt, maxmz, minmz], (err, row) => {
+    resultDb.all(sql, [maxrt, minrt, maxmz, minmz], (err, row) => {
         if (err) {
             console.error(err.message);
         }
