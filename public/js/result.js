@@ -169,66 +169,6 @@ function getPeaksPerTable(totalLayer){
         xhttp.send();
     });
 }
-/*
-function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
-    //same as load3dDataByParaRange, but this functions runs only when a scan changes
-    //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
-    //when a range changes in the same scan, call load3dDataByParaRange instead
-
-    let tableNum = calculateTableNum(minrt, maxrt, minmz, maxmz);
-    var xhttp = new XMLHttpRequest();
-    
-    let fullDir = (document.getElementById("projectDir").value).split("/");
-    let fileName = (fullDir[fullDir.length -1].split("."))[0];
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
-    
-    xhttp.onreadystatechange = function (){
-        if (this.readyState == 4 && this.status == 200) {
-            var peakData = JSON.parse(this.responseText);
-            var xhttp2 = new XMLHttpRequest();
-            let t0 = new Date();    
-            if (rawRT <= maxrt && rawRT >= minrt){
-                xhttp2.onreadystatechange = function (){
-                    if (this.readyState == 4 && this.status == 200) {
-    
-                        console.log("loadingScanData: ", new Date() - t0);
-                        var ms1PeakData = JSON.parse(this.responseText);
-    
-                        graph3D.addNewScanDataToGraph(peakData, ms1PeakData, minmz, maxmz, minrt, maxrt);
-                        graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
-            
-                        if (updateTextBox){
-                            //update data range in textboxes if getting range from each scan, not by users
-                            document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-                            document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-                            document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
-                            document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
-                        }
-                    }
-                }
-                xhttp2.open("GET","load3dDataByRT?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&RT=" + rawRT,true);
-                xhttp2.send();
-            }
-            else{   
-                graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);
-                graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
-            
-                if (updateTextBox){
-                    //update data range in textboxes if getting range from each scan, not by users
-                    document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-                    document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-                    document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
-                    document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
-                }
-            }
-            
-        }
-    }
-    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&curRT=" + rt, true);
-    xhttp.send();
-
-}*/
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
     //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
@@ -249,9 +189,9 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
 
             console.log("loadingScanData: ", new Date() - t0);
 
-            graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);
-            graph3D.drawGraph(minmz, maxmz, minrt, maxrt);
-            
+            graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);            
+            graph3D.drawGraph(minmz, maxmz, minrt, maxrt, rt);
+           
             if (updateTextBox){
                 //update data range in textboxes if getting range from each scan, not by users
                 document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
@@ -930,7 +870,6 @@ redrawRequestButton.addEventListener('click', function(){
     let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
     let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
     let curRT = rawRT; 
-    console.log("curRT: ", (curRT/60).toFixed(4));
 
     //error handing
     if (minRT > maxRT){
