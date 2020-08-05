@@ -32,34 +32,8 @@ MsGraph.prototype.getInteRange = function(points){
     }
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
+    this.dataRange.intrange = intmax - intmin;
 }
-/*MsGraph.prototype.getInteRtRange = function(points){
-    let rtmin = Infinity;
-    let rtmax = 0;
-    let intmin = Infinity;
-    let intmax = 0;
-
-    for (let i = 0; i < points.length; i++){
-        if (points[i].RETENTIONTIME < rtmin){
-            rtmin = points[i].RETENTIONTIME;
-        }
-        else if(points[i].RETENTIONTIME > rtmax){
-            rtmax = points[i].RETENTIONTIME;
-        };
-        if (points[i].INTENSITY < intmin){
-            intmin = points[i].INTENSITY;
-        }
-        else if(points[i].INTENSITY > intmax){
-            intmax = points[i].INTENSITY;
-        }
-    }
-    this.dataRange.rtmin = rtmin;
-    this.dataRange.rtmax = rtmax;
-    this.dataRange.rtrange = rtmax - rtmin;
-
-    this.dataRange.intmin = intmin;
-    this.dataRange.intmax = intmax;
-}*/
 MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw based on ms1 graph mz range
     this.clearGraph();
 
@@ -72,6 +46,7 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     this.dataRange.rtrange = maxrt - minrt;
     
     this.getInteRange(this.currentData);
+    this.setGradientInterval();
 
     for (let i = 0; i < this.currentData.length; i++)
     {   
@@ -109,8 +84,26 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
     let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length));
     this.currentData = ms1Peaks.concat(peaksToAdd);
 }
+MsGraph.prototype.setGradientInterval = function(){
+    //pick peak color based on each peak intensity -- currently 5 levels gradient
+    this.cutoff = [];//cutoff point for intensity for each color
+    let interval = this.dataRange.intrange / this.gradientColor.length; 
+
+    for (let i = 1; i <= this.gradientColor.length; i++){
+        let val = this.dataRange.rtmin + (interval * i);
+        this.cutoff.push(val);
+    } 
+}
+MsGraph.prototype.pickPeakColor = function(intensity){
+    for (let j = 0; j < this.cutoff.length; j++){
+        if (intensity <= this.cutoff[j]){
+            return this.gradientColor[j];
+        }
+    }
+    return this.gradientColor[this.gradientColor.length - 1];
+}
 MsGraph.prototype.plotPointAsCircle = function(){
-    //console.log(this.dataRange)
+    
     let mzRange = this.dataRange.mzmax - this.dataRange.mzmin;
     let rtRange = (this.dataRange.rtmax - this.dataRange.rtmin)/60;
 
@@ -135,9 +128,11 @@ MsGraph.prototype.plotPointAsCircle = function(){
     for (let i = 0; i < this.currentData.length; i++)
     {   
         var point = this.currentData[i];
+        var lineColor = this.pickPeakColor(this.currentData[i].INTENSITY);
+        console.log(lineColor)
         //var geometry = new THREE.CylinderBufferGeometry(xSize, ySize, 1, 0);
         var geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
-        var material = new THREE.MeshBasicMaterial( { color: 0x350fa8 } );
+        var material = new THREE.MeshBasicMaterial( { color: lineColor } );
    
         if ((point.RETENTIONTIME/60).toFixed(4) == rt){
             material = new THREE.MeshBasicMaterial({color: 0xED1111});
@@ -175,7 +170,8 @@ MsGraph.prototype.plotPoint = function(point) {
     var mz = point.MZ;
     var rt = point.RETENTIONTIME;
     var inten = point.INTENSITY;
-    
+    var lineColor = this.pickPeakColor(inten);
+   
     var thisLogScale = this.LOG_SCALAR * Math.log(inten);
     var maxLogScale = Math.log(this.dataRange.intmax);
 
@@ -186,15 +182,13 @@ MsGraph.prototype.plotPoint = function(point) {
     
     var drawObj;
 
-    var meshmat = new THREE.MeshBasicMaterial({color: 0x350fa8});
-
     var linegeo = new THREE.BufferGeometry();
     linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
         0, 0, 0,
         0, y, 0,
     ]), 3));
 
-    var linemat = new THREE.LineBasicMaterial({color: 0x350fa8});
+    var linemat = new THREE.LineBasicMaterial({color: lineColor});
 
     if ((point.RETENTIONTIME/60).toFixed(4) == currt){
         linemat = new THREE.LineBasicMaterial({color: 0xED1111});

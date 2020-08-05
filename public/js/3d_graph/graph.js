@@ -45,6 +45,10 @@ function MsGraph(containerEl, graphEl) {
     this.intensitySum = 0; //for display near the graph
     
     this.imageAddress;
+
+    //this.gradientColor = ["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"];//5 shades of blue
+    this.gradientColor = ["#2233c3", "#5f31ac", "#963097", "#c82f84", "#fd2d70"];//purple-pink (low to high);
+    this.cutoff = []; //intensity cutoff point for each color in gradient
 }
 
 /******** SETUP FUNCTIONS ******/
@@ -55,7 +59,6 @@ MsGraph.prototype.init = function(maxMzRt){
     //set maximum mz rt value 
     this.totalMaxMz = maxMzRt.MZMAX;
     this.totalMaxRt = maxMzRt.RTMAX;
-    this.totalMinRt = maxMzRt.RTMIN;
    
     var scene = this.scene;
 
@@ -179,8 +182,6 @@ MsGraph.prototype.init = function(maxMzRt){
     renderer.setAnimationLoop(function() {
         graphControls.update();
     });
-
-    //this.renderImmediate();
 };
 
 /******** GEOMETRY/MATH FUNCTIONS *******/
