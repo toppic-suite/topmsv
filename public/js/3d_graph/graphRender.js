@@ -80,22 +80,19 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     this.viewRange["intscale"] = 1;
 
     // make sure the groups are plotted and update the view
-    //this.repositionPlot(this.dataRange);
     
-    this.displayGraphData();//display metadata about the graph
     if (rt <= maxrt && rt >= minrt){
         this.drawCurrentScanMarker(rt);
     }
-   
+    this.displayGraphData();//display metadata about the graph
     this.updateViewRange(this.dataRange);
 }
 MsGraph.prototype.drawCurrentScanMarker = function(rt){
     //draw a red line horizontal to x axis where y = current scan retention time
-    
     var linegeo = new THREE.Geometry();
         
-    linegeo.vertices.push(new THREE.Vector3(0, 0, 0));
-    linegeo.vertices.push(new THREE.Vector3(this.GRID_RANGE, 0, 0));
+    linegeo.vertices.push(new THREE.Vector3(0, 0.1, 0));
+    linegeo.vertices.push(new THREE.Vector3(this.GRID_RANGE, 0.1, 0));
 
     var linemat = new THREE.LineBasicMaterial({color: 0xED1111});
 
@@ -240,7 +237,7 @@ MsGraph.prototype.repositionPlot = function(r) {
     // Reposition the plot so that mzmin,rtmin is at the correct corner
     this.datagroup.position.set(-r.mzmin*mz_squish, 0, this.GRID_RANGE - r.rtmin*rt_squish);
     this.markergroup.position.set(0, 0, this.GRID_RANGE - r.rtmin*rt_squish);
-  
+
     // update tick marks
     var self = this;
     MsGraph.emptyGroup(self.ticklabelgroup);
