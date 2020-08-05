@@ -83,7 +83,10 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     //this.repositionPlot(this.dataRange);
     
     this.displayGraphData();//display metadata about the graph
-    this.drawCurrentScanMarker(rt);
+    if (rt <= maxrt && rt >= minrt){
+        this.drawCurrentScanMarker(rt);
+    }
+   
     this.updateViewRange(this.dataRange);
 }
 MsGraph.prototype.drawCurrentScanMarker = function(rt){
