@@ -7,6 +7,7 @@ MsGraph.setOnTop = function(obj) {
 MsGraph.prototype.clearGraph = function() {
     this.linesArray = [];
     this.plotGroup.children = [];
+    this.markergroup.children = [];
 }
 MsGraph.prototype.displayGraphData = function(){
     //display highest intensity, sum of intensity, total peak count in the current grph
@@ -59,7 +60,7 @@ MsGraph.prototype.getInteRange = function(points){
     this.dataRange.intmin = intmin;
     this.dataRange.intmax = intmax;
 }*/
-MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based on ms1 graph mz range
+MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw based on ms1 graph mz range
     this.clearGraph();
 
     this.dataRange.mzmin = minmz;
@@ -73,47 +74,43 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt){//draw based 
     this.getInteRange(this.currentData);
 
     for (let i = 0; i < this.currentData.length; i++)
-    {
+    {   
         this.plotPoint(this.currentData[i]);
-        
     }
     this.viewRange["intscale"] = 1;
 
     // make sure the groups are plotted and update the view
     //this.repositionPlot(this.dataRange);
+    
     this.displayGraphData();//display metadata about the graph
+    if (rt <= maxrt && rt >= minrt){
+        this.drawCurrentScanMarker(rt);
+    }
+   
     this.updateViewRange(this.dataRange);
 }
-/*this.maxPeaks is the max number of peaks on the graph. 
-    as ms1 peaks are always going to show in 3d grahph, add only a subset of peaks to the this.currentData
-    which contains peaks to be drawn on the graph*/
-MsGraph.prototype.addDataToGraph = function(points, minmz, maxmz, minrt, maxrt){
-    let peakCount = this.ms1Peaks.length;
-    let curMs1Peaks = [];
-    //from ms1 data, extract only those that are in current mz and rt range
-    for (let i = 0; i < peakCount && i < this.maxPeaks; i++){
-        if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
-        {
-            curMs1Peaks.push(this.ms1Peaks[i]);
-        }
-    }
-    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
-    this.currentData = curMs1Peaks.concat(peaksToAdd);//store loaded data
+MsGraph.prototype.drawCurrentScanMarker = function(rt){
+    //draw a red line horizontal to x axis where y = current scan retention time
+    
+    var linegeo = new THREE.Geometry();
+        
+    linegeo.vertices.push(new THREE.Vector3(0, 0, 0));
+    linegeo.vertices.push(new THREE.Vector3(this.GRID_RANGE, 0, 0));
+
+    var linemat = new THREE.LineBasicMaterial({color: 0xED1111});
+
+    var marker = new THREE.Line(linegeo, linemat);
+    marker.name = "currentScanMarker";
+
+    this.markergroup.add(marker);
+    
+    marker.position.set(0, 0, rt);
 }
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
-    this.ms1Peaks = ms1Peaks;//store peak 1 data
     let peakCount = ms1Peaks.length;
-    let curMs1Peaks = [];
 
-    //from ms1 data, extract only those that are in current mz and rt range
-    for (let i = 0; i < peakCount && i < this.maxPeaks; i++){
-        if (this.ms1Peaks[i].MZ >= minmz && this.ms1Peaks[i].MZ <= maxmz && this.ms1Peaks[i].RETENTIONTIME >= minrt && this.ms1Peaks[i].RETENTIONTIME <= maxrt)
-        {
-            curMs1Peaks.push(this.ms1Peaks[i]);
-        }
-    }
-    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - curMs1Peaks.length, points.length));
-    this.currentData = curMs1Peaks.concat(peaksToAdd);
+    let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length));
+    this.currentData = ms1Peaks.concat(peaksToAdd);
 }
 MsGraph.prototype.plotPointAsCircle = function(){
     //console.log(this.dataRange)
@@ -188,9 +185,7 @@ MsGraph.prototype.plotPoint = function(point) {
     let scanID = document.getElementById('scanID1').innerText;
     let currt = document.getElementById("scan1RT").innerText;
 
-    var x = mz;
     var y = this.USE_LOG_SCALE_HEIGHT ? Math.min(thisLogScale, maxLogScale) : inten;
-    var z = rt;
     
     var drawObj;
 
@@ -220,7 +215,7 @@ MsGraph.prototype.plotPoint = function(point) {
     drawObj.height = y;
     drawObj.name = "peak";
     drawObj.scanID = point.SPECTRAID;
-
+    
     this.linesArray.push(drawObj);
     this.plotGroup.add(drawObj);
 };
@@ -234,15 +229,18 @@ MsGraph.prototype.repositionPlot = function(r) {
     var mz_squish = this.GRID_RANGE / r.mzrange;
     var rt_squish = - this.GRID_RANGE / r.rtrange;
     var inte_squish = (this.GRID_RANGE_VERTICAL / heightScale) * r.intscale;
-    //console.log("intensity scale ", inte_squish)
+
     if (this.dataRange.intmax < 1){
         //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
         inte_squish = 0;
     }
     this.datagroup.scale.set(mz_squish, inte_squish, rt_squish);
-    
+    this.markergroup.scale.set(1,1,rt_squish);
+
     // Reposition the plot so that mzmin,rtmin is at the correct corner
     this.datagroup.position.set(-r.mzmin*mz_squish, 0, this.GRID_RANGE - r.rtmin*rt_squish);
+    this.markergroup.position.set(0, 0, this.GRID_RANGE - r.rtmin*rt_squish);
+  
     // update tick marks
     var self = this;
     MsGraph.emptyGroup(self.ticklabelgroup);
