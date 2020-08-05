@@ -121,10 +121,9 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
 }*/
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
     let peakCount = ms1Peaks.length;
-    
+
     let peaksToAdd = points.splice(0, Math.min(this.maxPeaks - peakCount, points.length));
     this.currentData = ms1Peaks.concat(peaksToAdd);
-    console.log("curent scan peak : ", peakCount, " other scan peak : ", peaksToAdd.length);
 }
 MsGraph.prototype.plotPointAsCircle = function(){
     //console.log(this.dataRange)
