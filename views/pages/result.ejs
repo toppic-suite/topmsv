@@ -91,6 +91,30 @@
 						</table>
 						<hr style="margin-bottom: 7px; margin-top: 10px">
 						<div>
+							<h4>mzrt file</h4>
+							<p>
+								If you want to delete current existing mzrt file, please click the button below.
+							</p>
+							<button class="btn defaultBtn" id="deleteMzrt">Delete existing mzrt file</button>
+							<p>If you want to add annotated feature information to this project, please upload a csv file for it below.</p>
+							<label for="mzrtFile">New mzrt file</label>
+							<input class="form-control-file" type="file" id="mzrtFile">
+							<br>
+							<table>
+								<tr>
+									<td><button class="btn defaultBtn" id="mzrtUpload">Upload</button></td>
+									<td width="40pt"></td>
+									<td style="width: 300pt">
+										<div id="mzrtProgress" class="progress">
+											<div id="mzrtProgressbar" class="progress-bar progress-bar-striped" role="progressbar"
+												 style="width: 0%">0%</div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<hr style="margin-bottom: 7px; margin-top: 10px">
+						<div>
 							<h4>Sequence file</h4>
 							<p>
 								If you want to delete current existing sequence file, please click the button below.
