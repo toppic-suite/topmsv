@@ -115,7 +115,8 @@ MsGraph.prototype.init = function(maxMzRt){
     // plotting objects
     this.linesArray = [];
     this.plotGroup = new THREE.Group();
-  
+    this.plotGroup.name = "plotGroup";
+
     this.datagroup.add(this.plotGroup);
     //this.datagroup.add(this.cylinderGroup);
     this.datagroup.add(this.ticksGroup);

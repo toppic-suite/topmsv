@@ -6,6 +6,7 @@ let IsScrolling = false;
 MsGraph.prototype.zoomGraph = function(graph){
     graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
 }
+/*
 MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
     this.clearGraph();
 
@@ -17,8 +18,15 @@ MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
     if (this.viewRange["intscale"] >= 0){//prevent peak from drawn under the graph
         this.updateViewRange(this.viewRange);
     }
-}
+}*/
+MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
+    let peaks = this.scene.getObjectByName("plotGroup");
+    let oriScale = peaks.scale.y;
 
+    peaks.scale.set(1, oriScale * scaleFactor, 1);
+    
+    this.renderImmediate();
+}
 MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     //zoom action detected by event listener in each axis
     let scaleFactor = 0;
