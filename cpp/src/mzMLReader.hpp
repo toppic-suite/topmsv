@@ -33,7 +33,7 @@ struct Range{
   //vector<double> RTSIZE;
   int MINPEAKS = 3000; //minimum peak needed to create a new table 
   double MZSCALE = 2;//number to scale m/z range of a grid block
-  double MZSIZE = 0.1;//initial mz size of a grid block
+  double MZSIZE = 0.05;//initial mz size of a grid block
 
   double RTSCALEFACTOR = 2;
   double RTSCALE = 2;

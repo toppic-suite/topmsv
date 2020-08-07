@@ -43,6 +43,7 @@ public:
 	void getScanRangeDB();
 	void getRange();
 	void getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
+	void calculateInitBin(int ms1scancount, int ms1peakcount);
 	void createDtabase_normal();
 	void createDtabase();
 	void getRangeDB();
