@@ -51,7 +51,20 @@ span.ms1EnvFile{
     position: relative;
     left: 50%;
 }
-
+.defaultBtn {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.defaultBtn:hover{
+    color: white;
+}
 button#modalUpload {
     position: relative;
     font-size: 100%;
