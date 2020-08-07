@@ -1,5 +1,4 @@
 // graphpoints.js : draws and manages the points on the screen and panning/zooming
-
 MsGraph.setOnTop = function(obj) {
     obj.renderOrder = 10;
     obj.onBeforeRender = function(r) { r.clearDepth() };
@@ -55,7 +54,6 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     this.viewRange["intscale"] = 1;
 
     // make sure the groups are plotted and update the view
-    
     if (rt <= maxrt && rt >= minrt){
         this.drawCurrentScanMarker(rt);
     }
@@ -87,13 +85,15 @@ MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxm
 MsGraph.prototype.setGradientInterval = function(){
     //pick peak color based on each peak intensity -- currently 5 levels gradient
     this.cutoff = [];//cutoff point for intensity for each color
-    let interval = this.dataRange.intrange / this.gradientColor.length; 
-
+    let intRange = this.totalMaxInte - this.totalMinInte;
+  
     for (let i = 1; i <= this.gradientColor.length; i++){
-        let val = this.dataRange.rtmin + (interval * i);
+        let val = Math.pow(intRange, i/this.gradientColor.length);
+        //console.log("interval ", i, ": ", val);
         this.cutoff.push(val);
     } 
 }
+
 MsGraph.prototype.pickPeakColor = function(intensity){
     for (let j = 0; j < this.cutoff.length; j++){
         if (intensity <= this.cutoff[j]){
@@ -129,7 +129,6 @@ MsGraph.prototype.plotPointAsCircle = function(){
     {   
         var point = this.currentData[i];
         var lineColor = this.pickPeakColor(this.currentData[i].INTENSITY);
-        console.log(lineColor)
         //var geometry = new THREE.CylinderBufferGeometry(xSize, ySize, 1, 0);
         var geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
         var material = new THREE.MeshBasicMaterial( { color: lineColor } );

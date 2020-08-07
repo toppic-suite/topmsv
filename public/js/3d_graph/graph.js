@@ -40,14 +40,15 @@ function MsGraph(containerEl, graphEl) {
 
     this.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
     this.totalMaxRt = 0;
-    this.totalMinRt = 0;
+    this.totalMaxInte = 0;
+    this.totalMinInte = 0;
 
     this.intensitySum = 0; //for display near the graph
     
     this.imageAddress;
 
     //this.gradientColor = ["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"];//5 shades of blue
-    this.gradientColor = ["#2233c3", "#5f31ac", "#963097", "#c82f84", "#fd2d70"];//purple-pink (low to high);
+    this.gradientColor = ["#2233c3", "#3632bc", "#4c31b4", "#6630aa", "#7d30a1", "#942f98", "#ba2e8a", "#da2e7e", "#fd2d70"];//purple-pink (low to high);
     this.cutoff = []; //intensity cutoff point for each color in gradient
 }
 
@@ -59,6 +60,8 @@ MsGraph.prototype.init = function(maxMzRt){
     //set maximum mz rt value 
     this.totalMaxMz = maxMzRt.MZMAX;
     this.totalMaxRt = maxMzRt.RTMAX;
+    this.totalMaxInte = maxMzRt.INTMAX;
+    this.totalMinInte = maxMzRt.INTMIN;
    
     var scene = this.scene;
 
