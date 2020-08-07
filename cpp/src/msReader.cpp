@@ -132,8 +132,58 @@ void msReader::getAllPeaks(double mzmin, double mzmax, double rtmin, double rtma
   }
   std::cout << std::endl;
 };
+void msReader::calculateInitBin(int ms1scancount, int ms1peakcount){
+  /*set initial bin size for m/z and rt
+    set m/z size to be a number that reduces PEAKS1 to be 1/2 to 1/4 of PEAKS0*/
+  /*double mz_bin = 1;
+  double interval = 0.05;//interval to increase/decrease mz_bin
+  int rt_range = int(RANGE.RTMAX - RANGE.RTMIN);
+  int mz_range = int(RANGE.MZMAX - RANGE.MZMIN);
 
+  RANGE.RTSIZE = int((RANGE.RTMAX - RANGE.RTMIN) / ms1scancount);//set rt bin size 
+  
+  std::cout << "total peak at PEAK0 " << ms1peakcount << std::endl;
 
+  //if estimated peak count in this grid with rt bin size as RANGE.RTSIZE and m/z bin size as mz_bin 
+  //is bigger than total peaks in PEAKS0 (ms1peakcount)
+  //increase mz_bin in each iteration
+  //otherwise, decrease mz_bin
+
+  int peak_cnt = int(mz_range/mz_bin) * int(rt_range/RANGE.RTSIZE);
+  std::cout << "peak_cnt : "<< peak_cnt << ", total ms1 peak : " << ms1peakcount << std::endl;
+  std::cout << "rt size " << RANGE.RTSIZE << std::endl;
+
+  if (peak_cnt > ms1peakcount/2){
+    interval = interval * -1;
+    std::cout << "bin size needs to be bigger" << std::endl;
+    while (mz_bin < RANGE.MZMAX){
+      int grid_y = int(rt_range/RANGE.RTSIZE);
+      int grid_x = int(mz_range/mz_bin);
+      if (grid_x * grid_y < ms1peakcount/2){
+        RANGE.MZSIZE = mz_bin;
+        std::cout << "final mz bin size : " << mz_bin << " grid size : " << grid_x << " * " << grid_y << " peak count :" << grid_x * grid_y<< std::endl;
+        return;
+      }
+      mz_bin = mz_bin - interval;
+    }
+  }
+  else{
+    std::cout << "bin size needs to be smaller" << std::endl;
+    while (mz_bin > 0){
+      int grid_y = int(rt_range/RANGE.RTSIZE);
+      int grid_x = int(mz_range/mz_bin);
+      if (grid_x * grid_y > ms1peakcount/2){
+        RANGE.MZSIZE = mz_bin;
+        std::cout << "final mz bin size : " << mz_bin << " grid size : " << grid_x << " * " << grid_y << " peak count :" << grid_x * grid_y<< std::endl;
+        return;
+      }
+      mz_bin = mz_bin - interval;
+    }
+  
+  }
+  std::cout << "mz bin size not found." << " last grid size : " << int(mz_range/0.05) << " * " << int(rt_range/RANGE.RTSIZE) << "peak count" << int(mz_range/0.05) * int(rt_range/RANGE.RTSIZE) << std::endl;
+*/
+}
 void msReader::createDtabase_normal() {
   databaseReader.openDatabase(file_name);
   databaseReader.creatTable();
@@ -300,8 +350,11 @@ void msReader::createDtabase() { //stmt
   RANGE.RTMIN = rtmin;
   RANGE.COUNT = ms1peakcount;//peakCount
   RANGE.SCANCOUNT = ms1scancount;
-  RANGE.RTSIZE = int((RANGE.RTMAX - RANGE.RTMIN) / ms1scancount);
+  RANGE.RTSIZE = int((RANGE.RTMAX - RANGE.RTMIN) / ms1scancount);//set rt bin size 
 
+  t1 = clock();
+  calculateInitBin(ms1scancount, ms1peakcount);
+  std::cout <<"calculateInitBin Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
   std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << "\tmzsize:" << RANGE.MZSIZE << "\trtsize:" << RANGE.RTSIZE << std::endl;
   
