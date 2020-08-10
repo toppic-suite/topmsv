@@ -20,6 +20,7 @@ var projects = router.get('/projects', function (req,res) {
         console.log(uid);
         getProjects(uid,function (rows) {
             rows.forEach(row=>{
+                console.log("row", row);
                 if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
                 if(row.description === '') row.description = 'N/A';
                 if(row.projectStatus === 0) {
@@ -37,6 +38,11 @@ var projects = router.get('/projects', function (req,res) {
                     row.envStatus = 'Yes';
                 } else {
                     row.envStatus = 'No';
+                }
+                if(row.featureStatus === 1) {
+                    row.featureStatus = 'Yes';
+                } else {
+                    row.featureStatus = 'No';
                 }
                 if(row.seqStatus === 1) {
                     row.seqStatus = 'Yes';

@@ -86,7 +86,7 @@ function loadPeakList1(scanID, prec_mz) {
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
                                         load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, rt, true)
-
+                                        loadMzrtData(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt);
                                     }    
                             }
                         };    
@@ -168,6 +168,33 @@ function getPeaksPerTable(totalLayer){
         xhttp.send();
     });
 }
+function loadMzrtData(minmz, maxmz, minrt, maxrt){
+    if($('#featureStatus').val() != "0"){
+        console.log("loadMzrt Data is running");
+        //load feature data in this range
+        let fullDir = (document.getElementById("projectDir").value).split("/");
+        let fileName = (fullDir[fullDir.length -1].split("."))[0];
+        let dir = fullDir[0].concat("/");
+        dir = dir.concat(fullDir[1]);
+
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function (){
+            if (this.readyState == 4 && this.status == 200) {
+                var featureData = JSON.parse(this.responseText);
+                let t0 = new Date();    
+                console.log(featureData);
+                console.log("loadingFeatureData time: ", new Date() - t0);
+
+                //graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);            
+                //graph3D.drawGraph(minmz, maxmz, minrt, maxrt, rt);
+            } 
+        }
+        xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+        xhttp.
+        send();
+    }
+} 
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
     //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
@@ -219,7 +246,6 @@ function calculateTableNum(minrt, maxrt, minmz, maxmz){
     
     let diff = Number.MAX_VALUE;
    
-    
     //find which table has the closet number of peaks
     for (let i = 0; i < configData.length; i++){
         if (Math.abs(configData[i].COUNT - peakCnt) < diff){
@@ -883,12 +909,12 @@ redrawRequestButton.addEventListener('click', function(){
     else{
         //reload data and redraw graph
         load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, curRT, false);
+        loadMzrtData(minMZ, maxMZ, minRT, maxRT);
     }
 }, false);
 
 //function running on startup
 $( document ).ready(function() {
-    
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
         $("#envInfo").hide();
