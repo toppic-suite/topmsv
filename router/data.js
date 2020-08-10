@@ -34,14 +34,15 @@ var data = router.get('/data', function(req, res) {
                 res.send("No such project, please check your link.");
                 res.end();
             } else {
-                // console.log(row);
+                //console.log(row);
                 if (row.projectStatus === 1) {
                     summary = {
                         ProjectName: row.projectName,
                         ProjectStatus: row.projectStatus,
                         EmailAddress: row.email,
                         MS1_envelope_file: row.ms1_envelope_file,
-                        envStatus: row.envelopeStatus
+                        envStatus: row.envelopeStatus,
+                        featureStatus: row.featureStatus
                     };
                     //console.log(summary);
                     let projectDir = row.projectDir;
