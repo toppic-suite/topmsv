@@ -88,7 +88,7 @@ MsGraph.prototype.setGradientInterval = function(){
     let intRange = this.totalMaxInte - this.totalMinInte;
   
     for (let i = 1; i <= this.gradientColor.length; i++){
-        let val = Math.pow(intRange, i/this.gradientColor.length);
+        let val = this.totalMinInte + Math.pow(intRange, i/this.gradientColor.length);
         //console.log("interval ", i, ": ", val);
         this.cutoff.push(val);
     } 
