@@ -31,6 +31,7 @@ function MsGraph(containerEl, graphEl) {
     this.ROUND_INT = 3;
 
     this.currentData; //all data for current scan (so that no need to load all back when moving ms1 graph)
+    this.featureData;
     this.ms1Peaks;//ms1 peaks for each scan
 
     this.mzAxisZoom = false;
@@ -48,8 +49,10 @@ function MsGraph(containerEl, graphEl) {
     this.imageAddress;
 
     //this.gradientColor = ["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"];//5 shades of blue
-    this.gradientColor = ["#2233c3", "#3632bc", "#4c31b4", "#6630aa", "#7d30a1", "#942f98", "#ba2e8a", "#da2e7e", "#fd2d70"];//purple-pink (low to high);
+    this.gradientColor = ["#2233c3", "#5d31ad", "#86309e", "#c22f87", "#fd2d70"];//purple-pink (low to high);
+    this.gradientColor = ["#003ec9", "#2cceb3", "#d6e020", "#d98211", "#db0000"];//5 distinct shades
     this.cutoff = []; //intensity cutoff point for each color in gradient
+    //this.featureArray [];
 }
 
 /******** SETUP FUNCTIONS ******/
@@ -114,6 +117,7 @@ MsGraph.prototype.init = function(maxMzRt){
     this.labelgroup = new THREE.Group();
     this.ticksGroup = new THREE.Group();
     this.ticklabelgroup = new THREE.Group();
+    this.featuregroup = new THREE.Group();
 
     // plotting objects
     this.linesArray = [];
@@ -178,6 +182,7 @@ MsGraph.prototype.init = function(maxMzRt){
     scene.add(this.labelgroup);
     scene.add(this.ticklabelgroup);
     scene.add(this.markergroup);
+    scene.add(this.featuregroup);
     this.updateViewRange(this.dataRange);
 
     renderer.setAnimationLoop(function() {
@@ -303,6 +308,7 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
     }
     r = this.constrainBounds(r);
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, rawRT, graph3D);
+    loadMzrtData(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange);
 };
 
 /******** RENDERING AND DRAWING FUNCTIONS *****/

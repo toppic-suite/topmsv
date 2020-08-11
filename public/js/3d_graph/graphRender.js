@@ -7,6 +7,7 @@ MsGraph.prototype.clearGraph = function() {
     this.linesArray = [];
     this.plotGroup.children = [];
     this.markergroup.children = [];
+    this.featuregroup.children = [];
 }
 MsGraph.prototype.displayGraphData = function(){
     //display highest intensity, sum of intensity, total peak count in the current grph
@@ -57,6 +58,8 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     if (rt <= maxrt && rt >= minrt){
         this.drawCurrentScanMarker(rt);
     }
+    //console.log(minmz, maxmz, minrt/60, maxrt/60)
+    loadMzrtData(minmz, maxmz, minrt/60, maxrt/60);
     this.displayGraphData();//display metadata about the graph
     this.updateViewRange(this.dataRange);
 }
@@ -75,6 +78,46 @@ MsGraph.prototype.drawCurrentScanMarker = function(rt){
     this.markergroup.add(marker);
     
     marker.position.set(0, 0, rt);
+}
+MsGraph.prototype.addFeatureToGraph = function(featureData){
+    //draw rectangle (4 separate lines) from each feature Data
+    for (let i = 0; i < featureData.length; i++){
+        let data = featureData[i];
+        var linemat = new THREE.LineBasicMaterial({color: '#030ffc'});
+        var points = [];
+
+        data.rt_high = data.rt_high * 60;
+        data.rt_low = data.rt_low * 60;
+
+        points.push( new THREE.Vector3(data.mz_low, 0.1, data.rt_high) );
+        points.push( new THREE.Vector3(data.mz_high, 0.1, data.rt_high) );
+        points.push( new THREE.Vector3(data.mz_high, 0.1, data.rt_low) );
+        points.push( new THREE.Vector3(data.mz_low, 0.1, data.rt_low) );
+        points.push( new THREE.Vector3(data.mz_low, 0.1, data.rt_high) );
+
+        var geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+        var feature = new THREE.Line( geometry, linemat );
+        feature.mass = data.mass;
+        feature.mono_mz = data.mono_mz;
+        feature.charge = data.charge;
+
+        feature.mz_low = data.mz_low;
+        feature.mz_hight = data.mz_high;
+        feature.rt_low = data.rt_low / 60;
+        feature.rt_high = data.rt_high / 60;
+        feature.id = data.id;
+
+        feature.name = "featureAnnotation";
+
+        this.featuregroup.add(feature);
+    }
+    var mz_squish = this.GRID_RANGE / this.dataRange.mzrange;
+    var rt_squish = - this.GRID_RANGE / this.dataRange.rtrange;
+    this.featuregroup.scale.set(mz_squish, 1, rt_squish);
+    // Reposition the plot so that mzmin,rtmin is at the correct corner
+    this.featuregroup.position.set(-this.dataRange.mzmin*mz_squish, 0, this.GRID_RANGE - this.dataRange.rtmin*rt_squish);
+    this.renderImmediate();
 }
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
     let peakCount = ms1Peaks.length;
