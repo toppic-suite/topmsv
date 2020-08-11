@@ -52,7 +52,6 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
         this.plotPoint(this.currentData[i]);
     }
     this.viewRange["intscale"] = 1;
-
     // make sure the groups are plotted and update the view
     if (rt <= maxrt && rt >= minrt){
         this.drawCurrentScanMarker(rt);
@@ -88,8 +87,7 @@ MsGraph.prototype.setGradientInterval = function(){
     let intRange = this.totalMaxInte - this.totalMinInte;
   
     for (let i = 1; i <= this.gradientColor.length; i++){
-        let val = Math.pow(intRange, i/this.gradientColor.length);
-        //console.log("interval ", i, ": ", val);
+        let val = this.totalMinInte + Math.pow(intRange, i/this.gradientColor.length);
         this.cutoff.push(val);
     } 
 }
@@ -170,7 +168,6 @@ MsGraph.prototype.plotPoint = function(point) {
     var rt = point.RETENTIONTIME;
     var inten = point.INTENSITY;
     var lineColor = this.pickPeakColor(inten);
-   
     var thisLogScale = this.LOG_SCALAR * Math.log(inten);
     var maxLogScale = Math.log(this.dataRange.intmax);
 
