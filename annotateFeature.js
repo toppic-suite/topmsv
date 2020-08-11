@@ -27,7 +27,7 @@ stmtCreateFeatureTable.run();
 fs.readFile(myArgs[1], ((err, data) => {
     if (err) throw err;
     insertMany(betterDB,data.toString());
-    var stmtFeatureIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `feature_index` ON `feature` ( mz_low,mz_high,rt_low,rt_high )");
+    var stmtFeatureIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `feature_index` ON `feature` ( rt_high,rt_low,mz_high,mz_low )");
     stmtFeatureIndex.run();
     betterDB.close();
 }));
