@@ -414,6 +414,8 @@ app.use('/', require("./router/load3dDataByRT"));
 app.use('/', require("./router/load3dDataByParaRange"));
 app.use('/', require("./router/getPeaksPerTable"));
 app.use('/', require("./router/getMax"));
+/*routers used for 3d visualization -- feature annotation*/
+app.use('/', require("./router/loadMzrtData"));
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']

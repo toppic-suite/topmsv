@@ -31,6 +31,11 @@ var index = router.get('/', function (req, res) {
             } else {
                 row.envStatus = 'No';
             }
+            if(row.featureStatus === 1) {
+                row.featureStatus = 'Yes';
+            } else {
+                row.featureStatus = 'No';
+            }
             if(row.seqStatus === 1) {
                 row.seqStatus = 'Yes';
             } else {
