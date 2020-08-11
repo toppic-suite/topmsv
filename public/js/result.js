@@ -83,10 +83,13 @@ function loadPeakList1(scanID, prec_mz) {
                                 }
                                 if (envList1_g !== 0){
                                     let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
+                                    load3dDataByParaRange(ms1Graph.minMz, ms1Graph.maxMz, minrt, maxrt, rt, true)
+                                    //loadMzrtData(ms1Graph.minMz, ms1Graph.maxMz, minrt, maxrt);
+
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
                                         load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, rt, true)
-                                        loadMzrtData(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt);
+                                        //loadMzrtData(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt);
                                     }    
                             }
                         };    
@@ -170,7 +173,6 @@ function getPeaksPerTable(totalLayer){
 }
 function loadMzrtData(minmz, maxmz, minrt, maxrt){
     if($('#featureStatus').val() != "0"){
-        console.log("loadMzrt Data is running");
         //load feature data in this range
         let fullDir = (document.getElementById("projectDir").value).split("/");
         let fileName = (fullDir[fullDir.length -1].split("."))[0];
@@ -183,10 +185,9 @@ function loadMzrtData(minmz, maxmz, minrt, maxrt){
             if (this.readyState == 4 && this.status == 200) {
                 var featureData = JSON.parse(this.responseText);
                 let t0 = new Date();    
-                console.log(featureData);
-                console.log("loadingFeatureData time: ", new Date() - t0);
-
-                //graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);            
+                //console.log("feature", featureData);
+                console.log("feature length", featureData.length);
+                graph3D.addFeatureToGraph(featureData);            
                 //graph3D.drawGraph(minmz, maxmz, minrt, maxrt, rt);
             } 
         }
@@ -213,7 +214,7 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
             var peakData = JSON.parse(this.responseText);
             let t0 = new Date();    
 
-            console.log("loadingScanData: ", new Date() - t0);
+            //console.log("loadingScanData: ", new Date() - t0);
 
             graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);            
             graph3D.drawGraph(minmz, maxmz, minrt, maxrt, rt);
@@ -909,7 +910,7 @@ redrawRequestButton.addEventListener('click', function(){
     else{
         //reload data and redraw graph
         load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, curRT, false);
-        loadMzrtData(minMZ, maxMZ, minRT, maxRT);
+        //loadMzrtData(minMZ, maxMZ, minRT, maxRT);
     }
 }, false);
 
