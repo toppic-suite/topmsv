@@ -47,8 +47,10 @@ function MsGraph(containerEl, graphEl) {
     
     this.imageAddress;
 
-    //this.gradientColor = ["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"];//5 shades of blue
-    this.gradientColor = ["#2233c3", "#3632bc", "#4c31b4", "#6630aa", "#7d30a1", "#942f98", "#ba2e8a", "#da2e7e", "#fd2d70"];//purple-pink (low to high);
+    //this.gradientColor = ["#2233c3", "#3632bc", "#4c31b4", "#6630aa", "#7d30a1", "#942f98", "#ba2e8a", "#da2e7e", "#fd2d70"];//purple-pink 9 level(low to high);
+    
+    //this.gradientColor = ["#003ec9", "#2cceb3", "#d6e020", "#d98211","#db0000"];
+    this.gradientColor = ["#003ec9", "#0755c5","#1279c0","#1b95bc","#25b7b7","#2cceb3","#4ed296","#70d679","#92d95b","#b4dd3e","#d6e020","#d7cd1d","#d7be1b","#d8ae18","#d99815","#d98211","#d96d0e","#d9570b","#da4008","#da2605","#db0000"];
     this.cutoff = []; //intensity cutoff point for each color in gradient
 }
 
