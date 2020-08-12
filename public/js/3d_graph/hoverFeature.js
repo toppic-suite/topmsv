@@ -4,41 +4,49 @@ MsGraph.prototype.hoverGraph = function(graph){
    this.currentFeature = null;
    graph.renderer.domElement.addEventListener('mousemove', this.onMouseOver.bind(this), false);
 }
+MsGraph.prototype.findObjectHover = function(event){
+    var el = this.renderer.domElement;
+    let canvasPosition = this.renderer.domElement.getBoundingClientRect();
 
+    //find mouse position, normalized to a [-1,1] in both x/y-axes on screen
+    var coord = {
+        x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
+        y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
+    };
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(coord, this.resizedCamera);
+
+    var intersects = raycaster.intersectObjects( this.scene.getObjectByName("featureGroup").children );
+    //for ( var i = 0; i < intersects.length; i++ ) {
+        //console.log( intersects[ i ] ); 
+    //}
+    if (intersects.length > 0){
+        return intersects[0].object;
+    }
+    else{
+        return null;
+    }
+}
 MsGraph.prototype.onMouseOver = function(event){
-    let mousePos = this.getMousePosition(event);
+    //let mousePos = this.getMousePosition(event);
+    let obj = this.findObjectHover(event);
+    if (obj != null){
+        document.getElementById("tooltip").style.display = "inline-block";
+        document.getElementById("tooltip").style.top = (event.clientY - 10) + 'px';
+        document.getElementById("tooltip").style.left = (event.clientX + 20) + 'px';
+        document.getElementById("tooltiptext").innerHTML = "mass: " + obj.mass + "<br/>" + "mono_mz: " + obj.mono_mz + 
+        "<br/>" + "charge: " + obj.charge + "<br/>" + "intensity: " + obj.intensity;
+        
+    }
+    else{
+        document.getElementById("tooltip").style.display = "none";
+    }
     
-    let curmz = mousePos.x * this.viewRange.mzrange + this.viewRange.mzmin;//current mz and rt that has a cursor pointed to
-    let currt = mousePos.z * this.viewRange.rtrange + this.viewRange.rtmin;
-    console.log("mz, rt: ", curmz, currt);
+
     /*
     if (this.currentFeature != null){//restore orig color for the peak that was highlighted previously
         this.currentPeak.material.color.setHex( this.currentPeak.origColor);
         this.currentPeak.pinhead.material.color.setHex(this.currentPeak.origColor);
     }*/
-    let closestD = Infinity;
-    let closestFeature = null;
-    
-    let featureArray = this.featuregroup.children;
-    console.log("featureArray", featureArray);
 
-    for (let i = 0; i < this.featureArray.length; i++){//search through this.lineArray to find closest peak to the mouse cursor
-        if (Math.abs(this.featureArray[i].mz - curmz) < 0.01 || Math.abs(this.featureArray[i].rt - currt) < 0.01){
-            let mzD = Math.abs(this.featureArray[i].mz - curmz);
-            let rtD = Math.abs(this.featureArray[i].rt - currt);
-            let dist = Math.sqrt(mzD * mzD + rtD * rtD);
-            if (dist < closestD){
-                closestD = dist;
-                closestPeak = this.featureArray[i];
-            }
-        }
-    }
-    if (closestPeak != null){//if a peak is under the cursor, highlight and display its information
-        this.currentPeak = closestPeak;
-        //this.currentPeak.origColor = this.currentPeak.material.color.getHex();
-        document.getElementById('graph-hover-label').innerText = "scan: " + closestPeak.scanID + ", m/z : " + closestPeak.mz.toFixed(2) + ", intensity: " + closestPeak.int.toFixed(2) + ", retention time: " + (closestPeak.rt/60).toFixed(4); 
-        //closestPeak.material.color.setHex(0xffcf00);
-        //closestPeak.pinhead.material.color.setHex(0xffcf00);
-        this.renderer.render(this.scene, this.camera);
-    }
 }

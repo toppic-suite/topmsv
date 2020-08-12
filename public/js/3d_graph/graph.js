@@ -83,7 +83,7 @@ MsGraph.prototype.init = function(maxMzRt){
     this.panGraph(this);
 
     //enable hover over peaks
-    //this.hoverGraph(this);
+    this.hoverGraph(this);
 
     // camera
     //var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
@@ -116,6 +116,8 @@ MsGraph.prototype.init = function(maxMzRt){
     this.ticklabelgroup = new THREE.Group();
     this.featuregroup = new THREE.Group();
 
+    this.featuregroup.name = "featureGroup";
+    
     // plotting objects
     this.linesArray = [];
     this.plotGroup = new THREE.Group();
