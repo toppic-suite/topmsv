@@ -11,8 +11,8 @@ MsGraph.prototype.clearGraph = function() {
 }
 MsGraph.prototype.displayGraphData = function(){
     //display highest intensity, sum of intensity, total peak count in the current grph
-    let highestInte = "Highest Intensity: " + this.dataRange.intmax;
-    let sumInte = "Sum of Intensity: " + this.intensitySum;
+    let highestInte = "Highest Intensity: " + this.dataRange.intmax.toExponential();
+    let sumInte = "Sum of Intensity: " + this.intensitySum.toExponential();
     let peakCount = "Total Peaks on Graph: " + this.currentData.length;
     let sep = "\n";
     document.getElementById('graph-metadata').innerText = highestInte + sep + sumInte + sep + peakCount + sep;
@@ -68,7 +68,7 @@ MsGraph.prototype.drawCurrentScanMarker = function(rt){
     linegeo.vertices.push(new THREE.Vector3(0, 0.1, 0));
     linegeo.vertices.push(new THREE.Vector3(this.GRID_RANGE, 0.1, 0));
 
-    var linemat = new THREE.LineBasicMaterial({color: 0xED1111});
+    var linemat = new THREE.LineBasicMaterial({color: this.currentScanColor});
 
     var marker = new THREE.Line(linegeo, linemat);
     marker.name = "currentScanMarker";
@@ -81,7 +81,8 @@ MsGraph.prototype.addFeatureToGraph = function(featureData, minmz, maxmz, minrt,
     //draw rectangle (4 separate lines) from each feature Data
     for (let i = 0; i < featureData.length; i++){
         let data = featureData[i];
-        var linemat = new THREE.LineBasicMaterial({color: '#030ffc'});
+        //var linemat = new THREE.LineBasicMaterial({color: this.featureColor});
+        let linemat = new THREE.LineDashedMaterial( { color: this.featureColor, dashSize: 0.01, gapSize: 0.005 } )
         var points = [];
 
         let mz_low = data.mz_low;
@@ -115,6 +116,7 @@ MsGraph.prototype.addFeatureToGraph = function(featureData, minmz, maxmz, minrt,
         var geometry = new THREE.BufferGeometry().setFromPoints( points );
 
         var feature = new THREE.Line( geometry, linemat );
+        feature.computeLineDistances();
 
         feature.mz_low = data.mz_low;
         feature.mz_high = data.mz_high;
@@ -195,7 +197,7 @@ MsGraph.prototype.plotPointAsCircle = function(){
         var material = new THREE.MeshBasicMaterial( { color: lineColor } );
    
         if ((point.RETENTIONTIME/60).toFixed(4) == rt){
-            material = new THREE.MeshBasicMaterial({color: 0xED1111});
+            material = new THREE.MeshBasicMaterial({color: this.currentScanColor});
         }
         var circle = new THREE.Mesh( geometry, material );
 
@@ -250,8 +252,8 @@ MsGraph.prototype.plotPoint = function(point) {
     var linemat = new THREE.LineBasicMaterial({color: lineColor});
 
     if ((point.RETENTIONTIME/60).toFixed(4) == currt){
-        linemat = new THREE.LineBasicMaterial({color: 0xED1111});
-        meshmat = new THREE.MeshBasicMaterial({color: 0xED1111});
+        linemat = new THREE.LineBasicMaterial({color: this.currentScanColor});
+        meshmat = new THREE.MeshBasicMaterial({color: this.currentScanColor});
     }
     var line = new THREE.Line(linegeo, linemat);
     line.position.set(mz, 0, rt);
