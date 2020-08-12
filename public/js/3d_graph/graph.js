@@ -48,8 +48,12 @@ function MsGraph(containerEl, graphEl) {
     
     this.imageAddress;
 
-    this.gradientColor = ["#003ec9", "#0755c5","#1279c0","#1b95bc","#25b7b7","#2cceb3","#4ed296","#70d679","#92d95b","#b4dd3e","#d6e020","#d7cd1d","#d7be1b","#d8ae18","#d99815","#d98211","#d96d0e","#d9570b","#da4008","#da2605","#db0000"];
+    //this.gradientColor = ["#003ec9", "#0755c5","#1279c0","#1b95bc","#25b7b7","#2cceb3","#4ed296","#70d679","#92d95b","#b4dd3e","#d6e020","#d7cd1d","#d7be1b","#d8ae18","#d99815","#d98211","#d96d0e","#d9570b","#da4008","#da2605","#db0000"];
+    this.gradientColor = ["#000aff", "#033be3", "#076cc7", "#0a9dab", "#0ed88a", "#11ff74", "#33fc61", "#5ef94a", "#89f633", "#abf320", "#e6ef00", "#eae503", "#efd807", "#f4ca0a", "#fabd0e", "#ffaf11", "#ff8c0e", "#ff690b", "#ff4607", "#ff2a04", "#ff0000" ];
     this.cutoff = []; //intensity cutoff point for each color in gradient
+
+    this.currentScanColor = "#ff5797";
+    this.featureColor = "#a8b5ff";
 }
 
 /******** SETUP FUNCTIONS ******/
@@ -129,7 +133,7 @@ MsGraph.prototype.init = function(maxMzRt){
     
     // graph "surface" (gray underside)
     var surfaceGeo = new THREE.PlaneGeometry(this.GRID_RANGE, this.GRID_RANGE);
-    var surfaceMat = new THREE.MeshBasicMaterial({ color: 0xbbbbbb, side: THREE.DoubleSide });
+    var surfaceMat = new THREE.MeshBasicMaterial({ color: '#555555', side: THREE.DoubleSide });
     var surface = new THREE.Mesh(surfaceGeo, surfaceMat);
     surface.rotateX(Math.PI/2);
     surface.position.set(this.GRID_RANGE / 2, -0.05, this.GRID_RANGE / 2);
@@ -383,23 +387,12 @@ MsGraph.prototype.drawDataLabels = function() {
     this.labelgroup.add(this.labels.mzMin, this.labels.mzMax, this.labels.rtMin, this.labels.rtMax, this.labels.mz, this.labels.rt);
 };
 
-// labels the closest point to the mouse
-MsGraph.prototype.drawHoverLabel = function(point) {
-    var currentPtText = "[ No point near mouse ]";
-    if (point) {
-        currentPtText = "[ m/z: " + MsGraph.roundTo(point.mz, this.ROUND_MZ) +
-            ", RT: " + MsGraph.roundTo(point.rt, this.ROUND_RT) +
-            ", intensity: " + MsGraph.roundTo(point.int, this.ROUND_INT) +
-            ", trace: " + point.trace + " ]";
-    }
-    this.containerEl.find(".status-current-pt").text(currentPtText);
-};
 
 // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
 MsGraph.prototype.drawGrid = function() {
     var y = 0;
     var gridgeo = new THREE.Geometry();
-    var gridmaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+    var gridmaterial = new THREE.LineBasicMaterial({ color: '#7a7a7a' });
 
     for (var i = 0; i <= this.GRID_RANGE; i++) {
         gridgeo.vertices.push(new THREE.Vector3(i, y, 0));

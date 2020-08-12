@@ -32,7 +32,7 @@ MsGraph.prototype.onMouseOver = function(event){
         document.getElementById("tooltip").style.top = (event.clientY - 10) + 'px';
         document.getElementById("tooltip").style.left = (event.clientX + 20) + 'px';
         document.getElementById("tooltiptext").innerHTML = "mass: " + obj.mass + "<br/>" + "mono_mz: " + obj.mono_mz + 
-        "<br/>" + "charge: " + obj.charge + "<br/>" + "intensity: " + obj.intensity;
+        "<br/>" + "charge: " + obj.charge + "<br/>" + "intensity: " + obj.intensity.toExponential();
     }
     else{
         document.getElementById("tooltip").style.display = "none";
