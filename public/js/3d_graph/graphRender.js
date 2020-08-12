@@ -118,9 +118,9 @@ MsGraph.prototype.addFeatureToGraph = function(featureData, minmz, maxmz, minrt,
         var feature = new THREE.Line( geometry, linemat );
 
         feature.mz_low = data.mz_low;
-        feature.mz_hight = data.mz_high;
-        feature.rt_low = data.rt_low / 60;
-        feature.rt_high = data.rt_high / 60;
+        feature.mz_high = data.mz_high;
+        feature.rt_low = data.rt_low;
+        feature.rt_high = data.rt_high;
 
         feature.id = data.id;
         feature.mass = data.mass;
