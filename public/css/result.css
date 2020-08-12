@@ -372,3 +372,25 @@ button#minusBtn {
     position: relative;
     right: 130%;
 }
+/*3d graph tooltip*/
+#tooltip {
+    display:none;
+    position:fixed;
+    border-bottom: 1px dotted black;
+    z-index: 1;
+  }
+  
+  #tooltiptext {
+    width: 120px;
+    background-color: #555555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 5px;
+    margin: 5px;
+    font-size:10px;
+  
+    /* Position the tooltip */
+    position: absolute;
+   
+  }
