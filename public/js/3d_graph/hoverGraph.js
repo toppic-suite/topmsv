@@ -1,5 +1,5 @@
 //on hover, highlught and display peak information (scan ID, intensity, rt, mz)
-
+/*
 MsGraph.prototype.hoverGraph = function(graph){
    this.currentPeak = null;
    graph.renderer.domElement.addEventListener('mousemove', this.onMouseOver.bind(this), false);
@@ -39,3 +39,4 @@ MsGraph.prototype.onMouseOver = function(event){
         this.renderer.render(this.scene, this.camera);
     }
 }
+*/
