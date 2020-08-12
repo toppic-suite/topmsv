@@ -399,7 +399,6 @@ MsGraph.prototype.drawHoverLabel = function(point) {
 // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
 MsGraph.prototype.drawGrid = function() {
     var y = 0;
-
     var gridgeo = new THREE.Geometry();
     var gridmaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 

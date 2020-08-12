@@ -78,21 +78,40 @@ MsGraph.prototype.drawCurrentScanMarker = function(rt){
     
     marker.position.set(0, 0, rt);
 }
-MsGraph.prototype.addFeatureToGraph = function(featureData){
+MsGraph.prototype.addFeatureToGraph = function(featureData, minmz, maxmz, minrt, maxrt){
     //draw rectangle (4 separate lines) from each feature Data
     for (let i = 0; i < featureData.length; i++){
         let data = featureData[i];
         var linemat = new THREE.LineBasicMaterial({color: '#030ffc'});
         var points = [];
 
-        data.rt_high = data.rt_high * 60;
-        data.rt_low = data.rt_low * 60;
+        let mz_low = data.mz_low;
+        let mz_high = data.mz_high;
+        let rt_low = data.rt_low;
+        let rt_high = data.rt_high;
 
-        points.push( new THREE.Vector3(data.mz_low, 0.1, data.rt_high) );
-        points.push( new THREE.Vector3(data.mz_high, 0.1, data.rt_high) );
-        points.push( new THREE.Vector3(data.mz_high, 0.1, data.rt_low) );
-        points.push( new THREE.Vector3(data.mz_low, 0.1, data.rt_low) );
-        points.push( new THREE.Vector3(data.mz_low, 0.1, data.rt_high) );
+        if (mz_low < minmz){
+            mz_low = minmz;
+        }
+        if (mz_high > maxmz){
+            mz_high = maxmz;
+        }
+        if (rt_low < minrt){
+            rt_low = minrt;
+        }
+        if (rt_high > maxrt){
+            rt_high = maxrt;
+        }
+
+        rt_high = rt_high * 60;
+        rt_low = rt_low * 60;
+
+        //adjust point position when it goes outside of the graph range
+        points.push( new THREE.Vector3(mz_low, 0.1, rt_high) );
+        points.push( new THREE.Vector3(mz_high, 0.1, rt_high) );
+        points.push( new THREE.Vector3(mz_high, 0.1, rt_low) );
+        points.push( new THREE.Vector3(mz_low, 0.1, rt_low) );
+        points.push( new THREE.Vector3(mz_low, 0.1, rt_high) );
 
         var geometry = new THREE.BufferGeometry().setFromPoints( points );
 
