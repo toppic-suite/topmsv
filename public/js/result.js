@@ -185,8 +185,8 @@ function loadMzrtData(minmz, maxmz, minrt, maxrt){
             if (this.readyState == 4 && this.status == 200) {
                 var featureData = JSON.parse(this.responseText);
                 let t0 = new Date();    
-                console.log("feature", featureData);
-                console.log("feature length", featureData.length);
+                //console.log("feature", featureData);
+                //console.log("feature length", featureData.length);
                 graph3D.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
             } 
         }
