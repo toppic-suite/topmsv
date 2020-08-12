@@ -375,8 +375,9 @@ button#minusBtn {
 /*3d graph tooltip*/
 #tooltip {
     display:none;
-    position: absolute;
+    position:fixed;
     border-bottom: 1px dotted black;
+    z-index: 1;
   }
   
   #tooltiptext {
@@ -391,5 +392,5 @@ button#minusBtn {
   
     /* Position the tooltip */
     position: absolute;
-    z-index: 1;
+   
   }
