@@ -7,6 +7,7 @@ MsGraph.prototype.clearGraph = function() {
     this.linesArray = [];
     this.plotGroup.children = [];
     this.markergroup.children = [];
+    this.featuregroup.children = [];
 }
 MsGraph.prototype.displayGraphData = function(){
     //display highest intensity, sum of intensity, total peak count in the current grph
@@ -46,7 +47,7 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     
     this.getInteRange(this.currentData);
     this.setGradientInterval();
-
+    
     for (let i = 0; i < this.currentData.length; i++)
     {   
         this.plotPoint(this.currentData[i]);
@@ -56,6 +57,7 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     if (rt <= maxrt && rt >= minrt){
         this.drawCurrentScanMarker(rt);
     }
+    loadMzrtData(minmz, maxmz, minrt/60, maxrt/60);
     this.displayGraphData();//display metadata about the graph
     this.updateViewRange(this.dataRange);
 }
@@ -74,6 +76,67 @@ MsGraph.prototype.drawCurrentScanMarker = function(rt){
     this.markergroup.add(marker);
     
     marker.position.set(0, 0, rt);
+}
+MsGraph.prototype.addFeatureToGraph = function(featureData, minmz, maxmz, minrt, maxrt){
+    //draw rectangle (4 separate lines) from each feature Data
+    for (let i = 0; i < featureData.length; i++){
+        let data = featureData[i];
+        var linemat = new THREE.LineBasicMaterial({color: '#030ffc'});
+        var points = [];
+
+        let mz_low = data.mz_low;
+        let mz_high = data.mz_high;
+        let rt_low = data.rt_low;
+        let rt_high = data.rt_high;
+
+        if (mz_low < minmz){
+            mz_low = minmz;
+        }
+        if (mz_high > maxmz){
+            mz_high = maxmz;
+        }
+        if (rt_low < minrt){
+            rt_low = minrt;
+        }
+        if (rt_high > maxrt){
+            rt_high = maxrt;
+        }
+
+        rt_high = rt_high * 60;
+        rt_low = rt_low * 60;
+
+        //adjust point position when it goes outside of the graph range
+        points.push( new THREE.Vector3(mz_low, 0.1, rt_high) );
+        points.push( new THREE.Vector3(mz_high, 0.1, rt_high) );
+        points.push( new THREE.Vector3(mz_high, 0.1, rt_low) );
+        points.push( new THREE.Vector3(mz_low, 0.1, rt_low) );
+        points.push( new THREE.Vector3(mz_low, 0.1, rt_high) );
+
+        var geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+        var feature = new THREE.Line( geometry, linemat );
+
+        feature.mz_low = data.mz_low;
+        feature.mz_high = data.mz_high;
+        feature.rt_low = data.rt_low;
+        feature.rt_high = data.rt_high;
+
+        feature.id = data.id;
+        feature.mass = data.mass;
+        feature.mono_mz = data.mono_mz;
+        feature.charge = data.charge;
+        feature.intensity = data.intensity;
+
+        feature.name = "featureAnnotation";
+
+        this.featuregroup.add(feature);
+    }
+    var mz_squish = this.GRID_RANGE / this.dataRange.mzrange;
+    var rt_squish = - this.GRID_RANGE / this.dataRange.rtrange;
+    this.featuregroup.scale.set(mz_squish, 1, rt_squish);
+    // Reposition the plot so that mzmin,rtmin is at the correct corner
+    this.featuregroup.position.set(-this.dataRange.mzmin*mz_squish, 0, this.GRID_RANGE - this.dataRange.rtmin*rt_squish);
+    this.renderImmediate();
 }
 MsGraph.prototype.addNewScanDataToGraph = function(points, ms1Peaks, minmz, maxmz, minrt, maxrt){
     let peakCount = ms1Peaks.length;

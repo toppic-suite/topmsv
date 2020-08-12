@@ -7,12 +7,9 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function loadMzrtData(dir, minrt, maxrt, minmz, maxmz, callback) {
-    let sql = `SELECT *
-                FROM feature
-                WHERE rt_high <= ? 
-                AND rt_low >= ?
-                AND mz_high <= ?
-                AND mz_low >= ?;`;           
+   let sql = `SELECT * FROM feature
+              WHERE NOT (rt_low >= ? OR rt_high <= ? OR mz_low >= ? OR mz_high <= ?)
+              LIMIT 500;`;          
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
@@ -22,7 +19,6 @@ function loadMzrtData(dir, minrt, maxrt, minmz, maxmz, callback) {
     });
 
     resultDb.all(sql, [maxrt, minrt, maxmz, minmz], (err, row) => {
-        console.log([maxrt, minrt, maxmz, minmz])
         if (err) {
             console.error(err.message);
         }
