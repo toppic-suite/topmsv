@@ -47,7 +47,7 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     
     this.getInteRange(this.currentData);
     this.setGradientInterval();
-
+    
     for (let i = 0; i < this.currentData.length; i++)
     {   
         this.plotPoint(this.currentData[i]);
@@ -58,7 +58,6 @@ MsGraph.prototype.drawGraph = function(minmz, maxmz, minrt, maxrt, rt){//draw ba
     if (rt <= maxrt && rt >= minrt){
         this.drawCurrentScanMarker(rt);
     }
-    //console.log(minmz, maxmz, minrt/60, maxrt/60)
     loadMzrtData(minmz, maxmz, minrt/60, maxrt/60);
     this.displayGraphData();//display metadata about the graph
     this.updateViewRange(this.dataRange);
