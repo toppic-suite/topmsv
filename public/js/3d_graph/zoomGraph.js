@@ -6,19 +6,6 @@ let IsScrolling = false;
 MsGraph.prototype.zoomGraph = function(graph){
     graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
 }
-/*
-MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
-    this.clearGraph();
-
-    for (let i = 0; i < this.currentData.length; i++){
-        this.currentData[i].INTENSITY = this.currentData[i].INTENSITY * scaleFactor;//multiply intensity by scaleFactor
-        this.plotPoint(this.currentData[i]);
-    }
-    this.viewRange["intscale"] = this.viewRange["intscale"] + scaleFactor - 1;//because default value is 1, deduct 1 to start from 0.
-    if (this.viewRange["intscale"] >= 0){//prevent peak from drawn under the graph
-        this.updateViewRange(this.viewRange);
-    }
-}*/
 MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
     let peaks = this.scene.getObjectByName("plotGroup");
     let oriScale = peaks.scale.y;
@@ -86,12 +73,7 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     }
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
-/*
-MsGraph.prototype.delayWheelEvent = function(newmzmin, newmzrange, newrtmin, newrtrange){
-    return new Promise(function(resolve, reject){
-        this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange); 
-    }.bind(this));
-}*/
+
 MsGraph.prototype.getMousePosition = function(event) {
     var el = this.renderer.domElement;
     let canvasPosition = this.renderer.domElement.getBoundingClientRect();

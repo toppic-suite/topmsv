@@ -31,6 +31,7 @@ function MsGraph(containerEl, graphEl) {
     this.ROUND_INT = 3;
 
     this.currentData; //all data for current scan (so that no need to load all back when moving ms1 graph)
+    this.featureData;
     this.ms1Peaks;//ms1 peaks for each scan
 
     this.mzAxisZoom = false;
@@ -47,9 +48,6 @@ function MsGraph(containerEl, graphEl) {
     
     this.imageAddress;
 
-    //this.gradientColor = ["#2233c3", "#3632bc", "#4c31b4", "#6630aa", "#7d30a1", "#942f98", "#ba2e8a", "#da2e7e", "#fd2d70"];//purple-pink 9 level(low to high);
-    
-    //this.gradientColor = ["#003ec9", "#2cceb3", "#d6e020", "#d98211","#db0000"];
     this.gradientColor = ["#003ec9", "#0755c5","#1279c0","#1b95bc","#25b7b7","#2cceb3","#4ed296","#70d679","#92d95b","#b4dd3e","#d6e020","#d7cd1d","#d7be1b","#d8ae18","#d99815","#d98211","#d96d0e","#d9570b","#da4008","#da2605","#db0000"];
     this.cutoff = []; //intensity cutoff point for each color in gradient
 }
@@ -85,7 +83,7 @@ MsGraph.prototype.init = function(maxMzRt){
     this.panGraph(this);
 
     //enable hover over peaks
-    //this.hoverGraph(this);
+    this.hoverGraph(this);
 
     // camera
     //var camera = this.camera = new THREE.OrthographicCamera(el.offsetLeft/-2, el.offsetLeft/2, el.offsetTop/-2, el.offsetTop/2, - 300, 300 );
@@ -116,7 +114,10 @@ MsGraph.prototype.init = function(maxMzRt){
     this.labelgroup = new THREE.Group();
     this.ticksGroup = new THREE.Group();
     this.ticklabelgroup = new THREE.Group();
+    this.featuregroup = new THREE.Group();
 
+    this.featuregroup.name = "featureGroup";
+    
     // plotting objects
     this.linesArray = [];
     this.plotGroup = new THREE.Group();
@@ -180,6 +181,7 @@ MsGraph.prototype.init = function(maxMzRt){
     scene.add(this.labelgroup);
     scene.add(this.ticklabelgroup);
     scene.add(this.markergroup);
+    scene.add(this.featuregroup);
     this.updateViewRange(this.dataRange);
 
     renderer.setAnimationLoop(function() {
@@ -396,7 +398,6 @@ MsGraph.prototype.drawHoverLabel = function(point) {
 // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
 MsGraph.prototype.drawGrid = function() {
     var y = 0;
-
     var gridgeo = new THREE.Geometry();
     var gridmaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 
