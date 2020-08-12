@@ -84,12 +84,10 @@ function loadPeakList1(scanID, prec_mz) {
                                 if (envList1_g !== 0){
                                     let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
                                     load3dDataByParaRange(ms1Graph.minMz, ms1Graph.maxMz, minrt, maxrt, rt, true)
-                                    //loadMzrtData(ms1Graph.minMz, ms1Graph.maxMz, minrt, maxrt);
 
                                 }else {
                                     let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
                                         load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, rt, true)
-                                        //loadMzrtData(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt);
                                     }    
                             }
                         };    
