@@ -116,15 +116,17 @@ MsGraph.prototype.addFeatureToGraph = function(featureData, minmz, maxmz, minrt,
         var geometry = new THREE.BufferGeometry().setFromPoints( points );
 
         var feature = new THREE.Line( geometry, linemat );
-        feature.mass = data.mass;
-        feature.mono_mz = data.mono_mz;
-        feature.charge = data.charge;
 
         feature.mz_low = data.mz_low;
         feature.mz_hight = data.mz_high;
         feature.rt_low = data.rt_low / 60;
         feature.rt_high = data.rt_high / 60;
+
         feature.id = data.id;
+        feature.mass = data.mass;
+        feature.mono_mz = data.mono_mz;
+        feature.charge = data.charge;
+        feature.intensity = data.intensity;
 
         feature.name = "featureAnnotation";
 
