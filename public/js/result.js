@@ -188,7 +188,6 @@ function loadMzrtData(minmz, maxmz, minrt, maxrt){
                 //console.log("feature", featureData);
                 console.log("feature length", featureData.length);
                 graph3D.addFeatureToGraph(featureData);            
-                //graph3D.drawGraph(minmz, maxmz, minrt, maxrt, rt);
             } 
         }
         xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);

@@ -308,7 +308,6 @@ MsGraph.prototype.setViewingArea = function(mzmin, mzrange, rtmin, rtrange) {
     }
     r = this.constrainBounds(r);
     load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, rawRT, graph3D);
-    loadMzrtData(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange);
 };
 
 /******** RENDERING AND DRAWING FUNCTIONS *****/
