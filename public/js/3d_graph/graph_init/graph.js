@@ -20,6 +20,7 @@ Graph.viewSize = 18; // in world units; large enough to fit the graph and labels
 Graph.scene = new THREE.Scene();
 Graph.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
 Graph.camera = new THREE.OrthographicCamera( 5000, 5000, 5000, 5000, 0, 5000 );
+Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
 
 /*ticks and axis label*/
 
@@ -29,7 +30,7 @@ Graph.roundRt = 3;
 Graph.roundInte = 3;
 
 /*on scaling and repositioning objects*/
-Graph.rangeTransform = new THREE.Vector3(1/this.GRID_RANGE, 1/this.GRID_RANGE_VERTICAL, 1/this.GRID_RANGE);
+Graph.rangeTransform = new THREE.Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
 
 /*initial data range -- to be replaced with incoming data*/
 //Graph.dataRange = {};

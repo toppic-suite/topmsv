@@ -124,7 +124,7 @@ class GraphControl{
     }
     /*prevent user from going outside the data range or zooming in so far that math breaks down*/
     static constrainBounds(r) {
-        let dataRange = parent.dataRange;
+        let dataRange = Graph.viewRange;
         // prevent mzrange and rtrange from getting too small and causing bizarre floating point errors
         let newmzrange = Math.min(Math.max(r.mzrange, 0.05), dataRange.mzrange);
         let newrtrange = Math.min(Math.max(r.rtrange, 0.05), dataRange.rtrange);
