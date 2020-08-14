@@ -168,28 +168,7 @@ function getPeaksPerTable(totalLayer){
         xhttp.send();
     });
 }
-function loadMzrtData(minmz, maxmz, minrt, maxrt){
-    if($('#featureStatus').val() != "0"){
-        //load feature data in this range
-        let fullDir = (document.getElementById("projectDir").value).split("/");
-        let fileName = (fullDir[fullDir.length -1].split("."))[0];
-        let dir = fullDir[0].concat("/");
-        dir = dir.concat(fullDir[1]);
 
-        let xhttp = new XMLHttpRequest();
-
-        xhttp.onreadystatechange = function (){
-            if (this.readyState == 4 && this.status == 200) {
-                var featureData = JSON.parse(this.responseText);
-                let t0 = new Date();    
-                graph3D.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
-            } 
-        }
-        xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
-        xhttp.
-        send();
-    }
-} 
 function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
     //same as load3dDataByParaRange, but this functions runs only when a scan changes
     //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
@@ -273,12 +252,13 @@ function init3dGraph(){
             "intmin": data.INTMIN, "intmax": data.INTMAX, "intrange": data.INTMAX - data.INTMIN
         };*/
         let dataRange = {
-            "mzmax": data.MZMAX, "rtmax": data.RTMAX, 
-            "intmin": data.INTMIN, "intmax": data.INTMAX
+            "mzmax": data[0].MZMAX, "rtmax": data[0].RTMAX, 
+            "intmin": data[0].INTMIN, "intmax": data[0].INTMAX
         };
-        let graph3D = new Graph(document.querySelector("#graph-container"));
-        graph3D.dataRange = dataRange;
+        let graph3D = new Graph(document.querySelector("#graph-container"), dataRange);
+        //graph3D.dataRange = dataRange;
         graph3D.main();
+
         console.log("graph3DInit :" , new Date() - t0);
         t0 = new Date();
 

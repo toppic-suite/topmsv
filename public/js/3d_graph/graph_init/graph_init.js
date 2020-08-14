@@ -1,15 +1,15 @@
 /*graph_init.js: class for initializing 3d graph*/
 class GraphInit{
 
-    constructor(graphEl){
+    constructor(graphEl, dataRange){
         this.graphEl = graphEl;
+        this.dataRange = dataRange;
     }
      
     /******** CREATE GRAPH ELEMENTS ******/
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
     createGrid() {
         let y = 0;
-
         let gridgeo = new THREE.Geometry();
         let gridmaterial = new THREE.LineBasicMaterial({ color: Graph.gridColor });
 
@@ -37,11 +37,11 @@ class GraphInit{
     }
     initColorSet(){
         //pick peak color based on each peak intensity -- currently 5 levels gradient
-        let intRange = Graph.dataRange.intmax - Graph.dataRange.intmin;
+        let intRange = this.dataRange.intmax - this.dataRange.intmin;
   
         for (let i = 1; i <= Graph.gradientColor.length; i++)
         {
-            let val = Graph.dataRange.intmin + Math.pow(intRange, i/Graph.gradientColor.length);
+            let val = this.dataRange.intmin + Math.pow(intRange, i/Graph.gradientColor.length);
             //console.log("interval ", i, ": ", val);
             Graph.cutoff.push(val);
         } 
@@ -58,8 +58,8 @@ class GraphInit{
     }
     initGraphControl(){
         /*initiate graph interactions*/
-        //parent.zoomGraph(parent);//can be a static method
-        //parent.panGraph(parent);
+        //GraphZoom.init(parent);//can be a static method
+        //GraphPan.panGraph(parent);
 
         let camera = Graph.camera;
         let renderer = Graph.renderer;
@@ -90,8 +90,9 @@ class GraphInit{
         Graph.scene.add(Graph.labelgroup);
         Graph.scene.add(Graph.ticklabelgroup);
         Graph.scene.add(Graph.markergroup);
+        Graph.scene.add(Graph.featuregroup);
     
-        GraphControl.updateViewRange(Graph.dataRange);
+        GraphControl.updateViewRange(this.dataRange);
 
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();

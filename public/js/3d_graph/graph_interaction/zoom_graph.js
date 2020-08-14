@@ -1,19 +1,29 @@
-//on mouse wheel event, get mouse point
-//if it is near x axis, y axis, or else, adjust range accordingly
+/*zoomGraph.js : class defining zoom behavior on the graph
+zoom in and zoom out on x and y axis by scrolling mouse wheel 
+peak intensity is also adjusted by ctrl + mouse wheel
+*/
+/*
+class zoomGraph
+{
+    constructor(msGraph, scene, canvas, range){
+        this.graph = graph;
+        this.scene = scene;
+        this.canvas = canvas;
+        this.range = range;
+    }
+    init(){
+        this.graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this.graph), false);
+    }
+    adjustPeakHeight(scaleFactor){
+        let peaks = this.scene.getObjectByName("plotGroup");
+        let oriScale = peaks.scale.y;
 
-let IsScrolling = false;
-
-MsGraph.prototype.zoomGraph = function(graph){
-    graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
-}
-MsGraph.prototype.adjustPeakHeight = function(scaleFactor){
-    let peaks = this.scene.getObjectByName("plotGroup");
-    let oriScale = peaks.scale.y;
-
-    peaks.scale.set(1, oriScale * scaleFactor, 1);
+        peaks.scale.set(1, oriScale * scaleFactor, 1);
     
     this.renderImmediate();
+    }
 }
+
 MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     //zoom action detected by event listener in each axis
     let scaleFactor = 0;
@@ -71,9 +81,7 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     if (newrtmin + newrtrange > this.totalMaxRt){
         newrtrange = this.totalMaxRt - newrtmin;
     }
-    //this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
-    load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, rawRT, graph3D);
-
+    this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
 
 MsGraph.prototype.getMousePosition = function(event) {
@@ -122,3 +130,4 @@ MsGraph.prototype.onZoom = function(e){
         }
     }
 }
+*/

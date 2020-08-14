@@ -1,11 +1,12 @@
 // graph.js: graph initialization code and helper methods
 
 class Graph{
-    constructor(graphEl){
+    constructor(graphEl, dataRange){
         this.graphEl = graphEl;
+        this.dataRange = dataRange;
     }
     main(){
-        let newGraph = new GraphInit(this.graphEl);
+        let newGraph = new GraphInit(this.graphEl, this.dataRange);
         newGraph.init();
     }
 }
@@ -29,10 +30,9 @@ Graph.roundInte = 3;
 
 /*on scaling and repositioning objects*/
 Graph.rangeTransform = new THREE.Vector3(1/this.GRID_RANGE, 1/this.GRID_RANGE_VERTICAL, 1/this.GRID_RANGE);
-LOG_SCALAR = 1;
 
 /*initial data range -- to be replaced with incoming data*/
-Graph.dataRange = {};
+//Graph.dataRange = {};
 Graph.viewRange = {};
 
 /*flag for x-y axis zoom*/
@@ -53,7 +53,7 @@ Graph.intensitySum = 0;
 Graph.imageAddress;
 
 /*color set for peaks */
-Graph.gradientColor = ["#2233c3", "#3632bc", "#4c31b4", "#6630aa", "#7d30a1", "#942f98", "#ba2e8a", "#da2e7e", "#fd2d70"];//purple-pink (low to high);
+Graph.gradientColor =  ["#000aff", "#033be3", "#076cc7", "#0a9dab", "#0ed88a", "#11ff74", "#33fc61", "#5ef94a", "#89f633", "#abf320", "#e6ef00", "#eae503", "#efd807", "#f4ca0a", "#fabd0e", "#ffaf11", "#ff8c0e", "#ff690b", "#ff4607", "#ff2a04", "#ff0000" ];
 Graph.cutoff = []; //intensity cutoff point for each color in gradient
 
 /*groups to hold different graph elements */
@@ -64,7 +64,8 @@ Graph.labelgroup = new THREE.Group();
 Graph.ticksGroup = new THREE.Group();
 Graph.ticklabelgroup = new THREE.Group();
 Graph.plotGroup = new THREE.Group();
-
+Graph.featuregroup = new THREE.Group();
+ 
 Graph.gridgroup.name = "gridGroup";
 Graph.datagroup.name = "dataGroup";
 Graph.markergroup.name = "markerGroup";
@@ -72,6 +73,7 @@ Graph.labelgroup.name = "labelGroup";
 Graph.ticksGroup.name = "ticksGroup";
 Graph.ticklabelgroup.name = "tickLabelGroup";
 Graph.plotGroup.name = "plotGroup";
+Graph.featuregroup.name = "featureGroup";
 
 /*plotting objects*/
 
