@@ -59,7 +59,8 @@ class GraphInit{
     initGraphControl(){
         /*initiate graph interactions*/
         //GraphZoom.init(parent);//can be a static method
-        //GraphPan.panGraph(parent);
+        let panObj = new GraphPan();
+        panObj.init(Graph.scene);
 
         let camera = Graph.camera;
         let renderer = Graph.renderer;

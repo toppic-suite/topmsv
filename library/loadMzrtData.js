@@ -24,7 +24,6 @@ function loadMzrtData(dir, minrt, maxrt, minmz, maxmz, callback) {
         if (err) {
             console.error(err.message);
         }
-        console.log(sql, [maxrt, minrt, maxmz, minmz])
         return callback(null, row);
     });
     resultDb.close();
