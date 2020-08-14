@@ -1,5 +1,5 @@
 //on click and drag, move the peaks based on the rt mz range
-
+/*
 MsGraph.prototype.panGraph = function(graph){
     this.mstart = null;
     this.mend = new THREE.Vector3();
@@ -45,4 +45,4 @@ MsGraph.prototype.onMouseUp = function(e) {
     this.mstart.copy(this.mend);
   }
   this.mstart = null;
-}
+}*/
