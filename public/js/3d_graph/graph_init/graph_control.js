@@ -16,15 +16,15 @@ class GraphControl{
     /*resizes the renderer and camera, especially in response to a window resize*/
     static repositionPlot(r) {
         // set plot positions and scales
-        let heightScale = Graph.dataRange.intmax;
+        let heightScale = Graph.viewRange.intmax;
         // This step allows points to be plotted at their normal mz,rt locations in plotPoint,
         // but keeping them in the grid. Scaling datagroup transforms the coordinate system
         // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
-        let mz_squish = Graph.gridRange / (r.maxmz - r.minmz);
-        let rt_squish = - Graph.gridRange / (r.maxrt - r.minrt);
+        let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
+        let rt_squish = - Graph.gridRange / (r.rtmax - r.rtmin);
         let inte_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
     
-        if (Graph.dataRange.intmax < 1){
+        if (Graph.viewRange.intmax < 1){
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             inte_squish = 0;
         }
@@ -35,11 +35,11 @@ class GraphControl{
 
         dataGroup.scale.set(mz_squish, inte_squish, rt_squish);
         markerGroup.scale.set(1,1,rt_squish);
-    
+        
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
-    
+        
         // update tick marks
         let self = this;
 
