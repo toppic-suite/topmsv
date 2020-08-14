@@ -2,17 +2,11 @@
 zoom in and zoom out on x and y axis by scrolling mouse wheel 
 peak intensity is also adjusted by ctrl + mouse wheel
 */
-/*
-class zoomGraph
+
+class GraphZoom
 {
-    constructor(msGraph, scene, canvas, range){
-        this.graph = graph;
-        this.scene = scene;
-        this.canvas = canvas;
-        this.range = range;
-    }
-    init(){
-        this.graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this.graph), false);
+    static init(){
+        Graph.renderer.domElement.addEventListener('wheel', this.onZoom, false);
     }
     adjustPeakHeight(scaleFactor){
         let peaks = this.scene.getObjectByName("plotGroup");
@@ -20,10 +14,10 @@ class zoomGraph
 
         peaks.scale.set(1, oriScale * scaleFactor, 1);
     
-    this.renderImmediate();
+        this.renderImmediate();
     }
 }
-
+/*
 MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     //zoom action detected by event listener in each axis
     let scaleFactor = 0;
@@ -84,26 +78,6 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
 }
 
-MsGraph.prototype.getMousePosition = function(event) {
-    var el = this.renderer.domElement;
-    let canvasPosition = this.renderer.domElement.getBoundingClientRect();
-
-    //find mouse position, normalized to a [-1,1] in both x/y-axes on screen
-    var coord = {
-        x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
-        y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
-    };
-    var raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(coord, this.resizedCamera);
-
-    var pos = raycaster.ray.intersectPlane(this.graphPlane);
-    if (pos) {
-    //convert world coordinates to graph-fractional coordinates
-        pos.multiply(this.rangeTransform);
-        pos.z = 1 - pos.z;
-    }
-    return pos;
-};
 MsGraph.prototype.onZoom = function(e){
     e.preventDefault();//disable scroll of browser
 

@@ -4,12 +4,14 @@ class GraphData{
         this.currentData = peakData;
 
         this.plotGroup = Graph.scene.getObjectByName("plotGroup");
-        this.markergroup = Graph.scene.getObjectByName("markerGroup");
+        this.markerGroup = Graph.scene.getObjectByName("markerGroup");
+        this.featureGroup = Graph.scene.getObjectByName("featureGroup");
     }
     /******** GRAPH RESET ******/
     clearGraph() {
         this.plotGroup.children = [];
-        this.markergroup.children = [];
+        this.markerGroup.children = [];
+        this.featureGroup.children = [];
     }
     /******** PEAK COLOR ASSIGNMENT ******/
     pickPeakColor(intensity){
@@ -32,7 +34,7 @@ class GraphData{
     
         let marker = new THREE.Line(linegeo, linemat);
         marker.name = "currentScanMarker";
-        this.markergroup.add(marker);
+        this.markerGroup.add(marker);
 
         marker.position.set(0, 0, rt);
     }
