@@ -71,7 +71,9 @@ MsGraph.prototype.onZoomFromEventListener = function(e, axisName){
     if (newrtmin + newrtrange > this.totalMaxRt){
         newrtrange = this.totalMaxRt - newrtmin;
     }
-    this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
+    //this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
+    load3dDataByParaRange(mzmin,mzmin + mzrange, rtmin, rtmin + rtrange, rawRT, graph3D);
+
 }
 
 MsGraph.prototype.getMousePosition = function(event) {

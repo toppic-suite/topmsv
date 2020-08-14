@@ -1,0 +1,84 @@
+// graph.js: graph initialization code and helper methods
+
+class Graph{
+    constructor(graphEl){
+        this.graphEl = graphEl;
+    }
+    main(){
+        let newGraph = new GraphInit(this.graphEl);
+        newGraph.init();
+    }
+}
+
+/*add static properties to Graph class*/
+Graph.gridRange = 20;
+Graph.gridRangeVertical = 6;
+Graph.viewSize = 18; // in world units; large enough to fit the graph and labels at reasonable angles
+
+/*initialize graph components*/
+Graph.scene = new THREE.Scene();
+Graph.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
+Graph.camera = new THREE.OrthographicCamera( 5000, 5000, 5000, 5000, 0, 5000 );
+
+/*ticks and axis label*/
+
+Graph.rulerTickes = 5;
+Graph.roundMz = 3;
+Graph.roundRt = 3;
+Graph.roundInte = 3;
+
+/*on scaling and repositioning objects*/
+Graph.rangeTransform = new THREE.Vector3(1/this.GRID_RANGE, 1/this.GRID_RANGE_VERTICAL, 1/this.GRID_RANGE);
+LOG_SCALAR = 1;
+
+/*initial data range -- to be replaced with incoming data*/
+Graph.dataRange = {};
+Graph.viewRange = {};
+
+/*flag for x-y axis zoom*/
+Graph.mzAxisZoom = false;
+Graph.rtAxisZoom = false;
+
+/*metadata and data control*/
+Graph.maxPeaks = 6000;
+Graph.currentData;//current peak data on the 3d graph
+
+Graph.totalMaxMz = 0;//max mz and rt for all peaks in this mzMLm, used to limit the maximum mz rt in the 3d graph
+Graph.totalMaxRt = 0;
+Graph.totalMaxInte = 0;
+Graph.totalMinInte = 0;
+Graph.intensitySum = 0;
+
+/*for downloading 3d graph*/
+Graph.imageAddress;
+
+/*color set for peaks */
+Graph.gradientColor = ["#2233c3", "#3632bc", "#4c31b4", "#6630aa", "#7d30a1", "#942f98", "#ba2e8a", "#da2e7e", "#fd2d70"];//purple-pink (low to high);
+Graph.cutoff = []; //intensity cutoff point for each color in gradient
+
+/*groups to hold different graph elements */
+Graph.gridgroup = new THREE.Group();
+Graph.datagroup = new THREE.Group();
+Graph.markergroup = new THREE.Group();
+Graph.labelgroup = new THREE.Group();
+Graph.ticksGroup = new THREE.Group();
+Graph.ticklabelgroup = new THREE.Group();
+Graph.plotGroup = new THREE.Group();
+
+Graph.gridgroup.name = "gridGroup";
+Graph.datagroup.name = "dataGroup";
+Graph.markergroup.name = "markerGroup";
+Graph.labelgroup.name = "labelGroup";
+Graph.ticksGroup.name = "ticksGroup";
+Graph.ticklabelgroup.name = "tickLabelGroup";
+Graph.plotGroup.name = "plotGroup";
+
+/*plotting objects*/
+
+Graph.datagroup.add(Graph.plotGroup);
+Graph.datagroup.add(Graph.ticksGroup);
+
+Graph.currentScanColor = "#ff5797";
+Graph.surfaceColor = "#555555";
+Graph.gridColor = "#7a7a7a";
+Graph.featureColor = "#a8b5ff";

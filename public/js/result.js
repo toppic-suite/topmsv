@@ -1,4 +1,3 @@
-let graph3D;//3d graph
 let configData;
 let rawRT; //rt before it is converted to seconds
 
@@ -183,8 +182,6 @@ function loadMzrtData(minmz, maxmz, minrt, maxrt){
             if (this.readyState == 4 && this.status == 200) {
                 var featureData = JSON.parse(this.responseText);
                 let t0 = new Date();    
-                //console.log("feature", featureData);
-                //console.log("feature length", featureData.length);
                 graph3D.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
             } 
         }
@@ -211,10 +208,10 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
             var peakData = JSON.parse(this.responseText);
             let t0 = new Date();    
 
-            //console.log("loadingScanData: ", new Date() - t0);
+            console.log("loadingScanData: ", new Date() - t0);
 
-            graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);            
-            graph3D.drawGraph(minmz, maxmz, minrt, maxrt, rt);
+            let graphData = new GraphData(peakData);
+            graphData.drawGraph(minmz, maxmz, minrt, maxrt, rt);
            
             if (updateTextBox){
                 //update data range in textboxes if getting range from each scan, not by users
@@ -270,7 +267,18 @@ function init3dGraph(){
         console.log("getMax: ", new Date() - t0)
         t0 = new Date();
 
-        graph3D.init(data[0]);
+        /*let dataRange = {
+            "mzmin": data.MZMIN, "mzmax": data.MZMAX, "mzrange": data.MZMAX - data.MZMIN, 
+            "rtmin": data.RTMIN, "rtmax": data.RTMAX, "rtrange": data.RTMAX - data.RTMIN, 
+            "intmin": data.INTMIN, "intmax": data.INTMAX, "intrange": data.INTMAX - data.INTMIN
+        };*/
+        let dataRange = {
+            "mzmax": data.MZMAX, "rtmax": data.RTMAX, 
+            "intmin": data.INTMIN, "intmax": data.INTMAX
+        };
+        let graph3D = new Graph(document.querySelector("#graph-container"));
+        graph3D.dataRange = dataRange;
+        graph3D.main();
         console.log("graph3DInit :" , new Date() - t0);
         t0 = new Date();
 
@@ -907,7 +915,6 @@ redrawRequestButton.addEventListener('click', function(){
     else{
         //reload data and redraw graph
         load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, curRT, false);
-        //loadMzrtData(minMZ, maxMZ, minRT, maxRT);
     }
 }, false);
 
@@ -920,7 +927,6 @@ $( document ).ready(function() {
     }
     $('#envFileInfo').hide();
 
-    graph3D = new MsGraph('body', document.querySelector("#graph-container"));
     init3dGraph();
 
     let scanRef = window.localStorage.getItem('scan');
