@@ -105,9 +105,7 @@ class GraphZoom
         if (newrtmin + newrtrange > Graph.dataRange.rtmax){
             newrtrange = Graph.dataRange.rtmax - newrtmin;
         }
-        load3dDataByParaRange(newmzmin,newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, rawRT, true);
-        //GraphControl.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
-        //GraphRender.renderImmediate();
+        LoadData.load3dDataByParaRange(newmzmin,newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, rawRT, true);
     }
     init(){
         Graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);

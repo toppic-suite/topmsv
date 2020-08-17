@@ -7,9 +7,11 @@ class GraphRender{
         if (Graph.camera.position.y > 25.495){
             graphData.plotPointAsCircle();
         }else{
-            //function needed
-            // let prevGroup = parent.datagroup.getObjectByName("cylinderGroup");
-            // parent.datagroup.remove(prevGroup);
+            let prevGroup = Graph.scene.getObjectByName("cylinderGroup");
+            if (prevGroup != undefined){
+                Graph.scene.remove(prevGroup);
+            }
+            
         }
         Graph.renderer.render( Graph.scene, Graph.camera );
         
