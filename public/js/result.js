@@ -1,5 +1,4 @@
-let configData;
-let rawRT; //rt before it is converted to seconds
+let rangeTemp;
 
 function getRelatedScan2(scanID) {
     var xhttp = new XMLHttpRequest();
@@ -69,29 +68,12 @@ function loadPeakList1(scanID, prec_mz) {
                         envList1_g = JSON.parse(this.responseText);
                         console.log("envList1_g", envList1_g);
 
-                        //get raw rt value
-                        var xhttpRT = new XMLHttpRequest();
-                        xhttpRT.onreadystatechange = function () {
-                            if (this.readyState == 4 && this.status == 200) {
-                                let rt = parseFloat(this.responseText);
-                                let minrt = rt - 30;
-                                let maxrt = rt + 30;
-
-                                if (minrt < 0){
-                                    minrt = 0;
-                                }
-                                if (envList1_g !== 0){
-                                    let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
-                                    LoadData.load3dDataByParaRange(ms1Graph.minMz, ms1Graph.maxMz, minrt, maxrt, rt, true)
-
-                                }else {
-                                    let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                                        LoadData.load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, rt, true)
-                                    }    
-                            }
-                        };    
-                        xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-                        xhttpRT.send();
+                        if (envList1_g !== 0){
+                            let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
+                        }else {
+                            let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
+                            rangeTemp = ms1GraphParameters;
+                        }    
                     }
                 };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
@@ -168,37 +150,26 @@ function getPeaksPerTable(totalLayer){
         xhttp.send();
     });
 }
-
-
-
 function init3dGraph(){
     let t0 = new Date();
     let t1 = new Date();
 
+    let scanID = document.getElementById("rangeMin").value;
+
     let promise = getMax();
-    let min = document.getElementById("rangeMin").value;
     
     promise.then(function(data){//to make sure max values are fetched before creating graph
         console.log("getMax: ", new Date() - t0)
         t0 = new Date();
 
-        let dataRange = {
-            "mzmax": data[0].MZMAX, "rtmax": data[0].RTMAX, 
-            "intmin": data[0].INTMIN, "intmax": data[0].INTMAX
-        };
-        Graph.dataRange = dataRange;
-        
-        let graph3D = new Graph(document.querySelector("#graph-container"), dataRange);
+        Graph.tablePeakCount = data;
+
+        let graph3D = new Graph(document.querySelector("#graph-container"), data,scanID);
         graph3D.main();
 
         console.log("graph3DInit :" , new Date() - t0);
         t0 = new Date();
 
-        showEnvTable(min);
-        findNextLevelOneScan(min);
-        loadInteSumList();
-
-        configData = data;
         console.log("total init time: " , new Date() - t1);
     }, function(err){
         console.log(err);
@@ -826,28 +797,40 @@ redrawRequestButton.addEventListener('click', function(){
     }
     else{
         //reload data and redraw graph
-        LoadData.load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, curRT, false);
+        //LoadData.load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, curRT, false);
     }
 }, false);
+function init2dGraph(){
+    return new Promise(function(resolve, reject){
+        let min = document.getElementById("rangeMin").value;
 
+        if($('#envStatus').val() === "0"){
+            $('#brhr').hide();
+            $("#envInfo").hide();
+            $('#envFileInfo').hide();
+        }
+        $('#envFileInfo').hide();
+
+        showEnvTable(min);
+        findNextLevelOneScan(min);
+        loadInteSumList();
+
+        let scanRef = window.localStorage.getItem('scan');
+        if(scanRef) {
+            console.log(scanRef);
+            $('#scanID').val(scanRef);
+            $('#request').click();
+            localStorage.clear();
+        }
+        resolve();
+    });
+}
 //function running on startup
 $( document ).ready(function() {
-    if($('#envStatus').val() === "0"){
-        $('#brhr').hide();
-        $("#envInfo").hide();
-        $('#envFileInfo').hide();
-    }
-    $('#envFileInfo').hide();
-
-    init3dGraph();
-
-    let scanRef = window.localStorage.getItem('scan');
-    if(scanRef) {
-        // console.log(scanRef);
-        $('#scanID').val(scanRef);
-        $('#request').click();
-        localStorage.clear();
-    }
+    let promise = init2dGraph();
+    promise.then(function(){
+        init3dGraph();
+    });
 });
 $("#scanID").keyup(function(event) {
     if (event.keyCode === 13) {

@@ -18,8 +18,9 @@ class GraphPan{
       rtmin = 0;
     }
     GraphControl.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
-    LoadData.load3dDataByParaRange(mzmin,mzmin + viewRange.mzrange, rtmin, rtmin + viewRange.rtrange, rawRT, true);
-  }
+    let graphData = new GraphData();
+    graphData.drawGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, rawRT);
+}
   onMouseDown(e){
     if (e.button === 0) {
         let mousePoint = GraphUtil.getMousePosition(e);

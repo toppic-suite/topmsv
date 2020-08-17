@@ -1,9 +1,9 @@
 /*graph_init.js: class for initializing 3d graph*/
 class GraphInit{
 
-    constructor(graphEl, dataRange){
+    constructor(graphEl, tableData){
         this.graphEl = graphEl;
-        this.dataRange = dataRange;
+        this.tableData = tableData;
     }
      
     /******** CREATE GRAPH ELEMENTS ******/
@@ -53,11 +53,10 @@ class GraphInit{
     }
     initColorSet(){
         //pick peak color based on each peak intensity -- currently 5 levels gradient
-        let intRange = this.dataRange.intmax - this.dataRange.intmin;
-  
+        let intRange = this.tableData[0].INTMAX - this.tableData[0].INTMIN;
         for (let i = 1; i <= Graph.gradientColor.length; i++)
         {
-            let val = this.dataRange.intmin + Math.pow(intRange, i/Graph.gradientColor.length);
+            let val = this.tableData[0].INTMIN + Math.pow(intRange, i/Graph.gradientColor.length);
             //console.log("interval ", i, ": ", val);
             Graph.cutoff.push(val);
         } 
@@ -105,7 +104,7 @@ class GraphInit{
         this.initGraphControl();
         this.createPlane();
         this.createAxis();
-
+       
         Graph.scene.add(Graph.gridgroup);
         Graph.scene.add(Graph.datagroup);
         Graph.scene.add(Graph.labelgroup);
@@ -114,8 +113,6 @@ class GraphInit{
         Graph.scene.add(Graph.featuregroup);
         Graph.scene.add(Graph.axisgroup);
     
-       // GraphControl.updateViewRange(this.dataRange);
-
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
         })
