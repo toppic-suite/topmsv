@@ -1,13 +1,30 @@
 // graph.js: graph initialization code and helper methods
 
 class Graph{
-    constructor(graphEl, dataRange){
-        this.graphEl = graphEl;
-        this.dataRange = dataRange;
+    constructor(graphEl, data, scanID){
+        this.graphEl = graphEl; 
+        this.tableData = data;
+        this.scanID = scanID;
+    }
+    drawGraph(){
+        let graphData = new GraphData();
+        let promise = GraphUtil.getRT(this.scanID);
+        let self = this;
+
+        promise.then(function(curRT){
+            let viewRange = {
+                "mzmax": 570, "mzmin": 550,
+                "rtmax": curRT + 30, "rtmin": curRT - 30
+            };
+            console.log(viewRange)
+            graphData.drawGraph(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax, curRT)
+        })
     }
     main(){
-        let newGraph = new GraphInit(this.graphEl, this.dataRange);
-        newGraph.init();
+        let graphInit = new GraphInit(this.graphEl, this.tableData);
+        graphInit.init();
+
+        this.drawGraph();
     }
 }
 
@@ -33,6 +50,7 @@ Graph.roundInte = 3;
 Graph.rangeTransform = new THREE.Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
 
 /*initial data range -- to be replaced with incoming data*/
+Graph.tablePeakCount = {};
 Graph.dataRange = {};
 Graph.viewRange = {};
 

@@ -29,6 +29,23 @@
         let power = Math.pow(10, places);
         return Math.round(number * power) / power;
     }
+    static getRT(scanID){
+        return new Promise(function(resolve, reject){
+            var xhttpRT = new XMLHttpRequest();
+            xhttpRT.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                
+                    var rt = parseFloat(this.responseText);
+                    console.log(rt)
+                    resolve(rt);
+                }
+            };
+            xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+            xhttpRT.send();
+        })
+        
+    }
+
     static findObjectHover(event, objGroup){
         let el = Graph.renderer.domElement;
         let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
