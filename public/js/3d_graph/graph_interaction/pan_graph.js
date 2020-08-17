@@ -6,7 +6,7 @@ class GraphPan{
     this.mdelta = new THREE.Vector3();
   }
 
-  panView = function(x,z){
+  panView(x,z){
     let viewRange = Graph.viewRange;
     let mzmin = viewRange.mzmin + (x * viewRange.mzrange);
     let rtmin = viewRange.rtmin + (z * viewRange.rtrange);
@@ -30,7 +30,7 @@ class GraphPan{
         this.mstart.copy(mousePoint);
       }
   }
-  onMouseUp = function(e) {
+  onMouseUp(e) {
     let mousePoint = GraphUtil.getMousePosition(e);
     if (mousePoint === null) {
       return;
