@@ -66,6 +66,7 @@ Graph.ticksGroup = new THREE.Group();
 Graph.ticklabelgroup = new THREE.Group();
 Graph.plotGroup = new THREE.Group();
 Graph.featuregroup = new THREE.Group();
+Graph.axisgroup = new THREE.Group();
  
 Graph.gridgroup.name = "gridGroup";
 Graph.datagroup.name = "dataGroup";
@@ -75,6 +76,7 @@ Graph.ticksGroup.name = "ticksGroup";
 Graph.ticklabelgroup.name = "tickLabelGroup";
 Graph.plotGroup.name = "plotGroup";
 Graph.featuregroup.name = "featureGroup";
+Graph.axisgroup.name = "axisGroup";
 
 /*plotting objects*/
 
