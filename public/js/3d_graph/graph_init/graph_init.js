@@ -74,10 +74,11 @@ class GraphInit{
     }
     initGraphControl(){
         /*initiate graph interactions*/
-        GraphZoom.init();
+        let zoomObj = new GraphZoom();
+        zoomObj.init(Graph.scene);
 
         let panObj = new GraphPan();
-        panObj.init(Graph.scene);
+        panObj.init();
 
         let camera = Graph.camera;
         let renderer = Graph.renderer;
@@ -88,6 +89,7 @@ class GraphInit{
         Graph.graphControls.addEventListener( 'change', GraphRender.renderImmediate.bind(Graph));
         Graph.graphControls.target.set(Graph.gridRange/2, 0, Graph.gridRange/2); // focus on the center of the grid
         Graph.graphControls.enablePan = false;
+        Graph.graphControls.enableZoom = false;
         Graph.graphControls.enabled = true;
     }
     initScene(){
@@ -112,7 +114,7 @@ class GraphInit{
         Graph.scene.add(Graph.featuregroup);
         Graph.scene.add(Graph.axisgroup);
     
-        GraphControl.updateViewRange(this.dataRange);
+       // GraphControl.updateViewRange(this.dataRange);
 
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();

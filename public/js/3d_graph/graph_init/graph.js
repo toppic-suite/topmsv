@@ -33,7 +33,7 @@ Graph.roundInte = 3;
 Graph.rangeTransform = new THREE.Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
 
 /*initial data range -- to be replaced with incoming data*/
-//Graph.dataRange = {};
+Graph.dataRange = {};
 Graph.viewRange = {};
 
 /*flag for x-y axis zoom*/
