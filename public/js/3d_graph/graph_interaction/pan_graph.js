@@ -18,7 +18,7 @@ class GraphPan{
       rtmin = 0;
     }
     GraphControl.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
-    load3dDataByParaRange(mzmin,mzmin + viewRange.mzrange, rtmin, rtmin + viewRange.rtrange, rawRT, true);
+    LoadData.load3dDataByParaRange(mzmin,mzmin + viewRange.mzrange, rtmin, rtmin + viewRange.rtrange, rawRT, true);
   }
   onMouseDown(e){
     if (e.button === 0) {
