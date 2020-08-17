@@ -8,10 +8,30 @@ class GraphInit{
      
     /******** CREATE GRAPH ELEMENTS ******/
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
+    createAxis(){
+        let xAxisGeo = new THREE.Geometry();
+        let yAxisGeo = new THREE.Geometry();
+        let axisMaterial = new THREE.LineBasicMaterial({ color:"#FFFF00" });
+
+        yAxisGeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
+        yAxisGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+
+        xAxisGeo.vertices.push(new THREE.Vector3(Graph.gridRange,0, Graph.gridRange));
+        xAxisGeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
+
+        let xAxis = new THREE.LineSegments(xAxisGeo, axisMaterial);
+        let yAxis = new THREE.LineSegments(yAxisGeo, axisMaterial);
+
+        xAxis.name = "xAxis";
+        yAxis.name = "yAxis";
+        
+        Graph.axisgroup.add(xAxis);
+        Graph.axisgroup.add(yAxis);
+    }
     createGrid() {
         let y = 0;
         let gridgeo = new THREE.Geometry();
-        let gridmaterial = new THREE.LineBasicMaterial({ color: Graph.gridColor });
+        let gridmaterial = new THREE.LineBasicMaterial({ color:Graph.gridColor });
 
         for (let i = 0; i <= Graph.gridRange; i++) {
             gridgeo.vertices.push(new THREE.Vector3(i, y, 0));
@@ -20,10 +40,6 @@ class GraphInit{
             gridgeo.vertices.push(new THREE.Vector3(0, y, i));
             gridgeo.vertices.push(new THREE.Vector3(Graph.gridRange, y, i));
         }
-
-        gridgeo.vertices.push(new THREE.Vector3(0, y, Graph.gridRange));
-        gridgeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
-
         return new THREE.LineSegments(gridgeo, gridmaterial);
     }
     createPlane(){
@@ -58,7 +74,8 @@ class GraphInit{
     }
     initGraphControl(){
         /*initiate graph interactions*/
-        //GraphZoom.init(parent);//can be a static method
+        GraphZoom.init();
+
         let panObj = new GraphPan();
         panObj.init(Graph.scene);
 
@@ -85,6 +102,7 @@ class GraphInit{
         this.initColorSet();
         this.initGraphControl();
         this.createPlane();
+        this.createAxis();
 
         Graph.scene.add(Graph.gridgroup);
         Graph.scene.add(Graph.datagroup);
@@ -92,6 +110,7 @@ class GraphInit{
         Graph.scene.add(Graph.ticklabelgroup);
         Graph.scene.add(Graph.markergroup);
         Graph.scene.add(Graph.featuregroup);
+        Graph.scene.add(Graph.axisgroup);
     
         GraphControl.updateViewRange(this.dataRange);
 
