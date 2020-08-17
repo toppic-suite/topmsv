@@ -44,7 +44,7 @@ class GraphPan{
     }
     this.mstart = null;
   }
-  init(scene){
+  init(){
     Graph.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
     Graph.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this), false);
   }

@@ -1,4 +1,4 @@
-class GraphUtil{
+    class GraphUtil{
     constructor(){}
     static disposeObject(obj) {
         if (obj.material.map) 

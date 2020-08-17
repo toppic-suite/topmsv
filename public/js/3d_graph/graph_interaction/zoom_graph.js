@@ -8,28 +8,19 @@ class GraphZoom
     constructor(){}
     
     adjustPeakHeight(scaleFactor){
-        let peaks = this.scene.getObjectByName("plotGroup");
+        let peaks = Graph.scene.getObjectByName("plotGroup");
         let oriScale = peaks.scale.y;
 
         peaks.scale.set(1, oriScale * scaleFactor, 1);
     
-        this.renderImmediate();
+        GraphRender.renderImmediate();
     }
     onZoom(e){
         e.preventDefault();//disable scroll of browser
-        
-        console.log(Graph.axisgroup)
-        let axis = GraphUtil.findObjectHover(e, Graph.axisgroup);
+    
+        let axis = GraphUtil.findObjectHover(e, Graph.axisgroup);//axis is null if cursor is not on axis
 
-        console.log(axis.name)
-
-        if (axis.name == "xAxis"){
-            this.onZoomFromEventListener(e, "mz");
-        }
-        else if(axis.name == "yAxis"){
-            this.onZoomFromEventListener(e, "rt");
-        }
-        else{
+        if (axis == null){
             if (e.ctrlKey){//if control key is pressed --> intensity zoom
                 let scaleFactor = 0;
                 if (e.deltaY > 0) {
@@ -45,17 +36,25 @@ class GraphZoom
                 this.onZoomFromEventListener(e, "both");
             }
         }
+        else{
+            if (axis.name == "xAxis"){
+                this.onZoomFromEventListener(e, "mz");
+            }
+            else if(axis.name == "yAxis"){
+                this.onZoomFromEventListener(e, "rt");
+            }
+        }
     }
     onZoomFromEventListener(e, axisName){
         //zoom action detected by event listener in each axis
         let scaleFactor = 0;
-        let mousePos = this.getMousePosition(e);
+        let mousePos = GraphUtil.getMousePosition(e);
     
-        let newmzrange = this.viewRange.mzrange;
-        let newrtrange = this.viewRange.rtrange;
+        let newmzrange = Graph.viewRange.mzrange;
+        let newrtrange = Graph.viewRange.rtrange;
     
-        let curmz = mousePos.x * this.viewRange.mzrange + this.viewRange.mzmin;//current mz and rt that has a cursor pointed to
-        let currt = mousePos.z * this.viewRange.rtrange + this.viewRange.rtmin;
+        let curmz = mousePos.x * Graph.viewRange.mzrange + Graph.viewRange.mzmin;//current mz and rt that has a cursor pointed to
+        let currt = mousePos.z * Graph.viewRange.rtrange + Graph.viewRange.rtmin;
     
         //reset view range based on scroll up or down
         if (e.deltaY < 0) {
@@ -66,14 +65,17 @@ class GraphZoom
         }
         //figure out where the cursor is (near x axis, y axis)
         if (axisName == "rt"){
-            newrtrange = this.viewRange.rtrange * scaleFactor;
+            newrtrange = Graph.viewRange.rtrange * scaleFactor;
         }
         else if (axisName == "mz"){//mz range adjust
-            newmzrange = this.viewRange.mzrange * scaleFactor;
+            newmzrange = Graph.viewRange.mzrange * scaleFactor;
         }
         else if (axisName == "both"){//if adjusting both
-            newrtrange = this.viewRange.rtrange * scaleFactor;
-            newmzrange = this.viewRange.mzrange * scaleFactor;
+            newrtrange = Graph.viewRange.rtrange * scaleFactor;
+            newmzrange = Graph.viewRange.mzrange * scaleFactor;
+        }
+        else{
+            return;
         }
     
         //if range is too small, set to minimum range of 0.01
@@ -83,8 +85,8 @@ class GraphZoom
         if (newmzrange < 0.01){
             newmzrange = 0.01;
         }
-        let mzscale = (curmz - this.viewRange.mzmin)/(this.viewRange.mzmax - this.viewRange.mzmin);//find relative pos of current mz currrent rt
-        let rtscale = (currt - this.viewRange.rtmin)/(this.viewRange.rtmax - this.viewRange.rtmin);
+        let mzscale = (curmz - Graph.viewRange.mzmin)/(Graph.viewRange.mzmax - Graph.viewRange.mzmin);//find relative pos of current mz currrent rt
+        let rtscale = (currt - Graph.viewRange.rtmin)/(Graph.viewRange.rtmax - Graph.viewRange.rtmin);
     
         let newmzmin = curmz - (mzscale * newmzrange);//the closer curmz or currt is to the minmz and minrt, the less change in min value
         let newrtmin = currt - (rtscale * newrtrange);
@@ -97,16 +99,17 @@ class GraphZoom
             newrtmin = 0;
         }
         //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
-        if (newmzmin + newmzrange > this.totalMaxMz){
-            newmzrange = this.totalMaxMz - newmzmin;
+        if (newmzmin + newmzrange > Graph.dataRange.mzmax){
+            newmzrange = Graph.dataRange.mzmax - newmzmin;
         }
-        if (newrtmin + newrtrange > this.totalMaxRt){
-            newrtrange = this.totalMaxRt - newrtmin;
+        if (newrtmin + newrtrange > Graph.dataRange.rtmax){
+            newrtrange = Graph.dataRange.rtmax - newrtmin;
         }
-        this.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
+        load3dDataByParaRange(newmzmin,newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, rawRT, true);
+        //GraphControl.setViewingArea(newmzmin, newmzrange, newrtmin, newrtrange);
+        //GraphRender.renderImmediate();
     }
-    static init(){
-        console.log("zoom start")
-        Graph.renderer.domElement.addEventListener('wheel', this.onZoom, false);
+    init(){
+        Graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
     }
 }

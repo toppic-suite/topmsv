@@ -246,17 +246,13 @@ function init3dGraph(){
         console.log("getMax: ", new Date() - t0)
         t0 = new Date();
 
-        /*let dataRange = {
-            "mzmin": data.MZMIN, "mzmax": data.MZMAX, "mzrange": data.MZMAX - data.MZMIN, 
-            "rtmin": data.RTMIN, "rtmax": data.RTMAX, "rtrange": data.RTMAX - data.RTMIN, 
-            "intmin": data.INTMIN, "intmax": data.INTMAX, "intrange": data.INTMAX - data.INTMIN
-        };*/
         let dataRange = {
             "mzmax": data[0].MZMAX, "rtmax": data[0].RTMAX, 
             "intmin": data[0].INTMIN, "intmax": data[0].INTMAX
         };
+        Graph.dataRange = dataRange;
+        
         let graph3D = new Graph(document.querySelector("#graph-container"), dataRange);
-        //graph3D.dataRange = dataRange;
         graph3D.main();
 
         console.log("graph3DInit :" , new Date() - t0);
