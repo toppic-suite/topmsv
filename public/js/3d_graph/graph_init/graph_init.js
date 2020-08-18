@@ -131,13 +131,7 @@ class GraphInit{
         this.createPlane();
         this.createAxis();
        
-        Graph.scene.add(Graph.gridgroup);
-        Graph.scene.add(Graph.datagroup);
-        Graph.scene.add(Graph.labelgroup);
-        Graph.scene.add(Graph.ticklabelgroup);
-        Graph.scene.add(Graph.markergroup);
-        Graph.scene.add(Graph.featuregroup);
-        Graph.scene.add(Graph.axisgroup);
+        
     
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
