@@ -54,22 +54,47 @@ class GraphData{
         Graph.viewRange.intmax = intmax;
         Graph.viewRange.intrange = intmax - intmin;
     }
-    drawGraph(minmz, maxmz, minrt, maxrt, curRT, updateTextBox){        
-        this.clearGraph();
-       
-        let self = this;
-        let promise = LoadData.load3dDataByParaRange(minmz, maxmz, minrt, maxrt, curRT, updateTextBox);
+    setViewRange(_mzmin, _mzmax, curRT){
+        let rtmax = parseFloat(curRT + Graph.rtRange);
+        let rtmin = parseFloat(curRT - Graph.rtRange);
+        let mzmax = parseFloat(_mzmax);
+        let mzmin = parseFloat(_mzmin);
+
+        let dataTotal = Graph.tablePeakCount[0];
+
+        if (rtmax > dataTotal.RTMAX){
+            rtmax = dataTotal.RTMAX;
+        }
+        if (rtmin < dataTotal.RTMIN){
+            rtmin = dataTotal.RTMIN;
+        }
+        if (mzmax > dataTotal.MZMAX){
+            mzmax = dataTotal.MZMAX;
+        }
+        if (mzmin < dataTotal.MZMIN){
+            mzmin = dataTotal.MZMIN;
+        }
+
+        Graph.curRT = curRT;
+
+        Graph.viewRange.mzmin = mzmin;
+        Graph.viewRange.mzmax = mzmax;
+        Graph.viewRange.mzrange = mzmax - mzmin;
         
+        Graph.viewRange.rtmin = rtmin;
+        Graph.viewRange.rtmax = rtmax;
+        Graph.viewRange.rtrange = rtmax - rtmin;
+    }
+    drawGraph(minmz, maxmz, curRT, updateTextBox){        
+        this.clearGraph();
+        this.setViewRange(minmz, maxmz, curRT);
+
+        let self = this;
+        //let promise = LoadData.load3dDataByParaRange(minmz, maxmz, curRT, updateTextBox);
+        let promise = LoadData.load3dDataByParaRange(updateTextBox);
+
         promise.then(function(peakData){
             Graph.currentData = peakData;
-
-            Graph.viewRange.mzmin = minmz;
-            Graph.viewRange.mzmax = maxmz;
-            Graph.viewRange.mzrange = maxmz - minmz;
-        
-            Graph.viewRange.rtmin = minrt;
-            Graph.viewRange.rtmax = maxrt;
-            Graph.viewRange.rtrange = maxrt - minrt;
             
             self.getInteRange(Graph.currentData);
     
@@ -89,7 +114,7 @@ class GraphData{
             Graph.viewRange["intscale"] = 1;
         
             // make sure the groups are plotted and update the view
-            if (rt <= maxrt && rt >= minrt){
+            if (curRT <= Graph.viewRange.rtmax && curRT >= Graph.viewRange.rtmin){
                 self.drawCurrentScanMarker(rt);
             }
             GraphFeature.drawFeature(Graph.viewRange);
