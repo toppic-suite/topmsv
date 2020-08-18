@@ -54,11 +54,11 @@ class GraphData{
         Graph.viewRange.intmax = intmax;
         Graph.viewRange.intrange = intmax - intmin;
     }
-    drawGraph(minmz, maxmz, minrt, maxrt, curRT){        
+    drawGraph(minmz, maxmz, minrt, maxrt, curRT, updateTextBox){        
         this.clearGraph();
        
         let self = this;
-        let promise = LoadData.load3dDataByParaRange(minmz, maxmz, minrt, maxrt, curRT, true);
+        let promise = LoadData.load3dDataByParaRange(minmz, maxmz, minrt, maxrt, curRT, updateTextBox);
         
         promise.then(function(peakData){
             self.currentData = peakData;
