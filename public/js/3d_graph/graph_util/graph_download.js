@@ -25,7 +25,6 @@ class GraphDownload{
 	static popupnamewindow(type, x, y){
 		//save-as-image-form
 		let formDiv = document.getElementById("save-as-image-form");
-		console.log(x,y)
 		formDiv.style.display = "flex";
 		formDiv.style.left = (x - 90) + "px"
 		formDiv.style.top = (y + 20) + "px";
