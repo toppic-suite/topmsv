@@ -49,13 +49,9 @@ class LoadData{
                 if (this.readyState == 4 && this.status == 200) {
                     var peakData = JSON.parse(this.responseText);
                     let t0 = new Date();    
-                    console.log("loadingScanData: ", new Date() - t0);
+                    //console.log("loadingScanData: ", new Date() - t0);
                     if (updateTextBox){
-                        //update data range in textboxes if getting range from each scan, not by users
-                        document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-                        document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-                        document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
-                        document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
+                        GraphUtil.updateTextBox(maxmz, minmz, maxrt, minrt);
                     }
                     resolve(peakData);
                 }

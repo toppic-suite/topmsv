@@ -15,6 +15,13 @@ class Graph{
         viewRange.rtmax = viewRange.curRT + this.rtRange;
         viewRange.rtmin = viewRange.curRT - this.rtRange;
 
+        if (viewRange.rtmin < 0){
+            viewRange.rtmin = 0;
+        }
+        if (viewRange.rtmax > this.tableData[0].RTMAX){
+            viewRange.rtmax = this.tableData[0].RTMAX;
+        }
+
         graphData.drawGraph(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax, viewRange.curRT)
     }
     setProperties(){

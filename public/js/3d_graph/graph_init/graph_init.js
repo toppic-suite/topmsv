@@ -7,6 +7,32 @@ class GraphInit{
     }
      
     /******** CREATE GRAPH ELEMENTS ******/
+    createTextBoxEvent(){
+        //listener for rt range and mz range change in 3d graph
+        let redrawRequestButton = document.getElementById('request3dGraphRedraw');
+        redrawRequestButton.addEventListener('click', function(){
+            let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
+            let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
+            let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
+            let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
+            let curRT = Graph.curRT; 
+
+            //error handing
+            if (minRT > maxRT){
+                alert("Invalid Range : Minimum retention time is bigger than maximum.");
+            } 
+            else if (minMZ > maxMZ){
+                alert("Invalid Range : Minimum m/z is bigger than maximum");
+            }
+            else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
+                alert("Invalid Value Found : Please make sure the range has valid values.");
+            }
+            else{
+                let graphData = new GraphData();
+                graphData.drawGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
+            }
+        }, false);
+    }
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
     createAxis(){
         let xAxisGeo = new THREE.Geometry();
