@@ -25,6 +25,13 @@
             this.disposeObject(obj);
         }
     };
+    static updateTextBox(maxmz, minmz, maxrt, minrt){
+        //update data range in textboxes if getting range from each scan, not by users
+        document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
+        document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
+        document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
+        document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
+    }
     static roundTo(number, places) {
         let power = Math.pow(10, places);
         return Math.round(number * power) / power;
