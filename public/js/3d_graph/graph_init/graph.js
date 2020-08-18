@@ -5,8 +5,6 @@ class Graph{
         this.graphEl = graphEl; 
         this.viewRange = viewRange;
         this.tableData = tableData;
-
-        this.rtRange = 30;
     }
     drawInitGraph(){
         let graphData = new GraphData();
@@ -40,7 +38,8 @@ class Graph{
         Graph.dataRange = {};
         Graph.viewRange = {};
 
-        Graph.curRT = this.viewRange.curRT
+        Graph.rtRange = 30;
+        Graph.curRT = -1;
 
         /*flag for x-y axis zoom*/
         Graph.mzAxisZoom = false;
@@ -100,7 +99,7 @@ class Graph{
         Graph.scene.add(Graph.axisgroup);
     }
     initDataRange(){
-        Graph.viewRange = this.viewRange;
+        /*Graph.viewRange = this.viewRange;
 
         Graph.viewRange.rtmax = Graph.viewRange.curRT + this.rtRange;
         Graph.viewRange.rtmin = Graph.viewRange.curRT - this.rtRange;
@@ -110,7 +109,7 @@ class Graph{
         }
         if (Graph.viewRange.rtmax > this.tableData[0].RTMAX){
             Graph.viewRange.rtmax = this.tableData[0].RTMAX;
-        }
+        }*/
 
         let dataTotal = Graph.tablePeakCount[0];
 
@@ -120,8 +119,6 @@ class Graph{
         Graph.dataRange.intmin = dataTotal.INTMIN;
         Graph.dataRange.mzmax = dataTotal.MZMAX;
         Graph.dataRange.mzmin = dataTotal.MZMIN;    
-
-        console.log(Graph.dataRange)
     }
     main(){
         this.setProperties();
@@ -131,7 +128,7 @@ class Graph{
         let graphInit = new GraphInit(this.graphEl, Graph.tablePeakCount);
         graphInit.init();
 
-        this.drawInitGraph();
+        //this.drawInitGraph();
     }
 }
 

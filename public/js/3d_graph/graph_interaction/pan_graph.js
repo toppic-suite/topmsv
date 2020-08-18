@@ -46,7 +46,6 @@ class GraphPan{
     this.mstart = null;
   }
   init(){
-    console.log(Graph.curRT)
     Graph.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
     Graph.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this), false);
   }

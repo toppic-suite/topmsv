@@ -74,13 +74,15 @@ function loadPeakList1(scanID, prec_mz) {
                             window.localStorage.setItem('mzmin', ms1Graph.minMz);
                         }else {
                             let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                            console.log(ms1GraphParameters);
                             window.localStorage.setItem('mzmax', ms1GraphParameters.maxMz);
                             window.localStorage.setItem('mzmin', ms1GraphParameters.minMz);
                             
-                        }    
+                        }  
+                        let graphData = new GraphData();
 
-                        init3dGraph(window.localStorage.mzmax, window.localStorage.mzmin, window.localStorage.curRT);
+                        //graphData.drawGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT - Graph.rtRange,  window.localStorage.curRT + Graph.rtRange, window.localStorage.curRT, true)
+                        graphData.drawGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
+
                     }
                 };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
@@ -785,33 +787,30 @@ next1.addEventListener('click', function () {
     }
 },false)
 
-
 function init2dGraph(){
-    return new Promise(function(resolve, reject){
-        let min = document.getElementById("rangeMin").value;
+    let min = document.getElementById("rangeMin").value;
 
-        if($('#envStatus').val() === "0"){
-            $('#brhr').hide();
-            $("#envInfo").hide();
-            $('#envFileInfo').hide();
-        }
+    if($('#envStatus').val() === "0"){
+        $('#brhr').hide();
+        $("#envInfo").hide();
         $('#envFileInfo').hide();
+    }
+    $('#envFileInfo').hide();
 
-        showEnvTable(min);
-        findNextLevelOneScan(min);
-        loadInteSumList();
+    showEnvTable(min);
+    findNextLevelOneScan(min);
+    loadInteSumList();
 
-        let scanRef = window.localStorage.getItem('scan');
-        if(scanRef) {
-            console.log(scanRef);
-            $('#scanID').val(scanRef);
-            $('#request').click();
-        }
-        resolve();
-    });
+    let scanRef = window.localStorage.getItem('scan');
+    if(scanRef) {
+        console.log(scanRef);
+        $('#scanID').val(scanRef);
+        $('#request').click();
+    }
 }
 //function running on startup
 $( document ).ready(function() {
+    init3dGraph();
     init2dGraph();
 });
 $("#scanID").keyup(function(event) {
