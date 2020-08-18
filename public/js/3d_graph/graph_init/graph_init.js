@@ -131,7 +131,7 @@ class GraphInit{
         this.createPlane();
         this.createAxis();
        
-        
+        document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
     
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
