@@ -101,6 +101,14 @@ class Graph{
 
         Graph.datagroup.add(Graph.plotGroup);
         Graph.datagroup.add(Graph.ticksGroup);
+
+        Graph.scene.add(Graph.gridgroup);
+        Graph.scene.add(Graph.datagroup);
+        Graph.scene.add(Graph.labelgroup);
+        Graph.scene.add(Graph.ticklabelgroup);
+        Graph.scene.add(Graph.markergroup);
+        Graph.scene.add(Graph.featuregroup);
+        Graph.scene.add(Graph.axisgroup);
     }
     main(){
         this.setProperties();
