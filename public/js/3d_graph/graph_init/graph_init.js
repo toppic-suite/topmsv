@@ -7,6 +7,9 @@ class GraphInit{
     }
      
     /******** CREATE GRAPH ELEMENTS ******/
+    createSaveGraphEvent(){
+        document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
+    }
     createTextBoxEvent(){
         //listener for rt range and mz range change in 3d graph
         let redrawRequestButton = document.getElementById('request3dGraphRedraw');
@@ -128,11 +131,12 @@ class GraphInit{
         this.initScene();
         this.initColorSet();
         this.initGraphControl();
+
         this.createPlane();
         this.createAxis();
+        this.createTextBoxEvent();
+        this.createSaveGraphEvent();
        
-        document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
-    
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
         })

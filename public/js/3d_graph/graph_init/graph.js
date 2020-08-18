@@ -10,19 +10,8 @@ class Graph{
     }
     drawInitGraph(){
         let graphData = new GraphData();
-        let viewRange = this.viewRange;
 
-        viewRange.rtmax = viewRange.curRT + this.rtRange;
-        viewRange.rtmin = viewRange.curRT - this.rtRange;
-
-        if (viewRange.rtmin < 0){
-            viewRange.rtmin = 0;
-        }
-        if (viewRange.rtmax > this.tableData[0].RTMAX){
-            viewRange.rtmax = this.tableData[0].RTMAX;
-        }
-
-        graphData.drawGraph(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax, viewRange.curRT)
+        graphData.drawGraph(Graph.viewRange.mzmin, Graph.viewRange.mzmax, Graph.viewRange.rtmin, Graph.viewRange.rtmax, Graph.viewRange.curRT, true)
     }
     setProperties(){
         /*add static properties to Graph class*/
@@ -110,9 +99,34 @@ class Graph{
         Graph.scene.add(Graph.featuregroup);
         Graph.scene.add(Graph.axisgroup);
     }
+    initDataRange(){
+        Graph.viewRange = this.viewRange;
+
+        Graph.viewRange.rtmax = Graph.viewRange.curRT + this.rtRange;
+        Graph.viewRange.rtmin = Graph.viewRange.curRT - this.rtRange;
+
+        if (Graph.viewRange.rtmin < 0){
+            Graph.viewRange.rtmin = 0;
+        }
+        if (Graph.viewRange.rtmax > this.tableData[0].RTMAX){
+            Graph.viewRange.rtmax = this.tableData[0].RTMAX;
+        }
+
+        let dataTotal = Graph.tablePeakCount[0];
+
+        Graph.dataRange.rtmax = dataTotal.RTMAX;
+        Graph.dataRange.rtmin = dataTotal.RTMIN;
+        Graph.dataRange.intmax = dataTotal.INTMAX;
+        Graph.dataRange.intmin = dataTotal.INTMIN;
+        Graph.dataRange.mzmax = dataTotal.MZMAX;
+        Graph.dataRange.mzmin = dataTotal.MZMIN;    
+
+        console.log(Graph.dataRange)
+    }
     main(){
         this.setProperties();
         this.createGroups();
+        this.initDataRange();
 
         let graphInit = new GraphInit(this.graphEl, Graph.tablePeakCount);
         graphInit.init();
