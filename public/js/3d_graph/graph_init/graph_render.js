@@ -13,8 +13,7 @@ class GraphRender{
             let prevGroup = dataGroup.getObjectByName("cylinderGroup");
             dataGroup.remove(prevGroup);
         }
-       
-
+    
         Graph.renderer.render( Graph.scene, Graph.camera );
         Graph.imageAddress = Graph.renderer.domElement.toDataURL();
     }
