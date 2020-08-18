@@ -61,7 +61,7 @@ class GraphData{
         let promise = LoadData.load3dDataByParaRange(minmz, maxmz, minrt, maxrt, curRT, updateTextBox);
         
         promise.then(function(peakData){
-            self.currentData = peakData;
+            Graph.currentData = peakData;
 
             Graph.viewRange.mzmin = minmz;
             Graph.viewRange.mzmax = maxmz;
@@ -71,19 +71,19 @@ class GraphData{
             Graph.viewRange.rtmax = maxrt;
             Graph.viewRange.rtrange = maxrt - minrt;
             
-            self.getInteRange(self.currentData);
+            self.getInteRange(Graph.currentData);
     
             //if camera angle is perpendicular to the graph plane
             if (Graph.camera.position.y > 25.495){
-                self.plotPointAsCircle(self.currentData);
+                self.plotPointAsCircle(Graph.currentData);
             }
             else{
                 let prevGroup = Graph.scene.getObjectByName("cylinderGroup");
                 if (prevGroup != undefined){
                     Graph.scene.remove(prevGroup);
                 }
-                for (let i = 0; i < self.currentData.length; i++){   
-                    self.plotPoint(self.currentData[i]);
+                for (let i = 0; i < Graph.currentData.length; i++){   
+                    self.plotPoint(Graph.currentData[i]);
                 }
             }
             Graph.viewRange["intscale"] = 1;
@@ -93,7 +93,7 @@ class GraphData{
                 self.drawCurrentScanMarker(rt);
             }
             GraphFeature.drawFeature(Graph.viewRange);
-            GraphLabel.displayGraphData(self.currentData.length);//display metadata about the graph
+            GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
         })
@@ -111,14 +111,20 @@ class GraphData{
         let rt = document.getElementById("scan1RT").innerText;
     
         let prevGroup = Graph.scene.getObjectByName("cylinderGroup");
-        let cylinderGroup = new THREE.Group();//when view angle is perpendicular
+        let dataGroup = Graph.scene.getObjectByName("dataGroup");
 
-        if (prevGroup != undefined){
-            cylinderGroup = prevGroup;
+        if (prevGroup == undefined){
+            this.cylinderGroup = new THREE.Group();//when view angle is perpendicular
+            this.cylinderGroup.name = "cylinderGroup";
+            dataGroup.add(this.cylinderGroup);
         }
-        for (let i = 0; i < this.currentData.length; i++){   
-            let point = this.currentData[i];
-            let lineColor = this.pickPeakColor(this.currentData[i].INTENSITY);
+        else{
+            this.cylinderGroup = prevGroup;
+        }
+    
+        for (let i = 0; i < Graph.currentData.length; i++){   
+            let point = Graph.currentData[i];
+            let lineColor = this.pickPeakColor(Graph.currentData[i].INTENSITY);
             let geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
             let material = new THREE.MeshBasicMaterial( { color: lineColor } );
        
@@ -136,24 +142,20 @@ class GraphData{
             circle.height = 10;
             circle.name = "point";
             circle.scanID = point.SPECTRAID;
-            cylinderGroup.add(circle);
+            this.cylinderGroup.add(circle);
         }
         //repositioning m/z and rt from repositionPlot
         let heightScale = Graph.viewRange.intmax;
         let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
         let rt_squish = - Graph.gridRange / Graph.viewRange.rtrange;
         let inte_squish = (Graph.gridRangeVertical / heightScale) * Graph.viewRange.intscale;
-    
+        
         if (Graph.viewRange.intmax < 1){
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             inte_squish = 0;
         }
         // Reposition the plot so that mzmin,rtmin is at the correct corner
-        cylinderGroup.position.set(-Graph.viewRange.mzmin*mz_squish, inte_squish, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
-        cylinderGroup.name = "cylinderGroup";
-
-        Graph.scene.add(cylinderGroup);
-        console.log("cylinderGroup", cylinderGroup)
+        dataGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0.01, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
     }
     /*plots a peak as a vertical line on the graph*/
     plotPoint = function(point) {
