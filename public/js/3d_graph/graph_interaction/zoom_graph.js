@@ -106,7 +106,7 @@ class GraphZoom
             newrtrange = Graph.dataRange.rtmax - newrtmin;
         }
         let graphData = new GraphData();
-        graphData.drawGraph(newmzmin, newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, rawRT);
+        graphData.drawGraph(newmzmin, newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, Graph.curRT);
     }
     init(){
         Graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
