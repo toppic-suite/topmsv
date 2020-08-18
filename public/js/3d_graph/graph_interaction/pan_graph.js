@@ -19,7 +19,7 @@ class GraphPan{
     }
     GraphControl.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
     let graphData = new GraphData();
-    graphData.drawGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, rawRT);
+    graphData.drawGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, Graph.curRT);
 }
   onMouseDown(e){
     if (e.button === 0) {
@@ -46,6 +46,7 @@ class GraphPan{
     this.mstart = null;
   }
   init(){
+    console.log(Graph.curRT)
     Graph.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
     Graph.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this), false);
   }
