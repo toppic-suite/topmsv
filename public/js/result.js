@@ -175,7 +175,7 @@ function init3dGraph(mzmax, mzmin, curRT){
             "mzmax": parseFloat(mzmax), "mzmin": parseFloat(mzmin),
             "curRT": parseFloat(curRT)
         };
-        let graph3D = new Graph(document.querySelector("#graph-container"),tableData, viewRange);
+        let graph3D = new Graph(document.querySelector("#graph-container"), tableData);
         graph3D.main();
 
         console.log("graph3DInit :" , new Date() - t0);

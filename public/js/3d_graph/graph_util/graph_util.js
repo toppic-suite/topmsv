@@ -29,7 +29,7 @@
         let sciNumber = intensity.toExponential();
         let decimalPoint = sciNumber.indexOf(".")
         let eNotation = sciNumber.slice(sciNumber.indexOf("e"), sciNumber.length);
-        let truncated = sciNumber.slice(0, decimalPoint + 4);
+        let truncated = sciNumber.slice(0, decimalPoint + 3);
 
         return truncated.concat(eNotation);
     };

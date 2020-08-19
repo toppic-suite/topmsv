@@ -1,13 +1,12 @@
 /*graph_init.js: class for initializing 3d graph*/
 class GraphInit{
-
     constructor(){}
      
-    /******** CREATE GRAPH ELEMENTS ******/
-    createSaveGraphEvent(){
+    /******** GRAPH EVENTS******/
+    createSaveGraphEvent(){//add an event listener for when a user clicks on graph download button
         document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
     }
-    createTextBoxEvent(){
+    createRedrawEvent(){
         //listener for rt range and mz range change in 3d graph
         let redrawRequestButton = document.getElementById('request3dGraphRedraw');
         redrawRequestButton.addEventListener('click', function(){
@@ -33,6 +32,7 @@ class GraphInit{
             }
         }, false);
     }
+    /******** CREATE GRAPH ELEMENTS ******/
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
     createAxis(){
         let xAxisGeo = new THREE.Geometry();
@@ -135,7 +135,7 @@ class GraphInit{
 
         this.createPlane();
         this.createAxis();
-        this.createTextBoxEvent();
+        this.createRedrawEvent();
         this.createSaveGraphEvent();
        
         Graph.renderer.setAnimationLoop(function() {

@@ -1,15 +1,10 @@
-// graph.js: graph initialization code and helper methods
+// graph.js: set properties of 3D graph which are referenced and updated from other classes throughout the application
+//and initialize empty 3D graph
 
 class Graph{
-    constructor(graphEl, tableData, viewRange){
+    constructor(graphEl, tableData){
         Graph.graphEl = graphEl; 
-        this.viewRange = viewRange;
-        this.tableData = tableData;
-    }
-    drawInitGraph(){
-        let graphData = new GraphData();
-
-        graphData.drawGraph(Graph.viewRange.mzmin, Graph.viewRange.mzmax, Graph.viewRange.rtmin, Graph.viewRange.rtmax, Graph.viewRange.curRT, true)
+        Graph.tablePeakCount = tableData;
     }
     setProperties(){
         /*add static properties to Graph class*/
@@ -23,8 +18,6 @@ class Graph{
         Graph.camera = new THREE.OrthographicCamera( 5000, 5000, 5000, 5000, 0, 5000 );
         Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
 
-        /*ticks and axis label*/
-
         Graph.rulerTickes = 5;
         Graph.roundMz = 3;
         Graph.roundRt = 3;
@@ -34,19 +27,14 @@ class Graph{
         Graph.rangeTransform = new THREE.Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
 
         /*initial data range -- to be replaced with incoming data*/
-        Graph.tablePeakCount = this.tableData;
         Graph.dataRange = {};
         Graph.viewRange = {};
 
         Graph.rtRange = 30;
         Graph.curRT = -1;
 
-        /*flag for x-y axis zoom*/
-        Graph.mzAxisZoom = false;
-        Graph.rtAxisZoom = false;
-
         /*metadata and data control*/
-        Graph.maxPeaks = 6000;
+        Graph.maxPeaks = 2000;
         Graph.currentData;//current peak data on the 3d graph
 
         Graph.intensitySum = 0;
@@ -99,18 +87,6 @@ class Graph{
         Graph.scene.add(Graph.axisgroup);
     }
     initDataRange(){
-        /*Graph.viewRange = this.viewRange;
-
-        Graph.viewRange.rtmax = Graph.viewRange.curRT + this.rtRange;
-        Graph.viewRange.rtmin = Graph.viewRange.curRT - this.rtRange;
-
-        if (Graph.viewRange.rtmin < 0){
-            Graph.viewRange.rtmin = 0;
-        }
-        if (Graph.viewRange.rtmax > this.tableData[0].RTMAX){
-            Graph.viewRange.rtmax = this.tableData[0].RTMAX;
-        }*/
-
         let dataTotal = Graph.tablePeakCount[0];
 
         Graph.dataRange.rtmax = dataTotal.RTMAX;
@@ -127,12 +103,5 @@ class Graph{
 
         let graphInit = new GraphInit();
         graphInit.init();
-
-        //this.drawInitGraph();
     }
 }
-
-
-
-
-

@@ -6,7 +6,7 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {function} callback
  * @async
  */
-function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, currt, callback) {
+function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, maxPeaks, callback) {
     /*let sql = `SELECT *
                 FROM PEAKS` + tableNum + 
                 ` WHERE RETENTIONTIME <= ? 
@@ -21,7 +21,7 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, currt,
                 AND MZ <= ?
                 AND MZ >= ?
                 ORDER BY INTENSITY DESC
-                LIMIT 6000;`;           
+                LIMIT ?;`;           
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
@@ -30,7 +30,7 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, currt,
        // console.log('Connected to the result database.');
     });
 
-    resultDb.all(sql, [maxrt, minrt, maxmz, minmz], (err, row) => {
+    resultDb.all(sql, [maxrt, minrt, maxmz, minmz, maxPeaks], (err, row) => {
         if (err) {
             console.error(err.message);
         }
