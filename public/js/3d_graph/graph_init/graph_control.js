@@ -155,8 +155,8 @@ class GraphControl{
         r = this.constrainBounds(r);
         return r;
     }
-    static resizeCamera(graphEl){
-        Graph.renderer.setSize(graphEl.clientWidth, graphEl.clientHeight, true);
+    static resizeCamera(){
+        Graph.renderer.setSize(Graph.graphEl.clientWidth, Graph.graphEl.clientHeight, true);
         let aspectRatio = Graph.renderer.getSize().width / Graph.renderer.getSize().height;
 
         let vs = Graph.viewSize;

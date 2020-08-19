@@ -13,9 +13,6 @@ class LoadData{
         
         let peakCnt = 3000 / (xRatio * yRatio);
 
-        console.log(xRatio, yRatio, peakCnt)
-        console.log(Graph.viewRange)
-
         let diff = Number.MAX_VALUE;
         
         //find which table has the closet number of peaks
