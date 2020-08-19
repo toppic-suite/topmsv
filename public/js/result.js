@@ -81,7 +81,7 @@ function loadPeakList1(scanID, prec_mz) {
                         let graphData = new GraphData();
 
                         //graphData.drawGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT - Graph.rtRange,  window.localStorage.curRT + Graph.rtRange, window.localStorage.curRT, true)
-                        graphData.drawGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
+                        graphData.drawInitGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
 
                     }
                 };

@@ -25,12 +25,12 @@
             this.disposeObject(obj);
         }
     };
-    static updateTextBox(maxmz, minmz, maxrt, minrt){
+    static updateTextBox(){
         //update data range in textboxes if getting range from each scan, not by users
-        document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
-        document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
-        document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
-        document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
+        document.getElementById('rtRangeMin').value = (Graph.viewRange.rtmin/60).toFixed(4);
+        document.getElementById('rtRangeMax').value = (Graph.viewRange.rtmax/60).toFixed(4);
+        document.getElementById('mzRangeMin').value = Graph.viewRange.mzmin.toFixed(4);
+        document.getElementById('mzRangeMax').value = Graph.viewRange.mzmax.toFixed(4);
     }
     static roundTo(number, places) {
         let power = Math.pow(10, places);
