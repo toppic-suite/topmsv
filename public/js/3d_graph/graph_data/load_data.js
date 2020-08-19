@@ -52,7 +52,7 @@ class LoadData{
                     resolve(peakData);
                 }
             }
-            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + Graph.viewRange.rtmin + "&maxRT=" + Graph.viewRange.rtmax + "&minMZ=" + Graph.viewRange.mzmin + "&maxMZ=" + Graph.viewRange.mzmax + "&curRT=" + Graph.curRT, true);
+            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + Graph.viewRange.rtmin + "&maxRT=" + Graph.viewRange.rtmax + "&minMZ=" + Graph.viewRange.mzmin + "&maxMZ=" + Graph.viewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
             xhttp.send();
         });
     }
