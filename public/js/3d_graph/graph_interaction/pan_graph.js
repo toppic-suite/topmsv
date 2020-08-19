@@ -19,7 +19,7 @@ class GraphPan{
     }
     GraphControl.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
     let graphData = new GraphData();
-    graphData.drawGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, Graph.curRT, true);
+    graphData.updateGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, Graph.curRT, true);
 }
   onMouseDown(e){
     if (e.button === 0) {
