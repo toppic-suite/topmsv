@@ -54,25 +54,57 @@ class GraphData{
         Graph.viewRange.intmax = intmax;
         Graph.viewRange.intrange = intmax - intmin;
     }
-    setViewRange(_mzmin, _mzmax, curRT){
+    setInitViewRange(_mzmin, _mzmax, _curRT){
+        let curRT = parseFloat(_curRT);
         let rtmax = parseFloat(curRT + Graph.rtRange);
         let rtmin = parseFloat(curRT - Graph.rtRange);
         let mzmax = parseFloat(_mzmax);
         let mzmin = parseFloat(_mzmin);
-
+        
         let dataTotal = Graph.tablePeakCount[0];
 
         if (rtmax > dataTotal.RTMAX){
             rtmax = dataTotal.RTMAX;
         }
-        if (rtmin < dataTotal.RTMIN){
-            rtmin = dataTotal.RTMIN;
+        if (rtmin < 0){
+            rtmin = 0;
         }
         if (mzmax > dataTotal.MZMAX){
             mzmax = dataTotal.MZMAX;
         }
-        if (mzmin < dataTotal.MZMIN){
-            mzmin = dataTotal.MZMIN;
+        if (mzmin < 0){
+            mzmin = 0;
+        }
+        Graph.curRT = curRT;
+
+        Graph.viewRange.mzmin = mzmin;
+        Graph.viewRange.mzmax = mzmax;
+        Graph.viewRange.mzrange = mzmax - mzmin;
+        
+        Graph.viewRange.rtmin = rtmin;
+        Graph.viewRange.rtmax = rtmax;
+        Graph.viewRange.rtrange = rtmax - rtmin;
+    }
+    setViewRange(_mzmin, _mzmax, _rtmax, _rtmin, _curRT){
+        let curRT = parseFloat(_curRT);
+        let rtmax = parseFloat(_rtmax);
+        let rtmin = parseFloat(_rtmin);
+        let mzmax = parseFloat(_mzmax);
+        let mzmin = parseFloat(_mzmin);
+        
+        let dataTotal = Graph.tablePeakCount[0];
+
+        if (rtmax > dataTotal.RTMAX){
+            rtmax = dataTotal.RTMAX;
+        }
+        if (rtmin < 0){
+            rtmin = 0;
+        }
+        if (mzmax > dataTotal.MZMAX){
+            mzmax = dataTotal.MZMAX;
+        }
+        if (mzmin < 0){
+            mzmin = 0;
         }
 
         Graph.curRT = curRT;
@@ -85,13 +117,25 @@ class GraphData{
         Graph.viewRange.rtmax = rtmax;
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
-    drawGraph(minmz, maxmz, curRT, updateTextBox){        
+    updateGraph(minmz, maxmz,minrt,maxrt, curRT, updateTextBox){
+        this.setViewRange(minmz, maxmz, maxrt, minrt, curRT);
+        this.draw(curRT);
+        if (updateTextBox){
+            GraphUtil.updateTextBox();
+        }
+    }
+    drawInitGraph(minmz, maxmz, curRT, updateTextBox){
+        this.setInitViewRange(minmz, maxmz, curRT);
+        this.draw(curRT);
+        if (updateTextBox){
+            GraphUtil.updateTextBox();
+        }
+    }
+    draw(curRT){        
         this.clearGraph();
-        this.setViewRange(minmz, maxmz, curRT);
-
         let self = this;
-        //let promise = LoadData.load3dDataByParaRange(minmz, maxmz, curRT, updateTextBox);
-        let promise = LoadData.load3dDataByParaRange(updateTextBox);
+
+        let promise = LoadData.load3dDataByParaRange();
 
         promise.then(function(peakData){
             Graph.currentData = peakData;
@@ -114,8 +158,8 @@ class GraphData{
             Graph.viewRange["intscale"] = 1;
         
             // make sure the groups are plotted and update the view
-            if (curRT <= Graph.viewRange.rtmax && curRT >= Graph.viewRange.rtmin){
-                self.drawCurrentScanMarker(rt);
+            if (parseFloat(curRT) <= Graph.viewRange.rtmax && parseFloat(curRT) >= Graph.viewRange.rtmin){
+                self.drawCurrentScanMarker(curRT);
             }
             GraphFeature.drawFeature(Graph.viewRange);
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph

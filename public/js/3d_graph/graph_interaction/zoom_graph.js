@@ -65,7 +65,9 @@ class GraphZoom
         }
         //figure out where the cursor is (near x axis, y axis)
         if (axisName == "rt"){
+            
             newrtrange = Graph.viewRange.rtrange * scaleFactor;
+           
         }
         else if (axisName == "mz"){//mz range adjust
             newmzrange = Graph.viewRange.mzrange * scaleFactor;
@@ -76,8 +78,8 @@ class GraphZoom
         }
         else{
             return;
-        }
-    
+        }   
+        
         //if range is too small, set to minimum range of 0.01
         if (newrtrange < 0.01){
             newrtrange = 0.01;
@@ -106,7 +108,7 @@ class GraphZoom
             newrtrange = Graph.dataRange.rtmax - newrtmin;
         }
         let graphData = new GraphData();
-        graphData.drawGraph(newmzmin, newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, Graph.curRT, true);
+        graphData.updateGraph(newmzmin, newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, Graph.curRT, true);
     }
     init(){
         Graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
