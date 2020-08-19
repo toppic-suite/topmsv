@@ -61,8 +61,8 @@ class GraphLabel{
     /*display details about the current peaks on the graph*/
     static displayGraphData(peaks){
         //display highest intensity, sum of intensity, total peak count in the current grph
-        let highestInte = "Highest Intensity: " + Graph.viewRange.intmax.toExponential();
-        let sumInte = "Sum of Intensity: " + Graph.intensitySum.toExponential();
+        let highestInte = "Highest Intensity: " + GraphUtil.formatScientificNotation(Graph.viewRange.intmax);
+        let sumInte = "Sum of Intensity: " + GraphUtil.formatScientificNotation(Graph.intensitySum);
         let peakCount = "Total Peaks on Graph: " + peaks;
         let sep = "\n";
         document.getElementById('graph-metadata').innerText = highestInte + sep + sumInte + sep + peakCount + sep;

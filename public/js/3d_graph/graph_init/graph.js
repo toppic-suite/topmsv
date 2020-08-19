@@ -2,7 +2,7 @@
 
 class Graph{
     constructor(graphEl, tableData, viewRange){
-        this.graphEl = graphEl; 
+        Graph.graphEl = graphEl; 
         this.viewRange = viewRange;
         this.tableData = tableData;
     }
@@ -125,7 +125,7 @@ class Graph{
         this.createGroups();
         this.initDataRange();
 
-        let graphInit = new GraphInit(this.graphEl, Graph.tablePeakCount);
+        let graphInit = new GraphInit();
         graphInit.init();
 
         //this.drawInitGraph();

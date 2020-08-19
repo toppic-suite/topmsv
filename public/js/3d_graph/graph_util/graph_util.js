@@ -25,6 +25,15 @@
             this.disposeObject(obj);
         }
     };
+    static formatScientificNotation(intensity){
+        let sciNumber = intensity.toExponential();
+        let decimalPoint = sciNumber.indexOf(".")
+        let eNotation = sciNumber.slice(sciNumber.indexOf("e"), sciNumber.length);
+        let truncated = sciNumber.slice(0, decimalPoint + 4);
+
+        return truncated.concat(eNotation);
+    };
+
     static updateTextBox(){
         //update data range in textboxes if getting range from each scan, not by users
         document.getElementById('rtRangeMin').value = (Graph.viewRange.rtmin/60).toFixed(4);

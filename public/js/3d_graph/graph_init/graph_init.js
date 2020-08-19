@@ -1,10 +1,7 @@
 /*graph_init.js: class for initializing 3d graph*/
 class GraphInit{
 
-    constructor(graphEl, tableData){
-        this.graphEl = graphEl;
-        this.tableData = tableData;
-    }
+    constructor(){}
      
     /******** CREATE GRAPH ELEMENTS ******/
     createSaveGraphEvent(){
@@ -32,7 +29,7 @@ class GraphInit{
             }
             else{
                 let graphData = new GraphData();
-                graphData.drawGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
+                graphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
             }
         }, false);
     }
@@ -82,10 +79,11 @@ class GraphInit{
     }
     initColorSet(){
         //pick peak color based on each peak intensity -- currently 5 levels gradient
-        let intRange = this.tableData[0].INTMAX - this.tableData[0].INTMIN;
+        let intRange = Graph.tablePeakCount[0].INTMAX - Graph.tablePeakCount[0].INTMIN;
+        
         for (let i = 1; i <= Graph.gradientColor.length; i++)
         {
-            let val = this.tableData[0].INTMIN + Math.pow(intRange, i/Graph.gradientColor.length);
+            let val = Graph.tablePeakCount[0].INTMIN + Math.pow(intRange, i/Graph.gradientColor.length);
             //console.log("interval ", i, ": ", val);
             Graph.cutoff.push(val);
         } 
@@ -95,7 +93,7 @@ class GraphInit{
         Graph.renderer.setSize(window.innerWidth, window.innerHeight * 0.3);
         Graph.renderer.setClearColor(0xEEEEEE, 1);
         Graph.renderer.domElement.id = "canvas3D";
-        this.graphEl.appendChild(Graph.renderer.domElement);
+        Graph.graphEl.appendChild(Graph.renderer.domElement);
     }
     initCamera(){
         Graph.camera.position.set(15, 15, 30);
@@ -107,6 +105,9 @@ class GraphInit{
 
         let panObj = new GraphPan();
         panObj.init();
+
+        let hoverObj = new HoverFeature();
+        hoverObj.init();
 
         let camera = Graph.camera;
         let renderer = Graph.renderer;
@@ -124,8 +125,8 @@ class GraphInit{
         this.initRenderer();
         this.initCamera();
         // rendering element
-        window.addEventListener("resize", GraphControl.resizeCamera);
-        GraphControl.resizeCamera(this.graphEl);
+        window.addEventListener("resize", GraphControl.resizeCamera.bind(Graph.scene));
+        GraphControl.resizeCamera();
     }
     init(){
         this.initScene();
