@@ -278,19 +278,19 @@ void msReader::createDtabase() { //stmt
           databaseReader.insertPeakStmtMs1(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
           databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
           ms1peakcount++ ;
-        }
-        //compare with min max values to find overall min max value
+
+          //compare with min max values to find overall min max value
         if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
         if (pairs[j].mz > mzmax){mzmax = pairs[j].mz;}
         if (pairs[j].intensity < intemin){intemin = pairs[j].intensity;}
         if (pairs[j].intensity > intemax){intemax = pairs[j].intensity;}
-     
+        //compare with min max values to find overall min max value
+        if (retentionTime < rtmin){rtmin = retentionTime;}
+        if (retentionTime > rtmax){rtmax = retentionTime;}
+
+      }
         databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
       }
-      //compare with min max values to find overall min max value
-      if (retentionTime < rtmin){rtmin = retentionTime;}
-      if (retentionTime > rtmax){rtmax = retentionTime;}
-
       // cout << currentID <<endl;
       if (scanLevel == 2) {
         // prec_mz, prec_charge, prec_inte
