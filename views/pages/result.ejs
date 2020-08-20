@@ -31,7 +31,6 @@
 	<script src="js/spectrum_graph/spectrumdownload.js" ></script>
 
 	<script src="js/download/FileSaver.js"></script>
-	<script src="js/download/saveImage.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
@@ -47,7 +46,6 @@
 	<!--js files related to 3d graph-->
 	<script type="text/javascript" src ="js/3d_graph/three.js" crossorigin="anonymous"></script>
 	<script type="text/javascript" src ="js/3d_graph/OrbitControls.js" crossorigin="anonymous"></script>
-	<script type="text/javascript" src='js/3d_graph/threex.domevents.js' crossorigin="anonymous"></script>
 </head>
 <body class="container">
 
@@ -306,6 +304,10 @@
 					</div>
 					
 				</div>
+				<div id ="save-as-image-form">
+					<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
+					<button class="btn" type="submit" id="btn-save-file-name">OK</button>
+				</div>
 				<div>
 					<div class="graph-metadata-container">
 					<span id="graph-metadata"></span>
@@ -444,15 +446,23 @@
 	<script src="js/dataTables.altEditor.free.js"></script>
 	
 <!--js files related to 3d graph-->
-	<script src="js/3d_graph/graph.js"></script>
-	<script src="js/3d_graph/graphRender.js"></script>
-	<script src="js/3d_graph/zoomGraph.js"></script>
-	<script src="js/3d_graph/panGraph.js"></script>
-	<script src="js/3d_graph/hoverFeature.js"></script>
-	<script src="js/3d_graph/downloadGraph.js"></script>
+	<script src="js/3d_graph/graph_init/graph.js"></script>
+	<script src="js/3d_graph/graph_interaction/pan_graph.js"></script>
+	<script src="js/3d_graph/graph_interaction/zoom_graph.js"></script>
+	<script src="js/3d_graph/graph_interaction/hover_feature.js"></script>
+	<script src="js/3d_graph/graph_init/graph_init.js"></script>
+	<script src="js/3d_graph/graph_init/graph_render.js"></script>
+	<script src="js/3d_graph/graph_util/graph_util.js"></script>
+	<script src="js/3d_graph/graph_util/graph_label.js"></script>
+	<script src="js/3d_graph/graph_util/graph_download.js"></script>
+	<script src="js/3d_graph/graph_init/graph_control.js"></script>
+	<script src="js/3d_graph/graph_data/load_data.js"></script>
+	<script src="js/3d_graph/graph_data/graph_data.js"></script>
+	<script src="js/3d_graph/graph_data/feature_annotation.js"></script>
+
+
 <!--library related to image download-->
 	<script src="js/download/FileSaver.js"></script>
-	<script src="js/download/saveImage.js"></script>
 	<script src="js/canvas-toBlob.js"></script>
 </body>
 </html>
