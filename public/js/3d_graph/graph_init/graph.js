@@ -7,6 +7,7 @@ class Graph{
         Graph.tablePeakCount = tableData;
     }
     setProperties(){
+        Graph.isQueryRunning = false;
         /*add static properties to Graph class*/
         Graph.gridRange = 20;
         Graph.gridRangeVertical = 6;

@@ -65,28 +65,37 @@ class GraphFeature{
         GraphRender.renderImmediate();
     }
     static loadMzrtData(minmz, maxmz, minrt, maxrt){
-        let self = this;
-        if($('#featureStatus').val() != "0"){
-            //load feature data in this range
-            let fullDir = (document.getElementById("projectDir").value).split("/");
-            let fileName = (fullDir[fullDir.length -1].split("."))[0];
-            let dir = fullDir[0].concat("/");
-            dir = dir.concat(fullDir[1]);
-    
-            let xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function (){
-                if (this.readyState == 4 && this.status == 200) {
-                    let featureData = JSON.parse(this.responseText);
-                    //console.log(featureData);
-                    self.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
-                } 
+        return new Promise(function(resolve, reject){
+            let self = this;
+            if($('#featureStatus').val() != "0"){
+                //load feature data in this range
+                let fullDir = (document.getElementById("projectDir").value).split("/");
+                let fileName = (fullDir[fullDir.length -1].split("."))[0];
+                let dir = fullDir[0].concat("/");
+                dir = dir.concat(fullDir[1]);
+        
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function (){
+                    if (this.readyState == 4 && this.status == 200) {
+                        let featureData = JSON.parse(this.responseText);
+                        //console.log(featureData);
+                        self.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
+                        resolve();
+                    } 
+                }
+                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+                xhttp.
+                send();
             }
-            xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
-            xhttp.
-            send();
-        }
+        })
     } 
     static drawFeature(viewRange){
-        this.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
+        let self = this;
+        return new Promise(function(resolve, reject){
+            let promise = self.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
+            promise.then(function(){
+                resolve();
+            })
+        })
     }
 }
