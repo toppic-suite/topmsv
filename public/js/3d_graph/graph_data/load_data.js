@@ -30,7 +30,7 @@ class LoadData{
         console.log("current table number : ", tableNum);
         return tableNum;
     }
-    static load3dDataByParaRange(){
+    static load3dDataByParaRange(curViewRange){
         //same as load3dDataByParaRange, but this functions runs only when a scan changes
         //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
         //when a range changes in the same scan, call load3dDataByParaRange instead
@@ -39,7 +39,6 @@ class LoadData{
         return new Promise(function(resolve, reject){
             let tableNum = self.calculateTableNum();
             var xhttp = new XMLHttpRequest();
-            
             let fullDir = (document.getElementById("projectDir").value).split("/");
             let fileName = (fullDir[fullDir.length -1].split("."))[0];
             let dir = fullDir[0].concat("/");
@@ -48,11 +47,11 @@ class LoadData{
                 if (this.readyState == 4 && this.status == 200) {
                     var peakData = JSON.parse(this.responseText);
                     let t0 = new Date();    
-                    //console.log("loadingScanData: ", new Date() - t0);
+                    console.log("data length:", peakData.length)
                     resolve(peakData);
                 }
             }
-            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + Graph.viewRange.rtmin + "&maxRT=" + Graph.viewRange.rtmax + "&minMZ=" + Graph.viewRange.mzmin + "&maxMZ=" + Graph.viewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
+            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, false);
             xhttp.send();
         });
     }
