@@ -62,9 +62,9 @@ class GraphFeature{
         featureGroup.scale.set(mz_squish, 1, rt_squish);
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         featureGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
-        GraphRender.renderImmediate();
     }
     static loadMzrtData(minmz, maxmz, minrt, maxrt){
+        let t0 = new Date().getTime();
         return new Promise(function(resolve, reject){
             let self = this;
             if($('#featureStatus').val() != "0"){
@@ -78,12 +78,11 @@ class GraphFeature{
                 xhttp.onreadystatechange = function (){
                     if (this.readyState == 4 && this.status == 200) {
                         let featureData = JSON.parse(this.responseText);
-                        //console.log(featureData);
-                        self.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
+                        GraphFeature.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
                         resolve();
                     } 
                 }
-                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, false);
                 xhttp.
                 send();
             }

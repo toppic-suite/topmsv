@@ -151,21 +151,17 @@ class GraphData{
                 }  
             }
             Graph.viewRange["intscale"] = 1;
-        
+
             // make sure the groups are plotted and update the view
             if (parseFloat(curRT) <= Graph.viewRange.rtmax && parseFloat(curRT) >= Graph.viewRange.rtmin){
                 self.drawCurrentScanMarker(curRT);
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         }).then(function(){
-            let promise = GraphFeature.drawFeature(Graph.viewRange);
-            promise.then(function(){
-                resolve();
-            })
+            return GraphFeature.drawFeature(Graph.viewRange);
         }).then(function(){
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
-
             Graph.isQueryRunning = false;
         })
     }
