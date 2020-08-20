@@ -65,6 +65,13 @@ class GraphLabel{
         let sumInte = "Sum of Intensity: " + GraphUtil.formatScientificNotation(Graph.intensitySum);
         let peakCount = "Total Peaks on Graph: " + peaks;
         let sep = "\n";
+
+        //if intensity was 0, it should be just 0
+        if (Graph.intensitySum){
+            sumInte = "Sum of Intensity: 0";
+            highestInte = "Highest Intensity: 0";
+        }
+
         document.getElementById('graph-metadata').innerText = highestInte + sep + sumInte + sep + peakCount + sep;
     }
 }
