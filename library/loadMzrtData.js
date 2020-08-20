@@ -11,6 +11,8 @@ function loadMzrtData(dir, minrt, maxrt, minmz, maxmz, callback) {
               WHERE NOT (rt_low >= ? OR rt_high <= ? OR mz_low >= ? OR mz_high <= ?)
               LIMIT 500;`;          
     let dbDir = dir;
+
+    
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
             console.error("error during db generation", err.message);
