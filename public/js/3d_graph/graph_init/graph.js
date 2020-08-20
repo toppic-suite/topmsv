@@ -98,15 +98,11 @@ class Graph{
         Graph.dataRange.mzmin = dataTotal.MZMIN;    
     }
     main(){
-        let t0 = new Date().getTime();
-
         this.setProperties();
         this.createGroups();
         this.initDataRange();
 
         let graphInit = new GraphInit();
         graphInit.init();
-        
-        console.log("graph creation time : ", new Date().getTime() - t0);
     }
 }
