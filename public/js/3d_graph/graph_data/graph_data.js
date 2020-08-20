@@ -132,12 +132,13 @@ class GraphData{
         }
     }
     draw(curRT){        
-        this.clearGraph();
+        
         let self = this;
 
         let promise = LoadData.load3dDataByParaRange();
 
         promise.then(function(peakData){
+            self.clearGraph();
             Graph.currentData = peakData;
             
             self.getInteRange(Graph.currentData);
