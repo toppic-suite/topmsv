@@ -159,29 +159,15 @@ function getPeaksPerTable(totalLayer){
         xhttp.send();
     });
 }
-function init3dGraph(mzmax, mzmin, curRT){
-    let t0 = new Date();
-    let t1 = new Date();
-
+function init3dGraph(){
     let promise = getMax();
     
     promise.then(function(tableData){//to make sure max values are fetched before creating graph
-        console.log("getMax: ", new Date() - t0)
-        t0 = new Date();
-
         Graph.tablePeakCount = tableData;
 
-        let viewRange = {
-            "mzmax": parseFloat(mzmax), "mzmin": parseFloat(mzmin),
-            "curRT": parseFloat(curRT)
-        };
         let graph3D = new Graph(document.querySelector("#graph-container"), tableData);
         graph3D.main();
 
-        console.log("graph3DInit :" , new Date() - t0);
-        t0 = new Date();
-
-        console.log("total init time: " , new Date() - t1);
     }, function(err){
         console.log(err);
     })

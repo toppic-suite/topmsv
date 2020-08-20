@@ -46,8 +46,6 @@ class LoadData{
             xhttp.onreadystatechange = function (){
                 if (this.readyState == 4 && this.status == 200) {
                     var peakData = JSON.parse(this.responseText);
-                    let t0 = new Date();    
-                    console.log("data length:", peakData.length)
                     resolve(peakData);
                 }
             }
