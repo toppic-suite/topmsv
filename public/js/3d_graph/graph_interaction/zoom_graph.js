@@ -4,7 +4,7 @@ peak intensity is also adjusted by ctrl + mouse wheel
 */
 
 class GraphZoom
-{
+{   
     constructor(){}
     
     adjustPeakHeight(scaleFactor){
@@ -15,6 +15,7 @@ class GraphZoom
     
         GraphRender.renderImmediate();
     }
+    
     onZoom(e){
         e.preventDefault();//disable scroll of browser
     
@@ -33,7 +34,7 @@ class GraphZoom
                 }
             }
             else{
-                this.onZoomFromEventListener(e, "both");
+               this.onZoomFromEventListener(e, "both");
             }
         }
         else{

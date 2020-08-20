@@ -1,15 +1,13 @@
+
 // graph_data.js : draws and manages the peaks on the screen
 class GraphData{
-    constructor(){
-        this.plotGroup = Graph.scene.getObjectByName("plotGroup");
-        this.markerGroup = Graph.scene.getObjectByName("markerGroup");
-        this.featureGroup = Graph.scene.getObjectByName("featureGroup");
-    }
+    constructor(){}
     /******** GRAPH RESET ******/
-    clearGraph() {
-        this.plotGroup.children = [];
-        this.markerGroup.children = [];
-        this.featureGroup.children = [];
+    static clearGraph() {
+        GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
+        GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
+        GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
+        
     }
     /******** PEAK COLOR ASSIGNMENT ******/
     pickPeakColor(intensity){
@@ -22,6 +20,7 @@ class GraphData{
     }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     drawCurrentScanMarker(rt){
+        let markerGroup = Graph.scene.getObjectByName("markerGroup");
         //draw a red line horizontal to x axis where y = current scan retention time
         let linegeo = new THREE.Geometry();
             
@@ -32,7 +31,7 @@ class GraphData{
     
         let marker = new THREE.Line(linegeo, linemat);
         marker.name = "currentScanMarker";
-        this.markerGroup.add(marker);
+        markerGroup.add(marker);
 
         marker.position.set(0, 0, rt);
     }
@@ -132,14 +131,14 @@ class GraphData{
         }
     }
     draw(curRT){        
-        this.clearGraph();
         let self = this;
-
-        let promise = LoadData.load3dDataByParaRange();
+        const curViewRange = Graph.viewRange;
+        
+        let promise = LoadData.load3dDataByParaRange(curViewRange);
 
         promise.then(function(peakData){
+            GraphData.clearGraph();    
             Graph.currentData = peakData;
-            
             self.getInteRange(Graph.currentData);
     
             //if camera angle is perpendicular to the graph plane
@@ -147,13 +146,9 @@ class GraphData{
                 self.plotPointAsCircle(Graph.currentData);
             }
             else{
-                let prevGroup = Graph.scene.getObjectByName("cylinderGroup");
-                if (prevGroup != undefined){
-                    Graph.scene.remove(prevGroup);
-                }
                 for (let i = 0; i < Graph.currentData.length; i++){   
                     self.plotPoint(Graph.currentData[i]);
-                }
+                }  
             }
             Graph.viewRange["intscale"] = 1;
         
@@ -161,10 +156,17 @@ class GraphData{
             if (parseFloat(curRT) <= Graph.viewRange.rtmax && parseFloat(curRT) >= Graph.viewRange.rtmin){
                 self.drawCurrentScanMarker(curRT);
             }
-            GraphFeature.drawFeature(Graph.viewRange);
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
+        }).then(function(){
+            let promise = GraphFeature.drawFeature(Graph.viewRange);
+            promise.then(function(){
+                resolve();
+            })
+        }).then(function(){
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
+
+            Graph.isQueryRunning = false;
         })
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
@@ -228,6 +230,8 @@ class GraphData{
     }
     /*plots a peak as a vertical line on the graph*/
     plotPoint = function(point) {
+        let plotGroup = Graph.scene.getObjectByName("plotGroup");
+
         let id = point.ID;
         let mz = point.MZ;
         let rt = point.RETENTIONTIME;
@@ -265,6 +269,6 @@ class GraphData{
         drawObj.name = "peak";
         drawObj.scanID = point.SPECTRAID;
         
-        this.plotGroup.add(drawObj);
+        plotGroup.add(drawObj);
     }
 }
