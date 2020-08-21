@@ -146,7 +146,7 @@
                 this.language.modalClose = this.language.modalClose || 'Close';
                 this.language.edit = this.language.edit || {};
                 this.language.edit = { title: this.language.edit.title || 'Update record',
-                                       button: this.language.edit.button || 'Update'
+                                       button: this.language.edit.button || 'Preview'
                                      };
                 this.language.delete = this.language.delete || {};
                 this.language.delete = { title: this.language.delete.title || 'Delete record',
@@ -186,7 +186,7 @@
                 if (dt.button('edit:name')) {
                     dt.button('edit:name').action(function (e, dt, node, config) {
                         that._openEditModal();
-
+                        // console.log("click edit button");
                         $(`#altEditor-edit-form-${that.random_id}`)
                         .off('submit')
                         .on('submit', function (e) {
@@ -306,8 +306,14 @@
                     return;
                 }
                 var columnDefs = this.completeColumnDefs();
+                //console.log("columnDefs",columnDefs);
+                //console.log("adata", adata.data()[0]);
+                preview(adata.data()[0]);
                 // columnDefs = columnDefs.slice(0,-1); // From second one to last second one
-                var data = this.createDialog(columnDefs, this.language.edit.title, this.language.edit.button,
+
+
+
+                /*var data = this.createDialog(columnDefs, this.language.edit.title, this.language.edit.button,
                     this.language.modalClose, 'editRowBtn', 'altEditor-edit-form');
 
                 var selector = this.modal_selector;
@@ -321,7 +327,7 @@
                 }
                 
                 $(selector + ' input[0]').focus();
-                $(selector).trigger("alteditor:some_dialog_opened").trigger("alteditor:edit_dialog_opened");
+                $(selector).trigger("alteditor:some_dialog_opened").trigger("alteditor:edit_dialog_opened");*/
             },
 
             /**
@@ -351,7 +357,7 @@
                     rowDataArray,
                     function(data,b,c,d,e){
                         that._editRowCallback(data,b,c,d,e);
-                        refresh();
+                        // refresh();
                         /*let mono_old = mono_mz_list1_g;
                         findNextLevelOneScan($('#envScan').text());
                         addSpectrum('spectrum2', peakList1_g, envList1_g, mono_old);*/
@@ -791,6 +797,20 @@
                     //TODO should honor dt.ajax().dataSrc
                     
                     var data = (typeof response === "string") ? JSON.parse(response) : response;
+                    // console.log("returnList", data);
+                    data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
+                    data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
+                    data.envlist[0].env.scan_id = parseInt(data.envlist[0].env.scan_id);
+                    data.envlist[0].env.envelope_id = parseInt(data.envlist[0].env.envelope_id);
+                    data.envlist[0].env.mono_mass = parseFloat(data.envlist[0].env.mono_mass);
+                    data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
+                    peakList_temp = data.peaklist;
+                    envList_temp = data.envlist;
+                    // envList_temp.envlist[0].mono_mass = parseFloat(data.envlist.mono_mass);
+                    // preview(data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass);
+                    // addSpectrum("spectrum2", data.peaklist, data.envlist, null);
+                    data = data.envlist.env;
+                    console.log("altEditor data: ", data);
                     var selector = this.modal_selector;
                     $(selector + ' .modal-body .alert').remove();
 

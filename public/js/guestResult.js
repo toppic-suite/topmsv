@@ -55,8 +55,9 @@ function getScanID(ID) {
 }
 let peakList1_g;
 let envList1_g;
+let graph1_g;
 function loadPeakList1(scanID, prec_mz) {
-    let t0 = new Date();
+    const graphFeatures = new GraphFeatures();
     if (scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -68,6 +69,7 @@ function loadPeakList1(scanID, prec_mz) {
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
                         envList1_g = JSON.parse(this.responseText);
+                      
                         console.log("envList1_g", envList1_g);
 
                         //get raw rt value
@@ -82,16 +84,18 @@ function loadPeakList1(scanID, prec_mz) {
                                     minrt = 0;
                                 }
                                 if (envList1_g !== 0){
-                                    let ms1Graph = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz);
+                                    graph1_g = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz, null, graphFeatures);
                                 }else {
-                                    let ms1GraphParameters = addSpectrum("spectrum1",peakList1_g, [],prec_mz);
-                                        load3dDataByParaRange(ms1GraphParameters.minMz, ms1GraphParameters.maxMz, minrt, maxrt, rt, true)
+                                    graph1_g = addSpectrum("spectrum1",peakList1_g, [],prec_mz,null,graphFeatures);
+                                        load3dDataByParaRange(graph1_g.minMz, graph1_g.maxMz, minrt, maxrt, rt, true)
 
                                     }    
                             }
                         };    
                         xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
                         xhttpRT.send();
+                      }
+
                     }
                 };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
@@ -273,7 +277,9 @@ function findNextLevelOneScan(scan) {
 }
 let peakList2_g;
 let envList2_g;
+let graph2_g;
 function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
+    const graphFeatures = new GraphFeatures();
     if(scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -292,9 +298,9 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                         envList2_g = JSON.parse(this.responseText);
                         //console.log(envList2_g);
                         if (envList2_g !== 0){
-                            addSpectrum("spectrum2",peakList2_g, envList2_g,null);
+                            graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
                         }else {
-                            addSpectrum("spectrum2",peakList2_g, [],null);
+                            graph2_g = addSpectrum("spectrum2",peakList2_g, [],null,null, graphFeatures);
                         }
                         // var t7 = performance.now();
                         // console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
@@ -820,10 +826,14 @@ function jumpTo(mono_mz) {
     }
 }
 function relocSpet1 (mono_mz) {
-    addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5);
+    const graphFeatures = new GraphFeatures();
+    graph1_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
+    //addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5);
 }
 function relocSpet2 (mono_mz) {
-    addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5);
+    const graphFeatures = new GraphFeatures();
+    graph2_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
+    // addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5);
 }
 var requestButton = document.getElementById('request');
 requestButton.addEventListener('click', function () {
@@ -1252,7 +1262,7 @@ function refresh() {
     }*/
 
     // addSpectrum('spectrum1', peakList1_g, envList1_g, mono_mz_list1_g);
-
+    const graphFeatures = new GraphFeatures();
     let msType_old = $('#msType').text();
     let scanID;
     if (msType_old === 'MS1') {
@@ -1274,17 +1284,19 @@ function refresh() {
                 if(envList1_g===0) {
                     envList1_g = [];
                 }
-                addSpectrum('spectrum1', peakList1_g, envList1_g, null);
+                addSpectrum('spectrum1', peakList1_g, envList1_g, null, null, graphFeatures);
             } else {
                 envList2_g = JSON.parse(res);
                 console.log(envList2_g);
                 if(envList2_g===0) {
                     envList2_g = [];
                 }
-                addSpectrum('spectrum2', peakList2_g, envList2_g, null);
+                addSpectrum('spectrum2', peakList2_g, envList2_g, null, null, graphFeatures);
             }
         }
     });
     // findNextLevelOneScan($('#envScan').text());
     //setTimeout()
 }
+let lockPara_3 = false;
+var correspondingSpecParams_g = [];
