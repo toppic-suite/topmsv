@@ -1,12 +1,11 @@
-//on click and drag, move the peaks based on the rt mz range
+/*pan_graph.js: on click and drag, move the peaks based on the rt mz range*/
 class GraphPan{
   constructor(){
     this.mstart = null;
     this.mend = new THREE.Vector3();
     this.mdelta = new THREE.Vector3();
   }
-
-  panView(x,z){
+  panView = (x,z) => {
     let viewRange = Graph.viewRange;
     let mzmin = viewRange.mzmin + (x * viewRange.mzrange);
     let rtmin = viewRange.rtmin + (z * viewRange.rtrange);
@@ -18,10 +17,9 @@ class GraphPan{
       rtmin = 0;
     }
     GraphControl.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
-    let graphData = new GraphData();
-    graphData.updateGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, Graph.curRT, true);
+    GraphData.updateGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, Graph.curRT, true);
 }
-  onMouseDown(e){
+  onMouseDown = (e) => {
     if (e.button === 0) {
         let mousePoint = GraphUtil.getMousePosition(e);
         if (mousePoint === null) {
@@ -31,7 +29,7 @@ class GraphPan{
         this.mstart.copy(mousePoint);
       }
   }
-  onMouseUp(e) {
+  onMouseUp = (e) => {
     let mousePoint = GraphUtil.getMousePosition(e);
     if (mousePoint === null) {
       return;
@@ -45,9 +43,9 @@ class GraphPan{
     }
     this.mstart = null;
   }
-  init(){
-    Graph.renderer.domElement.addEventListener('mousedown', this.onMouseDown.bind(this), false);
-    Graph.renderer.domElement.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+  main = () => {
+    Graph.renderer.domElement.addEventListener('mousedown', this.onMouseDown, false);
+    Graph.renderer.domElement.addEventListener('mouseup', this.onMouseUp, false);
   }
 }
 

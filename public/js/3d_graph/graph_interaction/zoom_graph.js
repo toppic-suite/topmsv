@@ -5,10 +5,10 @@ peak intensity is also adjusted by ctrl + mouse wheel
 
 class GraphZoom
 {   
-    isScrolling;
+    scrollTimer;//detect if scroll has ended or not
     constructor(){}
         
-    adjustPeakHeight(scaleFactor){
+    adjustPeakHeight = (scaleFactor) => {
         let peaks = Graph.scene.getObjectByName("plotGroup");
         let oriScale = peaks.scale.y;
 
@@ -16,46 +16,41 @@ class GraphZoom
     
         GraphRender.renderImmediate();
     }
-    
-    onZoom(e){
+    onZoom = (e) => {
         e.preventDefault();//disable scroll of browser
 
-        // Clear our timeout throughout the scroll
-        window.clearTimeout( this.isScrolling );
-        let self = this;
-        // Set a timeout to run after scrolling ends
-        this.isScrolling = setTimeout(function() {
+        window.clearTimeout( this.scrollTimer );
 
-            // Run the callback
-            let axis = GraphUtil.findObjectHover(e, Graph.axisgroup);//axis is null if cursor is not on axis
+        this.scrollTimer = setTimeout(() => {
+            let axis = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
 
             if (axis == null){
                 if (e.ctrlKey){//if control key is pressed --> intensity zoom
                     let scaleFactor = 0;
                     if (e.deltaY > 0) {
                         scaleFactor = 0.75;
-                        self.adjustPeakHeight(scaleFactor);
+                        this.adjustPeakHeight(scaleFactor);
                     }
                     else if (e.deltaY < 0){
                         scaleFactor = 1.5;
-                        self.adjustPeakHeight(scaleFactor);
+                        this.adjustPeakHeight(scaleFactor);
                     }
                 }
                 else{
-                    self.onZoomFromEventListener(e, "both");
+                    this.onZoomFromEventListener(e, "both");
                 }
             }
             else{
                 if (axis.name == "xAxis"){
-                    self.onZoomFromEventListener(e, "mz");
+                    this.onZoomFromEventListener(e, "mz");
                 }
                 else if(axis.name == "yAxis"){
-                    self.onZoomFromEventListener(e, "rt");
+                    this.onZoomFromEventListener(e, "rt");
                 }
             }
         }, 5); 
     }
-    onZoomFromEventListener(e, axisName){
+    onZoomFromEventListener = (e, axisName) => {
         //zoom action detected by event listener in each axis
         let scaleFactor = 0;
         let mousePos = GraphUtil.getMousePosition(e);
@@ -74,10 +69,8 @@ class GraphZoom
             scaleFactor = 1.2;
         }
         //figure out where the cursor is (near x axis, y axis)
-        if (axisName == "rt"){
-            
-            newrtrange = Graph.viewRange.rtrange * scaleFactor;
-           
+        if (axisName == "rt"){         
+            newrtrange = Graph.viewRange.rtrange * scaleFactor; 
         }
         else if (axisName == "mz"){//mz range adjust
             newmzrange = Graph.viewRange.mzrange * scaleFactor;
@@ -117,10 +110,10 @@ class GraphZoom
         if (newrtmin + newrtrange > Graph.dataRange.rtmax){
             newrtrange = Graph.dataRange.rtmax - newrtmin;
         }
-        let graphData = new GraphData();
-        graphData.updateGraph(newmzmin, newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, Graph.curRT, true);
+        //let graphData = new GraphData();
+        GraphData.updateGraph(newmzmin, newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, Graph.curRT, true);
     }
-    init(){
-        Graph.renderer.domElement.addEventListener('wheel', this.onZoom.bind(this), false);
+    main(){
+        Graph.renderer.domElement.addEventListener('wheel', this.onZoom, false);
     }
 }
