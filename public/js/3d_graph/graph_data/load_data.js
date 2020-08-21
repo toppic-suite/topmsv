@@ -1,6 +1,8 @@
+/*load_data.js: calculate which table to use, query database for data, and return result*/
+
 class LoadData{
     constructor(){}
-    static calculateTableNum(){
+    static calculateTableNum = () => {
         /*decide which table to query based on what is the ratio is between current range and whole graph
         if the ratio is small (1:100), the detail level is high, and the peaks in that range are more*/
         let tableNum = -1;
@@ -30,15 +32,11 @@ class LoadData{
         console.log("current table number : ", tableNum);
         return tableNum;
     }
-    static load3dDataByParaRange(curViewRange){
-        //same as load3dDataByParaRange, but this functions runs only when a scan changes
-        //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
-        //when a range changes in the same scan, call load3dDataByParaRange instead
-        let self = this;
-
-        return new Promise(function(resolve, reject){
+    static load3dData = (curViewRange) => {
+        /*load data from database based on current graph range*/
+        return new Promise((resolve, reject) => {
             let xhttp = new XMLHttpRequest();
-            let tableNum = self.calculateTableNum();
+            let tableNum = LoadData.calculateTableNum();
             let fullDir = (document.getElementById("projectDir").value).split("/");
             let fileName = (fullDir[fullDir.length -1].split("."))[0];
             let dir = fullDir[0].concat("/");
@@ -46,7 +44,6 @@ class LoadData{
             xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
 
             xhttp.onload = () => {
-                
                 if (xhttp.status == 200 && xhttp.readyState == 4) {
                     let peakData = JSON.parse(xhttp.response);
                     resolve(peakData);

@@ -1,12 +1,10 @@
 class GraphRender{
-
     constructor(){}
-    /******** RENDERING AND DRAWING FUNCTIONS *****/
-    static renderImmediate() {
+    
+    static renderImmediate = () => {
         if (Graph.camera.position.y > 25.495){
-            //switch to cylinder group
-            let graphData = new GraphData();
-            graphData.plotPointAsCircle();
+            //if camera is perpendicular to view, switch to cylinder group
+            GraphData.plotPointAsCircle();
         }else{
             let dataGroup = Graph.scene.getObjectByName("dataGroup");
             let prevGroup = dataGroup.getObjectByName("cylinderGroup");
@@ -15,5 +13,4 @@ class GraphRender{
         Graph.renderer.render( Graph.scene, Graph.camera );
         Graph.imageAddress = Graph.renderer.domElement.toDataURL();
     }
-    
 }
