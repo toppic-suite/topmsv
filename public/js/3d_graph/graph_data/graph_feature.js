@@ -64,7 +64,6 @@ class GraphFeature{
         featureGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
     }
     static loadMzrtData(minmz, maxmz, minrt, maxrt){
-        let t0 = new Date().getTime();
         return new Promise(function(resolve, reject){
             let self = this;
             if($('#featureStatus').val() != "0"){
@@ -82,9 +81,8 @@ class GraphFeature{
                         resolve();
                     } 
                 }
-                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, false);
-                xhttp.
-                send();
+                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+                xhttp.send();
             }
         })
     } 
