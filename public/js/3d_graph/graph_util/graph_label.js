@@ -67,7 +67,7 @@ class GraphLabel{
         let sep = "\n";
 
         //if intensity was 0, it should be just 0
-        if (Graph.intensitySum){
+        if (Graph.intensitySum == 0){
             sumInte = "Sum of Intensity: 0";
             highestInte = "Highest Intensity: 0";
         }

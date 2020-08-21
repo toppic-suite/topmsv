@@ -37,19 +37,21 @@ class LoadData{
         let self = this;
 
         return new Promise(function(resolve, reject){
+            let xhttp = new XMLHttpRequest();
             let tableNum = self.calculateTableNum();
-            var xhttp = new XMLHttpRequest();
             let fullDir = (document.getElementById("projectDir").value).split("/");
             let fileName = (fullDir[fullDir.length -1].split("."))[0];
             let dir = fullDir[0].concat("/");
             dir = dir.concat(fullDir[1]);
-            xhttp.onreadystatechange = function (){
-                if (this.readyState == 4 && this.status == 200) {
-                    var peakData = JSON.parse(this.responseText);
+            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
+
+            xhttp.onload = () => {
+                
+                if (xhttp.status == 200 && xhttp.readyState == 4) {
+                    let peakData = JSON.parse(xhttp.response);
                     resolve(peakData);
-                }
+                }     
             }
-            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, false);
             xhttp.send();
         });
     }
