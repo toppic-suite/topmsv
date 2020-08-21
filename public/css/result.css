@@ -374,7 +374,7 @@ svg#spectrum2{
     text-align: center;
 }
 
-button#plusBtn {
+/*button#plusBtn {
     position: relative;
     right: 130%;
 }
@@ -418,3 +418,4 @@ button#minusBtn {
     font-size:10px;
 
 }
+

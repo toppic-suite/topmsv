@@ -49,7 +49,8 @@ job.start();
 var avaiResourse = cpuCount - 2;
 console.log("cpuCount", cpuCount);
 
-const getTaskListSync = require('./library/getTaskListSync');
+const getTaskListSync = require("./library/getTaskListSync");
+
 /**
  * Create a task scheduler for topview app
  * It will check Tasks table in project database every second, if taskList is not empty then check
@@ -376,7 +377,9 @@ app.use('/', require("./router/addrow"));
 
 app.use('/', require("./router/editrow"));
 
-app.use('/', require("./router/peaklist"))
+app.use('/', require("./router/previewEdit"));
+
+app.use('/', require("./router/peaklist"));
 
 
 app.use('/', require("./router/scanID"));
@@ -409,6 +412,7 @@ app.use('/', require("./router/envlist"));
 
 app.use('/', require("./router/envtable"));
 
+
 /*routers used for 3d visualization */
 app.use('/', require("./router/load3dDataByRT"));
 app.use('/', require("./router/load3dDataByParaRange"));
@@ -416,6 +420,21 @@ app.use('/', require("./router/getPeaksPerTable"));
 app.use('/', require("./router/getMax"));
 /*routers used for 3d visualization -- feature annotation*/
 app.use('/', require("./router/loadMzrtData"));
+
+app.use('/', require("./router/projectTab"));
+
+app.use('/', require("./router/newProject"));
+
+app.use('/', require("./router/createProject"));
+
+app.use('/', require("./router/experimentManagement"));
+
+app.use('/', require("./router/createExperiment"));
+
+app.use('/', require("./router/test"));
+
+app.use('/',require("./router/getInfo"));
+
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']
