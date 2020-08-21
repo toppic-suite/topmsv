@@ -3,18 +3,18 @@ class GraphInit{
     constructor(){}
      
     /******** GRAPH EVENTS******/
-    createSaveGraphEvent(){//add an event listener for when a user clicks on graph download button
+    static createSaveGraphEvent = () => {//add an event listener for when a user clicks on graph download button
         document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
     }
-    createRedrawEvent(){
+    static createRedrawEvent = () => {
         //listener for rt range and mz range change in 3d graph
         let redrawRequestButton = document.getElementById('request3dGraphRedraw');
+
         redrawRequestButton.addEventListener('click', function(){
             let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
             let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
             let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
             let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
-            let curRT = Graph.curRT; 
 
             //error handing
             if (minRT > maxRT){
@@ -34,7 +34,7 @@ class GraphInit{
     }
     /******** CREATE GRAPH ELEMENTS ******/
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
-    createAxis(){
+    static createAxis = () => {
         let xAxisGeo = new THREE.Geometry();
         let yAxisGeo = new THREE.Geometry();
         let axisMaterial = new THREE.LineBasicMaterial({ color:"#FFFF00" });
@@ -51,10 +51,10 @@ class GraphInit{
         xAxis.name = "xAxis";
         yAxis.name = "yAxis";
         
-        Graph.axisgroup.add(xAxis);
-        Graph.axisgroup.add(yAxis);
+        Graph.axisGroup.add(xAxis);
+        Graph.axisGroup.add(yAxis);
     }
-    createGrid() {
+    static createGrid = () => {
         let y = 0;
         let gridgeo = new THREE.Geometry();
         let gridmaterial = new THREE.LineBasicMaterial({ color:Graph.gridColor });
@@ -68,46 +68,47 @@ class GraphInit{
         }
         return new THREE.LineSegments(gridgeo, gridmaterial);
     }
-    createPlane(){
+    static createPlane = () => {
         let surfaceGeo = new THREE.PlaneGeometry(Graph.gridRange, Graph.gridRange);
         let surfaceMat = new THREE.MeshBasicMaterial({ color: Graph.surfaceColor, side: THREE.DoubleSide });
         let surface = new THREE.Mesh(surfaceGeo, surfaceMat);
+
         surface.rotateX(Math.PI/2);
         surface.position.set(Graph.gridRange / 2, -0.05, Graph.gridRange / 2);
-        Graph.gridgroup.add(surface);
-        Graph.gridgroup.add(this.createGrid());
+
+        Graph.gridGroup.add(surface);
+        Graph.gridGroup.add(GraphInit.createGrid());
     }
-    initColorSet(){
+    static initColorSet = () => {
         //pick peak color based on each peak intensity -- currently 5 levels gradient
         let intRange = Graph.tablePeakCount[0].INTMAX - Graph.tablePeakCount[0].INTMIN;
         
         for (let i = 1; i <= Graph.gradientColor.length; i++)
         {
             let val = Graph.tablePeakCount[0].INTMIN + Math.pow(intRange, i/Graph.gradientColor.length);
-            //console.log("interval ", i, ": ", val);
             Graph.cutoff.push(val);
         } 
     }
-    initRenderer(){
+    static initRenderer = () => {
         Graph.renderer.setPixelRatio( window.devicePixelRatio );
         Graph.renderer.setSize(window.innerWidth, window.innerHeight * 0.3);
         Graph.renderer.setClearColor(0xEEEEEE, 1);
         Graph.renderer.domElement.id = "canvas3D";
         Graph.graphEl.appendChild(Graph.renderer.domElement);
     }
-    initCamera(){
+    static initCamera = () => {
         Graph.camera.position.set(15, 15, 30);
     }
-    initGraphControl(){
+    static initGraphControl = () => {
         /*initiate graph interactions*/
         let zoomObj = new GraphZoom();
-        zoomObj.init(Graph.scene);
+        zoomObj.main(Graph.scene);
 
         let panObj = new GraphPan();
-        panObj.init();
+        panObj.main();
 
         let hoverObj = new HoverFeature();
-        hoverObj.init();
+        hoverObj.main();
 
         let camera = Graph.camera;
         let renderer = Graph.renderer;
@@ -121,22 +122,22 @@ class GraphInit{
         Graph.graphControls.enableZoom = false;
         Graph.graphControls.enabled = true;
     }
-    initScene(){
-        this.initRenderer();
-        this.initCamera();
+    static initScene = () => {
+        GraphInit.initRenderer();
+        GraphInit.initCamera();
         // rendering element
         window.addEventListener("resize", GraphControl.resizeCamera.bind(Graph.scene));
         GraphControl.resizeCamera();
     }
-    init(){
-        this.initScene();
-        this.initColorSet();
-        this.initGraphControl();
+    static main = () => {
+        GraphInit.initScene();
+        GraphInit.initColorSet();
+        GraphInit.initGraphControl();
 
-        this.createPlane();
-        this.createAxis();
-        this.createRedrawEvent();
-        this.createSaveGraphEvent();
+        GraphInit.createPlane();
+        GraphInit.createAxis();
+        GraphInit.createRedrawEvent();
+        GraphInit.createSaveGraphEvent();
        
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
