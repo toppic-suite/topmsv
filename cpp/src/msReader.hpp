@@ -1,7 +1,6 @@
 #ifndef MSREADER_HPP_
 #define MSREADER_HPP_
 
-
 #include <iostream>
 #include <memory>
 #include <cmath>
@@ -31,8 +30,6 @@ public:
 	MSDataFilePtr msd_ptr_;
 	pwiz::msdata::SpectrumListPtr spec_list_ptr_;
 
-
-
 	msReader(std::string filename);
 	std::string file_name;
 	//pwiz::msdata::MSData test_msdata;
@@ -46,6 +43,7 @@ public:
 	void getScanRangeDB();
 	void getRange();
 	void getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
+	void calculateInitBin(int ms1scancount, int ms1peakcount);
 	void createDtabase_normal();
 	void createDtabase();
 	void getRangeDB();

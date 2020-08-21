@@ -46,4 +46,5 @@ add_executable(mzMLReader ${MZMLREADER_MAIN_SRCS} ${MSREADER_SRC} ${PWIZ_SRC} ${
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_link_libraries(mzMLReader dl xalan-c xerces-c boost_program_options
         boost_filesystem boost_system boost_thread boost_iostreams boost_chrono pthread z)
+
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 

@@ -96,7 +96,7 @@ var upload = router.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,envFile1.name,uid,publicStatus);
+                                insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,0,envFile1.name,uid,publicStatus);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
                                 message.to = emailtosend;
@@ -111,9 +111,8 @@ var upload = router.post('/upload', function (req, res) {
                                 res.write('<h2>Link: </h2>');
                                 res.write(message.text);
 
-                                let app = './cpp/bin/mzMLReader';
                                 let parameter = des_file + ' -f';
-                                submitTask(id, app, parameter,1);
+                                submitTask(id, './cpp/bin/mzMLReader', parameter, 1);
 
                                 app = 'node';
                                 let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
@@ -223,7 +222,7 @@ var upload = router.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,uid,publicStatus);
+                            insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
                             message.to = emailtosend;
@@ -238,9 +237,9 @@ var upload = router.post('/upload', function (req, res) {
                             res.write('<h2>Link: </h2>');
                             res.write(message.text);
 
-                            let app = './cpp/bin/mzMLReader';
                             let parameter = des_file + ' -f';
-                            submitTask(id, app, parameter, 1);
+
+                            submitTask(id, './cpp/bin/mzMLReader', parameter, 1);
 
                             res.end();
                             break;

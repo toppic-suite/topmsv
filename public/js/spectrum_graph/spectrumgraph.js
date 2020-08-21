@@ -590,6 +590,7 @@ function drawSpectrum(svgId, spectrumParameters, peakData,ionData){
 	if(spectrumParameters.graphFeatures.showCircles && peakData.envelope_list != null)
 	{
 		addCircles(svg,spectrumParameters,peakData);
+
 	}
 	if(spectrumParameters.graphFeatures.showIons && ionData != null)
 	{

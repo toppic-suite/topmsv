@@ -132,8 +132,58 @@ void msReader::getAllPeaks(double mzmin, double mzmax, double rtmin, double rtma
   }
   std::cout << std::endl;
 };
+void msReader::calculateInitBin(int ms1scancount, int ms1peakcount){
+  /*set initial bin size for m/z and rt
+    set m/z size to be a number that reduces PEAKS1 to be 1/2 to 1/4 of PEAKS0*/
+  /*double mz_bin = 1;
+  double interval = 0.05;//interval to increase/decrease mz_bin
+  int rt_range = int(RANGE.RTMAX - RANGE.RTMIN);
+  int mz_range = int(RANGE.MZMAX - RANGE.MZMIN);
 
+  RANGE.RTSIZE = int((RANGE.RTMAX - RANGE.RTMIN) / ms1scancount);//set rt bin size 
+  
+  std::cout << "total peak at PEAK0 " << ms1peakcount << std::endl;
 
+  //if estimated peak count in this grid with rt bin size as RANGE.RTSIZE and m/z bin size as mz_bin 
+  //is bigger than total peaks in PEAKS0 (ms1peakcount)
+  //increase mz_bin in each iteration
+  //otherwise, decrease mz_bin
+
+  int peak_cnt = int(mz_range/mz_bin) * int(rt_range/RANGE.RTSIZE);
+  std::cout << "peak_cnt : "<< peak_cnt << ", total ms1 peak : " << ms1peakcount << std::endl;
+  std::cout << "rt size " << RANGE.RTSIZE << std::endl;
+
+  if (peak_cnt > ms1peakcount/2){
+    interval = interval * -1;
+    std::cout << "bin size needs to be bigger" << std::endl;
+    while (mz_bin < RANGE.MZMAX){
+      int grid_y = int(rt_range/RANGE.RTSIZE);
+      int grid_x = int(mz_range/mz_bin);
+      if (grid_x * grid_y < ms1peakcount/2){
+        RANGE.MZSIZE = mz_bin;
+        std::cout << "final mz bin size : " << mz_bin << " grid size : " << grid_x << " * " << grid_y << " peak count :" << grid_x * grid_y<< std::endl;
+        return;
+      }
+      mz_bin = mz_bin - interval;
+    }
+  }
+  else{
+    std::cout << "bin size needs to be smaller" << std::endl;
+    while (mz_bin > 0){
+      int grid_y = int(rt_range/RANGE.RTSIZE);
+      int grid_x = int(mz_range/mz_bin);
+      if (grid_x * grid_y > ms1peakcount/2){
+        RANGE.MZSIZE = mz_bin;
+        std::cout << "final mz bin size : " << mz_bin << " grid size : " << grid_x << " * " << grid_y << " peak count :" << grid_x * grid_y<< std::endl;
+        return;
+      }
+      mz_bin = mz_bin - interval;
+    }
+  
+  }
+  std::cout << "mz bin size not found." << " last grid size : " << int(mz_range/0.05) << " * " << int(rt_range/RANGE.RTSIZE) << "peak count" << int(mz_range/0.05) * int(rt_range/RANGE.RTSIZE) << std::endl;
+*/
+}
 void msReader::createDtabase_normal() {
   databaseReader.openDatabase(file_name);
   databaseReader.creatTable();
@@ -162,11 +212,14 @@ void msReader::createDtabase_normal() {
   databaseReader.closeDatabase();
 }
 void msReader::createDtabase() { //stmt
+  clock_t t0 = clock();
   clock_t t1 = clock();
   databaseReader.openDatabase(file_name);
+  databaseReader.openDatabaseInMemory(file_name);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.creatTable();
+  databaseReader.creatTableInMemory();
   std::cout <<"Create table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   int scanLevel = 1;
@@ -174,14 +227,29 @@ void msReader::createDtabase() { //stmt
   int spSize = sl->size();
   std::vector<Point> pointsList;
   databaseReader.beginTransaction();
+  databaseReader.beginTransactionInMemory();
   std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.openInsertStmt();
+  databaseReader.openInsertStmtMs1Only();
+  databaseReader.openInsertStmtInMemory();
+
   int levelOneID = 0;
   int levelTwoID = 0;
   int levelOneScanID = 0;
   int levelTwoScanID = 0;
   double peaksInteSum = 0.000;
+
+  double rtmin = DBL_MAX;
+  double rtmax = 0;
+  double mzmin = DBL_MAX;
+  double mzmax = 0;
+  double intemin = DBL_MAX;
+  double intemax = 0;
+
+  int ms1scancount = 0;
+  int ms1peakcount = 0;
+
   for(int i = 0; i < spSize; i++){
     // if (sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>() == scanLevel) {
       SpectrumPtr s = sl->spectrum(i, true); // read with binary data
@@ -197,13 +265,32 @@ void msReader::createDtabase() { //stmt
       vector<MZIntensityPair> pairs;
       s->getMZIntensityPairs(pairs);
       peaksInteSum = 0.000;
+
+      if (scanLevel == 1){
+        ms1scancount++;//calculate ms1 scan count
+      }
+
       for (int j=0; j<pairs.size(); j++) {
         count++ ;
         // std::cout << count << std::endl;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
-        databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz);
-      }
+        if (scanLevel == 1){//PEAKS0 contains level 1 data only
+          databaseReader.insertPeakStmtMs1(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+          databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+          ms1peakcount++ ;
 
+          //compare with min max values to find overall min max value
+        if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
+        if (pairs[j].mz > mzmax){mzmax = pairs[j].mz;}
+        if (pairs[j].intensity < intemin){intemin = pairs[j].intensity;}
+        if (pairs[j].intensity > intemax){intemax = pairs[j].intensity;}
+        //compare with min max values to find overall min max value
+        if (retentionTime < rtmin){rtmin = retentionTime;}
+        if (retentionTime > rtmax){rtmax = retentionTime;}
+
+      }
+        databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+      }
       // cout << currentID <<endl;
       if (scanLevel == 2) {
         // prec_mz, prec_charge, prec_inte
@@ -249,18 +336,55 @@ void msReader::createDtabase() { //stmt
     // }
   }
   databaseReader.closeInsertStmt();
+  databaseReader.closeInsertStmtMs1Only();
+  databaseReader.closeInsertStmtInMemory();
   std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
-  databaseReader.endTransaction();
-  std::cout <<"End Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+
+  //store min max values in RANGE
+  RANGE.MZMAX = mzmax;
+  RANGE.MZMIN = mzmin;
+  RANGE.INTMAX = intemax;
+  RANGE.INTMIN = intemin;
+  RANGE.RTMAX = rtmax;
+  RANGE.RTMIN = rtmin;
+  RANGE.COUNT = ms1peakcount;//peakCount
+  RANGE.SCANCOUNT = ms1scancount;
+  RANGE.RTSIZE = int((RANGE.RTMAX - RANGE.RTMIN) / ms1scancount);//set rt bin size 
+
   t1 = clock();
+  calculateInitBin(ms1scancount, ms1peakcount);
+  std::cout <<"calculateInitBin Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  std::cout << "mzmin:" << RANGE.MZMIN << "\tmzmax:" << RANGE.MZMAX << "\trtmin:" << RANGE.RTMIN ;
+  std::cout << "\trtmax:" << RANGE.RTMAX  << "\tcount:" << RANGE.COUNT << "\tmzsize:" << RANGE.MZSIZE << "\trtsize:" << RANGE.RTSIZE << std::endl;
+  
+  std::cout <<"End Insert to PEAKS0: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
+
+  databaseReader.setRange(RANGE);
+  databaseReader.insertConfigOneTable();
+  databaseReader.endTransaction();
+  databaseReader.endTransactionInMemory();
+  
+  //create index on peak id (for copying to each layer later)
+  databaseReader.createIndexOnIdOnly();
+  
+  t1 = clock();
+  databaseReader.insertDataLayerTable();
+  std::cout <<"End Insert to all layer tables: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  
+  t1 = clock();
+  
+  databaseReader.createIndexLayerTable();
   databaseReader.createIndex();
   std::cout <<"Creat Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  
+  std::cout <<"total elapsed time: "<< (clock() - t0) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }
-
 // get range of scan from database
 void msReader::getScanRangeDB() {
   clock_t t1 = clock();
@@ -400,7 +524,7 @@ void msReader::createDtabaseOneTable() { //stmt
   databaseReader.insertConfigOneTable();
   std::cout <<"Insert range Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
-  databaseReader.creatLayersTable();
+  //databaseReader.creatLayersTable();
   std::cout <<"Create layers table Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.closeDatabase();
@@ -435,7 +559,7 @@ void msReader::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, d
   databaseReader.openDatabase(file_name);
   // std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
-  databaseReader.getPeaksOneTable(mzmin, mzmax, rtmin, rtmax, numpoints, intmin);
+  //databaseReader.getPeaksOneTable(mzmin, mzmax, rtmin, rtmax, numpoints, intmin);
   // std::cout <<"Get Peaks: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.closeDatabase();
@@ -443,7 +567,7 @@ void msReader::getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, d
   t1 = clock();
 };
 void msReader::createDtabaseOneTableRTree() { //stmt
-  clock_t t1 = clock();
+  /*clock_t t1 = clock();
   getRangeFromRaw();
   std::cout <<"Get range from raw data Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
@@ -497,6 +621,7 @@ void msReader::createDtabaseOneTableRTree() { //stmt
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+*/
 }
 void msReader::getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin) {
   int scanLevel = 1;

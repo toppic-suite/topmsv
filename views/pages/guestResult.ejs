@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <% include ../partials/head %>
-    <script
-            src="https://code.jquery.com/jquery-3.4.1.min.js"
-            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-            crossorigin="anonymous"></script>
-    <script
-            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-            crossorigin="anonymous"></script>
+	<% include ../partials/head %>
+	<script
+			src="https://code.jquery.com/jquery-3.4.1.min.js"
+			integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			crossorigin="anonymous"></script>
+	<script
+			src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+			integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+			crossorigin="anonymous"></script>
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="css/jquery-ui.min.css">
-    <link href="css/guestResult.css" type="text/css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/jquery.fileupload.css">
+	<link rel="stylesheet" href="css/jquery-ui.min.css">
+	<link href="css/result.css" type="text/css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/jquery.fileupload.css">
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="js/spectrum_graph/graphFeatures.js" ></script>
@@ -31,68 +31,149 @@
     <script src="js/spectrum_graph/spectrumgraph.js" ></script>
     <script src="js/spectrum_graph/spectrumdownload.js" ></script>
 
-    <script src="js/download/FileSaver.js"></script>
-    <script src="js/download/saveImage.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+	<script src="js/download/FileSaver.js"></script>
+	<script src="js/download/saveImage.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+	
+	<!--js files related to 3d graph-->
+	<script type="text/javascript" src ="js/3d_graph/three.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src ="js/3d_graph/OrbitControls.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src='js/3d_graph/threex.domevents.js' crossorigin="anonymous"></script>
 </head>
 <body class="container">
 
-<main>
-    <!-- Result Modal -->
-    <div id="seqModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+	<main>
+		<!-- Modal -->
+		<div id="msalignModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
 
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Result</h4>
-                </div>
-                <div class="modal-body">
-                    <div>
-                        <p>
-                            Click the button below to check all of your sequence results.
-                        </p>
-                        <div>
-                            <button class="btn bwButton" id="seqResult">Sequence Result</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="jumbotron">
-        <div>
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Upload</h4>
+					</div>
+					<div class="modal-body">
+						<h4 style="margin-top: 0">Msalign files</h4>
+						<p>
+							If you want to delete current existing msalign file for envelope peaks, please click the button below.
+						</p>
+						<button class="btn" id="deleteMsalign">Delete existing msalign file</button>
+						<br>
+						<p>If you want to upload new msalign files for envelope peaks, please upload both MS1 msalign file and MS2 msalign file below.
+							Once you upload files successfully, please wait our server to process data. When everything is done, we will send an email to you.</p>
+						<label for="MS1_msalign">MS1 msalign file</label>
+						<input class="form-control-file" type="file" id="MS1_msalign">
+						<br>
+						<label for="MS2_msalign">MS2 msalign file</label>
+						<input class="form-control-file" type="file" id="MS2_msalign">
+						<br>
+						<table>
+							<tr>
+								<td><button class="btn" id="modalUpload">Upload</button></td>
+								<td width="40pt"></td>
+								<td style="width: 300pt">
+									<div id="dbprogress" class="progress">
+										<div id="progressbar" class="progress-bar progress-bar-striped" role="progressbar"
+											 style="width: 0%">0%</div>
+									</div>
+								</td>
+							</tr>
+						</table>
+						<hr style="margin-bottom: 7px; margin-top: 10px">
+						<div>
+							<h4>Sequence file</h4>
+							<p>
+								If you want to delete current existing sequence file, please click the button below.
+							</p>
+							<button class="btn" id="deleteSeq">Delete existing sequence</button>
+							<p>If you want to add sequence information to this project, please upload a csv file for it below.</p>
+							<label for="sequenceFile">New sequence file</label>
+							<input class="form-control-file" type="file" id="seqFile">
+							<br>
+							<table>
+								<tr>
+									<td><button class="btn" id="seqUpload">Upload</button></td>
+									<td width="40pt"></td>
+									<td style="width: 300pt">
+										<div id="seqProgress" class="progress">
+											<div id="seqProgressbar" class="progress-bar progress-bar-striped" role="progressbar"
+												 style="width: 0%">0%</div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Result Modal -->
+		<div id="seqModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Result</h4>
+					</div>
+					<div class="modal-body">
+						<div>
+							<p>
+								Click the button below to check all of your sequence results.
+							</p>
+							<div>
+								<button class="btn bwButton" id="seqResult">Sequence Result</button>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="jumbotron">
+			<div>
 				<span class="projectsummary">
 					<div class="row">
-						<div class="projectName col-sm-9">
+						<div class="projectName col-sm-7">
 						<strong>Project Name:</strong> <%= summary.ProjectName %>
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-5">
 							<div class="row">
-                                <div class="col-sm-4">
-
-                                </div>
-								<div class="col-sm-4">
+								<div class="col-sm-3">
 								<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
 								</div>
-								<div class="col-sm-4">
-<!--									<button id="resultBtn" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Result</button>-->
-                                    <button id="resultBtn" type="button" class="btn">Sequence</button>
+								<div class="col-sm-2">
+								<button id="topfdtask" class="btn" onclick="window.location.href='/topfd?projectCode=<%= projectCode%>'">TopFD</button>
 								</div>
+								<div class="col-sm-2">
+								<button id="toppicTask" class="btn" onclick="window.location.href='/toppic?projectCode=<%= projectCode%>'">Toppic</button>
+								</div>
+								<div class="col-sm-2">
+									<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#msalignModal">Upload</button>
+								</div>
+								<div class="col-sm-3">
+<!--									<button id="uploadSequence" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Result</button>-->
+									<button id="uploadSequence" type="button" class="btn">Sequence</button>
+								</div>
+
 							</div>
 						</div>
 					</div>
@@ -105,184 +186,248 @@
 						</div>
 					</div>
 				</span>
-        </div>
+			</div>
 
-        <hr>
+			<hr>
 
-        <div id="input">
-            <div class="scanleveltitle row">
-                <div class="col-sm-9">
-                    <strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
-                </div>
-                <div class="col-sm-3">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label for="scanID" id="scanRange">Scan:</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
-                        </div>
-                        <div class="col-sm-4">
-                            <button class="btn" type="submit" id="request">Request</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+			<div id="input">
+				<div class="scanleveltitle row">
+					<div class="col-sm-9">
+						<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
+					</div>
+					<div class="col-sm-3">
+						<div class="row">
+							<div class="col-sm-4">
+								<label for="scanID" id="scanRange">Scan:</label>
+							</div>
+							<div class="col-sm-4">
+								<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="request">Request</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="scanleveltitle row">
+					<div class="col-sm-4">
+						<div class="row">
+							<div class="col-sm-3">
+								RT:<span id="rt-hover">0</span>
+							</div>
+							<div class="col-sm-6">
+								<div id="shiftRight">
+									Intensity:<span id="intensity-hover">0</span>
+								</div>
+							</div>
+							<div class="col-sm-3">
+								Scan:<span id="scan-hover">0</span>
+							</div>
+						</div>
+					</div>
+				</div>
 
-            <div class="scanleveltitle row">
-                <div class="col-sm-4">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            RT:<span id="rt-hover">0</span>
-                        </div>
-                        <div class="col-sm-6">
-                            <div id="shiftRight">
-                                Intensity:<span id="intensity-hover">0</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            Scan:<span id="scan-hover">0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
+				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
+				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
+				<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
+				<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
+				<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
 
-            <input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
-            <input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
-            <input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
-            <input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
-            <input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
-            <input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
-            <input type="hidden" id="email" value=<%= summary.EmailAddress %>>
+			</div>
+			<div class="row">
+				<div id="rt-sum" class="col-sm-12">
+				</div>
+			</div>
 
-        </div>
-        <div class="row">
-            <div id="rt-sum" class="col-sm-12">
-            </div>
-        </div>
+			<hr>
+			<div>
+				<div class="scanleveltitle row">
+					<div class="col-sm-2">
+						<div><strong>Retention Time:</strong></div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-5">
+							<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+						</div>
+						<div class="col-sm-2 rangeMarker">
+							<span>-</span>
+						</div>
+						<div class="col-sm-5">
+							<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+						</div>
+					</div>
+					<div class="col-sm-1">
+						<div><strong>m/z:</strong></div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-5">
+							<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+						</div>
+						<div class="col-sm-2 rangeMarker">
+							<span>-</span>
+						</div>
+						<div class="col-sm-5">
+							<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+						</div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-6">
+							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+						</div>
+						<div class="col-sm-6">
+							<button class="btn" type="submit" id="save3dGraph">Save as Image</button>
+						</div>
+					</div>
+					
+				</div>
+				<div>
+					<div class="graph-metadata-container">
+					<span id="graph-metadata"></span>
+				</div>			
 
-        <hr>
-        <div id="scanLevelOne">
-            <div class="row scanleveltitle">
-                <div class="col-sm-7">
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <b>Scan Level 1</b>
-                        </div>
-                        <div class="col-sm-2" style="position: relative; right: 1%">
-                            Scan: <span id="scanID1"></span>
-                        </div>
-                        <div class="col-sm-7">
-                            Retention Time: <span id="scan1RT"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                </div>
-                <div class="col-sm-3">
-                    <div class="row">
-                        <div class="col-sm-4">
+				<div class="col-md-11 col2" id="graph-container"></div>
+				</div>
+				
+				<div class="hover-label-container">
+					<span id="graph-hover-label"></span>
+				</div>
+			</div>	
+			<div id="scanLevelOne">
+				<div class="row scanleveltitle">
+					<div class="col-sm-7">
+						<div class="row">
+							<div class="col-sm-3">
+								<b>Scan Level 1</b>
+							</div>
+							<div class="col-sm-2" style="position: relative; right: 1%">
+								Scan: <span id="scanID1"></span>
+							</div>
+							<div class="col-sm-7">
+								Retention Time: <span id="scan1RT"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-2">
+					</div>
+					<div class="col-sm-3">
+						<div class="row">
+							<div class="col-sm-4">
 
-                        </div>
-                        <div class="col-sm-4">
-                            <button class="btn" type="submit" id="prev1">Previous</button>
-                        </div>
-                        <div class="col-sm-4">
-                            <button class="btn" type="submit" id="next1">Next</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <svg id="spectrum1"></svg><br />
-        </div>
-        <hr>
-        <div id="scanLevelTwo">
-            <div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
-                <div class="col-sm-2" style="padding-right: 5px">
-                    <b>Scan Level 2</b>
-                </div>
-                <div class="col-sm-1" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
-                    Scan:<span id="scanID2"></span>
-                </div>
-                <div class="col-sm-9">
-                    <div class="row">
-                        <div class="col-sm-3" style="padding-left: 0px; padding-right: 0px">
-                            Precursor MZ:<span id="prec_mz"></span>
-                        </div>
-                        <div class="col-sm-2" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
-                            Precursor Charge:<span id="prec_charge"></span>
-                        </div>
-                        <div class="col-sm-4" style="padding-left: 0px; padding-right: 0px; position: relative; left: 2%">
-                            Precursor Intensity:<span id="prec_inte"></span>
-                        </div>
-                        <div class="col-sm-3" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
-                            Retention Time:<span id="rt"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="scanleveltitle row">
-                <div class="col-sm-12">
-                    <span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
-                </div>
-            </div>
-            <div id="tabs">
-                <ul id="tabList">
-                </ul>
-                <svg id="spectrum2"></svg>
-            </div>
-        </div>
-        <br>
-        <hr>
-        <div id="envInfo">
-            <div class="scanleveltitle" id="scanLevelTwoInfo">
-                <b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                <span id="msType"></span> Scan: <span id="envScan"></span>
-                <!--<div>
-                    Proteoform: <span id="proteoform"></span>
-                </div>-->
-            </div>
-            <div class="row">
-                <div class="col-sm-9">
-                    Proteoform: <span id="proteoform"></span>
-                </div>
-                <div class="col-sm-1">
-                    <button class="btn" id="inspect">Inspect</button>
-                </div>
-                <div class="col-sm-1">
-                    <button class="btn" id="switch">MS1</button>
-                </div>
-                <div class="col-sm-1">
-                    <button class="btn" id="hide">Hide</button>
-                </div>
-            </div>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="prev1">Previous</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="next1">Next</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<svg id="spectrum1"></svg><br />
+			</div>
+			<hr>
+			<div id="scanLevelTwo">
+				<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
+					<div class="col-sm-2" style="padding-right: 5px">
+						<b>Scan Level 2</b>
+					</div>
+					<div class="col-sm-1" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+						Scan:<span id="scanID2"></span>
+					</div>
+					<div class="col-sm-9">
+						<div class="row">
+							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px">
+								Precursor MZ:<span id="prec_mz"></span>
+							</div>
+							<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+								Precursor Charge:<span id="prec_charge"></span>
+							</div>
+							<div class="col-sm-4" style="padding-left: 0px; padding-right: 0px; position: relative; left: 2%">
+								Precursor Intensity:<span id="prec_inte"></span>
+							</div>
+							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+								Retention Time:<span id="rt"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="scanleveltitle row">
+					<div class="col-sm-12">
+						<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
+					</div>
+				</div>
+				<div id="tabs">
+					<ul id="tabList">
+					</ul>
+					<svg id="spectrum2"></svg>
+				</div>
+			</div>
+			<br>
+			<hr>
+			<div id="envInfo">
+				<div class="scanleveltitle" id="scanLevelTwoInfo">
+					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
+					<span id="msType"></span> Scan: <span id="envScan"></span>
+					<!--<div>
+						Proteoform: <span id="proteoform"></span>
+					</div>-->
+				</div>
+				<div class="row">
+					<div class="col-sm-9">
+						Proteoform: <span id="proteoform"></span>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="inspect">Inspect</button>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="switch">MS1</button>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="hide">Hide</button>
+					</div>
+				</div>
 
-            <div id="datatable">
-                <table id="envTable" class="display" style="width:100%">
-                    <thead>
-                    <tr>
-                        <th>Envelope ID</th>
-                        <th>Scan</th>
-                        <th>Charge</th>
-                        <th>Mono Mass</th>
-                        <th>Intensity</th>
-                        <th>Mono M/Z</th>
-                    </tr>
-                    </thead>
-                    <!--<tfoot>
-                    <tr>
-                        <th>Scan</th>
-                        <th>Charge</th>
-                        <th>Theo Mono Mass</th>
-                        <th>Mono M/Z</th>
-                    </tr>
-                    </tfoot>-->
-                </table>
-            </div>
-        </div>
-    </div>
-</main>
-<script type="text/javascript" src="js/guestResult.js"></script>
-<script src="js/dataTables.altEditor.free.js"></script>
+				<div id="datatable">
+				<table id="envTable" class="display" style="width:100%">
+					<thead>
+					<tr>
+						<th>Envelope ID</th>
+						<th>Scan</th>
+						<th>Charge</th>
+						<th>Mono Mass</th>
+						<th>Intensity</th>
+						<th>Mono M/Z</th>
+					</tr>
+					</thead>
+					<!--<tfoot>
+					<tr>
+						<th>Scan</th>
+						<th>Charge</th>
+						<th>Theo Mono Mass</th>
+						<th>Mono M/Z</th>
+					</tr>
+					</tfoot>-->
+				</table>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script type="text/javascript" src="js/guestResult.js"></script>
+	<script src="js/dataTables.altEditor.free.js"></script>
+	
+<!--js files related to 3d graph-->
+	<script src="js/3d_graph/graph.js"></script>
+	<script src="js/3d_graph/graphRender.js"></script>
+	<script src="js/3d_graph/zoomGraph.js"></script>
+	<script src="js/3d_graph/panGraph.js"></script>
+	<script src="js/3d_graph/hoverGraph.js"></script>
+	<script src="js/3d_graph/downloadGraph.js"></script>
+<!--library related to image download-->
+	<script src="js/download/FileSaver.js"></script>
+	<script src="js/download/saveImage.js"></script>
+	<script src="js/canvas-toBlob.js"></script>
 </body>
 </html>

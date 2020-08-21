@@ -1,3 +1,7 @@
+let graph3D;//3d graph
+let configData;
+let rawRT; //rt before it is converted to seconds
+
 function getRelatedScan2(scanID) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -60,15 +64,38 @@ function loadPeakList1(scanID, prec_mz) {
             if (this.readyState == 4 && this.status == 200) {
                 getRT(scanID);
                 peakList1_g = JSON.parse(this.responseText);
+                
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
                         envList1_g = JSON.parse(this.responseText);
-                        if (envList1_g !== 0){
-                            graph1_g = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz, null, graphFeatures);
-                        }else {
-                            graph1_g = addSpectrum("spectrum1",peakList1_g, [],prec_mz,null,graphFeatures);
-                        }
+                      
+                        console.log("envList1_g", envList1_g);
+
+                        //get raw rt value
+                        var xhttpRT = new XMLHttpRequest();
+                        xhttpRT.onreadystatechange = function () {
+                            if (this.readyState == 4 && this.status == 200) {
+                                let rt = parseFloat(this.responseText);
+                                let minrt = rt - 30;
+                                let maxrt = rt + 30;
+
+                                if (minrt < 0){
+                                    minrt = 0;
+                                }
+                                if (envList1_g !== 0){
+                                    graph1_g = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz, null, graphFeatures);
+                                }else {
+                                    graph1_g = addSpectrum("spectrum1",peakList1_g, [],prec_mz,null,graphFeatures);
+                                        load3dDataByParaRange(graph1_g.minMz, graph1_g.maxMz, minrt, maxrt, rt, true)
+
+                                    }    
+                            }
+                        };    
+                        xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
+                        xhttpRT.send();
+                      }
+
                     }
                 };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
@@ -83,11 +110,13 @@ function loadPeakList1(scanID, prec_mz) {
         alert("NULL");
     }
 }
+
 function getRT(scanNum) {
     var xhttpRT = new XMLHttpRequest();
     xhttpRT.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             var rt = parseFloat(this.responseText);
+            rawRT = rt;
             moveLine(rt/60);
             document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
         }
@@ -95,7 +124,146 @@ function getRT(scanNum) {
     xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
     xhttpRT.send();
 }
+function getMax(){
+    return new Promise(function(resolve, reject){
+        let fullDir = (document.getElementById("projectDir").value).split("/");
+        let fileName = (fullDir[fullDir.length -1].split("."))[0];
+        let dir = fullDir[0].concat("/");
+        dir = dir.concat(fullDir[1]);
 
+        var xhttp3 = new XMLHttpRequest();
+        xhttp3.onreadystatechange = function (){
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(this.responseText);
+
+                if (result != undefined){
+                    resolve(result);
+                }
+                else{
+                    reject("max values are undefined")
+                }
+            }
+        }
+        xhttp3.open("GET","getMax?projectDir=" + dir + "/" + fileName + ".db" + "&colName=" + 'MZ',true);
+        xhttp3.send();
+    });
+}
+function getPeaksPerTable(totalLayer){
+    return new Promise(function(resolve, reject){
+        let fullDir = (document.getElementById("projectDir").value).split("/");
+        let fileName = (fullDir[fullDir.length -1].split("."))[0];
+        let dir = fullDir[0].concat("/");
+        dir = dir.concat(fullDir[1]);
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function (){
+            if (this.readyState == 4 && this.status == 200) {
+                var result = this.responseText;
+                
+                if (result != undefined){
+                    resolve(result);
+                }
+                else{
+                    reject("trouble counting rows of each table")
+                }
+            }
+        }
+        xhttp.open("GET","getPeaksPerTable?projectDir=" + dir + "/" + fileName + ".db" + "&layerCount=" + totalLayer,true);
+        xhttp.send();
+    });
+}
+function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
+    //same as load3dDataByParaRange, but this functions runs only when a scan changes
+    //to load all peaks of ms1 graph so that ms1 graph peaks are always showing in 3d graph
+    //when a range changes in the same scan, call load3dDataByParaRange instead
+
+    let tableNum = calculateTableNum(minrt, maxrt, minmz, maxmz);
+    var xhttp = new XMLHttpRequest();
+    
+    let fullDir = (document.getElementById("projectDir").value).split("/");
+    let fileName = (fullDir[fullDir.length -1].split("."))[0];
+    let dir = fullDir[0].concat("/");
+    dir = dir.concat(fullDir[1]);
+    
+    xhttp.onreadystatechange = function (){
+        if (this.readyState == 4 && this.status == 200) {
+            var peakData = JSON.parse(this.responseText);
+            let t0 = new Date();    
+
+            console.log("loadingScanData: ", new Date() - t0);
+
+            graph3D.addNewScanDataToGraph(peakData, [], minmz, maxmz, minrt, maxrt);            
+            graph3D.drawGraph(minmz, maxmz, minrt, maxrt, rt);
+           
+            if (updateTextBox){
+                //update data range in textboxes if getting range from each scan, not by users
+                document.getElementById('rtRangeMin').value = (minrt/60).toFixed(4);
+                document.getElementById('rtRangeMax').value = (maxrt/60).toFixed(4);
+                document.getElementById('mzRangeMin').value = parseFloat(minmz).toFixed(4);
+                document.getElementById('mzRangeMax').value = parseFloat(maxmz).toFixed(4);
+            }
+        } 
+    }
+    xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&curRT=" + rt, true);
+    xhttp.send();
+}
+function calculateTableNum(minrt, maxrt, minmz, maxmz){
+    /*decide which table to query based on what is the ratio is between current range and whole graph
+    if the ratio is small (1:100), the detail level is high, and the peaks in that range are more*/
+
+    let tableNum = -1;
+  
+    let totalMzRange = configData[0].MZMAX - configData[0].MZMIN; 
+    let totalRtRange = configData[0].RTMAX - configData[0].RTMIN;
+
+    let xRatio = (maxmz - minmz) / totalMzRange;
+    let yRatio = (maxrt - minrt) / totalRtRange;
+    
+    let peakCnt = 3000 / (xRatio * yRatio);
+    
+    let diff = Number.MAX_VALUE;
+   
+    
+    //find which table has the closet number of peaks
+    for (let i = 0; i < configData.length; i++){
+        if (Math.abs(configData[i].COUNT - peakCnt) < diff){
+            diff = Math.abs(configData[i].COUNT - peakCnt);
+            tableNum = i;
+        }
+    }
+
+    if (tableNum < 0){
+        console.log("something wrong during calculateTableNum")
+    }
+    console.log("current table number : ", tableNum);
+    return tableNum;
+}
+
+function init3dGraph(){
+    let t0 = new Date();
+    let t1 = new Date();
+
+    let promise = getMax();
+    let min = document.getElementById("rangeMin").value;
+    
+    promise.then(function(data){//to make sure max values are fetched before creating graph
+        console.log("getMax: ", new Date() - t0)
+        t0 = new Date();
+
+        graph3D.init(data[0]);
+        console.log("graph3DInit :" , new Date() - t0);
+        t0 = new Date();
+
+        showEnvTable(min);
+        findNextLevelOneScan(min);
+        loadInteSumList();
+
+        configData = data;
+        console.log("total init time: " , new Date() - t1);
+    }, function(err){
+        console.log(err);
+    })
+}
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -166,8 +334,8 @@ function loadInteSumList() {
             var t3 = performance.now();
             // console.log("Call to fetch inteSum data from server took " + (t3 - t2) + " milliseconds.");
             var response = JSON.parse(this.responseText);
-            // console.log("SumList:");
-            // console.log(response);
+/*            console.log("SumList:");
+            console.log(response);*/
             var t0 = performance.now();
             addFigure(response);
             var t1 = performance.now();
@@ -183,15 +351,14 @@ var padding_g;
 var fixedLine_g;
 function addFigure(dataset) {
 
-    var width = 1100;
-    var height = 120; //160
-    var padding = { top: 10, right: 10, bottom: 50, left: 80 }; //left:50 right:150
+    var width = 1100; //1100
+    var height = 120; //120
+    var padding = { top: 10, right: 10, bottom: 50, left: 80 };
     padding_g = padding;
-    // var dataset = [{rt:1, inteSum:224}, {rt:2, inteSum:528}, {rt:3, inteSum:756}, {rt:4, inteSum:632}];
 
     var maxInte = d3.max(dataset, function(d) {
         return d.inteSum;
-    })
+    });
 
     var formatPercent = d3.format(".0%");
 
@@ -203,17 +370,17 @@ function addFigure(dataset) {
 
     var min = d3.min(dataset, function(d) {
         return d.intePercentage;
-    })
+    });
     var max = d3.max(dataset, function(d) {
         return d.intePercentage;
-    })
+    });
 
     var minRT = d3.min(dataset, function(d) {
         return d.rt;
-    })
+    });
     var maxRT = d3.max(dataset, function(d) {
         return d.rt;
-    })
+    });
     var xScale = d3.scaleLinear()
         .domain([0, maxRT+5])
         .range([0, width - padding.left - padding.right]);
@@ -554,6 +721,23 @@ function showEnvTable(scan) {
                 filename: 'envelope_data'
             },
             {
+                text: 'Add',
+                className: 'btn',
+                name: 'add'        // do not change name
+            },
+            {
+                extend: 'selected', // Bind to Selected row
+                text: 'Update',
+                className: 'btn',
+                name: 'edit'        // do not change name
+            },
+            {
+                extend: 'selected', // Bind to Selected row
+                text: 'Delete',
+                className: 'btn',
+                name: 'delete'      // do not change name
+            },
+            {
                 text: 'Refresh',
                 className: 'btn',
                 name: 'refresh'      // do not change name
@@ -580,6 +764,7 @@ function showEnvTable(scan) {
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            // { "data": "mono_mass",type:'number', required: 'true'},
             { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true', readonly: 'true',"visible": true, type:"hidden"},
             {
@@ -685,17 +870,44 @@ next1.addEventListener('click', function () {
         next(document.getElementById("scanID1").innerHTML);
     }
 },false)
+
+//listener for rt range and mz range change in 3d graph
+let redrawRequestButton = document.getElementById('request3dGraphRedraw');
+redrawRequestButton.addEventListener('click', function(){
+    let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
+    let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
+    let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
+    let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
+    let curRT = rawRT; 
+
+    //error handing
+    if (minRT > maxRT){
+        alert("Invalid Range : Minimum retention time is bigger than maximum.");
+    } 
+    else if (minMZ > maxMZ){
+        alert("Invalid Range : Minimum m/z is bigger than maximum");
+    }
+    else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
+        alert("Invalid Value Found : Please make sure the range has valid values.");
+    }
+    else{
+        //reload data and redraw graph
+        load3dDataByParaRange(minMZ, maxMZ, minRT, maxRT, curRT, false);
+    }
+}, false);
+
+//function running on startup
 $( document ).ready(function() {
-    var min = document.getElementById("rangeMin").value;
+    
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
         $("#envInfo").hide();
         $('#envFileInfo').hide();
     }
     $('#envFileInfo').hide();
-    showEnvTable(min);
-    findNextLevelOneScan(min);
-    loadInteSumList();
+
+    graph3D = new MsGraph('body', document.querySelector("#graph-container"));
+    init3dGraph();
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
@@ -704,7 +916,6 @@ $( document ).ready(function() {
         $('#request').click();
         localStorage.clear();
     }
-
 });
 $("#scanID").keyup(function(event) {
     if (event.keyCode === 13) {
@@ -785,7 +996,35 @@ $("#deleteMsalign").click(function () {
         });
     }
 });
-$('#resultBtn').click(function () {
+$("#deleteMzrt").click(function () {
+    var result = confirm("Are you sure that you want to delete mzrt data?");
+    if (result) {
+        $.ajax({
+            url:"deleteMzrt?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+            type: "get",
+            // dataType: 'json',
+            success: function (res) {
+                alert('Your previous mzrt data has been removed.');
+                location.reload();
+            }
+        });
+    }
+});
+$("#deleteSeq").click(function () {
+    var result = confirm("Are you sure that you want to delete sequence data?");
+    if (result) {
+        $.ajax({
+            url:"deleteSeq?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+            type: "get",
+            // dataType: 'json',
+            success: function (res) {
+                alert('Your previous sequence data has been removed.');
+                location.reload();
+            }
+        });
+    }
+});
+$('#uploadSequence').click(function () {
     window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_self');
 });
 $("#seqUpload").click(function () {
@@ -828,6 +1067,104 @@ $("#seqUpload").click(function () {
         }
     }
 });
+$("#mzrtUpload").click(function () {
+    var mzrtFile = document.querySelector('#mzrtFile');
+    var mzrtProgress = document.querySelector('#mzrtProgressbar');
+    var xhr = new XMLHttpRequest();
+    if(mzrtFile.files[0] === undefined) {
+        alert("Please choose a mzrt file first!");
+        return;
+    } else if (!mzrtFile.files[0].name.match(/.(csv)$/i)) {
+        alert('Please upload a csv file!');
+        return;
+    }
+    var formData = new FormData();
+    formData.append('mzrtFile', mzrtFile.files[0]);
+    formData.append('projectDir', document.getElementById('projectDir').value);
+    formData.append('projectCode',document.getElementById("projectCode").value);
+    formData.append('projectName', document.getElementById("projectName").value);
+    formData.append('email', document.getElementById("email").value);
+    xhr.upload.onprogress = mzrtSetProgress;
+    xhr.onload = mzrtUploadSuccess;
+    xhr.open('post', '/mzrt', true);
+    xhr.send(formData);
+
+    function mzrtUploadSuccess(event) {
+        if (xhr.readyState === 4) {
+            alert("Upload successfully!");
+            window.location.replace("/projects");
+        }
+    }
+
+    function mzrtSetProgress(event) {
+        if (event.lengthComputable) {
+            var complete = Number.parseInt(event.loaded / event.total * 100);
+            mzrtProgress.style.width = complete + '%';
+            mzrtProgress.innerHTML = complete + '%';
+            if (complete == 100) {
+                mzrtProgress.innerHTML = 'Done!';
+            }
+        }
+    }
+});
+var ms1file = document.querySelector('#MS1_msalign');
+var ms2file = document.querySelector('#MS2_msalign');
+var upload = document.querySelector('#modalUpload');
+var progress = document.querySelector('#progressbar');
+var xhr = new XMLHttpRequest();
+upload.addEventListener('click', uploadFile, false);
+
+function uploadFile() {
+    if(ms1file.files[0] === undefined || ms2file.files[0] === undefined) {
+        alert("Please choose msalign files for both ms1 and ms2!");
+        return;
+    } else if (!ms1file.files[0].name.match(/.(msalign)$/i)) {
+        alert("Please upload .msalign file for ms1");
+        return;
+    } else if (!ms2file.files[0].name.match(/.(msalign)$/i)) {
+        alert("Please upload .msalign file for ms2");
+        return;
+    }
+    var formData = new FormData();
+    formData.append('ms1file', ms1file.files[0]);
+    formData.append('ms2file', ms2file.files[0]);
+    formData.append('projectDir', document.getElementById('projectDir').value);
+    formData.append('projectCode',document.getElementById("projectCode").value);
+    formData.append('projectName', document.getElementById("projectName").value);
+    formData.append('email', document.getElementById("email").value);
+    xhr.onload = uploadSuccess;
+    xhr.upload.onprogress = setProgress;
+    xhr.open('post', '/msalign', true);
+    xhr.send(formData);
+}
+function uploadSuccess(event) {
+    if (xhr.readyState === 4) {
+        alert("Upload successfully! Please wait for data processing, you will receive an email when it's done");
+        window.location.replace("/projects");
+    }
+}
+
+function setProgress(event) {
+    if (event.lengthComputable) {
+        var complete = Number.parseInt(event.loaded / event.total * 100);
+        progress.style.width = complete + '%';
+        progress.innerHTML = complete + '%';
+        if (complete == 100) {
+            progress.innerHTML = 'Done!';
+        }
+    }
+}
+
+/*function preprocessSeq(seq) {
+    var firstDotIndex = seq.indexOf('.');
+    var lastDotIndex = seq.lastIndexOf('.');
+    seq = seq.slice(firstDotIndex+1,lastDotIndex);
+    seq = seq.replace(/\(/g,'');
+    seq = seq.replace(/\)/g, '');
+    seq = seq.replace(/\[[A-z]*\]/g, '');
+    return seq;
+    //console.log(seq);
+}*/
 function preprocessSeq(seq) {
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
@@ -860,6 +1197,53 @@ function preprocessSeq(seq) {
     //console.log(seq);
 }
 
+function plus() {
+    var input = $("input[name='mono_mass']");
+    let inputVal = input[input.length-1].value;
+    if(inputVal === "") {inputVal = 0;}
+    inputVal = parseFloat(inputVal) + 1.00235;
+    inputVal = inputVal.toFixed(5);
+    input[input.length-1].value = inputVal;
+    change_mono_mz()
+}
+function minus() {
+    var input = $("input[name='mono_mass']");
+    let inputVal = input[input.length-1].value;
+    if(inputVal === "") {inputVal = 0;}
+    inputVal = parseFloat(inputVal) - 1.00235;
+    inputVal = inputVal.toFixed(5);
+    input[input.length-1].value = inputVal;
+    change_mono_mz()
+}
+function change_mono_mass() {
+    var input_mz = $("input[id='mono_mz']");
+    let mz = input_mz[input_mz.length-1].value;
+    if(mz === "") {mz = 0;}
+    mz = parseFloat(mz);
+    var chargeInput = $("input[name='Charge']");
+    let charge = chargeInput[chargeInput.length-1].value;
+    if(charge === "") {charge = 1;}
+    charge = parseInt(charge);
+    let result = (mz - 1)*charge;
+    if(result < 0) result = 0;
+    var input = $("input[name='mono_mass']");
+    input[input.length-1].value = result.toFixed(5);
+    //console.log(result);
+}
+function change_mono_mz() {
+    var input_mass = $("input[name='mono_mass']");
+    let mass = input_mass[input_mass.length-1].value;
+    if(mass === "") {mass = 0;}
+    mass = parseFloat(mass);
+    var chargeInput = $("input[name='Charge']");
+    let charge = chargeInput[chargeInput.length-1].value;
+    if(charge === "") {charge = 1;}
+    charge = parseInt(charge);
+    let result = (mass/charge) + 1;
+    if(result < 0) result = 0;
+    var input = $("input[id='mono_mz']");
+    input[input.length-1].value = result.toFixed(5);
+}
 let specPara1_g;
 let lockPara1 = false;
 let specPara2_g;
