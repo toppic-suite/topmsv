@@ -1,7 +1,7 @@
-//on hover, highlught and display feature information (scan ID, intensity, rt, mz)
+/*hover_feature.js: on hover, highlught and display feature information (scan ID, intensity, rt, mz)*/
 class HoverFeature{
     constructor(){};
-    onMouseOver = function(event){
+    onMouseOver = (event) => {
         let objGroup = Graph.scene.getObjectByName("featureGroup");
         let obj = GraphUtil.findObjectHover(event, objGroup);
         if (obj != null){
@@ -20,7 +20,7 @@ class HoverFeature{
             document.getElementById("tooltip").style.display = "none";
         }
     }
-    init(){
-        Graph.renderer.domElement.addEventListener('mousemove', this.onMouseOver.bind(this), false);
+    main = () => {
+        Graph.renderer.domElement.addEventListener('mousemove', this.onMouseOver, false);
     }
 }

@@ -1,6 +1,7 @@
-    class GraphUtil{
+    /*graph_util.js: class for utility functions used throughout the 3d graph*/
+class GraphUtil{
     constructor(){}
-    static disposeObject(obj) {
+    static disposeObject = (obj) => {
         if (obj.material.map) 
         {
             obj.material.map.dispose();
@@ -18,14 +19,14 @@
             obj.dispose();
         }
     };
-    static emptyGroup(g) {
+    static emptyGroup = (g) => {
         while (g.children.length > 0) 
         {
             let obj = g.children.pop();
             this.disposeObject(obj);
         }
     };
-    static formatScientificNotation(intensity){
+    static formatScientificNotation = (intensity) => {
         let sciNumber = intensity.toExponential();
         let decimalPoint = sciNumber.indexOf(".")
         let eNotation = sciNumber.slice(sciNumber.indexOf("e"), sciNumber.length);
@@ -33,36 +34,31 @@
 
         return truncated.concat(eNotation);
     };
-
-    static updateTextBox(){
+    static updateTextBox = () => {
         //update data range in textboxes if getting range from each scan, not by users
         document.getElementById('rtRangeMin').value = (Graph.viewRange.rtmin/60).toFixed(4);
         document.getElementById('rtRangeMax').value = (Graph.viewRange.rtmax/60).toFixed(4);
         document.getElementById('mzRangeMin').value = Graph.viewRange.mzmin.toFixed(4);
         document.getElementById('mzRangeMax').value = Graph.viewRange.mzmax.toFixed(4);
     }
-    static roundTo(number, places) {
+    static roundTo = (number, places) => {
         let power = Math.pow(10, places);
         return Math.round(number * power) / power;
     }
-    static getRT(scanID){
-        return new Promise(function(resolve, reject){
+    static getRT = (scanID) => {
+        return new Promise((resolve, reject) => {
             var xhttpRT = new XMLHttpRequest();
             xhttpRT.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                
                     var rt = parseFloat(this.responseText);
-                    console.log(rt)
                     resolve(rt);
                 }
             };
             xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
             xhttpRT.send();
         })
-        
     }
-
-    static findObjectHover(event, objGroup){
+    static findObjectHover = (event, objGroup) => {
         let el = Graph.renderer.domElement;
         let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
     
@@ -82,7 +78,7 @@
             return null;
         }
     }
-    static getMousePosition = function(event) {
+    static getMousePosition = (event) => {
         let el = Graph.renderer.domElement;
         let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
 
