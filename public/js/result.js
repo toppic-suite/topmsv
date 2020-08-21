@@ -69,12 +69,13 @@ function loadPeakList1(scanID, prec_mz) {
 
                         if (envList1_g !== 0){
                             graph1_g = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz, null,graphFeatures);
-                            window.localStorage.setItem('mzmax', graph1_g.maxMz);
-                            window.localStorage.setItem('mzmin', graph1_g.minMz);
+                            console.log(graph1_g)
+                            window.localStorage.setItem('mzmax', graph1_g.para.maxMz);
+                            window.localStorage.setItem('mzmin', graph1_g.para.minMz);
                         }else {
                             graph1_g = addSpectrum("spectrum1",peakList1_g, [],prec_mz, null,graphFeatures);
-                            window.localStorage.setItem('mzmax', graph1_g.maxMz);
-                            window.localStorage.setItem('mzmin', graph1_g.minMz);
+                            window.localStorage.setItem('mzmax', graph1_g.para.maxMz);
+                            window.localStorage.setItem('mzmin', graph1_g.para.minMz);
                             
                         }  
                         let graphData = new GraphData();
