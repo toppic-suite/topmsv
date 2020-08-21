@@ -159,12 +159,10 @@ class GraphData{
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         }).then(function(){
-            let promise = GraphFeature.drawFeature(Graph.viewRange);
-            promise.then(function(){})
+            return GraphFeature.drawFeature(Graph.viewRange);
         }).then(function(){
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
-            Graph.isQueryRunning = false;
         })
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
