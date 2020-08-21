@@ -5,8 +5,9 @@ peak intensity is also adjusted by ctrl + mouse wheel
 
 class GraphZoom
 {   
+    isScrolling;
     constructor(){}
-    
+        
     adjustPeakHeight(scaleFactor){
         let peaks = Graph.scene.getObjectByName("plotGroup");
         let oriScale = peaks.scale.y;
@@ -18,33 +19,41 @@ class GraphZoom
     
     onZoom(e){
         e.preventDefault();//disable scroll of browser
-    
-        let axis = GraphUtil.findObjectHover(e, Graph.axisgroup);//axis is null if cursor is not on axis
 
-        if (axis == null){
-            if (e.ctrlKey){//if control key is pressed --> intensity zoom
-                let scaleFactor = 0;
-                if (e.deltaY > 0) {
-                    scaleFactor = 0.75;
-                    this.adjustPeakHeight(scaleFactor);
+        // Clear our timeout throughout the scroll
+        window.clearTimeout( this.isScrolling );
+        let self = this;
+        // Set a timeout to run after scrolling ends
+        this.isScrolling = setTimeout(function() {
+
+            // Run the callback
+            let axis = GraphUtil.findObjectHover(e, Graph.axisgroup);//axis is null if cursor is not on axis
+
+            if (axis == null){
+                if (e.ctrlKey){//if control key is pressed --> intensity zoom
+                    let scaleFactor = 0;
+                    if (e.deltaY > 0) {
+                        scaleFactor = 0.75;
+                        self.adjustPeakHeight(scaleFactor);
+                    }
+                    else if (e.deltaY < 0){
+                        scaleFactor = 1.5;
+                        self.adjustPeakHeight(scaleFactor);
+                    }
                 }
-                else if (e.deltaY < 0){
-                    scaleFactor = 1.5;
-                    this.adjustPeakHeight(scaleFactor);
+                else{
+                    self.onZoomFromEventListener(e, "both");
                 }
             }
             else{
-               this.onZoomFromEventListener(e, "both");
+                if (axis.name == "xAxis"){
+                    self.onZoomFromEventListener(e, "mz");
+                }
+                else if(axis.name == "yAxis"){
+                    self.onZoomFromEventListener(e, "rt");
+                }
             }
-        }
-        else{
-            if (axis.name == "xAxis"){
-                this.onZoomFromEventListener(e, "mz");
-            }
-            else if(axis.name == "yAxis"){
-                this.onZoomFromEventListener(e, "rt");
-            }
-        }
+        }, 5); 
     }
     onZoomFromEventListener(e, axisName){
         //zoom action detected by event listener in each axis

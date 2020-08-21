@@ -132,6 +132,7 @@ class GraphData{
     }
     draw(curRT){        
         let self = this;
+        
         const curViewRange = Graph.viewRange;
         
         let promise = LoadData.load3dDataByParaRange(curViewRange);
