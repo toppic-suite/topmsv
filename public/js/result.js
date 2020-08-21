@@ -78,10 +78,10 @@ function loadPeakList1(scanID, prec_mz) {
                             window.localStorage.setItem('mzmin', graph1_g.para.minMz);
                             
                         }  
-                        let graphData = new GraphData();
+                        //let graphData = new GraphData();
 
                         //graphData.drawGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT - Graph.rtRange,  window.localStorage.curRT + Graph.rtRange, window.localStorage.curRT, true)
-                        graphData.drawInitGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
+                        GraphData.drawInitGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
                     }
                 };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);

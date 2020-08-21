@@ -1,16 +1,14 @@
-
-// graph_data.js : draws and manages the peaks on the screen
+/*graph_data.js : draws and manages the peaks on the screen*/
 class GraphData{
     constructor(){}
     /******** GRAPH RESET ******/
-    static clearGraph() {
+    static clearGraph = () => {
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
-        
     }
     /******** PEAK COLOR ASSIGNMENT ******/
-    pickPeakColor(intensity){
+    static pickPeakColor = (intensity) => {
         for (let j = 0; j < Graph.cutoff.length; j++){
             if (intensity <= Graph.cutoff[j]){
                 return Graph.gradientColor[j];
@@ -19,7 +17,7 @@ class GraphData{
         return Graph.gradientColor[Graph.gradientColor.length - 1];
     }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
-    drawCurrentScanMarker(rt){
+    static drawCurrentScanMarker = (rt) => {
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         //draw a red line horizontal to x axis where y = current scan retention time
         let linegeo = new THREE.Geometry();
@@ -35,8 +33,8 @@ class GraphData{
 
         marker.position.set(0, 0, rt);
     }
-    /******** PLOT PEAKS ******/
-    getInteRange(points){
+    /******** CALCULATE AND SET DATA RANGE ******/
+    static getInteRange = (points) => {
         let intmin = Infinity;
         let intmax = 0;
         Graph.intensitySum = 0;
@@ -53,12 +51,12 @@ class GraphData{
         Graph.viewRange.intmax = intmax;
         Graph.viewRange.intrange = intmax - intmin;
     }
-    setInitViewRange(_mzmin, _mzmax, _curRT){
-        let curRT = parseFloat(_curRT);
+    static setInitViewRange = (mzminRaw, mzmaxRaw, curRTRaw) => {
+        let curRT = parseFloat(curRTRaw);
         let rtmax = parseFloat(curRT + Graph.rtRange);
         let rtmin = parseFloat(curRT - Graph.rtRange);
-        let mzmax = parseFloat(_mzmax);
-        let mzmin = parseFloat(_mzmin);
+        let mzmax = parseFloat(mzmaxRaw);
+        let mzmin = parseFloat(mzminRaw);
         
         let dataTotal = Graph.tablePeakCount[0];
 
@@ -84,13 +82,7 @@ class GraphData{
         Graph.viewRange.rtmax = rtmax;
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
-    setViewRange(_mzmin, _mzmax, _rtmax, _rtmin, _curRT){
-        let curRT = parseFloat(_curRT);
-        let rtmax = parseFloat(_rtmax);
-        let rtmin = parseFloat(_rtmin);
-        let mzmax = parseFloat(_mzmax);
-        let mzmin = parseFloat(_mzmin);
-        
+    static setViewRange = (mzmin, mzmax, rtmax, rtmin, curRT) => {
         let dataTotal = Graph.tablePeakCount[0];
 
         if (rtmax > dataTotal.RTMAX){
@@ -105,7 +97,6 @@ class GraphData{
         if (mzmin < 0){
             mzmin = 0;
         }
-
         Graph.curRT = curRT;
 
         Graph.viewRange.mzmin = mzmin;
@@ -116,82 +107,81 @@ class GraphData{
         Graph.viewRange.rtmax = rtmax;
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
-    updateGraph(minmz, maxmz,minrt,maxrt, curRT, updateTextBox){
-        this.setViewRange(minmz, maxmz, maxrt, minrt, curRT);
-        this.draw(curRT);
+     /******** PLOT PEAKS ******/
+    static updateGraph = (minmz, maxmz,minrt,maxrt, curRT, updateTextBox) => {
+        GraphData.setViewRange(minmz, maxmz, maxrt, minrt, curRT);
+        GraphData.draw(curRT);
         if (updateTextBox){
             GraphUtil.updateTextBox();
         }
     }
-    drawInitGraph(minmz, maxmz, curRT, updateTextBox){
-        this.setInitViewRange(minmz, maxmz, curRT);
-        this.draw(curRT);
+    static drawInitGraph = (minmz, maxmz, curRT, updateTextBox) => {
+        GraphData.setInitViewRange(minmz, maxmz, curRT);
+        GraphData.draw(curRT);
         if (updateTextBox){
             GraphUtil.updateTextBox();
         }
     }
-    draw(curRT){        
-        let self = this;
-        
+     /******** PLOT PEAKS ******/
+    static draw = (curRT) => {                
         const curViewRange = Graph.viewRange;
         
-        let promise = LoadData.load3dDataByParaRange(curViewRange);
+        let promise = LoadData.load3dData(curViewRange);
 
-        promise.then(function(peakData){
+        promise.then(peakData => {
             GraphData.clearGraph();    
             Graph.currentData = peakData;
-            self.getInteRange(Graph.currentData);
+            GraphData.getInteRange(Graph.currentData);
     
             //if camera angle is perpendicular to the graph plane
             if (Graph.camera.position.y > 25.495){
-                self.plotPointAsCircle(Graph.currentData);
+                GraphData.plotPointAsCircle(Graph.currentData);
             }
             else{
                 for (let i = 0; i < Graph.currentData.length; i++){   
-                    self.plotPoint(Graph.currentData[i]);
+                    GraphData.plotPoint(Graph.currentData[i]);
                 }  
             }
             Graph.viewRange["intscale"] = 1;
 
             // make sure the groups are plotted and update the view
             if (parseFloat(curRT) <= Graph.viewRange.rtmax && parseFloat(curRT) >= Graph.viewRange.rtmin){
-                self.drawCurrentScanMarker(curRT);
+                GraphData.drawCurrentScanMarker(curRT);
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
-        }).then(function(){
+        }).then(() => {
             return GraphFeature.drawFeature(Graph.viewRange);
-        }).then(function(){
+        }).then(() => {
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
         })
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
-    plotPointAsCircle = function(){
+    static plotPointAsCircle = () => {
         let mzRange = Graph.viewRange.mzmax - Graph.viewRange.mzmin;
         let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
     
         let xSize = mzRange / 100;
         let ySize = rtRange;
     
-        //called from renderImmediate when view is perpendicular
-        let scanID = document.getElementById('scanID1').innerText;
         let rt = document.getElementById("scan1RT").innerText;
     
         let prevGroup = Graph.scene.getObjectByName("cylinderGroup");
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
+        let cylinderGroup; 
 
         if (prevGroup == undefined){
-            this.cylinderGroup = new THREE.Group();//when view angle is perpendicular
-            this.cylinderGroup.name = "cylinderGroup";
-            dataGroup.add(this.cylinderGroup);
+            cylinderGroup = new THREE.Group();//when view angle is perpendicular
+            cylinderGroup.name = "cylinderGroup";
+            dataGroup.add(cylinderGroup);
         }
         else{
-            this.cylinderGroup = prevGroup;
+            cylinderGroup = prevGroup;
         }
-    
+
         for (let i = 0; i < Graph.currentData.length; i++){   
             let point = Graph.currentData[i];
-            let lineColor = this.pickPeakColor(Graph.currentData[i].INTENSITY);
+            let lineColor = GraphData.pickPeakColor(Graph.currentData[i].INTENSITY);
             let geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
             let material = new THREE.MeshBasicMaterial( { color: lineColor } );
        
@@ -209,39 +199,33 @@ class GraphData{
             circle.height = 10;
             circle.name = "point";
             circle.scanID = point.SPECTRAID;
-            this.cylinderGroup.add(circle);
+            cylinderGroup.add(circle);
         }
         //repositioning m/z and rt from repositionPlot
         let heightScale = Graph.viewRange.intmax;
         let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
         let rt_squish = - Graph.gridRange / Graph.viewRange.rtrange;
-        let inte_squish = (Graph.gridRangeVertical / heightScale) * Graph.viewRange.intscale;
         
         if (Graph.viewRange.intmax < 1){
-            //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             inte_squish = 0;
         }
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0.01, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
     }
     /*plots a peak as a vertical line on the graph*/
-    plotPoint = function(point) {
+    static plotPoint = (point) => {
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
 
         let id = point.ID;
         let mz = point.MZ;
         let rt = point.RETENTIONTIME;
         let inten = point.INTENSITY;
-        let lineColor = this.pickPeakColor(inten);
+        let lineColor = GraphData.pickPeakColor(inten);
            
-        let scanID = document.getElementById('scanID1').innerText;
         let currt = document.getElementById("scan1RT").innerText;
-    
-        let y = inten;
-        
-        let drawObj;
-    
+        let y = inten;    
         let linegeo = new THREE.BufferGeometry();
+        
         linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
             0, 0, 0,
             0, y, 0,
@@ -253,18 +237,16 @@ class GraphData{
             linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
         }
         let line = new THREE.Line(linegeo, linemat);
-        line.position.set(mz, 0, rt);
-    
-        drawObj = line;
-
-        drawObj.pointid = id;
-        drawObj.mz = mz;
-        drawObj.rt = rt;
-        drawObj.int = inten;
-        drawObj.height = y;
-        drawObj.name = "peak";
-        drawObj.scanID = point.SPECTRAID;
         
-        plotGroup.add(drawObj);
+        line.position.set(mz, 0, rt);
+        line.pointid = id;
+        line.mz = mz;
+        line.rt = rt;
+        line.int = inten;
+        line.height = y;
+        line.name = "peak";
+        line.scanID = point.SPECTRAID;
+
+        plotGroup.add(line);
     }
 }
