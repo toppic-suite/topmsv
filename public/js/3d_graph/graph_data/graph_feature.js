@@ -1,7 +1,8 @@
+/*graph_feature.js : draws and manages the peaks on the screen*/
 class GraphFeature{
     constructor(){}
     /******** ADD FEAUTRE ANNOTATION ******/
-    static addFeatureToGraph = function(featureData, minmz, maxmz, minrt, maxrt){
+    static addFeatureToGraph = (featureData, minmz, maxmz, minrt, maxrt) => {
         //draw rectangle (4 separate lines) from each feature Data
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
         for (let i = 0; i < featureData.length; i++){
@@ -63,34 +64,32 @@ class GraphFeature{
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         featureGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
     }
-    static loadMzrtData(minmz, maxmz, minrt, maxrt){
-        return new Promise(function(resolve, reject){
-            let self = this;
+    static loadMzrtData = (minmz, maxmz, minrt, maxrt) => {
+        return new Promise((resolve, reject) => {
             if($('#featureStatus').val() != "0"){
                 //load feature data in this range
                 let fullDir = (document.getElementById("projectDir").value).split("/");
                 let fileName = (fullDir[fullDir.length -1].split("."))[0];
                 let dir = fullDir[0].concat("/");
                 dir = dir.concat(fullDir[1]);
-        
+                
                 let xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function (){
-                    if (this.readyState == 4 && this.status == 200) {
-                        let featureData = JSON.parse(this.responseText);
+                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+                xhttp.onload = () => {
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        let featureData = JSON.parse(xhttp.responseText);
                         GraphFeature.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
                         resolve();
                     } 
                 }
-                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
                 xhttp.send();
             }
         })
     } 
-    static drawFeature(viewRange){
-        let self = this;
-        return new Promise(function(resolve, reject){
-            let promise = self.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
-            promise.then(function(){
+    static drawFeature = (viewRange) => {
+        return new Promise((resolve, reject) => {
+            let promise = GraphFeature.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
+            promise.then(() => {
                 resolve();
             })
         })

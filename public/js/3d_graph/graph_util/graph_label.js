@@ -3,9 +3,7 @@
 class GraphLabel{
     constructor(){}
     /******** CREATE LABELS ******/
-    /*creates text label*/
-    static makeTextSprite(msg, textColor, fontsize) 
-    {
+    static makeTextSprite = (msg, textColor, fontsize) => {
         let canvas = document.createElement('canvas');
         let context = canvas.getContext('2d');
         let fontwidth = context.measureText(msg).width;
@@ -24,10 +22,9 @@ class GraphLabel{
     };
 
     /*updates status text labels and the outer graph axis labels*/
-    static drawDataLabels() {
+    static drawDataLabels = () => {
         // dispose all labels on the graph
-        while(Graph.scene.getObjectByName("labelGroup").children.length > 0) 
-        {
+        while(Graph.scene.getObjectByName("labelGroup").children.length > 0) {
             let obj = Graph.scene.getObjectByName("labelGroup").children.pop();
             
             GraphUtil.disposeObject(obj);
@@ -41,12 +38,12 @@ class GraphLabel{
         let rttext = "retention time";
         let labels = {};
 
-        labels.mzMin = this.makeTextSprite(mzmintext, {r: 0, g: 0, b: 0}, 16);
-        labels.mzMax = this.makeTextSprite(mzmaxtext,{r: 0, g: 0, b: 0}, 16);
-        labels.rtMin = this.makeTextSprite(rtmintext,{r: 0, g: 0, b: 0}, 16);
-        labels.rtMax = this.makeTextSprite(rtmaxtext,{r: 0, g: 0, b: 0}, 16);
-        labels.mz = this.makeTextSprite(mztext,{r: 0, g: 0, b: 0}, 16);
-        labels.rt = this.makeTextSprite(rttext,{r: 0, g: 0, b: 0}, 16);
+        labels.mzMin = GraphLabel.makeTextSprite(mzmintext, {r: 0, g: 0, b: 0}, 16);
+        labels.mzMax = GraphLabel.makeTextSprite(mzmaxtext,{r: 0, g: 0, b: 0}, 16);
+        labels.rtMin = GraphLabel.makeTextSprite(rtmintext,{r: 0, g: 0, b: 0}, 16);
+        labels.rtMax = GraphLabel.makeTextSprite(rtmaxtext,{r: 0, g: 0, b: 0}, 16);
+        labels.mz = GraphLabel.makeTextSprite(mztext,{r: 0, g: 0, b: 0}, 16);
+        labels.rt = GraphLabel.makeTextSprite(rttext,{r: 0, g: 0, b: 0}, 16);
 
         labels.mz.position.set(0.5, 0.5, Graph.gridRange + 1.5);
         labels.mzMin.position.set(0.5, -0.5,  Graph.gridRange + 1.5);
@@ -56,10 +53,10 @@ class GraphLabel{
         labels.rtMin.position.set(-1.5, -0.5,  Graph.gridRange);
         labels.rtMax.position.set(-1.5, -0.5, 0.5);
 
-        Graph.labelgroup.add(labels.mzMin, labels.mzMax, labels.rtMin, labels.rtMax, labels.mz, labels.rt);
+        Graph.labelGroup.add(labels.mzMin, labels.mzMax, labels.rtMin, labels.rtMax, labels.mz, labels.rt);
     }
     /*display details about the current peaks on the graph*/
-    static displayGraphData(peaks){
+    static displayGraphData = (peaks) => {
         //display highest intensity, sum of intensity, total peak count in the current grph
         let highestInte = "Highest Intensity: " + GraphUtil.formatScientificNotation(Graph.viewRange.intmax);
         let sumInte = "Sum of Intensity: " + GraphUtil.formatScientificNotation(Graph.intensitySum);
@@ -71,7 +68,6 @@ class GraphLabel{
             sumInte = "Sum of Intensity: 0";
             highestInte = "Highest Intensity: 0";
         }
-
         document.getElementById('graph-metadata').innerText = highestInte + sep + sumInte + sep + peakCount + sep;
     }
 }
