@@ -1,13 +1,13 @@
 // graph.js: set properties of 3D graph which are referenced and updated from other classes throughout the application
-//and initialize empty 3D graph
+//and call to initialize empty 3D graph
 
 class Graph{
     constructor(graphEl, tableData){
         Graph.graphEl = graphEl; 
         Graph.tablePeakCount = tableData;
     }
-    setProperties(){
-        /*add static properties to Graph class*/
+    setProperties = () => {
+        /*add properties to Graph class*/
         Graph.gridRange = 20;
         Graph.gridRangeVertical = 6;
         Graph.viewSize = 18; // in world units; large enough to fit the graph and labels at reasonable angles
@@ -51,42 +51,40 @@ class Graph{
         Graph.gridColor = "#7a7a7a";
         Graph.featureColor = "#a8b5ff";
     }
-    createGroups(){
+    createGroups = () => {
         /*groups to hold different graph elements */
-        Graph.gridgroup = new THREE.Group();
-        Graph.datagroup = new THREE.Group();
-        Graph.markergroup = new THREE.Group();
-        Graph.labelgroup = new THREE.Group();
+        Graph.gridGroup = new THREE.Group();
+        Graph.dataGroup = new THREE.Group();
+        Graph.markerGroup = new THREE.Group();
+        Graph.labelGroup = new THREE.Group();
         Graph.ticksGroup = new THREE.Group();
-        Graph.ticklabelgroup = new THREE.Group();
+        Graph.ticklabelGroup = new THREE.Group();
         Graph.plotGroup = new THREE.Group();
-        Graph.featuregroup = new THREE.Group();
-        Graph.axisgroup = new THREE.Group();
+        Graph.featureGroup = new THREE.Group();
+        Graph.axisGroup = new THREE.Group();
         
-        Graph.gridgroup.name = "gridGroup";
-        Graph.datagroup.name = "dataGroup";
-        Graph.markergroup.name = "markerGroup";
-        Graph.labelgroup.name = "labelGroup";
+        Graph.gridGroup.name = "gridGroup";
+        Graph.dataGroup.name = "dataGroup";
+        Graph.markerGroup.name = "markerGroup";
+        Graph.labelGroup.name = "labelGroup";
         Graph.ticksGroup.name = "ticksGroup";
-        Graph.ticklabelgroup.name = "tickLabelGroup";
+        Graph.ticklabelGroup.name = "tickLabelGroup";
         Graph.plotGroup.name = "plotGroup";
-        Graph.featuregroup.name = "featureGroup";
-        Graph.axisgroup.name = "axisGroup";
+        Graph.featureGroup.name = "featureGroup";
+        Graph.axisGroup.name = "axisGroup";
 
-        /*plotting objects*/
+        Graph.dataGroup.add(Graph.plotGroup);
+        Graph.dataGroup.add(Graph.ticksGroup);
 
-        Graph.datagroup.add(Graph.plotGroup);
-        Graph.datagroup.add(Graph.ticksGroup);
-
-        Graph.scene.add(Graph.gridgroup);
-        Graph.scene.add(Graph.datagroup);
-        Graph.scene.add(Graph.labelgroup);
-        Graph.scene.add(Graph.ticklabelgroup);
-        Graph.scene.add(Graph.markergroup);
-        Graph.scene.add(Graph.featuregroup);
-        Graph.scene.add(Graph.axisgroup);
+        Graph.scene.add(Graph.gridGroup);
+        Graph.scene.add(Graph.dataGroup);
+        Graph.scene.add(Graph.labelGroup);
+        Graph.scene.add(Graph.ticklabelGroup);
+        Graph.scene.add(Graph.markerGroup);
+        Graph.scene.add(Graph.featureGroup);
+        Graph.scene.add(Graph.axisGroup);
     }
-    initDataRange(){
+    initDataRange = () => {
         let dataTotal = Graph.tablePeakCount[0];
 
         Graph.dataRange.rtmax = dataTotal.RTMAX;
@@ -96,12 +94,11 @@ class Graph{
         Graph.dataRange.mzmax = dataTotal.MZMAX;
         Graph.dataRange.mzmin = dataTotal.MZMIN;    
     }
-    main(){
+    main = () => {
         this.setProperties();
         this.createGroups();
         this.initDataRange();
 
-        let graphInit = new GraphInit();
-        graphInit.init();
+        GraphInit.main();
     }
 }
