@@ -1,28 +1,3 @@
-// let graphFeatures = new graphFeatures();
-// class GraphFeatures{
-//     constructor(){
-//         this.showCircles = true;
-//         this.showIons = false;
-//         this.showSequene = false;
-//         this.isAddbgColor = false;
-//         this.fixedWidthOfBgColorForMs1 = 2;
-//         this.ratio = 1.000684;
-//         this.tickWidthThreshholdval = 0.5;
-//         this.bgMinMz = 0;
-//         this.bgMaxMz = 0;
-//         this.bgColor = "orange";
-//         this.prefixSequenceData = [];
-//         this.suffixSequeceData = [];
-//         this.adjustableIonPosition = 4;
-//         this.svgWidth = 910;
-//         this.svgHeight = 220;
-//         this.padding = {left:70, right:20, head:10, bottom:50};
-//         this.adjustableHeightVal = 60;
-//         this.fixedHeightOfIonAboveThePeak = 10;
-//         this.specWidth = this.svgWidth - this.padding.left - this.padding.right;
-//         this.specHeight = this.svgHeight - this.padding.head - this.padding.bottom;
-//     }
-// }
 function getRelatedScan2(scanID) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -85,15 +60,27 @@ function loadPeakList1(scanID, prec_mz) {
             if (this.readyState == 4 && this.status == 200) {
                 getRT(scanID);
                 peakList1_g = JSON.parse(this.responseText);
+                
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
                     if (this.readyState == 4 && this.status == 200) {
                         envList1_g = JSON.parse(this.responseText);
+                        console.log("envList1_g", envList1_g);
+
                         if (envList1_g !== 0){
                             graph1_g = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz, null,graphFeatures);
+                            window.localStorage.setItem('mzmax', graph1_g.maxMz);
+                            window.localStorage.setItem('mzmin', graph1_g.minMz);
                         }else {
                             graph1_g = addSpectrum("spectrum1",peakList1_g, [],prec_mz, null,graphFeatures);
-                        }
+                            window.localStorage.setItem('mzmax', graph1_g.maxMz);
+                            window.localStorage.setItem('mzmin', graph1_g.minMz);
+                            
+                        }  
+                        let graphData = new GraphData();
+
+                        //graphData.drawGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT - Graph.rtRange,  window.localStorage.curRT + Graph.rtRange, window.localStorage.curRT, true)
+                        graphData.drawInitGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
                     }
                 };
                 xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
@@ -108,6 +95,7 @@ function loadPeakList1(scanID, prec_mz) {
         alert("NULL");
     }
 }
+
 function getRT(scanNum) {
     var xhttpRT = new XMLHttpRequest();
     xhttpRT.onreadystatechange = function () {
@@ -115,12 +103,73 @@ function getRT(scanNum) {
             var rt = parseFloat(this.responseText);
             moveLine(rt/60);
             document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
+            window.localStorage.setItem('curRT', rt);
         }
     };
     xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
     xhttpRT.send();
 }
+function getMax(){
+    return new Promise(function(resolve, reject){
+        let fullDir = (document.getElementById("projectDir").value).split("/");
+        let fileName = (fullDir[fullDir.length -1].split("."))[0];
+        let dir = fullDir[0].concat("/");
+        dir = dir.concat(fullDir[1]);
 
+        var xhttp3 = new XMLHttpRequest();
+        xhttp3.onreadystatechange = function (){
+            if (this.readyState == 4 && this.status == 200) {
+                var result = JSON.parse(this.responseText);
+
+                if (result != undefined){
+                    resolve(result);
+                }
+                else{
+                    reject("max values are undefined")
+                }
+            }
+        }
+        xhttp3.open("GET","getMax?projectDir=" + dir + "/" + fileName + ".db" + "&colName=" + 'MZ',true);
+        xhttp3.send();
+    });
+}
+function getPeaksPerTable(totalLayer){
+    return new Promise(function(resolve, reject){
+        let fullDir = (document.getElementById("projectDir").value).split("/");
+        let fileName = (fullDir[fullDir.length -1].split("."))[0];
+        let dir = fullDir[0].concat("/");
+        dir = dir.concat(fullDir[1]);
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function (){
+            if (this.readyState == 4 && this.status == 200) {
+                var result = this.responseText;
+                
+                if (result != undefined){
+                    resolve(result);
+                }
+                else{
+                    reject("trouble counting rows of each table")
+                }
+            }
+        }
+        xhttp.open("GET","getPeaksPerTable?projectDir=" + dir + "/" + fileName + ".db" + "&layerCount=" + totalLayer,true);
+        xhttp.send();
+    });
+}
+function init3dGraph(){
+    let promise = getMax();
+    
+    promise.then(function(tableData){//to make sure max values are fetched before creating graph
+        Graph.tablePeakCount = tableData;
+
+        let graph3D = new Graph(document.querySelector("#graph-container"), tableData);
+        graph3D.main();
+
+    }, function(err){
+        console.log(err);
+    })
+}
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -728,26 +777,32 @@ next1.addEventListener('click', function () {
         next(document.getElementById("scanID1").innerHTML);
     }
 },false)
-$( document ).ready(function() {
-    var min = document.getElementById("rangeMin").value;
+
+function init2dGraph(){
+    let min = document.getElementById("rangeMin").value;
+
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
         $("#envInfo").hide();
         $('#envFileInfo').hide();
     }
     $('#envFileInfo').hide();
+
     showEnvTable(min);
     findNextLevelOneScan(min);
     loadInteSumList();
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
-        // console.log(scanRef);
+        console.log(scanRef);
         $('#scanID').val(scanRef);
         $('#request').click();
-        localStorage.clear();
     }
-
+}
+//function running on startup
+$( document ).ready(function() {
+    init3dGraph();
+    init2dGraph();
 });
 $("#scanID").keyup(function(event) {
     if (event.keyCode === 13) {
@@ -828,6 +883,20 @@ $("#deleteMsalign").click(function () {
         });
     }
 });
+$("#deleteMzrt").click(function () {
+    var result = confirm("Are you sure that you want to delete mzrt data?");
+    if (result) {
+        $.ajax({
+            url:"deleteMzrt?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
+            type: "get",
+            // dataType: 'json',
+            success: function (res) {
+                alert('Your previous mzrt data has been removed.');
+                location.reload();
+            }
+        });
+    }
+});
 $("#deleteSeq").click(function () {
     var result = confirm("Are you sure that you want to delete sequence data?");
     if (result) {
@@ -885,7 +954,46 @@ $("#seqUpload").click(function () {
         }
     }
 });
+$("#mzrtUpload").click(function () {
+    var mzrtFile = document.querySelector('#mzrtFile');
+    var mzrtProgress = document.querySelector('#mzrtProgressbar');
+    var xhr = new XMLHttpRequest();
+    if(mzrtFile.files[0] === undefined) {
+        alert("Please choose a mzrt file first!");
+        return;
+    } else if (!mzrtFile.files[0].name.match(/.(csv)$/i)) {
+        alert('Please upload a csv file!');
+        return;
+    }
+    var formData = new FormData();
+    formData.append('mzrtFile', mzrtFile.files[0]);
+    formData.append('projectDir', document.getElementById('projectDir').value);
+    formData.append('projectCode',document.getElementById("projectCode").value);
+    formData.append('projectName', document.getElementById("projectName").value);
+    formData.append('email', document.getElementById("email").value);
+    xhr.upload.onprogress = mzrtSetProgress;
+    xhr.onload = mzrtUploadSuccess;
+    xhr.open('post', '/mzrt', true);
+    xhr.send(formData);
 
+    function mzrtUploadSuccess(event) {
+        if (xhr.readyState === 4) {
+            alert("Upload successfully!");
+            window.location.replace("/projects");
+        }
+    }
+
+    function mzrtSetProgress(event) {
+        if (event.lengthComputable) {
+            var complete = Number.parseInt(event.loaded / event.total * 100);
+            mzrtProgress.style.width = complete + '%';
+            mzrtProgress.innerHTML = complete + '%';
+            if (complete == 100) {
+                mzrtProgress.innerHTML = 'Done!';
+            }
+        }
+    }
+});
 var ms1file = document.querySelector('#MS1_msalign');
 var ms2file = document.querySelector('#MS2_msalign');
 var upload = document.querySelector('#modalUpload');

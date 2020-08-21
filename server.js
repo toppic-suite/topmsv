@@ -157,6 +157,10 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
         }
     }
 });
+/*const dbPath = __dirname + "/db/" + "projectDB.db";
+if (fs.existsSync(dbPath)){//check waiting tasks only when this is not the first time app is running
+    checkWaitTasks.start();
+}*/
 checkWaitTasks.start();
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -230,6 +234,14 @@ app.use('/', require("./router/seqQuery"));
  */
 app.use('/', require("./router/updateSeq"));
 
+/**
+ * Express router for /mzrt
+ *
+ * Handle request to upload mzrt file, save files to project directory,
+ * then delete current feature and submit process mzrt file task to
+ * task scheduler
+ */
+app.use('/', require("./router/mzrt"));
 /**
  * Express router for /msalign
  *
@@ -327,6 +339,12 @@ app.use('/', require("./router/editProject"));
  * Delete current envelope peaks
  */
 app.use('/', require("./router/deleteMsalign"));
+/**
+ * Express router for /deleteMzrt
+ *
+ * Delete current feature information
+ */
+app.use('/', require("./router/deleteMzrt"));
 
 /**
  * Express router for /deleteSeq
@@ -394,6 +412,15 @@ app.use('/', require("./router/envlist"));
 
 app.use('/', require("./router/envtable"));
 
+
+/*routers used for 3d visualization */
+app.use('/', require("./router/load3dDataByRT"));
+app.use('/', require("./router/load3dDataByParaRange"));
+app.use('/', require("./router/getPeaksPerTable"));
+app.use('/', require("./router/getMax"));
+/*routers used for 3d visualization -- feature annotation*/
+app.use('/', require("./router/loadMzrtData"));
+
 app.use('/', require("./router/projectTab"));
 
 app.use('/', require("./router/newProject"));
@@ -407,6 +434,7 @@ app.use('/', require("./router/createExperiment"));
 app.use('/', require("./router/test"));
 
 app.use('/',require("./router/getInfo"));
+
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']
@@ -459,7 +487,7 @@ var db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
+    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'FeatureStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);
