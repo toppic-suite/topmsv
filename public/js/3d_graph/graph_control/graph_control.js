@@ -4,7 +4,7 @@ class GraphControl{
     constructor(){}
     /******** CONVERSION FUNCTIONS *****/
     /*Converts mz, rt coordinate to grid space (0 to GRID_RANGE)*/
-    static mzRtToGridSpace(mz, rt){
+    static mzRtToGridSpace = (mz, rt) => {
         let vr = Graph.viewRange;
         let mz_norm = (mz - vr.mzmin) / vr.mzrange;
         let rt_norm = (rt - vr.rtmin) / vr.rtrange;
@@ -14,8 +14,7 @@ class GraphControl{
 
     /******* DATA RANGE AND VIEWING AREA ****/
     /*resizes the renderer and camera, especially in response to a window resize*/
-    static repositionPlot(r) {
-        // set plot positions and scales
+    static repositionPlot = (r) => {
         let heightScale = Graph.viewRange.intmax;
         // This step allows points to be plotted at their normal mz,rt locations in plotPoint,
         // but keeping them in the grid. Scaling datagroup transforms the coordinate system
@@ -41,12 +40,11 @@ class GraphControl{
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
         
         // update tick marks
-        let self = this;
-
         GraphUtil.emptyGroup(tickLabelGroup);
+
         let markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
         // draws a tick mark at the given location
-        let makeTickMark = function(mzmin, mzmax, rtmin, rtmax) {
+        let makeTickMark = (mzmin, mzmax, rtmin, rtmax) => {
             let markGeo = new THREE.Geometry();
             markGeo.vertices.push(new THREE.Vector3(mzmin, 0, rtmin));
             markGeo.vertices.push(new THREE.Vector3(mzmax, 0, rtmax));
@@ -55,7 +53,7 @@ class GraphControl{
         };
     
         // draws a tick label for the given location
-        let makeTickLabel = function(which, mz, rt) {
+        let makeTickLabel = (which, mz, rt) => {
             let text;
             let xoffset = 0;
             let zoffset = 0;
@@ -68,7 +66,7 @@ class GraphControl{
                 zoffset = 0.2;
             }
             let label = GraphLabel.makeTextSprite(text, {r:0, g:0, b:0}, 15);
-            let gridsp = self.mzRtToGridSpace(mz, rt);
+            let gridsp = GraphControl.mzRtToGridSpace(mz, rt);
             label.position.set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
             tickLabelGroup.add(label);
         };
@@ -81,7 +79,7 @@ class GraphControl{
     
         // properly check if floating-point "value" is a multiple
         // of "divisor" within a tolerance
-        let isMultiple = function(value, divisor) {
+        let isMultiple = (value, divisor) => {
             let rem = Math.abs(value % divisor);
             return (rem < 1e-4) || (divisor-rem < 1e-4);
         };
@@ -117,13 +115,13 @@ class GraphControl{
         }
     };
     /*update labels and legend to reflect a new view range*/
-    static updateViewRange(newViewRange) {
+    static updateViewRange = (newViewRange) => {
         Graph.viewRange = newViewRange;
-        this.repositionPlot(newViewRange);
+        GraphControl.repositionPlot(newViewRange);
         GraphLabel.drawDataLabels();
     }
     /*prevent user from going outside the data range or zooming in so far that math breaks down*/
-    static constrainBounds(r) {
+    static constrainBounds = (r) => {
         let dataRange = Graph.viewRange;
         // prevent mzrange and rtrange from getting too small and causing bizarre floating point errors
         let newmzrange = Math.min(Math.max(r.mzrange, 0.05), dataRange.mzrange);
@@ -142,7 +140,7 @@ class GraphControl{
             rtmin: newrtmin, rtmax: newrtmin + newrtrange, rtrange: newrtrange,
         }
     }
-    static setViewingArea(mzmin, mzrange, rtmin, rtrange) {
+    static setViewingArea = (mzmin, mzrange, rtmin, rtrange) => {
         let r = mzmin;
     
         if (typeof mzmin === "number") 
@@ -155,7 +153,7 @@ class GraphControl{
         r = this.constrainBounds(r);
         return r;
     }
-    static resizeCamera(){
+    static resizeCamera = () => {
         Graph.renderer.setSize(Graph.graphEl.clientWidth, Graph.graphEl.clientHeight, true);
         let aspectRatio = Graph.renderer.getSize().width / Graph.renderer.getSize().height;
 
