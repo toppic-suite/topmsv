@@ -32,7 +32,6 @@
 	<script src="js/spectrum_graph/spectrumdownload.js" ></script>
 
 	<script src="js/download/FileSaver.js"></script>
-	<script src="js/download/saveImage.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
@@ -44,6 +43,10 @@
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+	
+	<!--js files related to 3d graph-->
+	<script type="text/javascript" src ="js/3d_graph/three.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src ="js/3d_graph/OrbitControls.js" crossorigin="anonymous"></script>
 </head>
 <body class="container">
 
@@ -85,6 +88,30 @@
 								</td>
 							</tr>
 						</table>
+						<hr style="margin-bottom: 7px; margin-top: 10px">
+						<div>
+							<h4>mzrt file</h4>
+							<p>
+								If you want to delete current existing mzrt file, please click the button below.
+							</p>
+							<button class="btn defaultBtn" id="deleteMzrt">Delete existing mzrt file</button>
+							<p>If you want to add annotated feature information to this project, please upload a csv file for it below.</p>
+							<label for="mzrtFile">New mzrt file</label>
+							<input class="form-control-file" type="file" id="mzrtFile">
+							<br>
+							<table>
+								<tr>
+									<td><button class="btn defaultBtn" id="mzrtUpload">Upload</button></td>
+									<td width="40pt"></td>
+									<td style="width: 300pt">
+										<div id="mzrtProgress" class="progress">
+											<div id="mzrtProgressbar" class="progress-bar progress-bar-striped" role="progressbar"
+												 style="width: 0%">0%</div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
 						<hr style="margin-bottom: 7px; margin-top: 10px">
 						<div>
 							<h4>Sequence file</h4>
@@ -242,6 +269,7 @@
 <!--									<button id="uploadSequence" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Result</button>-->
 									<button id="uploadSequence" type="button" class="btn">Sequence</button>
 								</div>
+
 							</div>
 						</div>
 					</div>
@@ -277,7 +305,7 @@
 						</div>
 					</div>
 				</div>
-
+				
 				<div class="scanleveltitle row">
 					<div class="col-sm-4">
 						<div class="row">
@@ -301,6 +329,7 @@
 				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
 				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
 				<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
+				<input type="hidden" id="featureStatus" value=<%= summary.featureStatus %>>
 				<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
 				<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
 
@@ -311,6 +340,64 @@
 			</div>
 
 			<hr>
+			<div>
+				<div class="scanleveltitle row">
+					<div class="col-sm-2">
+						<div><strong>Retention Time:</strong></div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-5">
+							<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+						</div>
+						<div class="col-sm-2 rangeMarker">
+							<span>-</span>
+						</div>
+						<div class="col-sm-5">
+							<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+						</div>
+					</div>
+					<div class="col-sm-1">
+						<div><strong>m/z:</strong></div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-5">
+							<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+						</div>
+						<div class="col-sm-2 rangeMarker">
+							<span>-</span>
+						</div>
+						<div class="col-sm-5">
+							<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+						</div>
+					</div>
+					<div class="col-sm-3">
+						<div class="col-sm-6">
+							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+						</div>
+						<div class="col-sm-6">
+							<button class="btn" type="submit" id="save3dGraph">Save as Image</button>
+						</div>
+					</div>
+					
+				</div>
+				<div id ="save-as-image-form">
+					<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
+					<button class="btn" type="submit" id="btn-save-file-name">OK</button>
+				</div>
+				<div>
+					<div class="graph-metadata-container">
+					<span id="graph-metadata"></span>
+				</div>			
+				<div id="tooltip">
+					<span id="tooltiptext">hello</span>
+				</div>
+				<div class="col-md-11 col2" id="graph-container"></div>
+				</div>
+				
+				<div class="hover-label-container">
+					<span id="graph-hover-label"></span>
+				</div>
+			</div>	
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">
 					<div class="col-sm-7">
@@ -433,5 +520,25 @@
 	</main>
 	<script type="text/javascript" src="js/result.js"></script>
 	<script src="js/dataTables.altEditor.free.js"></script>
+	
+<!--js files related to 3d graph-->
+	<script src="js/3d_graph/graph_init/graph.js"></script>
+	<script src="js/3d_graph/graph_interaction/pan_graph.js"></script>
+	<script src="js/3d_graph/graph_interaction/zoom_graph.js"></script>
+	<script src="js/3d_graph/graph_interaction/hover_feature.js"></script>
+	<script src="js/3d_graph/graph_init/graph_init.js"></script>
+	<script src="js/3d_graph/graph_control/graph_render.js"></script>
+	<script src="js/3d_graph/graph_control/graph_control.js"></script>
+	<script src="js/3d_graph/graph_util/graph_util.js"></script>
+	<script src="js/3d_graph/graph_util/graph_label.js"></script>
+	<script src="js/3d_graph/graph_util/graph_download.js"></script>
+	<script src="js/3d_graph/graph_data/load_data.js"></script>
+	<script src="js/3d_graph/graph_data/graph_data.js"></script>
+	<script src="js/3d_graph/graph_data/graph_feature.js"></script>
+
+
+<!--library related to image download-->
+	<script src="js/download/FileSaver.js"></script>
+	<script src="js/canvas-toBlob.js"></script>
 </body>
 </html>

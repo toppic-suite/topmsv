@@ -8,12 +8,16 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function getPeakList(dir, scan, callback) {
-    let sql = `SELECT MZ AS mz,
+    /*let sql = `SELECT MZ AS mz,
                   INTENSITY AS intensity
            FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID=SPECTRA.ID
-           WHERE SCAN = ?`;
+           WHERE SCAN = ?`;*/
     //ORDER BY INTENSITY DESC`;
     //LIMIT 1000`;
+    let sql = `SELECT MZ AS mz,
+               INTENSITY AS intensity
+               FROM PEAKS
+               WHERE SPECTRAID = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {

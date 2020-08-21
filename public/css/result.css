@@ -31,6 +31,10 @@ div#input {
     position: relative;
     /*left: 53%;*/
 }
+.rangeTextBox{
+    width: 120%;
+    position: relative;
+}
 hr {
     margin-bottom: 7px;
     margin-top: 0px;
@@ -47,7 +51,20 @@ span.ms1EnvFile{
     position: relative;
     left: 50%;
 }
-
+.defaultBtn {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.defaultBtn:hover{
+    color: white;
+}
 button#modalUpload {
     position: relative;
     font-size: 100%;
@@ -164,7 +181,30 @@ button#home {
     text-decoration: none;
     display: inline-block;
 }
-
+button#request3dGraphRedraw{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#save3dGraph{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button#next1 {
     position: relative;
     /*left: 84%;*/
@@ -250,7 +290,18 @@ button#switch {
     text-decoration: none;
     display: inline-block;
 }
-
+button#btn-save-file-name{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button.export-button {
     background-color: #555555;
     color: white;
@@ -331,4 +382,40 @@ svg#spectrum2{
 button#minusBtn {
     position: relative;
     right: 130%;
-}*/
+}
+/*3d graph tooltip*/
+#tooltip {
+    display:none;
+    position:fixed;
+    border-bottom: 1px dotted black;
+    z-index: 1;
+  }
+  
+  #tooltiptext {
+    width: 120px;
+    background-color: #555555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 5px;
+    margin: 5px;
+    font-size:10px;
+  
+    /* Position the tooltip */
+    position: absolute;
+   
+  }
+/*save-as-image popup css*/
+#save-as-image-form{
+    /*padding: 10px;
+    background-color: #555555;*/
+    display:none;
+    position: absolute;
+    border-radius: 5px;
+}
+#input-file-name{
+    width:200px;
+    font-size:10px;
+
+}
+

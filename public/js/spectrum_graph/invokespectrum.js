@@ -49,6 +49,7 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ, ionData, graphFeatures){
 	let listSize = peakList.length;
 	let minMzData = peakList[0].mz;
 	let maxMzData = peakList[listSize-1].mz;
+
 	// Sort by intensity
 	peakList.sort(function(x,y){
 		return x.intensity - y.intensity;
@@ -110,6 +111,7 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ, ionData, graphFeatures){
 	if (minIntensity > minEnvelope){
 		minIntensity = minEnvelope;
 	}
+
 	specParameters.initScale(currminMz,currmaxMz,maxIntensity,minIntensity,minMzData,maxMzData,currentMaxIntensity);
 
 	// Code must be included to get top 200 intensities at any given time
@@ -118,6 +120,11 @@ addSpectrum = function(id,peakList,envelopeList,monoMZ, ionData, graphFeatures){
 	});
 	return specParameters;
  }
+
+	//console.log(peakData);
+	//id = "#"+id;
+	//let spectrumgraphPara = new SpectrumGraph(id,specParameters,peakData);
+	//return spectrumgraphPara;
 
 /**
  * Sorting envelopes based on intensity to show top 200 envelops with high intensitites
@@ -136,6 +143,7 @@ sortEnvelopes = function(envelopeList)
 	 	return d3.descending(x.env_peaks[0].intensity, y.env_peaks[0].intensity);
 	})
 	return envelopeList ;
+
 }
 
 /**
