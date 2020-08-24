@@ -150,7 +150,8 @@ class GraphData{
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         }).then(() => {
-            return GraphFeature.drawFeature(Graph.viewRange);
+            let promise = GraphFeature.drawFeature(Graph.viewRange);
+            promise.then(function(){})
         }).then(() => {
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
