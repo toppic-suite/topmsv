@@ -231,7 +231,7 @@ void msReader::createDtabase() { //stmt
   std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.openInsertStmt();
-  databaseReader.openInsertStmtMs1Only();
+ // databaseReader.openInsertStmtMs1Only();
   databaseReader.openInsertStmtInMemory();
 
   int levelOneID = 0;
@@ -275,10 +275,10 @@ void msReader::createDtabase() { //stmt
         // std::cout << count << std::endl;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
         if (scanLevel == 1){//PEAKS0 contains level 1 data only
-          databaseReader.insertPeakStmtMs1(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
-          databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
+          //databaseReader.insertPeakStmtMs1(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime, databaseReader.peakColor[0]);
+          databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime, databaseReader.peakColor[0]);
           ms1peakcount++ ;
-
+          
           //compare with min max values to find overall min max value
         if (pairs[j].mz < mzmin){mzmin = pairs[j].mz;}
         if (pairs[j].mz > mzmax){mzmax = pairs[j].mz;}
@@ -291,6 +291,7 @@ void msReader::createDtabase() { //stmt
       }
         databaseReader.insertPeakStmt(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime);
       }
+      
       // cout << currentID <<endl;
       if (scanLevel == 2) {
         // prec_mz, prec_charge, prec_inte
@@ -336,7 +337,7 @@ void msReader::createDtabase() { //stmt
     // }
   }
   databaseReader.closeInsertStmt();
-  databaseReader.closeInsertStmtMs1Only();
+  //databaseReader.closeInsertStmtMs1Only();
   databaseReader.closeInsertStmtInMemory();
   std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
@@ -363,8 +364,18 @@ void msReader::createDtabase() { //stmt
 
   databaseReader.setRange(RANGE);
   databaseReader.insertConfigOneTable();
+
+  //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
+  databaseReader.setColor(RANGE.COUNT);
+
+
+
+
+
   databaseReader.endTransaction();
   databaseReader.endTransactionInMemory();
+
+
   
   //create index on peak id (for copying to each layer later)
   databaseReader.createIndexOnIdOnly();
