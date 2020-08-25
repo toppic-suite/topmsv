@@ -27,8 +27,7 @@ class GraphInit{
                 alert("Invalid Value Found : Please make sure the range has valid values.");
             }
             else{
-                let graphData = new GraphData();
-                graphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
+                GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
             }
         }, false);
     }
