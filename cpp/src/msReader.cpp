@@ -231,7 +231,6 @@ void msReader::createDtabase() { //stmt
   std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.openInsertStmt();
- // databaseReader.openInsertStmtMs1Only();
   databaseReader.openInsertStmtInMemory();
 
   int levelOneID = 0;
@@ -337,7 +336,7 @@ void msReader::createDtabase() { //stmt
     // }
   }
   databaseReader.closeInsertStmt();
-  //databaseReader.closeInsertStmtMs1Only();
+  
   databaseReader.closeInsertStmtInMemory();
   std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
@@ -365,11 +364,9 @@ void msReader::createDtabase() { //stmt
   databaseReader.setRange(RANGE);
   databaseReader.insertConfigOneTable();
 
+  databaseReader.createIndexOnIdOnlyInMemory();//create index on PEAKS0 table by ID
   //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
   databaseReader.setColor(RANGE.COUNT);
-
-
-
 
 
   databaseReader.endTransaction();
