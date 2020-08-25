@@ -8,14 +8,14 @@ class GraphData{
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
     /******** PEAK COLOR ASSIGNMENT ******/
-    static pickPeakColor = (intensity) => {
+   /*static pickPeakColor = (intensity) => {
         for (let j = 0; j < Graph.cutoff.length; j++){
             if (intensity <= Graph.cutoff[j]){
                 return Graph.gradientColor[j];
             }
         }
         return Graph.gradientColor[Graph.gradientColor.length - 1];
-    }
+    }*/
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     static drawCurrentScanMarker = (rt) => {
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
@@ -182,7 +182,8 @@ class GraphData{
 
         for (let i = 0; i < Graph.currentData.length; i++){   
             let point = Graph.currentData[i];
-            let lineColor = GraphData.pickPeakColor(Graph.currentData[i].INTENSITY);
+            //let lineColor = GraphData.pickPeakColor(Graph.currentData[i].INTENSITY);
+            let lineColor = point.COLOR;
             let geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
             let material = new THREE.MeshBasicMaterial( { color: lineColor } );
        
@@ -221,8 +222,10 @@ class GraphData{
         let mz = point.MZ;
         let rt = point.RETENTIONTIME;
         let inten = point.INTENSITY;
-        let lineColor = GraphData.pickPeakColor(inten);
-           
+        let lineColor = point.COLOR;
+
+        //let lineColor = GraphData.pickPeakColor(inten);
+
         let currt = document.getElementById("scan1RT").innerText;
         let y = inten;    
         let linegeo = new THREE.BufferGeometry();

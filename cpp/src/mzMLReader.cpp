@@ -104,7 +104,7 @@ int callbackUpdateData(void *ptr, int argc, char **argv, char **azColName){//met
 
   mzMLReader reader;
 
-  std::string color = reader.peakColor[0];
+  std::string color = "NONE";
   
   if (peak_inte_rank > interval[0]){
     for (int i = 1; i < interval.size(); i++){
@@ -113,7 +113,15 @@ int callbackUpdateData(void *ptr, int argc, char **argv, char **azColName){//met
         break;
       }
     }
+  }
+  else{
+    color = reader.peakColor[0];
   } 
+
+  if (color == "NONE"){
+    //when a peak is higher than the last interval --> should be assigned the highest intensity color
+    color = reader.peakColor[reader.peakColor.size() - 1];
+  }
   //insert to PEAKS0 table at disk
   reader.insertPeakStmtMs1(peak_inte_rank, std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
 
