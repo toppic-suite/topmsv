@@ -87,11 +87,14 @@ public:
 	void openInsertStmt();
 	void openInsertStmtMs1Only();
 	void openInsertStmtInMemory();
+	void openColorStmtInMemory();
 	void closeInsertStmt();
 	void closeInsertStmtMs1Only();
 	void closeInsertStmtInMemory();
+	void closeColorStmtInMemory();
 	void insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, double peaksInteSum, int next, int prev);
 	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
+	void updateColor(int ID, std::string color);
 	void updateSpStmt(int currentID, int prevID);
 	void updateSpSumStmt(int currentID, double peaksInteSum);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
@@ -99,6 +102,7 @@ public:
 	void insertPeakStmtInMemory(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime, std::string peakColor);
 	void createIndex();
 	void createIndexOnIdOnly();
+	void createIndexOnIdOnlyInMemory();
 
 	double MZ_GROUP1_SIZE;
 	double MZ_GROUP2_SIZE;
