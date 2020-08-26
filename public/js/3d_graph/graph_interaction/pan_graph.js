@@ -10,14 +10,8 @@ class GraphPan{
     let mzmin = viewRange.mzmin + (x * viewRange.mzrange);
     let rtmin = viewRange.rtmin + (z * viewRange.rtrange);
 
-    if (mzmin < 0){
-      mzmin = 0;
-    }
-    if (rtmin < 0){
-      rtmin = 0;
-    }
-    GraphControl.setViewingArea(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
-    GraphData.updateGraph(mzmin, viewRange.mzrange + mzmin, rtmin, viewRange.rtrange + rtmin, Graph.curRT, true);
+    let newRange = GraphControl.constrainBoundsPan(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
+    GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT, true);
 }
   onMouseDown = (e) => {
     if (e.button === 0) {
