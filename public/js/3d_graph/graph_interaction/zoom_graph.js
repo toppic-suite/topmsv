@@ -11,7 +11,6 @@ class GraphZoom
     adjustPeakHeight = (scaleFactor) => {
         let peaks = Graph.scene.getObjectByName("plotGroup");
         let oriScale = peaks.scale.y;
-
         peaks.scale.set(1, oriScale * scaleFactor, 1);
     
         GraphRender.renderImmediate();
