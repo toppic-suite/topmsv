@@ -224,7 +224,16 @@ class GraphData{
         let lineColor = GraphData.pickPeakColor(inten);
            
         let currt = document.getElementById("scan1RT").innerText;
-        let y = inten;    
+        let y = inten;   
+        let minHeight = 0.1;
+        let scale = Graph.gridRangeVertical / Graph.viewRange.intmax;
+
+        //if y is much smaller than the highest intensity peak in the view range
+        if (scale * y < minHeight){
+            //increase y so that later y is larger than 0.1 when scaled
+            y = y * (minHeight/(scale * y));
+        }
+
         let linegeo = new THREE.BufferGeometry();
         
         linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
