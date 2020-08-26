@@ -50,6 +50,7 @@ class GraphData{
         Graph.viewRange.intmin = intmin;
         Graph.viewRange.intmax = intmax;
         Graph.viewRange.intrange = intmax - intmin;
+        console.log("lowest intensity peak on screen has ", intmin, " intensity")
     }
     static setInitViewRange = (mzminRaw, mzmaxRaw, curRTRaw) => {
         let curRT = parseFloat(curRTRaw);

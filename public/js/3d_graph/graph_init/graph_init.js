@@ -36,7 +36,7 @@ class GraphInit{
     static createAxis = () => {
         let xAxisGeo = new THREE.Geometry();
         let yAxisGeo = new THREE.Geometry();
-        let axisMaterial = new THREE.LineBasicMaterial({ color:"#FFFF00" });
+        let axisMaterial = new THREE.LineBasicMaterial({ color:Graph.gridColor });
 
         yAxisGeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
         yAxisGeo.vertices.push(new THREE.Vector3(0, 0, 0));
