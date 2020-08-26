@@ -82,36 +82,14 @@ class GraphZoom
         else{
             return;
         }   
-        
-        //if range is too small, set to minimum range of 0.01
-        if (newrtrange < 0.01){
-            newrtrange = 0.01;
-        }
-        if (newmzrange < 0.01){
-            newmzrange = 0.01;
-        }
         let mzscale = (curmz - Graph.viewRange.mzmin)/(Graph.viewRange.mzmax - Graph.viewRange.mzmin);//find relative pos of current mz currrent rt
         let rtscale = (currt - Graph.viewRange.rtmin)/(Graph.viewRange.rtmax - Graph.viewRange.rtmin);
     
         let newmzmin = curmz - (mzscale * newmzrange);//the closer curmz or currt is to the minmz and minrt, the less change in min value
         let newrtmin = currt - (rtscale * newrtrange);
-    
-        //if value goes below zero in rt or mz, set to 0
-        if (newmzmin < 0){
-            newmzmin = 0;
-        }
-        if (newrtmin < 0){
-            newrtmin = 0;
-        }
-        //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
-        if (newmzmin + newmzrange > Graph.dataRange.mzmax){
-            newmzrange = Graph.dataRange.mzmax - newmzmin;
-        }
-        if (newrtmin + newrtrange > Graph.dataRange.rtmax){
-            newrtrange = Graph.dataRange.rtmax - newrtmin;
-        }
-        //let graphData = new GraphData();
-        GraphData.updateGraph(newmzmin, newmzmin + newmzrange, newrtmin, newrtmin + newrtrange, Graph.curRT, true);
+
+        let newRange = GraphControl.constrainBoundsZoom(newmzmin, newmzrange, newrtmin, newrtrange);
+        GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT, true);
     }
     main(){
         Graph.renderer.domElement.addEventListener('wheel', this.onZoom, false);
