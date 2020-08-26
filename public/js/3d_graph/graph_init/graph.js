@@ -47,8 +47,10 @@ class Graph{
         Graph.cutoff = []; //intensity cutoff point for each color in gradient
 
         Graph.currentScanColor = "#ff5797";
-        Graph.surfaceColor = "#555555";
-        Graph.gridColor = "#7a7a7a";
+        //Graph.surfaceColor = "#eee";
+        //Graph.gridColor = "#7a7a7a";
+        Graph.surfaceColor = "#7a7a7a";
+        Graph.gridColor = "#555555";
         Graph.featureColor = "#a8b5ff";
     }
     createGroups = () => {
