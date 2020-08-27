@@ -123,7 +123,7 @@ int callbackUpdateData(void *ptr, int argc, char **argv, char **azColName){//met
     color = reader.peakColor[reader.peakColor.size() - 1];
   }
   //insert to PEAKS0 table at disk
-  reader.insertPeakStmtMs1(peak_inte_rank, std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
+  reader.insertPeakStmtMs1(std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
 
   peak_inte_rank++;
 }
@@ -676,7 +676,7 @@ void mzMLReader::insertPeakStmt(int peakIndex, int scanIndex, double intensity, 
     std::cout << sqlite3_errmsg(db) << std::endl;
   }
 };
-void mzMLReader::insertPeakStmtMs1(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime, std::string color) {
+void mzMLReader::insertPeakStmtMs1(int peakIndex, double intensity, double mz, double retentionTime, std::string color) {
   // std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std::endl;
   char *colorCode = (char *)color.c_str();
   sqlite3_reset(stmtPeakMs1Only);
@@ -769,8 +769,6 @@ void mzMLReader::setColor(int ms1PeakCount){
 
   std::vector<int> interval;
 
-  
-
   for (int i = threshold; i < ms1PeakCount; i += eachPeak){
     interval.push_back(i);
   }
@@ -851,7 +849,7 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
     while (x < GRID.GRIDBLOCKS.size()){
       double highestInte = 0;
       int highestPeakId = -1;
-      //std::vector<std::vector<int>> highest;
+
       for (int cur_x = x; cur_x < x + xrange && cur_x < GRID.GRIDBLOCKS.size(); cur_x++){
         for (int cur_y = y; cur_y < y + yrange && cur_y < GRID.GRIDBLOCKS[0].size(); cur_y++){
           //check intensity
@@ -885,10 +883,6 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
           }
         }
       }
-      //std::cout << "highest peak-intensity pairs " << std::endl;
-      //for (int i = 0; i < highest.size();i++){
-        //std::cout << highest[i][0] << " " << highest[i][1] << std::endl;
-     // }
       if (highestPeakId >= 0){
         //insert and reset
         selected_peak_ID.push_back(highestPeakId);
@@ -898,15 +892,7 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
     //moving to next row in grid
     y = y + yrange;
     x = 0;
-  }/*
-  if (GRID.GRIDBLOCKS.size() / xrange < GRID.GRIDBLOCKS[0].size() / yrange){ // if x < y in the grid, next run y will be reduced
-    RANGE.RTSCALE = RANGE.RTSCALE * RANGE.RTSCALEFACTOR;
-
-    yrange = RANGE.RTSCALE;
-
-    std::cout << "RTSCALE = " << RANGE.RTSCALE << std::endl;
-  }*/
-  
+  }
 }
 void mzMLReader::insertPeaksToEachLayer(int table_cnt, int scan_id){
   std::string sqlstr = "INSERT INTO PEAKS" + int2str(table_cnt) + "(ID,MZ,INTENSITY,RETENTIONTIME,COLOR)" + 
