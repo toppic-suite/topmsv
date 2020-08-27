@@ -270,11 +270,12 @@ void msReader::createDtabase() { //stmt
       }
 
       for (int j=0; j<pairs.size(); j++) {
-        count++ ;
+        count++;
         // std::cout << count << std::endl;
         peaksInteSum = peaksInteSum + pairs[j].intensity;
         if (scanLevel == 1){//PEAKS0 contains level 1 data only
           //databaseReader.insertPeakStmtMs1(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime, databaseReader.peakColor[0]);
+          
           databaseReader.insertPeakStmtInMemory(count, currentID, pairs[j].intensity, pairs[j].mz, retentionTime, databaseReader.peakColor[0]);
           ms1peakcount++ ;
           
