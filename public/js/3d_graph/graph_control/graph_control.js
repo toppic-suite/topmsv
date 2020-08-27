@@ -21,7 +21,7 @@ class GraphControl{
         // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
         let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
         let rt_squish = - Graph.gridRange / (r.rtmax - r.rtmin);
-        let inte_squish = (Graph.gridRangeVertical / heightScale) * r.intscale * 3;
+        let inte_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
         
         if (Graph.viewRange.intmax < 1){
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
@@ -39,6 +39,8 @@ class GraphControl{
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
         
+        //console.log(inte_squish)
+
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
 
@@ -121,37 +123,68 @@ class GraphControl{
         GraphLabel.drawDataLabels();
     }
     /*prevent user from going outside the data range or zooming in so far that math breaks down*/
-    static constrainBounds = (r) => {
-        let dataRange = Graph.viewRange;
-        // prevent mzrange and rtrange from getting too small and causing bizarre floating point errors
-        let newmzrange = Math.min(Math.max(r.mzrange, 0.05), dataRange.mzrange);
-        let newrtrange = Math.min(Math.max(r.rtrange, 0.05), dataRange.rtrange);
-        let mzmid = (r.mzmin + r.mzmax) / 2;
-        let rtmid = (r.rtmin + r.rtmax) / 2;
-        let newmzmin = mzmid - newmzrange / 2;
-        let newrtmin = rtmid - newrtrange / 2;
-    
-        // stay within data range
-        newmzmin = Math.min(Math.max(newmzmin, dataRange.mzmin), dataRange.mzmax - newmzrange);
-        newrtmin = Math.min(Math.max(newrtmin, dataRange.rtmin), dataRange.rtmax - newrtrange);
-    
+    static constrainBoundsZoom = (newmzmin, newmzrange, newrtmin, newrtrange) => {
+        //if range is too small, set to minimum range of 0.01
+        if (newrtrange < 0.01){
+            newrtrange = 0.01;
+        }
+        if (newmzrange < 0.01){
+            newmzrange = 0.01;
+        }
+        //if value goes below zero in rt or mz, set to 0
+        if (newmzmin < 0){
+            newmzmin = 0;
+        }
+        if (newrtmin < 0){
+            newrtmin = 0;
+        }
+        //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
+        if (newmzmin + newmzrange > Graph.dataRange.mzmax){
+            newmzrange = Graph.dataRange.mzmax - newmzmin;
+        }
+        if (newrtmin + newrtrange > Graph.dataRange.rtmax){
+            newrtrange = Graph.dataRange.rtmax - newrtmin;
+        }
         return {
             mzmin: newmzmin, mzmax: newmzmin + newmzrange, mzrange: newmzrange,
             rtmin: newrtmin, rtmax: newrtmin + newrtrange, rtrange: newrtrange,
         }
     }
-    static setViewingArea = (mzmin, mzrange, rtmin, rtrange) => {
-        let r = mzmin;
-    
-        if (typeof mzmin === "number") 
-        {
-            r = {
-                    mzmin: mzmin, mzmax: mzmin + mzrange, mzrange: mzrange,
-                    rtmin: rtmin, rtmax: rtmin + rtrange, rtrange: rtrange,
-                }
+    static constrainBoundsPan = (newmzmin, newmzrange, newrtmin, newrtrange) => {
+        //if range is too small, set to minimum range of 0.01
+        if (newrtrange < 0.01){
+            newrtrange = 0.01;
         }
-        r = this.constrainBounds(r);
-        return r;
+        if (newmzrange < 0.01){
+            newmzrange = 0.01;
+        }
+        if (newmzmin < 0){
+            newmzmin = 0;
+        }
+        if (newrtmin < 0){
+            newrtmin = 0;
+        }
+        let newmzmax = newmzmin + newmzrange; 
+        let newrtmax = newrtmin + newrtrange; 
+
+        //if max value is going to go over the max mz, rt, set them to be the max value, no going over the limit
+        if (newmzmin + newmzrange > Graph.dataRange.mzmax){
+            //no panning
+            newmzmin = Graph.viewRange.mzmin;
+            newmzmax = Graph.dataRange.mzmax;
+            newmzrange = newmzmax - newmzmin;
+
+        }
+        if (newrtmin + newrtrange > Graph.dataRange.rtmax){
+           //no panning
+           newrtmin = Graph.viewRange.rtmin;
+           newrtmax = Graph.dataRange.rtmax;
+           newrtrange = newrtmax - newrtmin;
+        }
+        return {
+            mzmin: newmzmin, mzmax: newmzmax, mzrange: newmzrange,
+            rtmin: newrtmin, rtmax: newrtmax, rtrange: newrtrange,
+        }
     }
     static resizeCamera = () => {
         Graph.renderer.setSize(Graph.graphEl.clientWidth, Graph.graphEl.clientHeight, true);
