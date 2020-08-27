@@ -62,6 +62,12 @@ public:
 	char *sql;
 	char *data;
 	bool isNew;
+	//original
+	//std::vector<std::string> peakColor{"#9be7ff", "#77eddb", "#56f3ba", "#3ef7a2", "#24fc87", "#11ff74", "#33fc61", "#5ef94a", "#89f633", "#abf320", "#e6ef00", "#eae503", "#efd807", "#f4ca0a", "#fabd0e", "#ffaf11", "#ff8c0e", "#ff690b", "#ff4607", "#ff2a04", "#ff0000"};
+	//more diversity in colors
+	//std::vector<std::string> peakColor{"#460086", "#7c43b1", "#b289dc", "#c9b7da", "#7188d9", "#003bd0", "#2ec1f5", "#81d1db", "#7eb493", "#015b03", "#aee0a5", "#af92a0", "#a94882", "#d07ba3", "#f7aec3", "#fbc7a7", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"};
+	//color brewer 11 colors 
+	std::vector<std::string> peakColor{"#313695", "#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090","#fdae61","#f46d43","#d73027","#a50026"};
 
 	mzMLReader();
 	void setName(std::string fileName);
@@ -86,18 +92,22 @@ public:
 	void openInsertStmt();
 	void openInsertStmtMs1Only();
 	void openInsertStmtInMemory();
+	void openColorStmtInMemory();
 	void closeInsertStmt();
 	void closeInsertStmtMs1Only();
 	void closeInsertStmtInMemory();
+	void closeColorStmtInMemory();
 	void insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, double peaksInteSum, int next, int prev);
 	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
+	void updateColor(int ID, std::string color);
 	void updateSpStmt(int currentID, int prevID);
 	void updateSpSumStmt(int currentID, double peaksInteSum);
 	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
-	void insertPeakStmtMs1(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
-	void insertPeakStmtInMemory(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
+	void insertPeakStmtMs1(int peakIndex, double intensity, double mz, double retentionTime, std::string peakColor);
+	void insertPeakStmtInMemory(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime, std::string peakColor);
 	void createIndex();
 	void createIndexOnIdOnly();
+	void createIndexOnIdOnlyInMemory();
 
 	double MZ_GROUP1_SIZE;
 	double MZ_GROUP2_SIZE;
@@ -120,6 +130,7 @@ public:
 	int RT_GROUP4;
 	int RT_GROUP5;
 
+	void setColor(int ms1PeakCount);
 	void resetRange();
 	void insertPeakDataToGridBlocks();
 	void createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_ID);
