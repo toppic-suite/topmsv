@@ -1,8 +1,3 @@
-/**
- * Express router for /editProject
- *
- * Edit projectName, projectDescription, projectPublicStatus by projectCode
- */
 var express = require("express");
 var router = express.Router();
 var insertProjectNew = require("../library/insertProjectNew");
@@ -12,7 +7,11 @@ var newProject = router.post('/newProject', function (req,res) {
     console.log("Hello, newProject!");
     const uid = req.session.passport.user.profile.id;
     const projectName = req.query.projectName;
-    insertProjectNew(projectName, uid);
+    const description = req.query.projectDescription;
+    const permission = req.query.permission;
+    console.log("permission", permission);
+    const password = req.query.password;
+    insertProjectNew(projectName, uid, description, permission, password);
     res.end();
 });
 

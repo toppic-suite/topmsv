@@ -258,59 +258,62 @@
 
 			<hr>
 
-			<div id="input">
-				<div class="scanleveltitle row">
-					<div class="col-sm-9">
-						<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
-					</div>
-					<div class="col-sm-3">
-						<div class="row">
-							<div class="col-sm-4">
-								<label for="scanID" id="scanRange">Scan:</label>
-							</div>
-							<div class="col-sm-4">
-								<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
-							</div>
-							<div class="col-sm-4">
-								<button class="btn" type="submit" id="request">Request</button>
-							</div>
+			<div id="rt-sum_panel">
+				<div id="input">
+					<div class="scanleveltitle row">
+						<div class="col-sm-9">
+							<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
 						</div>
-					</div>
-				</div>
-
-				<div class="scanleveltitle row">
-					<div class="col-sm-4">
-						<div class="row">
-							<div class="col-sm-3">
-								RT:<span id="rt-hover">0</span>
-							</div>
-							<div class="col-sm-6">
-								<div id="shiftRight">
-									Intensity:<span id="intensity-hover">0</span>
+						<div class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-4">
+									<label for="scanID" id="scanRange">Scan:</label>
+								</div>
+								<div class="col-sm-4">
+									<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+								</div>
+								<div class="col-sm-4">
+									<button class="btn" type="submit" id="request">Request</button>
 								</div>
 							</div>
-							<div class="col-sm-3">
-								Scan:<span id="scan-hover">0</span>
+						</div>
+					</div>
+
+					<div class="scanleveltitle row">
+						<div class="col-sm-4">
+							<div class="row">
+								<div class="col-sm-3">
+									RT:<span id="rt-hover">0</span>
+								</div>
+								<div class="col-sm-6">
+									<div id="shiftRight">
+										Intensity:<span id="intensity-hover">0</span>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									Scan:<span id="scan-hover">0</span>
+								</div>
 							</div>
 						</div>
 					</div>
+
+					<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+					<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
+					<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
+					<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
+					<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
+					<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
+					<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
+					<input type="hidden" id="fileName" value="<%= fileName %>">
 				</div>
-
-				<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
-				<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
-				<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
-				<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
-				<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
-				<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
-				<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
-
-			</div>
-			<div class="row">
-				<div id="rt-sum" class="col-sm-12">
+				<div class="row">
+					<div id="rt-sum" class="col-sm-12">
+					</div>
 				</div>
+				<hr>
 			</div>
 
-			<hr>
+
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">
 					<div class="col-sm-7">
@@ -343,8 +346,9 @@
 					</div>
 				</div>
 				<svg id="spectrum1"></svg><br />
+				<hr>
 			</div>
-			<hr>
+
 			<div id="scanLevelTwo">
 				<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
 					<div class="col-sm-2" style="padding-right: 5px">
@@ -380,9 +384,11 @@
 					</ul>
 					<svg id="spectrum2"></svg>
 				</div>
+
+				<br>
+				<hr>
 			</div>
-			<br>
-			<hr>
+
 			<div id="envInfo">
 				<div class="scanleveltitle" id="scanLevelTwoInfo">
 					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;

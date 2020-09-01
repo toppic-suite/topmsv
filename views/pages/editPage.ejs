@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>New Experiment</title>
+    <title>Project Management</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/jquery.fileupload.css">
     <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
@@ -28,31 +28,36 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-body" style="padding-top: 0px;">
-            <h3><strong>New Experiment</strong></h3>
+            <h3><strong>Management</strong></h3>
             <br>
+            <input type="hidden" id="type" name="type" value="<%= typePlaceholder %>">
+            <input type="hidden" id="id" name="id" value="<%= idPlaceholder %>">
+            <input type="hidden" id="oriName" value="<%= namePlaceholder %>">
+            <input type="hidden" id="oriDescription" value="<%= descriptionPlaceholder %>">
             <div class="form-group">
-                <label for="selectProject">Project</label>
-                <select id="selectProject" class="form-control">
-                    <% for (var i = 0; i < projectList.length; i++) { %>
-                        <option value="<%= projectList[i].pid%>"><%= projectList[i].projectName%></option>
-                    <% } %>
-                </select>
-                <label for="experiment_Name">Experiment Name</label>
-                <input type="text" class="form-control" id="experiment_Name" name="experiment_Name" placeholder="Experiment Name">
-                <label for="description">Experiment Description</label>
-                <input type="text" class="form-control" id="description" name="description" placeholder="Experiment Description">
-<!--                <input type="checkbox" class="form-check-input" id="public" name="public">-->
-<!--                <label class="form-check-label" for="public">Public</label>-->
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="<%= namePlaceholder%>">
             </div>
 
-            <button type="button" class="btn btn-primary" id="createButton" style="margin-top: 8px;">Confirm</button>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" id="description" name="description" placeholder="<%= descriptionPlaceholder%>">
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="public" name="public">
+                <label class="form-check-label" for="public">Public</label>
+            </div>
+
+            <br>
+            <button type="button" class="btn btn-primary" id="editButton" style="margin-top: 8px;">Edit</button>
         </div>
     </div>
 </div>
 <script src="js/jquery-1.9.1.js"></script>
 <script src="js/jquery-ui.js"></script>
 <script src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/createExperiment.js"></script>
+<script type="text/javascript" src="js/editPage.js"></script>
 
 </body>
 </html>
