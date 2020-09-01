@@ -22,7 +22,7 @@ class GraphControl{
         let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
         let rt_squish = - Graph.gridRange / (r.rtmax - r.rtmin);
         let inte_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
-        
+
         if (Graph.viewRange.intmax < 1){
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             inte_squish = 0;
