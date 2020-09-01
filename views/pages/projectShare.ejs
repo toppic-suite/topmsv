@@ -84,17 +84,21 @@
         <li role="presentation"><a href="/">Home</a></li>
         <li role="presentation"><a href="/submit">Upload</a></li>
         <li role="presentation"><a href="/projects">My projects</a></li>
-        <li role="presentation" class="active"><a href="/projectTab">New projects</a></li>
+        <li role="presentation" class="active"><a href="/projectTab">Project share</a></li>
     </ul>
     <br>
-    <div class="row">
-        <div class="col-sm-2">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create</button>
-        </div>
-    </div>
-    <br>
 
-    <div class="row">
+    <input type="hidden" id="treeviewNode" name="treeviewNode" value="<%= treeviewNode %>">
+    <input type="hidden" id="projectPassword" name="projectPassword" value="<%= password %>">
+    <div id="pwPanel">
+        <label for="pw">Password:</label>
+        <input type="password" id="pw" name="pw">
+
+        <button type="button" class="btn btn-primary" id="pwButton">Enter</button>
+    </div>
+
+
+    <div id="infoPanel" class="row">
         <div class="col-sm-3">
             <div id="tree"></div>
         </div>
@@ -114,14 +118,14 @@
                 <strong>Description: </strong><span id="description"></span>
             </div>
             <br>
-            <div class="row" style="font-size: large">
+            <!--<div class="row" style="font-size: large">
                 <strong>Permission: </strong><span id="permission"></span>
             </div>
             <br>
             <div class="row" style="font-size: large; display: none" id="passwordDiv">
                 <strong>Password: </strong><span id="password">NULL</span>
                 <br>
-            </div>
+            </div>-->
 
             <div class="row" style="font-size: large; display: none" id="datasetLink">
                 <strong>Link: </strong><a id="link" href="">Dataset Link</a>
@@ -136,6 +140,6 @@
         </div>
     </div>
 </main>
-<script type="text/javascript" src="js/projectTab.js"></script>
+<script type="text/javascript" src="js/projectShare.js"></script>
 </body>
 </html>

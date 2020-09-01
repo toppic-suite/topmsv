@@ -7,6 +7,11 @@ var getRT = router.get('/getRT', function (req, res) {
     var projectDir = req.query.projectDir;
     var scanNum = req.query.scanID;
     getRTAsync(projectDir, scanNum, function (err, row) {
+        if(!row) {
+            res.write('0');
+            res.end();
+            return;
+        }
         res.write(row.rt.toString());
         res.end();
     })

@@ -4,7 +4,6 @@ const getExperiment = require("./getExperiment");
 const getDataset = require("./getDataset");
 
 function buildTreeview(uid) {
-    let resultDb = new BetterDB("./db/projectDB.db");
     let projects = getProjectNew(uid);
     console.log("projects: ", projects);
     let result = [];

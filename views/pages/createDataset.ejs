@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Experiment</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery.fileupload.css">
+    <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-154408351-1');
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-11">
+            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        </div>
+        <!--<div class="col-sm-1">
+            <a href="/auth/google" id="signIn">Sign In</a>
+        </div>-->
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding-top: 0px;">
+            <h3><strong>New Dataset</strong></h3>
+            <br>
+            <div class="form-group">
+                <label for="selectProject">Project</label>
+                <select id="selectProject" class="form-control">
+                    <% for (var i = 0; i < projectList.length; i++) { %>
+                        <option value="<%= projectList[i].pid%>"><%= projectList[i].projectName%></option>
+                    <% } %>
+                </select>
+                <label for="selectExperiment">Experiment</label>
+                <select id="selectExperiment" class="form-control">
+                </select>
+<!--
+                <label for="dataset_Name">Dataset Name</label>
+                <input type="text" class="form-control" id="dataset_Name" name="dataset_Name" placeholder="Dataset Name">
+                <label for="description">Dataset Description</label>
+                <input type="text" class="form-control" id="description" name="description" placeholder="Dataset Description">
+-->
+
+                <br>
+
+                <div class="input-group">
+                    <span class="input-group-addon">Dataset Name:</span>
+                    <input type="text" class="form-control" id="projectName"
+                           name="projectname" value="" required autofocus>
+                </div>
+                <!--<br>
+                <div class="input-group">
+                    <span class="input-group-addon">Email:</span>
+                    <input type="email" class="form-control" id="emailAddress"
+                           name="emailaddress" value="" required>
+                </div>-->
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Description:</span>
+                    <textarea class="form-control" id="description"
+                              name="description" required></textarea>
+                </div>
+                <br>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="public">
+                    <label class="form-check-label" for="public">Public</label>
+                </div>
+                <br>
+                <div>
+                    <div>
+                            <span class="btn btn-primary fileinput-button"> <i
+                                        class="icon-plus icon-white"></i> <span>Select mzML file</span>
+                                    <input class="form-control" id="dbfile" type="file" name="dbfile">
+                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dbfilename"></span>
+                    </div>
+                    <br>
+                    <div>
+                            <span class="btn btn-primary fileinput-button"> <i
+                                        class="icon-plus icon-white"></i> <span>Select env file (Optional)</span>
+                                    <input class="form-control" id="envfile1" type="file" name="envfile1">
+                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="envfilename1"></span>
+                    </div>
+                    <br>
+                    <!--<div>
+                        <span class="btn btn-primary fileinput-button"> <i
+                                class="icon-plus icon-white"></i> <span>Select ms2 env file...</span>
+                                <input class="form-control" id="envfile2" type="file" name="envfile2">
+                                        </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="envfilename2"></span>
+                    </div>
+                    <br>-->
+                    <!--<table>
+                        <tr>
+                            <td><span class="btn btn-primary fileinput-button"> <i
+                                    class="icon-plus icon-white"></i> <span>Select mzML file...</span>
+                                <input class="form-control" id="dbfile" type="file" name="dbfile">
+                                        </span></td>
+                            <td width="10pt"></td>
+                            <td><span id="dbfilename"></span></td>
+                            <td width="10pt"></td>
+
+
+
+                        </tr>
+                        <tr>
+                            <td><span class="btn btn-primary fileinput-button"> <i
+                                    class="icon-plus icon-white"></i> <span>Select env file...</span>
+                                <input class="form-control" id="envfile" type="file" name="envfile">
+                                        </span></td>
+                            <td width="10pt"></td>
+                            <td><div id="envfilename"></div></td>
+                        </tr>
+                        <tr>
+                            <td id="dbtd" style="width: 300pt">
+                                <div id="dbprogress" class="progress">
+                                    <div id="dbbar" class="progress-bar progress-bar-striped" role="progressbar"
+                                         style="width: 0%">0%</div>
+                                </div>
+                            </td>
+                            <td width="10pt"></td>
+                        </tr>
+                    </table>-->
+                    <!--                        <div id="dbbutton">-->
+                    <table>
+                        <tr>
+                            <td><button id="uploadbutton" class="btn btn-primary">Upload</button></td>
+                            <td width="40pt"></td>
+                            <td id="dbtd" style="width: 300pt">
+                                <div id="dbprogress" class="progress">
+                                    <div id="dbbar" class="progress-bar progress-bar-striped" role="progressbar"
+                                         style="width: 0%">0%</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <!--                        </div>-->
+
+                </div>
+            </div>
+
+<!--            <button type="button" class="btn btn-primary" id="createButton" style="margin-top: 8px;">Confirm</button>-->
+        </div>
+    </div>
+</div>
+<script src="js/jquery-1.9.1.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/createDataset.js"></script>
+
+</body>
+</html>
