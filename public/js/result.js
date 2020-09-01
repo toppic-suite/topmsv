@@ -194,6 +194,7 @@ function loadInteSumList() {
 /*            console.log("SumList:");
             console.log(response);*/
             var t0 = performance.now();
+            console.log("loadInteSumList:", JSON.stringify(response));
             addFigure(response);
             var t1 = performance.now();
             // console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
@@ -307,7 +308,7 @@ function addFigure(dataset) {
         .attr("class", "hover-line");
     var hoverLine = hoverLineGroup
         .append("line")
-        .attr("stroke", "#f00")
+        .attr("stroke", "#ff0000")
         .attr("x1", padding.left).attr("x2", padding.left)
         .attr("y1", padding.top).attr("y2", height-padding.bottom);
     var fixedLine = hoverLineGroup
@@ -746,6 +747,29 @@ $( document ).ready(function() {
         $('#scanID').val(scanRef);
         $('#request').click();
         localStorage.clear();
+    }
+
+    let fileName = $('#fileName').val();
+    let apix = fileName.substr(fileName.lastIndexOf('.'), fileName.length);
+    if(apix === '.txt') {
+        $('#rt-sum_panel').hide();
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var response = this.responseText;
+                if (response === "1") {
+                    loadPeakList1(min, null);
+                    $('#scanLevelTwo').hide();
+                }
+                else {
+                    $('#scanLevelOne').hide();
+                    //loadPeakList2(min, )
+                    getRelatedScan2(min);
+                }
+            }
+        };
+        xhttp.open("GET", "scanlevel?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + min, true);
+        xhttp.send();
     }
 
 });

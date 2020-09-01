@@ -20,5 +20,6 @@ function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectD
     let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile,uid, publicStatus);
     console.log("insertRowSync info", info);
     resultDb.close();
+    return info.lastInsertRowid;
 }
 module.exports = insertRowSync;

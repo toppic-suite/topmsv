@@ -34,6 +34,22 @@
             <div class="form-group">
                 <label for="project_Name">Project Name</label>
                 <input type="text" class="form-control" id="project_Name" name="project_Name" placeholder="Project Name">
+                <label for="projectDescription">Description</label>
+                <input type="text" class="form-control" id="projectDescription" name="projectDescription" placeholder="Project Description">
+
+                <label for="permission">Permission</label>
+                <select name="permission" id="permission" class="form-control">
+                    <option value=0>Public</option>
+                    <option value=1>Private</option>
+                    <option value=2>Password</option>
+                </select>
+
+                <div id="password" style="display: none">
+                    <label for="password1">Password</label>
+                    <input type="password" class="form-control" id="password1">
+                    <label for="password2">Re-type password for validation</label>
+                    <input type="password" class="form-control" id="password2">
+                </div>
             </div>
 
             <button type="button" class="btn btn-primary" id="createButton" style="margin-top: 8px;">Confirm</button>
