@@ -135,8 +135,8 @@ class GraphData{
             GraphData.getInteRange(Graph.currentData);
     
             //if camera angle is perpendicular to the graph plane
-            if (Graph.camera.position.y > 25.495){
-                GraphData.plotPointAsCircle(Graph.currentData);
+            if (Graph.isPerpendicular){
+                GraphData.plotPointAsCircle();
             }
             else{
                 for (let i = 0; i < Graph.currentData.length; i++){   
@@ -168,18 +168,25 @@ class GraphData{
     
         let rt = document.getElementById("scan1RT").innerText;
     
-        let prevGroup = Graph.scene.getObjectByName("cylinderGroup");
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
+    
         let cylinderGroup; 
-
-        if (prevGroup == undefined){
-            cylinderGroup = new THREE.Group();//when view angle is perpendicular
-            cylinderGroup.name = "cylinderGroup";
-            dataGroup.add(cylinderGroup);
+        
+        if (dataGroup.children.length > 2){
+            for (let i = 0; i < dataGroup.children.length; i++){
+                if (dataGroup.children[i].name == "cylinderGroup"){
+                    dataGroup.children[i] = new THREE.Group(); 
+                    dataGroup.children[i].name = "cylinderGroup";
+                    cylinderGroup = dataGroup.children[i];
+                };
+            }
         }
         else{
-            cylinderGroup = prevGroup;
+            cylinderGroup = new THREE.Group(); 
+            cylinderGroup.name = "cylinderGroup";
         }
+
+       // console.log(dataGroup.children);   
 
         for (let i = 0; i < Graph.currentData.length; i++){   
             let point = Graph.currentData[i];
@@ -213,6 +220,7 @@ class GraphData{
             inte_squish = 0;
         }
         // Reposition the plot so that mzmin,rtmin is at the correct corner
+        dataGroup.add(cylinderGroup);
         dataGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0.01, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
     }
     /*plots a peak as a vertical line on the graph*/
