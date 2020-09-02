@@ -65,9 +65,9 @@ public:
 	//original
 	//std::vector<std::string> peakColor{"#9be7ff", "#77eddb", "#56f3ba", "#3ef7a2", "#24fc87", "#11ff74", "#33fc61", "#5ef94a", "#89f633", "#abf320", "#e6ef00", "#eae503", "#efd807", "#f4ca0a", "#fabd0e", "#ffaf11", "#ff8c0e", "#ff690b", "#ff4607", "#ff2a04", "#ff0000"};
 	//more diversity in colors
-	//std::vector<std::string> peakColor{"#460086", "#7c43b1", "#b289dc", "#c9b7da", "#7188d9", "#003bd0", "#2ec1f5", "#81d1db", "#7eb493", "#015b03", "#aee0a5", "#af92a0", "#a94882", "#d07ba3", "#f7aec3", "#fbc7a7", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"};
+	std::vector<std::string> peakColor{"#460086", "#7c43b1", "#b289dc", "#c9b7da", "#7188d9", "#003bd0", "#2ec1f5", "#81d1db", "#7eb493", "#015b03", "#aee0a5", "#af92a0", "#a94882", "#d07ba3", "#f7aec3", "#fbc7a7", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"};
 	//color brewer 11 colors 
-	std::vector<std::string> peakColor{"#313695", "#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090","#fdae61","#f46d43","#d73027","#a50026"};
+	//std::vector<std::string> peakColor{"#313695", "#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090","#fdae61","#f46d43","#d73027","#a50026"};
 
 	mzMLReader();
 	void setName(std::string fileName);
