@@ -761,6 +761,7 @@ Use only one table.
 Use only one table.
 Use only one table.
 */
+/*
 void mzMLReader::setColor(int ms1PeakCount){
   std::string sqlstr = "SELECT * FROM PEAKS0 ORDER BY INTENSITY;";
   int threshold = floor(ms1PeakCount/2);
@@ -772,7 +773,6 @@ void mzMLReader::setColor(int ms1PeakCount){
   for (int i = threshold; i < ms1PeakCount; i += eachPeak){
     interval.push_back(i);
   }
-  openColorStmtInMemory();
   openInsertStmtMs1Only();
   std::vector<int> *intervalPtr = &interval;
   sql = (char *)sqlstr.c_str();
@@ -784,7 +784,36 @@ void mzMLReader::setColor(int ms1PeakCount){
     //std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
   }
   closeInsertStmtMs1Only();
-  closeColorStmtInMemory();
+}*/
+void mzMLReader::setColor(int ms1PeakCount){
+  std::string sqlstr = "SELECT * FROM PEAKS0 ORDER BY INTENSITY;";
+  int topPerc = 1;//Two colors at each end of gradient are assigned to N% from bottom and top intensity
+  int bottomPerc = 30;
+  int top = ms1PeakCount * topPerc/100;
+  int bottom = ms1PeakCount * bottomPerc/100;
+  int remainColor = peakColor.size() - 2;//rest of colors to assign peaks
+  int remainPeaks = ms1PeakCount - top - bottom;
+  int eachPeak = remainPeaks / remainColor; //peak cnt in each interval
+
+  std::vector<int> interval;
+
+  for (int i = bottom; i < ms1PeakCount - top; i += eachPeak){
+    interval.push_back(i);
+    std::cout << "interval: " << i << std::endl;
+  }
+  std::cout << "total PEAKS " << ms1PeakCount << std::endl;
+
+  openInsertStmtMs1Only();
+  std::vector<int> *intervalPtr = &interval;
+  sql = (char *)sqlstr.c_str();
+  rc = sqlite3_exec(dbInMemory, sql, callbackUpdateData, intervalPtr, &zErrMsg);//after this function, gridBlocks has a peak for each grid
+  if( rc != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    //std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
+  }
+  closeInsertStmtMs1Only();
 }
 void mzMLReader::resetRange(){
   RANGE.MZMIN = 99999;
