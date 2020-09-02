@@ -38,23 +38,10 @@ public:
 	SpectrumListPtr sl;
 	mzMLReader databaseReader;
 	Range RANGE;
-	void getScans(int scanLevel);
-	void getSinglePeaks(int scan);
-	void getScanRangeDB();
 	void getRange();
-	void getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void calculateInitBin(int ms1scancount, int ms1peakcount);
-	void createDtabase_normal();
 	void createDtabase();
-	void getRangeDB();
+	void getScanRangeDB();
 	void getPeaksFromScanDB(int scan);
-	void getAllPeaksDB(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void getRangeFromRaw();
-	void createDtabaseOneTable();
-	void getRangeDBOneTable();
-	void getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void createDtabaseOneTableRTree();
-	void getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 };
 
 
