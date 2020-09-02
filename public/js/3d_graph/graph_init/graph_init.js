@@ -115,7 +115,7 @@ class GraphInit{
         /*right-click rotation controls*/
         Graph.graphControls = new THREE.OrbitControls( camera, renderer.domElement );
         Graph.graphControls.mouseButtons = { ORBIT: THREE.MOUSE.RIGHT };
-        Graph.graphControls.addEventListener( 'change', GraphRender.renderImmediate.bind(Graph));
+        Graph.graphControls.addEventListener( 'change', GraphRender.checkAndRender.bind(Graph));
         Graph.graphControls.target.set(Graph.gridRange/2, 0, Graph.gridRange/2); // focus on the center of the grid
         Graph.graphControls.enablePan = false;
         Graph.graphControls.enableZoom = false;
