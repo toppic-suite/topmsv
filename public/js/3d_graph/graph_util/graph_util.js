@@ -20,8 +20,7 @@ class GraphUtil{
         }
     };
     static emptyGroup = (g) => {
-        while (g.children.length > 0) 
-        {
+        while (g.children.length > 0) {
             let obj = g.children.pop();
             this.disposeObject(obj);
         }
