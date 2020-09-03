@@ -1,45 +1,26 @@
-// let graphFeatures = new graphFeatures();
-// class GraphFeatures{
-//     constructor(){
-//         this.showCircles = true;
-//         this.showIons = false;
-//         this.showSequene = false;
-//         this.isAddbgColor = false;
-//         this.fixedWidthOfBgColorForMs1 = 2;
-//         this.ratio = 1.000684;
-//         this.tickWidthThreshholdval = 0.5;
-//         this.bgMinMz = 0;
-//         this.bgMaxMz = 0;
-//         this.bgColor = "orange";
-//         this.prefixSequenceData = [];
-//         this.suffixSequeceData = [];
-//         this.adjustableIonPosition = 4;
-//         this.svgWidth = 910;
-//         this.svgHeight = 220;
-//         this.padding = {left:70, right:20, head:10, bottom:50};
-//         this.adjustableHeightVal = 60;
-//         this.fixedHeightOfIonAboveThePeak = 10;
-//         this.specWidth = this.svgWidth - this.padding.left - this.padding.right;
-//         this.specHeight = this.svgHeight - this.padding.head - this.padding.bottom;
-//     }
-// }
-function getRelatedScan2(scanID) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var response = this.responseText;
-            //loadPeakList1(response);
-            getScanLevelTwoList(response,scanID);
+function getRelatedScan2 (scanID) {
+    axios.get('/relatedScan2', {
+        params: {
+            projectDir: document.getElementById("projectDir").value,
+            scanID: scanID
         }
-    };
-    xhttp.open("GET", "relatedScan2?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-    xhttp.send();
+      })
+      .then(function (response) {
+        getScanLevelTwoList(response,scanID);
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
 }
+
 function getScanLevel(scanID,nextScan) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var response = this.responseText;
+    axios.get('/scanlevel', {
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                scanId: scanID
+            }
+        })
+        .then(function (response) {
             if (response === "1") {
                 if (nextScan - scanID === 1) {
                     $('#scanLevelTwoInfo').show();
@@ -57,429 +38,186 @@ function getScanLevel(scanID,nextScan) {
             else {
                 getRelatedScan2(scanID);
             }
-        }
-    };
-    xhttp.open("GET", "scanlevel?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-    xhttp.send();
+        })
+        .catch(function(error) {
+            console.log(error);
+        })
 }
+
 // get scanNum by ID
 function getScanID(ID) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            var response = this.responseText;
-            findNextLevelOneScan(response);
+    axios.get('/scanID', {
+        params: {
+            projectDir: document.getElementById("projectDir").value,
+            ID: ID
         }
-    };
-    xhttp.open("GET", "scanID?projectDir=" + document.getElementById("projectDir").value + "&ID=" + ID, true);
-    xhttp.send();
+    }).then(function(response) {
+        findNextLevelOneScan(response);
+    }).catch(function(error) {
+        console.log(error);
+    })
 }
+
 let peakList1_g;
 let envList1_g;
 let graph1_g;
+
 function loadPeakList1(scanID, prec_mz) {
     const graphFeatures = new GraphFeatures();
     if (scanID !== '0') {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                getRT(scanID);
-                peakList1_g = JSON.parse(this.responseText);
-                var xhttp2 = new XMLHttpRequest();
-                xhttp2.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        envList1_g = JSON.parse(this.responseText);
-                        if (envList1_g !== 0){
-                            graph1_g = addSpectrum("spectrum1",peakList1_g, envList1_g,prec_mz, null,graphFeatures);
-                        }else {
-                            graph1_g = addSpectrum("spectrum1",peakList1_g, [],prec_mz, null,graphFeatures);
-                        }
-                    }
-                };
-                xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
-                xhttp2.send();
-                document.getElementById("scanID1").innerText = scanID;
+        axios.get('/peaklist', {
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                scanID: scanID
             }
-        };
-        xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-        xhttp.send();
-
+        }).then(function(response){
+            getRT(scanID);
+            peakList1_g = JSON.parse(response);
+            document.getElementById("scanID1").innerText = scanID;
+            return axios.get('/envlist', {
+                params: {
+                    projectDir: document.getElementById("projectDir").value,
+                    scanID: scanID,
+                    projectCode: document.getElementById("projectCode").value
+                }
+            });
+        }).then(function(response){
+            envList1_g = JSON.parse(response);
+            if (envList1_g !== 0){
+                graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, prec_mz, null, graphFeatures);
+            }else {
+                graph1_g = addSpectrum("spectrum1", peakList1_g, [], prec_mz, null, graphFeatures);
+            }
+        }).catch(function(error) {
+            console.log(error);
+        })
     }else{
         alert("NULL");
     }
 }
+
 function getRT(scanNum) {
-    var xhttpRT = new XMLHttpRequest();
-    xhttpRT.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var rt = parseFloat(this.responseText);
-            moveLine(rt/60);
-            document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
+    axios.get('/getRT', {
+        params: {
+            projectDir: document.getElementById("projectDir").value,
+            scanID: scanNum
         }
-    };
-    xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
-    xhttpRT.send();
+    }).then(function(response){
+        let rt = parseFloat(response);
+        moveLine(rt/60);
+        document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
+    }).catch(function(error) {
+        console.log(error);
+    });
 }
 
 function findNextLevelOneScan(scan) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var nextScan = parseInt(this.responseText);
-            getScanLevel(scan,nextScan);
+    axios.get('/findNextLevelOneScan', {
+        params: {
+            projectDir: document.getElementById("projectDir").value,
+            scanID: scan
         }
-    };
-    xhttp.open("GET", "findNextLevelOneScan?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan, true);
-    xhttp.send();
+    }).then(function(response) {
+        let nextScan = parseInt(response);
+        getScanLevel(scan,nextScan);
+    }).catch(function(error) {
+        console.log(error);
+    })
 }
+
 let peakList2_g;
 let envList2_g;
 let graph2_g;
-function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
-    const graphFeatures = new GraphFeatures();
-    if(scanID !== '0') {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                /*
-                                        var t5 = performance.now();
-                                        console.log("Call to fetch peaklist2 data from server took " + (t5 - t4) + " milliseconds.");
-                */
-                peakList2_g = JSON.parse(this.responseText);
-                // document.getElementById("scanID2").innerText = scanID;
-                //getPrecMZ(scanID);
-                // var t6 = performance.now();
-                var xhttp2 = new XMLHttpRequest();
-                xhttp2.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        envList2_g = JSON.parse(this.responseText);
-                        //console.log(envList2_g);
-                        if (envList2_g !== 0){
-                            graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
-                        }else {
-                            graph2_g = addSpectrum("spectrum2",peakList2_g, [],null,null, graphFeatures);
-                        }
-                        // var t7 = performance.now();
-                        // console.log("Call to show figure took " + (t7 - t6) + " milliseconds.");
-                        document.getElementById("scanID2").innerHTML = scanID;
-                        document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
-                        loadPeakList1(levelOneScan, prec_mz);
-                        document.getElementById("prec_charge").innerHTML = prec_charge;
-                        document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
-                        document.getElementById("rt").innerHTML = (rt/60).toFixed(4);
-                    }
 
-                };
-                xhttp2.open("GET", "envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value, true);
-                xhttp2.send();
-            }
-        };
-        // var t4 = performance.now();
-        xhttp.open("GET", "peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-        xhttp.send();
+function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
+    if(scanID !== '0') {
+        const graphFeatures = new GraphFeatures();
         // show envelope table for MS2
         showEnvTable(scanID);
         $("#switch").text('MS1');
+
+        axios.get('/peaklist',{
+            params:{
+                projectDir: document.getElementById("projectDir").value,
+                scanID: scanID
+            }
+        }).then(function(response) {
+            peakList2_g = JSON.parse(response);
+            return axios.get('/envlist', {
+                params: {
+                    projectDir: document.getElementById("projectDir").value,
+                    scanID: scanID,
+                    projectCode: document.getElementById("projectCode").value
+                }
+            })
+        }).then(function(response) {
+            envList2_g = JSON.parse(response);
+            if (envList2_g !== 0){
+                graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
+            }else {
+                graph2_g = addSpectrum("spectrum2",peakList2_g, [],null,null, graphFeatures);
+            }
+            document.getElementById("scanID2").innerHTML = scanID;
+            document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
+            loadPeakList1(levelOneScan, prec_mz);
+            document.getElementById("prec_charge").innerHTML = prec_charge;
+            document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
+            document.getElementById("rt").innerHTML = (rt/60).toFixed(4);
+        }).catch(function(error) {
+            console.log(error);
+        })
     }else{
         alert("NULL");
     }
 }
+
 function loadInteSumList() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var t3 = performance.now();
-            // console.log("Call to fetch inteSum data from server took " + (t3 - t2) + " milliseconds.");
-            var response = JSON.parse(this.responseText);
-/*            console.log("SumList:");
-            console.log(response);*/
-            var t0 = performance.now();
-            console.log("loadInteSumList:", JSON.stringify(response));
-            addFigure(response);
-            var t1 = performance.now();
-            // console.log("Call to show figure took " + (t1 - t0) + " milliseconds.");
+    axios.get('/getInteSumList', {
+        params: {
+            projectDir: document.getElementById("projectDir").value
         }
-    };
-    var t2 = performance.now();
-    xhttp.open("GET", "getInteSumList?projectDir=" + document.getElementById("projectDir").value, true);
-    xhttp.send();
+    }).then(function(response) {
+        // console.log("loadInteSumList:", JSON.stringify(response));
+        addFigure(JSON.parse(response));
+    }).catch(function(error) {
+        console.log(error);
+    })
 }
-var xScale_g;
-var padding_g;
-var fixedLine_g;
-function addFigure(dataset) {
 
-    var width = 1100; //1100
-    var height = 120; //120
-    var padding = { top: 10, right: 10, bottom: 50, left: 80 };
-    padding_g = padding;
-
-    var maxInte = d3.max(dataset, function(d) {
-        return d.inteSum;
-    });
-
-    var formatPercent = d3.format(".0%");
-
-    dataset.forEach(function (element) {
-        element.rt = element.rt/60;
-        element.intePercentage = element.inteSum/maxInte;
-    });
-    dataset.sort((a,b) => {a.rt > b.rt ? 1:-1});
-
-    var min = d3.min(dataset, function(d) {
-        return d.intePercentage;
-    });
-    var max = d3.max(dataset, function(d) {
-        return d.intePercentage;
-    });
-
-    var minRT = d3.min(dataset, function(d) {
-        return d.rt;
-    });
-    var maxRT = d3.max(dataset, function(d) {
-        return d.rt;
-    });
-    var xScale = d3.scaleLinear()
-        .domain([0, maxRT+5])
-        .range([0, width - padding.left - padding.right]);
-    xScale_g = xScale;
-    var yScale = d3.scaleLinear()
-        .domain([0, max])
-        .range([height - padding.top - padding.bottom, 0]);
-
-    var svg = d3.select('#rt-sum')
-        .append('svg')
-        .attr('viewBox', "0 0 "+ width + " "+height)
-        .attr('preserveAspectRatio', 'xMidYMid meet')
-        .attr('width', '100%')
-        .attr('height', '100%');
-
-    var xAxis = d3.axisBottom()
-        .scale(xScale)
-        .ticks(20);
-
-    var yAxis = d3.axisLeft()
-        .scale(yScale)
-        .tickFormat(formatPercent)
-        .ticks(5);
-
-    svg.append('g')
-        .attr('class', 'axis')
-        .attr('transform', 'translate(' + padding.left + ',' + (height - padding.bottom) + ')')
-        .call(xAxis);
-    // text label for the x axis
-    svg.append("text")
-        // .attr("fill", "black")//set the fill here
-        .attr("transform",
-            "translate(" + ((width+padding.left-padding.right)/2) + " ," +
-            (height - padding.bottom + 35) + ")")
-        .style("text-anchor", "middle")
-        .text("Retention Time (mins)");
-
-    svg.append('g')
-        .attr('class', 'axis')
-        .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')')
-        .call(yAxis);
-    // text label for the y axis
-    svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 20)
-        .attr("x",0 - (height / 2) + 20)
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("Intensity");
-
-    var linePath = d3.line()
-        .x(function(d){ return xScale(d.rt) })
-        .y(function(d){ return yScale(d.intePercentage) }).curve(d3.curveBasis);
-
-    svg.append('g')
-        .append('path')
-        .attr('class', 'line-path')
-        .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')')
-        .attr('d', linePath(dataset))
-        .attr('fill', 'none')
-        .attr('stroke-width', 1)
-        .attr('stroke', 'black');
-
-    //Line chart mouse over
-    var vis = svg;
-    var hoverLineGroup = vis.append("g")
-        .attr("class", "hover-line");
-    var hoverLine = hoverLineGroup
-        .append("line")
-        .attr("stroke", "#ff0000")
-        .attr("x1", padding.left).attr("x2", padding.left)
-        .attr("y1", padding.top).attr("y2", height-padding.bottom);
-    var fixedLine = hoverLineGroup
-        .append("line")
-        .attr("stroke", "#ff8000")
-        .attr("x1", padding.left).attr("x2", padding.left)
-        .attr("y1", padding.top).attr("y2", height-padding.bottom);
-    fixedLine_g = fixedLine;
-    /*			var hoverTT = hoverLineGroup.append('text')
-                        .attr("class", "hover-text capo")
-                        .style('fill', 'red')
-                        .attr('dy', "0.35em");
-
-                var hoverTT2 = hoverLineGroup.append('text')
-                        .attr("class", "hover-text capo")
-                        .style('fill', 'red')
-                        .attr('dy', "0.45em");
-
-                var hoverTT3 = hoverLineGroup.append('text')
-                        .attr("class", "hover-text capo")
-                        .style('fill', 'red')
-                        .attr('dy', "0.45em");*/
-
-    hoverLine.style("opacity", 1e-6);
-    /*
-                var rectHover = vis.append("rect")
-                        .data(dataset)
-                        .attr("fill", "none")
-                        .attr("class", "overlay")
-                        .attr("width", width - padding.right -padding.left)
-                        .attr("height", height - padding.bottom - padding.top)
-                        .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
-    */
-
-    vis
-        .on("mouseout", hoverMouseOff)
-        .on("mouseover mousemove touchmove", hoverMouseOn)
-        .on("click", mouseClick);
-
-    var bisectRT = d3.bisector(function(d) { return d.rt; }).right;
-    function mouseClick() {
-        var mouse_x = d3.mouse(this)[0];
-        var mouse_y = d3.mouse(this)[1];
-        var maxMouse = xScale(maxRT);
-        var mouseRT = xScale.invert(mouse_x-padding.left);
-        var i = bisectRT(dataset, mouseRT); // returns the index to the current data item
-
-        if(i>0 && i < dataset.length && mouse_y < height-padding.bottom && mouse_y > padding.top) {
-            var d0 = dataset[i - 1];
-            var d1 = dataset[i];
-            // work out which date value is closest to the mouse
-            var d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
-            fixedLine.attr("x1", mouse_x).attr("x2", mouse_x);
-            fixedLine.style("opacity", 1);
-            findNextLevelOneScan(d.scanNum);
-        } else if (i === dataset.length && mouse_x -padding.left<= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
-        {
-            var d = dataset[i-1];
-            fixedLine.attr("x1", mouse_x).attr("x2", mouse_x);
-            fixedLine.style("opacity", 1);
-            findNextLevelOneScan(d.scanNum);
-        } else {
-            //fixedLine.style("opacity", 1e-6);
-        }
-    }
-    function hoverMouseOn() {
-        var mouse_x = d3.mouse(this)[0];
-        var mouse_y = d3.mouse(this)[1];
-        var maxMouse = xScale(maxRT);
-        hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);
-        hoverLine.style("opacity", 1);
-        var graph_y = yScale.invert(mouse_y);
-        var graph_x = xScale.invert(mouse_x-padding.left);
-
-        var mouseRT = xScale.invert(mouse_x-padding.left);
-        var i = bisectRT(dataset, mouseRT); // returns the index to the current data item
-        if(i>0 && i < dataset.length && mouse_y < height-padding.bottom && mouse_y > padding.top) {
-            var d0 = dataset[i - 1];
-            var d1 = dataset[i];
-            // work out which date value is closest to the mouse
-            var d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
-
-            document.getElementById("rt-hover").innerHTML = Math.round(d.rt * 100)/100;
-            document.getElementById("intensity-hover").innerHTML = d.inteSum.toExponential(2);
-            document.getElementById("scan-hover").innerHTML = d.scanNum;
-
-            /*hoverTT.text("RT: " + Math.round(d.rt * 10000)/10000);
-            hoverTT.attr('x', mouse_x);
-            hoverTT.attr('y', yScale(d.intePercentage)+20);
-            hoverTT2.text("Intensity: " + d.inteSum.toExponential(2))
-                    .attr('x', mouse_x)
-                    .attr('y', yScale(d.intePercentage)+30);
-            hoverTT3.text("Scan: " + d.scanNum)
-                    .attr('x', mouse_x)
-                    .attr('y', yScale(d.intePercentage) + 42);
-            hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*/
-            hoverLine.style("opacity", 1);
-        } else if (i === dataset.length&& mouse_x-padding.left <= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
-        {
-            var d = dataset[i-1];
-            document.getElementById("rt-hover").innerHTML = Math.round(d.rt * 100)/100;
-            document.getElementById("intensity-hover").innerHTML = d.inteSum.toExponential(2);
-            document.getElementById("scan-hover").innerHTML = d.scanNum;
-
-            /*hoverTT.text("RT: " + Math.round(d.rt * 10000)/10000);
-            hoverTT.attr('x', mouse_x);
-            hoverTT.attr('y', yScale(d.intePercentage)+20);
-            hoverTT2.text("Intensity: " + d.inteSum.toExponential(2))
-                    .attr('x', mouse_x)
-                    .attr('y', yScale(d.intePercentage) + 30);
-            hoverTT3.text("Scan: " + d.scanNum)
-                    .attr('x', mouse_x)
-                    .attr('y', yScale(d.intePercentage) + 42);
-            hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*/
-            hoverLine.style("opacity", 1);
-        } else {
-            document.getElementById("rt-hover").innerHTML = 0;
-            document.getElementById("intensity-hover").innerHTML = 0;
-            document.getElementById("scan-hover").innerHTML = 0;
-            hoverLine.style("opacity", 0);
-        }
-    }
-    function hoverMouseOff() {
-        hoverLine.style("opacity", 1e-6);
-    }
-}
-function moveLine(rt) {
-    var newX = xScale_g(rt) + padding_g.left;
-    fixedLine_g.attr("x1", newX).attr("x2", newX);
-    fixedLine_g.style("opacity", 1);
-}
 function prev(scanID) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            //console.log("Call to fetch prev id from server took " + (t5 - t4) + " milliseconds.");
-            var response = this.responseText;
-            if(response !== '0'){
-                getScanID(response);
-            }else {
-                /*$( "#spectrum1" ).empty();
-                $( "#spectrum2" ).empty();
-                $("#scanID1").empty();
-                cleanInfo();*/
-                alert("NULL");
-            }
+    axios.get('/prev', {
+        params: {
+            projectDir: document.getElementById("projectDir").value,
+            scanID: scanID
         }
-    };
-    xhttp.open("GET", "prev?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-    xhttp.send();
+    }).then(function(response) {
+        if(response !== '0'){
+            getScanID(response);
+        }else {
+            alert("NULL");
+        }
+    }).catch(function(error) {
+        console.log(error);
+    })
 }
+
 function next(scanID) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            //console.log("Call to fetch next id from server took " + (t7 - t6) + " milliseconds.");
-            var response = this.responseText;
-            if(response !== '0') {
-                getScanID(response);
-            }else {
-                /*$("#spectrum1" ).empty();
-                $("#spectrum2" ).empty();
-                $("#scanID1").empty();
-                cleanInfo();*/
-                alert("NULL");
-            }
+    axios.get('/next', {
+        params: {
+            projectDir: document.getElementById("projectDir").value,
+            scanID: scanID
         }
-    };
-    xhttp.open("GET", "next?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-    xhttp.send();
+    }).then(function(response) {
+        if(response !== '0') {
+            getScanID(response);
+        }else {
+            alert("NULL");
+        }
+    }).catch(function(error) {
+        console.log(error);
+    })
 }
+
 function cleanInfo() {
     $("#scanID2").empty();
     $("#prec_mz").empty();
@@ -490,49 +228,29 @@ function cleanInfo() {
     $("#spectrum2").empty();
     $("#tabList").empty();
 }
-function compare(a, b){
-    var a_inte = a.intenstiy;
-    var b_inte = b.intensity;
-    return a_inte - b_inte;
-}
 
 function getScanLevelTwoList(scanID,target) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            // console.log(response);
-            // $("#tabs li").remove();
-            $( "#tabs" ).tabs();
-            $("#tabs li").remove();
-            $( "#tabs" ).tabs("destroy");
-            // var tabs = $( "#tabs" ).tabs();
-            // var ul = tabs.find( "ul" );
-            response.forEach(function (item) {
-                //console.log(item.scanID);
-                //getPrecMZ(item.scanID);
-                var scanTwoNum = item.scanID;
-                var rt = item.rt;
-                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanID + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
-                // $( '<li><a href="#spectrum2" class="ui-icon ui-icon-close role=\'presentation\'" onclick="loadPeakList3(' + scanTwoNum + ')">'+ item.prec_mz + '</a></li>' ).appendTo( ul );
-            });
-            $( "#tabs" ).tabs();
-            /*
-                                console.log(scanID);
-                                console.log(document.getElementById(scanID));
-            */
-            //console.log(target);
-            /*
-                                var showID = (parseInt(scanID) + 1).toString(10);
-                                console.log(showID);
-                                console.log(document.getElementById(showID));
-            */
-            document.getElementById(target).click();
+    axios.get('/scanTwoList', {
+        params: {
+            projectDir: document.getElementById("projectDir").value,
+            scanID: scanID
         }
-    };
-    xhttp.open("GET", "scanTwoList?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-    xhttp.send();
+    }).then(function(response) {
+        $( "#tabs" ).tabs();
+        $("#tabs li").remove();
+        $( "#tabs" ).tabs("destroy");
+        response.forEach(function (item) {
+            var scanTwoNum = item.scanID;
+            var rt = item.rt;
+            $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanID + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+        });
+        $( "#tabs" ).tabs();
+        document.getElementById(target).click();
+    }).catch(function(error) {
+        console.log(error);
+    })
 }
+
 function showEnvTable(scan) {
     $('#envScan').text(scan);
     if(scan === $('#scanID1').text()) {
@@ -676,6 +394,7 @@ function showEnvTable(scan) {
         }
     } );
 }
+
 function jumpTo(mono_mz) {
     if($('#msType').text() === 'MS2'){
         relocSpet2(mono_mz);
@@ -683,23 +402,26 @@ function jumpTo(mono_mz) {
         relocSpet1(mono_mz);
     }
 }
+
 function relocSpet1 (mono_mz) {
     const graphFeatures = new GraphFeatures();
     graph1_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
     //addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5,null, graphFeatures);
 }
+
 function relocSpet2 (mono_mz) {
     const graphFeatures = new GraphFeatures();
     // console.log("relocSpect2 on", mono_mz+0.5);
     graph2_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
     //addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5,null, graphFeatures);
 }
-var requestButton = document.getElementById('request');
+
+let requestButton = document.getElementById('request');
 requestButton.addEventListener('click', function () {
     // $( "#spectrum2" ).empty();
-    var requestID = document.getElementById("scanID").value;
-    var min = document.getElementById("rangeMin").value;
-    var max = document.getElementById("rangeMax").value;
+    let requestID = document.getElementById("scanID").value;
+    let min = document.getElementById("rangeMin").value;
+    let max = document.getElementById("rangeMax").value;
     // console.log(parseInt(requestID));
     if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
         //console.log("Yes");
@@ -713,24 +435,27 @@ requestButton.addEventListener('click', function () {
 
     // getScanLevelTwoList(document.getElementById("scanID").value);
 },false)
-var prev1 = document.getElementById('prev1');
+
+let prev1 = document.getElementById('prev1');
 prev1.addEventListener('click', function () {
 
-    var scanID1 = document.getElementById("scanID1").innerHTML;
+    let scanID1 = document.getElementById("scanID1").innerHTML;
     if (scanID1 !== '') {
         prev(document.getElementById("scanID1").innerHTML);
     }
 },false)
-var next1 = document.getElementById('next1');
+
+let next1 = document.getElementById('next1');
 next1.addEventListener('click', function () {
 
-    var scanID1 = document.getElementById("scanID1").innerHTML;
+    let scanID1 = document.getElementById("scanID1").innerHTML;
     if (scanID1 !== '') {
         next(document.getElementById("scanID1").innerHTML);
     }
 },false)
+
 $( document ).ready(function() {
-    var min = document.getElementById("rangeMin").value;
+    let min = document.getElementById("rangeMin").value;
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
         $("#envInfo").hide();
@@ -753,31 +478,34 @@ $( document ).ready(function() {
     let apix = fileName.substr(fileName.lastIndexOf('.'), fileName.length);
     if(apix === '.txt') {
         $('#rt-sum_panel').hide();
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var response = this.responseText;
-                if (response === "1") {
-                    loadPeakList1(min, null);
-                    $('#scanLevelTwo').hide();
-                }
-                else {
-                    $('#scanLevelOne').hide();
-                    //loadPeakList2(min, )
-                    getRelatedScan2(min);
-                }
-            }
-        };
-        xhttp.open("GET", "scanlevel?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + min, true);
-        xhttp.send();
-    }
 
+        axios.get('/scanlevel', {
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                scanID: min
+            }
+        }).then(function(response) {
+            if (response === "1") {
+                loadPeakList1(min, null);
+                $('#scanLevelTwo').hide();
+            }
+            else {
+                $('#scanLevelOne').hide();
+                //loadPeakList2(min, )
+                getRelatedScan2(min);
+            }
+        }).catch(function(error){
+            console.log(error);
+        });
+    }
 });
+
 $("#scanID").keyup(function(event) {
     if (event.keyCode === 13) {
         $("#request").click();
     }
 });
+
 $( "#hide" ).click(function() {
     if($("#hide").text() === 'Hide') {
         $("#hide").text('Show');
@@ -787,6 +515,7 @@ $( "#hide" ).click(function() {
         $("#datatable").show();
     }
 });
+
 $("#switch").click(function () {
     if($("#switch").text() === 'MS1') {
         showEnvTable($("#scanID1").text());
@@ -838,7 +567,7 @@ $("#inspect").click(function () {
 });
 
 $("#deleteMsalign").click(function () {
-    var result = confirm("Are you sure that you want to delete msalign data?");
+    let result = confirm("Are you sure that you want to delete msalign data?");
     if (result) {
         //Logic to delete the item
         $.ajax({
@@ -852,8 +581,9 @@ $("#deleteMsalign").click(function () {
         });
     }
 });
+
 $("#deleteSeq").click(function () {
-    var result = confirm("Are you sure that you want to delete sequence data?");
+    let result = confirm("Are you sure that you want to delete sequence data?");
     if (result) {
         $.ajax({
             url:"deleteSeq?projectDir=" + document.getElementById("projectDir").value+ "&projectCode=" + document.getElementById('projectCode').value,
@@ -866,13 +596,15 @@ $("#deleteSeq").click(function () {
         });
     }
 });
+
 $('#uploadSequence').click(function () {
     window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_self');
 });
+
 $("#seqUpload").click(function () {
-    var seqFile = document.querySelector('#seqFile');
-    var seqProgress = document.querySelector('#seqProgressbar');
-    var xhr = new XMLHttpRequest();
+    let seqFile = document.querySelector('#seqFile');
+    let seqProgress = document.querySelector('#seqProgressbar');
+    let xhr = new XMLHttpRequest();
     if(seqFile.files[0] === undefined) {
         alert("Please choose a sequence file first!");
         return;
@@ -880,7 +612,7 @@ $("#seqUpload").click(function () {
         alert('Please upload a csv file for sequence!');
         return;
     }
-    var formData = new FormData();
+    let formData = new FormData();
     formData.append('seqFile', seqFile.files[0]);
     formData.append('projectDir', document.getElementById('projectDir').value);
     formData.append('projectCode',document.getElementById("projectCode").value);
@@ -900,7 +632,7 @@ $("#seqUpload").click(function () {
 
     function seqSetProgress(event) {
         if (event.lengthComputable) {
-            var complete = Number.parseInt(event.loaded / event.total * 100);
+            let complete = Number.parseInt(event.loaded / event.total * 100);
             seqProgress.style.width = complete + '%';
             seqProgress.innerHTML = complete + '%';
             if (complete == 100) {
@@ -940,6 +672,7 @@ function uploadFile() {
     xhr.open('post', '/msalign', true);
     xhr.send(formData);
 }
+
 function uploadSuccess(event) {
     if (xhr.readyState === 4) {
         alert("Upload successfully! Please wait for data processing, you will receive an email when it's done");
@@ -958,32 +691,22 @@ function setProgress(event) {
     }
 }
 
-/*function preprocessSeq(seq) {
-    var firstDotIndex = seq.indexOf('.');
-    var lastDotIndex = seq.lastIndexOf('.');
-    seq = seq.slice(firstDotIndex+1,lastDotIndex);
-    seq = seq.replace(/\(/g,'');
-    seq = seq.replace(/\)/g, '');
-    seq = seq.replace(/\[[A-z]*\]/g, '');
-    return seq;
-    //console.log(seq);
-}*/
 function preprocessSeq(seq) {
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
     seq = seq.replace(/\)/g, '');
     seq = seq.replace(/\[[A-z]*\]/g, '');
-    var firstDotIndex = seq.indexOf('.');
+    let firstDotIndex = seq.indexOf('.');
     if(firstDotIndex === -1) {
         firstDotIndex = 0;
         firstIsDot = 0;
     }
-    var lastDotIndex = seq.lastIndexOf('.');
+    let lastDotIndex = seq.lastIndexOf('.');
     if(lastDotIndex === -1) {
         lastDotIndex = seq.length;
     }
-    var firstIndex = seq.indexOf('[');
-    var lastIndex = seq.lastIndexOf(']');
+    let firstIndex = seq.indexOf('[');
+    let lastIndex = seq.lastIndexOf(']');
     if(firstDotIndex> firstIndex && firstIndex !== -1) {
         firstDotIndex = 0;
         firstIsDot = 0;
@@ -1012,6 +735,7 @@ function plus() {
     change_mono_mz();
     updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
 }
+
 function minus() {
     // var input = $("input[name='mono_mass']");
     // let inputVal = input[input.length-1].value;
@@ -1024,6 +748,7 @@ function minus() {
     change_mono_mz();
     updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
 }
+
 function change_mono_mass() {
     // var input_mz = $("input[id='mono_mz']");
     // let mz = input_mz[input_mz.length-1].value;
@@ -1043,6 +768,7 @@ function change_mono_mass() {
     updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
     //console.log(result);
 }
+
 function change_mono_mz() {
     // var input_mass = $("input[name='mono_mass']");
     // let mass = input_mass[input_mass.length-1].value;
@@ -1061,24 +787,12 @@ function change_mono_mz() {
     // input[input.length-1].value = result.toFixed(5);
     $('#preview_mono_mz').val(result.toFixed(5));
 }
+
 let specPara1_g;
 let lockPara1 = false;
 let specPara2_g;
 let lockPara2 = false;
 function refresh() {
-    /*let monoMZ1_old = mono_mz_list1_g;
-    let monoMZ2_old = mono_mz_list2_g;
-    let msType_old = $('#msType').text();
-    console.log(msType_old);
-    findNextLevelOneScan($('#envScan').text());
-    addSpectrum('spectrum1', peakList1_g, envList1_g, monoMZ1_old);
-    addSpectrum('spectrum2', peakList2_g, envList2_g, monoMZ2_old);
-    if (msType_old === 'MS1') {
-        showEnvTable($("#scanID1").text());
-        $("#switch").text('MS2');
-    }*/
-
-    // addSpectrum('spectrum1', peakList1_g, envList1_g, mono_mz_list1_g);
     const graphFeatures = new GraphFeatures();
     let msType_old = $('#msType').text();
     let scanID;
@@ -1112,13 +826,12 @@ function refresh() {
             }
         }
     });
-    // findNextLevelOneScan($('#envScan').text());
-    //setTimeout()
 }
-var peakList_temp;
-var envList_temp;
+
+let peakList_temp;
+let envList_temp;
 let specPara3_g;
-var lockPara_3 = false;
+let lockPara_3 = false;
 let preview_scanID_g;
 let graph_preview1_g;
 let graph_preview2_g;
@@ -1149,8 +862,8 @@ function preview(dataObj) {
         type: "get",
         // dataType: 'json',
         success: function (res) {
-            var data = (typeof res === "string") ? JSON.parse(res) : res;
-            console.log("returnList preview", data);
+            let data = (typeof res === "string") ? JSON.parse(res) : res;
+            // console.log("returnList preview", data);
             data.envlist[0].charge = parseInt(data.envlist[0].charge);
             data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
             data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
@@ -1160,13 +873,14 @@ function preview(dataObj) {
             data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
             peakList_temp = data.peaklist;
             envList_temp = data.envlist;
-            console.log("type: ", typeof mono_mass);
+            // console.log("type: ", typeof mono_mass);
             graph_preview1_g = addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass/data.envlist[0].charge + 1,null, graphFeatures);
             graph_preview2_g = addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, mono_mass/charge + 1,null, graphFeatures);
         }
     });
     $('#previewModal').modal('show');
 }
+
 function updatePreview(scanID, envID, charge, mono_mass) {
     const graphFeatures = new GraphFeatures();
     $.ajax({
@@ -1178,7 +892,7 @@ function updatePreview(scanID, envID, charge, mono_mass) {
         type: "get",
         // dataType: 'json',
         success: function (res) {
-            var data = (typeof res === "string") ? JSON.parse(res) : res;
+            let data = (typeof res === "string") ? JSON.parse(res) : res;
             console.log("returnList preview update", data);
             data.envlist[0].charge = parseInt(data.envlist[0].charge);
             data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
