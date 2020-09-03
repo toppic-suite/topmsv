@@ -4,11 +4,11 @@ class GraphRender{
         if (Graph.camera.position.y > 25.495){
             Graph.isPerpendicular = true;
             //if camera is perpendicular to view, switch to cylinder group
-            GraphData.plotPointAsCircle();
+            GraphData.plotPoint2D();
         }else{
             Graph.isPerpendicular = false;
             let dataGroup = Graph.scene.getObjectByName("dataGroup");
-            let prevGroup = dataGroup.getObjectByName("cylinderGroup");
+            let prevGroup = dataGroup.getObjectByName("peak2DGroup");
             dataGroup.remove(prevGroup);
         }
         this.renderImmediate();
