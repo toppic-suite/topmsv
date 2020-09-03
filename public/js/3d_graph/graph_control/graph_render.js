@@ -9,7 +9,13 @@ class GraphRender{
             Graph.isPerpendicular = false;
             let dataGroup = Graph.scene.getObjectByName("dataGroup");
             let prevGroup = dataGroup.getObjectByName("peak2DGroup");
+            let plotGroup = dataGroup.getObjectByName("plotGroup");
+
             dataGroup.remove(prevGroup);
+
+            if (plotGroup.children.length < 1 && Graph.currentData.length > 0){//if 3D peaks 
+                GraphData.draw();
+            }
         }
         this.renderImmediate();
     }
