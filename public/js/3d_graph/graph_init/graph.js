@@ -35,7 +35,7 @@ class Graph{
 
         /*metadata and data control*/
         Graph.maxPeaks = 2000;
-        Graph.currentData;//current peak data on the 3d graph
+        Graph.currentData = [];//current peak data on the 3d graph
 
         Graph.intensitySum = 0;
 
