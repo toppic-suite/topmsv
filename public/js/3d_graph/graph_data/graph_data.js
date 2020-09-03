@@ -50,7 +50,7 @@ class GraphData{
         Graph.viewRange.intmin = intmin;
         Graph.viewRange.intmax = intmax;
         Graph.viewRange.intrange = intmax - intmin;
-        console.log("lowest intensity peak on screen has ", intmin, " intensity")
+        //console.log("lowest intensity peak on screen has ", intmin, " intensity")
     }
     static setInitViewRange = (mzminRaw, mzmaxRaw, curRTRaw) => {
         let curRT = parseFloat(curRTRaw);
@@ -111,21 +111,20 @@ class GraphData{
      /******** PLOT PEAKS ******/
     static updateGraph = (minmz, maxmz,minrt,maxrt, curRT, updateTextBox) => {
         GraphData.setViewRange(minmz, maxmz, maxrt, minrt, curRT);
-        GraphData.draw();
+        GraphData.draw(curRT);
         if (updateTextBox){
             GraphUtil.updateTextBox();
         }
     }
     static drawInitGraph = (minmz, maxmz, curRT, updateTextBox) => {
         GraphData.setInitViewRange(minmz, maxmz, curRT);
-        GraphData.draw();
+        GraphData.draw(curRT);
         if (updateTextBox){
             GraphUtil.updateTextBox();
         }
     }
      /******** PLOT PEAKS ******/
-    static draw = () => {      
-        let curRT = document.getElementById("scan1RT").innerText;          
+    static draw = (curRT) => {          
         const curViewRange = Graph.viewRange;
         
         let promise = LoadData.load3dData(curViewRange);
