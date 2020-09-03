@@ -111,20 +111,21 @@ class GraphData{
      /******** PLOT PEAKS ******/
     static updateGraph = (minmz, maxmz,minrt,maxrt, curRT, updateTextBox) => {
         GraphData.setViewRange(minmz, maxmz, maxrt, minrt, curRT);
-        GraphData.draw(curRT);
+        GraphData.draw();
         if (updateTextBox){
             GraphUtil.updateTextBox();
         }
     }
     static drawInitGraph = (minmz, maxmz, curRT, updateTextBox) => {
         GraphData.setInitViewRange(minmz, maxmz, curRT);
-        GraphData.draw(curRT);
+        GraphData.draw();
         if (updateTextBox){
             GraphUtil.updateTextBox();
         }
     }
      /******** PLOT PEAKS ******/
-    static draw = (curRT) => {                
+    static draw = () => {      
+        let curRT = document.getElementById("scan1RT").innerText;          
         const curViewRange = Graph.viewRange;
         
         let promise = LoadData.load3dData(curViewRange);
@@ -173,8 +174,7 @@ class GraphData{
         if (dataGroup.children.length > 2){
             for (let i = 0; i < dataGroup.children.length; i++){
                 if (dataGroup.children[i].name == "peak2DGroup"){
-                    dataGroup.children[i] = new THREE.Group(); 
-                    dataGroup.children[i].name = "peak2DGroup";
+                    dataGroup.children[i].children = [];
                     peak2DGroup = dataGroup.children[i];
                 };
             }
