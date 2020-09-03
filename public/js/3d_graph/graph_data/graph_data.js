@@ -136,7 +136,7 @@ class GraphData{
     
             //if camera angle is perpendicular to the graph plane
             if (Graph.isPerpendicular){
-                GraphData.plotPointAsCircle();
+                GraphData.plotPoint2D();
             }
             else{
                 for (let i = 0; i < Graph.currentData.length; i++){   
@@ -159,68 +159,61 @@ class GraphData{
         })
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
-    static plotPointAsCircle = () => {
-        let mzRange = Graph.viewRange.mzmax - Graph.viewRange.mzmin;
+    static plotPoint2D = () => {
         let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
     
-        let xSize = mzRange / 100;
-        let ySize = rtRange;
+        let ySize = rtRange * 2;
     
         let rt = document.getElementById("scan1RT").innerText;
     
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
     
-        let cylinderGroup; 
+        let peak2DGroup; 
         
         if (dataGroup.children.length > 2){
             for (let i = 0; i < dataGroup.children.length; i++){
-                if (dataGroup.children[i].name == "cylinderGroup"){
+                if (dataGroup.children[i].name == "peak2DGroup"){
                     dataGroup.children[i] = new THREE.Group(); 
-                    dataGroup.children[i].name = "cylinderGroup";
-                    cylinderGroup = dataGroup.children[i];
+                    dataGroup.children[i].name = "peak2DGroup";
+                    peak2DGroup = dataGroup.children[i];
                 };
             }
         }
         else{
-            cylinderGroup = new THREE.Group(); 
-            cylinderGroup.name = "cylinderGroup";
+            peak2DGroup = new THREE.Group(); 
+            peak2DGroup.name = "peak2DGroup";
         }
-
-       // console.log(dataGroup.children);   
-
         for (let i = 0; i < Graph.currentData.length; i++){   
             let point = Graph.currentData[i];
-            //let lineColor = GraphData.pickPeakColor(Graph.currentData[i].INTENSITY);
-            let lineColor = point.COLOR;
-            let geometry = new THREE.BoxBufferGeometry( xSize, 1, ySize );
-            let material = new THREE.MeshBasicMaterial( { color: lineColor } );
-       
+            let linegeo = new THREE.BufferGeometry();
+        
+            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+                0, 0, 0,
+                0, 0, ySize,
+            ]), 3));
+        
+            let linemat = new THREE.LineBasicMaterial({color: point.COLOR, linewidth:0.8});
+        
             if ((point.RETENTIONTIME/60).toFixed(4) == rt){
-                material = new THREE.MeshBasicMaterial({color: 0xED1111});
+                linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
             }
-            let circle = new THREE.Mesh( geometry, material );
-    
-            circle.position.set(point.MZ, 0, point.RETENTIONTIME);
-    
-            circle.pointid = point.ID;
-            circle.mz = point.MZ;
-            circle.rt = point.RETENTIONTIME;
-            circle.int = point.INTENSITY;
-            circle.height = 10;
-            circle.name = "point";
-            circle.scanID = point.SPECTRAID;
-            cylinderGroup.add(circle);
+            let line = new THREE.Line(linegeo, linemat);
+            
+            line.position.set(point.MZ, 0, point.RETENTIONTIME);
+            line.pointid = point.ID;
+            line.mz = point.MZ;
+            line.rt = point.RETENTIONTIME;
+            line.int = point.INTENSITY;
+            line.name = "peak";
+            line.scanID = point.SPECTRAID;
+            peak2DGroup.add(line);
         }
         //repositioning m/z and rt from repositionPlot
-        let heightScale = Graph.viewRange.intmax;
         let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
         let rt_squish = - Graph.gridRange / Graph.viewRange.rtrange;
         
-        if (Graph.viewRange.intmax < 1){
-            inte_squish = 0;
-        }
         // Reposition the plot so that mzmin,rtmin is at the correct corner
-        dataGroup.add(cylinderGroup);
+        dataGroup.add(peak2DGroup);
         dataGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0.01, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
     }
     /*plots a peak as a vertical line on the graph*/
