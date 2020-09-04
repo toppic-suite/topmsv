@@ -67,10 +67,9 @@ int callbackInsertPeak(void *NotUsed, int argc, char **argv, char **azColName) {
   }
   return 0;
 };
-int callbackUpdateData(void *ptr, int argc, char **argv, char **azColName){//method using peak count 
-   /*input : row from PEAKS0 table*/
-  std::vector<int> *intervalPtr = reinterpret_cast<std::vector<int>*> (ptr);
-  std::vector<int> interval = *intervalPtr;
+/*int callbackUpdateData(void *ptr, int argc, char **argv, char **azColName){//method using peak count 
+  std::vector<double> *maxMinPtr = reinterpret_cast<std::vector<double>*> (ptr);
+  std::vector<double> maxMin = *maxMinPtr;
 
   mzMLReader reader;
 
@@ -96,6 +95,33 @@ int callbackUpdateData(void *ptr, int argc, char **argv, char **azColName){//met
   reader.insertPeakStmtMs1(std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
 
   peak_inte_rank++;
+}*/
+int callbackUpdateData(void *ptr, int argc, char **argv, char **azColName){//method using peak count 
+  std::vector<double> *normalizationPtr = reinterpret_cast<std::vector<double>*> (ptr);
+  std::vector<double> normalization = *normalizationPtr;
+  double max = normalization[1];
+  double min = normalization[0];
+  double valSpan = max - min;
+  double logBase = normalization[2];
+  double inte = log(std::stod(argv[2])) / log(logBase);
+  mzMLReader reader;
+
+  std::string color = "NONE";
+  
+  int idx = (int)(reader.peakColor.size() * (inte-min)/valSpan);
+
+  if (idx < 0) {
+    color = reader.peakColor[0];
+  } 
+  else if (idx >= reader.peakColor.size() -1) {
+    color = reader.peakColor[reader.peakColor.size() -1];
+  }
+  else{
+    color = reader.peakColor[idx];
+  }
+  //insert to PEAKS0 table at disk
+  reader.insertPeakStmtMs1(std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
+
 }
 int callbackConvertData(void *NotUsed, int argc, char **argv, char **azColName){
   /*input : row from PEAKS0 table, with a column structure as above
@@ -639,6 +665,7 @@ Use only one table.
 Use only one table.
 Use only one table.
 */
+/*
 void mzMLReader::setColor(int ms1PeakCount){
   std::string sqlstr = "SELECT * FROM PEAKS0 ORDER BY INTENSITY;";
   int topPerc = 1;//Two colors at each end of gradient are assigned to N% from bottom and top intensity
@@ -668,7 +695,43 @@ void mzMLReader::setColor(int ms1PeakCount){
     //std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
   }
   closeInsertStmtMs1Only();
+}*/
+double mzMLReader::normalizeInte(std::vector<double> *normalizationData){
+  double targetRange = 100;
+  double max = (*normalizationData)[1];
+  double min = (*normalizationData)[0];
+  double range = max - min;
+
+  double logBase = exp((log(max) - log(min)) / targetRange);
+
+  (*normalizationData)[0] = log(min) / log(logBase);
+  (*normalizationData)[1] = log(max) / log(logBase);
+
+  return logBase;
 }
+void mzMLReader::setColor(){
+  std::string sqlstr = "SELECT * FROM PEAKS0;";
+  std::vector<double> normalizationData{RANGE.INTMIN, RANGE.INTMAX};
+
+  double logBase = normalizeInte(&normalizationData);
+
+  normalizationData.push_back(logBase);
+
+  openInsertStmtMs1Only();
+
+  std::vector<double> *maxMinPtr = &normalizationData;
+  sql = (char *)sqlstr.c_str();
+  rc = sqlite3_exec(dbInMemory, sql, callbackUpdateData, maxMinPtr, &zErrMsg);//after this function, gridBlocks has a peak for each grid
+  if( rc != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc << "-" << zErrMsg << std::endl;
+    sqlite3_free(zErrMsg);
+  }else{
+    //std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
+  }
+
+  closeInsertStmtMs1Only();
+}
+
 void mzMLReader::resetRange(){
   RANGE.MZMIN = 99999;
   RANGE.MZMAX = 0;
