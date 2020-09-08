@@ -65,7 +65,7 @@ public:
 	//color brewer 11 colors 
 	//std::vector<std::string> peakColor{"#313695", "#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090","#fdae61","#f46d43","#d73027","#a50026"};
 	//batmass
-	std::vector<std::string> peakColor{"#000030","#00007f","#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000","#7f0000"};
+	std::vector<std::string> peakColor{"#00007f","#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000","#7f0000"};
 
 	mzMLReader();
 	void setName(std::string fileName);
