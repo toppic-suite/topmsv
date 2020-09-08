@@ -34,6 +34,7 @@ class Graph{
         Graph.curRT = -1;
 
         /*metadata and data control*/
+        Graph.minPeakHeight = 0.05;
         Graph.maxPeaks = 2000;
         Graph.currentData = [];//current peak data on the 3d graph
 
