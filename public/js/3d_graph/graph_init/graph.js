@@ -48,7 +48,8 @@ class Graph{
         Graph.currentScanColor = "#ff5797";
         //Graph.surfaceColor = "#eee";
         //Graph.gridColor = "#7a7a7a";
-        Graph.surfaceColor = "#7a7a7a";
+        //Graph.surfaceColor = "#7a7a7a";
+        Graph.surfaceColor = "#000030";
         Graph.gridColor = "#555555";
         Graph.featureColor = "#a8b5ff";
 
