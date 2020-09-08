@@ -231,7 +231,8 @@ void msReader::createDtabase() { //stmt
 
   databaseReader.createIndexOnIdOnlyInMemory();//create index on PEAKS0 table by ID
   //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
-  databaseReader.setColor(RANGE.COUNT);
+  //databaseReader.setColor(RANGE.COUNT);
+  databaseReader.setColor();
 
   databaseReader.endTransaction();
   databaseReader.endTransactionInMemory();
