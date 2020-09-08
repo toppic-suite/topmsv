@@ -13,6 +13,25 @@ class GraphControl{
     }
 
     /******* DATA RANGE AND VIEWING AREA ****/
+    static adjustIntensity = (peaks, scale) => {
+        //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
+        //peak.height = adjusted y (current Y), peak.int = original intensity
+        peaks.forEach((peak) => {
+            if (peak.lowPeak){
+                let resultHeight = scale * peak.int;
+                if (resultHeight < Graph.minPeakHeight){
+                    //peak y should be updated so that the resulting height is still 0.05
+                    let newY = Graph.minPeakHeight/ scale;
+                    peak.geometry.attributes.position.array[4] = newY;
+                    peak.geometry.attributes.position.needsUpdate = true;
+                }else{
+                    //when the scaled intensity would be > 0.05
+                    peak.geometry.attributes.position.array[4] = peak.int;
+                    peak.geometry.attributes.position.needsUpdate = true;
+                }
+            }
+        })
+    }
     /*resizes the renderer and camera, especially in response to a window resize*/
     static repositionPlot = (r) => {
         let heightScale = Graph.viewRange.intmax;

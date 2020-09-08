@@ -45,11 +45,11 @@ class GraphLabel{
         labels.mz = GraphLabel.makeTextSprite(mztext,{r: 0, g: 0, b: 0}, 16);
         labels.rt = GraphLabel.makeTextSprite(rttext,{r: 0, g: 0, b: 0}, 16);
 
-        labels.mz.position.set(0.5, 0.5, Graph.gridRange + 1.5);
+        labels.mz.position.set(0.5, 0, Graph.gridRange + 1);
         labels.mzMin.position.set(0.5, -0.5,  Graph.gridRange + 1.5);
         labels.mzMax.position.set(Graph.gridRange, -0.5,  Graph.gridRange + 1.5);
 
-        labels.rt.position.set(-1.5, 0.5,  Graph.gridRange);
+        labels.rt.position.set(-1.8, 0.5,  Graph.gridRange + 0.5);
         labels.rtMin.position.set(-1.5, -0.5,  Graph.gridRange);
         labels.rtMax.position.set(-1.5, -0.5, 0.5);
 
