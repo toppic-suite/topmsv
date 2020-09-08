@@ -10,7 +10,7 @@ class Graph{
         /*add properties to Graph class*/
         Graph.gridRange = 20;
         Graph.gridRangeVertical = 6;
-        Graph.viewSize = 18; // in world units; large enough to fit the graph and labels at reasonable angles
+        Graph.viewSize = 23; // in world units; large enough to fit the graph and labels at reasonable angles
 
         /*initialize graph components*/
         Graph.scene = new THREE.Scene();
