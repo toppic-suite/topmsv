@@ -225,15 +225,17 @@ class GraphData{
         let inten = point.INTENSITY;
         let lineColor = point.COLOR;
 
+        let lowPeak = false;
+
         let currt = document.getElementById("scan1RT").innerText;
         let y = inten;    
-        let minHeight = 0.25;
+        let minHeight = Graph.minPeakHeight;
         let scale = Graph.gridRangeVertical / Graph.viewRange.intmax;
-        
         //if y is much smaller than the highest intensity peak in the view range
         if (scale * y < minHeight){
-            //increase y so that later y is at least 0.5 when scaled
+            //increase y so that later y is at least minHeight when scaled
             y = y * (minHeight/(scale * y));
+            lowPeak = true;
         }
 
         let linegeo = new THREE.BufferGeometry();
@@ -259,14 +261,16 @@ class GraphData{
         line.name = "peak";
         line.scanID = point.SPECTRAID;
 
+        if (lowPeak){
+            line.lowPeak = true;
+        }
         plotGroup.add(line);
     }
-    static restoreIntensity(){
-        let plotGroup = Graph.scene.getObjectByName("plotGroup");
+    static restoreIntensity = () => {
+        /*let plotGroup = Graph.scene.getObjectByName("plotGroup");
         for (let i = 0; i < plotGroup.children.length; i++){
             plotGroup.children[i].geometry.attributes.position.array[4] = plotGroup.children[i].int;
             plotGroup.children[i].geometry.attributes.position.needsUpdate = true;
-        }
-
+        }*/
     }
 }
