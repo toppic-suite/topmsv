@@ -160,10 +160,21 @@ class GraphData{
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
     static plotPoint2D = () => {
-        let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
-    
-        let ySize = rtRange * 2;
-    
+        let curRTRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
+        let totalRTRange = (Graph.dataRange.rtmax - Graph.dataRange.rtmin)/60;
+
+        let rtCount = [];
+        for (let i = 0; i < Graph.currentData.length; i++){
+            rtCount.push(Graph.currentData[i].RETENTIONTIME);
+        }
+        let uniqueRT = new Set(rtCount);
+        let ySize = (totalRTRange / uniqueRT.size) * 3 * curRTRange;
+
+        if (ySize < curRTRange/3){
+            ySize = curRTRange/3;
+        }else if(ySize > curRTRange * 5){
+            ySize = curRTRange * 5;
+        }
         let rt = document.getElementById("scan1RT").innerText;
     
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
@@ -185,12 +196,19 @@ class GraphData{
         for (let i = 0; i < Graph.currentData.length; i++){   
             let point = Graph.currentData[i];
             let linegeo = new THREE.BufferGeometry();
-        
-            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+            
+            if (point.RETENTIONTIME + ySize > Graph.viewRange.rtmax){//when the total length of the peak goes over the boundary, reduce length
+               linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
                 0, 0, 0,
-                0, 0, ySize,
-            ]), 3));
-        
+                0, 0, Graph.viewRange.rtmax - point.RETENTIONTIME,
+                ]), 3));
+            }
+            else{
+                linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+                    0, 0, 0,
+                    0, 0, ySize,
+                ]), 3));
+            }
             let linemat = new THREE.LineBasicMaterial({color: point.COLOR, linewidth:0.8});
         
             if ((point.RETENTIONTIME/60).toFixed(4) == rt){
@@ -208,12 +226,13 @@ class GraphData{
             peak2DGroup.add(line);
         }
         //repositioning m/z and rt from repositionPlot
-        let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
-        let rt_squish = - Graph.gridRange / Graph.viewRange.rtrange;
+        //let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
+       // let rt_squish = - Graph.gridRange / Graph.viewRange.rtrange;
         
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.add(peak2DGroup);
-        dataGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0.01, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
+        //dataGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0.01, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
+        //GraphControl.adjust2DPeakLength(dataGroup);
     }
     /*plots a peak as a vertical line on the graph*/
     static plotPoint = (point) => {
