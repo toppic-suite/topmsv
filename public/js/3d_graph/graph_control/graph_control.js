@@ -13,6 +13,17 @@ class GraphControl{
     }
 
     /******* DATA RANGE AND VIEWING AREA ****/
+    static adjust2DPeakLength = (dataGroup) => {
+        let rtScale = dataGroup.position.z;
+        let peak2DGroup = dataGroup.getObjectByName("peak2DGroup");
+        console.log("---")
+        for (let i = 0; i < peak2DGroup.children.length; i++){
+            let peak = peak2DGroup.children[i];
+            //console.log(peak)
+            //console.log(peak.rt * rtScale);
+
+        }
+    }
     static adjustIntensity = (peaks, scale) => {
         //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
         //peak.height = adjusted y (current Y), peak.int = original intensity
@@ -58,7 +69,7 @@ class GraphControl{
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
         
-        //console.log(inte_squish)
+        //console.log(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish)
 
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
