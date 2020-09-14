@@ -29,15 +29,15 @@ public:
 	pwiz::msdata::DefaultReaderList readers_;
 	MSDataFilePtr msd_ptr_;
 	pwiz::msdata::SpectrumListPtr spec_list_ptr_;
+	std::string file_name_;
 
-	msReader(std::string filename);
-	std::string file_name;
+	msReader(std::string file_name);
 	//pwiz::msdata::MSData test_msdata;
 	//boost::shared_ptr<std::istream> is;
 	//Index_mzML_Ptr index;
 	SpectrumListPtr sl;
 	mzMLReader databaseReader;
-	Range RANGE;
+	DataRange Range;
 	void getRange();
 	void createDtabase();
 	void getScanRangeDB();
