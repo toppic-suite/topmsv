@@ -17,30 +17,28 @@ struct Point{
   double rt;
   double inten;
 };
-struct Range{
-  double MZMIN;
-  double MZMAX;
-  double RTMIN;
-  double RTMAX;
-  double INTMIN;
-  double INTMAX;
-  int SCANCOUNT;
-  int COUNT;
-  int LAYERCOUNT = 0;
-  int MAXRETURN = 5000;
-  int MINPEAKS = 3000; //minimum peak needed to create a new table 
-  double MZSCALE = 2;//number to scale m/z range of a grid block
-  double MZSIZE = 0.05;//initial mz size of a grid block
+struct DataRange{
+  double mz_min;
+  double mz_max;
+  double rt_min;
+  double rt_max;
+  double int_min;
+  double int_max;
+  int scan_count;
+  int count;
+  int layer_count = 0;
+  int max_return = 5000;
+  int min_peaks = 3000; //minimum peak needed to create a new table 
+  double mz_scale = 2;//number to scale m/z range of a grid block
+  double mz_size = 0.05;//initial mz size of a grid block
 
-  double RTSCALEFACTOR = 2;
-  double RTSCALE = 2;
-  double RTSIZE = 1;
-
-  std::string TARGET = "";
+  double rt_scale_factor = 2;
+  double rt_scale = 2;
+  double rt_size = 1;
 };
-struct Grid{
-	vector<vector<int>> GRIDSIZES;
-	vector<vector<vector<double> > > GRIDBLOCKS;
+struct GridProperties{
+	vector<vector<int>> grid_sizes;
+	vector<vector<vector<double> > > grid_blocks;
 };
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
@@ -49,29 +47,22 @@ std::string int2str(int num);
 class mzMLReader
 {
 public:
-	std::string databaseName;
-	std::string databaseNameInMemory;
-	sqlite3 *db;
-	sqlite3 *dbInMemory;
-	char *zErrMsg = 0;
-	int  rc;
-	char *sql;
-	char *data;
-	bool isNew;
-	//original
-	//std::vector<std::string> peakColor{"#9be7ff", "#77eddb", "#56f3ba", "#3ef7a2", "#24fc87", "#11ff74", "#33fc61", "#5ef94a", "#89f633", "#abf320", "#e6ef00", "#eae503", "#efd807", "#f4ca0a", "#fabd0e", "#ffaf11", "#ff8c0e", "#ff690b", "#ff4607", "#ff2a04", "#ff0000"};
-	//more diversity in colors
-	//std::vector<std::string> peakColor{"#460086", "#7c43b1", "#b289dc", "#c9b7da", "#7188d9", "#003bd0", "#2ec1f5", "#81d1db", "#7eb493", "#015b03", "#aee0a5", "#af92a0", "#a94882", "#d07ba3", "#f7aec3", "#fbc7a7", "#fee08b", "#fdae61", "#f46d43", "#d53e4f", "#9e0142"};
-	//color brewer 11 colors 
-	//std::vector<std::string> peakColor{"#313695", "#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf","#fee090","#fdae61","#f46d43","#d73027","#a50026"};
-	//batmass
-	std::vector<std::string> peakColor{"#00007f","#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000","#7f0000"};
+	std::string database_name_;
+	std::string database_name_in_memory_;
+	sqlite3 *db_;
+	sqlite3 *db_in_memory_;
+	char *z_err_msg_ = 0;
+	int  rc_;
+	char *sql_;
+	char *data_;
+	bool is_new_;
+	std::vector<std::string> peak_color_{"#00007f","#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000","#7f0000"};
 
 	mzMLReader();
-	void setName(std::string fileName);
-	void setNameInMemory(std::string fileName);
-	void openDatabase(std::string fileName);
-	void openDatabaseInMemory(std::string fileName);
+	void setName(std::string file_name);
+	void setNameInMemory(std::string file_name);
+	void openDatabase(std::string file_name);
+	void openDatabaseInMemory(std::string file_name);
 	void closeDatabase();
 	void closeDatabaseInMemory();
 	void creatTable();
@@ -89,26 +80,26 @@ public:
 	void closeInsertStmt();
 	void closeInsertStmtMs1Only();
 	void closeInsertStmtInMemory();
-	void insertSpStmt(int scanIndex, std::string scan, double retentionTime, int scanLevel, double prec_mz, int prec_charge, double prec_inte, double peaksInteSum, int next, int prev);
-	void insertScanLevelPairStmt(int scanLevelOne, int scanLevelTwo);
-	void updateSpStmt(int currentID, int prevID);
-	void updateSpSumStmt(int currentID, double peaksInteSum);
-	void insertPeakStmt(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime);
-	void insertPeakStmtMs1(int peakIndex, double intensity, double mz, double retentionTime, std::string peakColor);
-	void insertPeakStmtInMemory(int peakIndex, int scanIndex, double intensity, double mz, double retentionTime, std::string peakColor);
+	void insertSpStmt(int scan_index, std::string scan, double retention_time, int scan_level, double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev);
+	void insertScanLevelPairStmt(int scan_level_one, int scan_level_two);
+	void updateSpStmt(int current_id, int prev_id);
+	void updateSpSumStmt(int current_id, double peaks_int_sum);
+	void insertPeakStmt(int peak_index, int scan_index, double intensity, double mz, double retention_time);
+	void insertPeakStmtMs1(int peak_index, double intensity, double mz, double retention_time, std::string peak_color_);
+	void insertPeakStmtInMemory(int peak_index, int scan_index, double intensity, double mz, double retention_time, std::string peakColor_);
 	void createIndex();
 	void createIndexOnIdOnly();
 	void createIndexOnIdOnlyInMemory();
 
-	double normalizeInte(std::vector<double> *normalizationData);
+	double normalizeInte(std::vector<double> *normalization_data);
 	void setColor();
 	void resetRange();
 	void insertPeakDataToGridBlocks();
-	void createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_ID);
-	void assignDataToGrid(int table_cnt, std::vector<int> &selected_peak_ID);
+	void createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_id);
+	void assignDataToGrid(int table_cnt, std::vector<int> &selected_peak_id);
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
 	void insertDataLayerTable();
-	void setRange(Range tmpRange);
+	void setRange(DataRange Tmp_range);
 	void insertConfigOneTable();
 	void createLayerTable(std::string num);
 	void createIndexLayerTable();
