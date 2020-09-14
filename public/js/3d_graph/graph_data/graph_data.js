@@ -7,15 +7,6 @@ class GraphData{
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
-    /******** PEAK COLOR ASSIGNMENT ******/
-   /*static pickPeakColor = (intensity) => {
-        for (let j = 0; j < Graph.cutoff.length; j++){
-            if (intensity <= Graph.cutoff[j]){
-                return Graph.gradientColor[j];
-            }
-        }
-        return Graph.gradientColor[Graph.gradientColor.length - 1];
-    }*/
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     static drawCurrentScanMarker = (rt) => {
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
@@ -225,14 +216,8 @@ class GraphData{
             line.scanID = point.SPECTRAID;
             peak2DGroup.add(line);
         }
-        //repositioning m/z and rt from repositionPlot
-        //let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
-       // let rt_squish = - Graph.gridRange / Graph.viewRange.rtrange;
-        
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.add(peak2DGroup);
-        //dataGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0.01, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
-        //GraphControl.adjust2DPeakLength(dataGroup);
     }
     /*plots a peak as a vertical line on the graph*/
     static plotPoint = (point) => {
@@ -284,12 +269,5 @@ class GraphData{
             line.lowPeak = true;
         }
         plotGroup.add(line);
-    }
-    static restoreIntensity = () => {
-        /*let plotGroup = Graph.scene.getObjectByName("plotGroup");
-        for (let i = 0; i < plotGroup.children.length; i++){
-            plotGroup.children[i].geometry.attributes.position.array[4] = plotGroup.children[i].int;
-            plotGroup.children[i].geometry.attributes.position.needsUpdate = true;
-        }*/
     }
 }
