@@ -13,17 +13,6 @@ class GraphControl{
     }
 
     /******* DATA RANGE AND VIEWING AREA ****/
-    static adjust2DPeakLength = (dataGroup) => {
-        let rtScale = dataGroup.position.z;
-        let peak2DGroup = dataGroup.getObjectByName("peak2DGroup");
-        console.log("---")
-        for (let i = 0; i < peak2DGroup.children.length; i++){
-            let peak = peak2DGroup.children[i];
-            //console.log(peak)
-            //console.log(peak.rt * rtScale);
-
-        }
-    }
     static adjustIntensity = (peaks, scale) => {
         //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
         //peak.height = adjusted y (current Y), peak.int = original intensity
@@ -51,18 +40,18 @@ class GraphControl{
         // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
         let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
         let rt_squish = - Graph.gridRange / (r.rtmax - r.rtmin);
-        let inte_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
+        let int_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
 
         if (Graph.viewRange.intmax < 1){
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
-            inte_squish = 0;
+            int_squish = 0;
         }
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
         let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
 
-        dataGroup.scale.set(mz_squish, inte_squish, rt_squish);
+        dataGroup.scale.set(mz_squish, int_squish, rt_squish);
         markerGroup.scale.set(1,1,rt_squish);
         
         // Reposition the plot so that mzmin,rtmin is at the correct corner
