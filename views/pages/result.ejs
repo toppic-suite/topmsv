@@ -343,6 +343,10 @@
 			<div>
 				<div class="scanleveltitle row">
 					<div class="col-sm-2">
+						<div><strong>Current graph data:</strong></div>
+						<span id="graph-cursor-data"></span>
+					</div>
+					<div class="col-sm-1">
 						<div><strong>Retention Time:</strong></div>
 					</div>
 					<div class="col-sm-3">
@@ -370,7 +374,8 @@
 							<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
 						</div>
 					</div>
-					<div class="col-sm-3">
+					
+					<div class="col-sm-2">
 						<div class="col-sm-6">
 							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
 						</div>
@@ -526,6 +531,7 @@
 	<script src="js/3d_graph/graph_interaction/pan_graph.js"></script>
 	<script src="js/3d_graph/graph_interaction/zoom_graph.js"></script>
 	<script src="js/3d_graph/graph_interaction/hover_feature.js"></script>
+	<script src="js/3d_graph/graph_interaction/hover_position.js"></script>
 	<script src="js/3d_graph/graph_init/graph_init.js"></script>
 	<script src="js/3d_graph/graph_control/graph_render.js"></script>
 	<script src="js/3d_graph/graph_control/graph_control.js"></script>
