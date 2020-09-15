@@ -109,6 +109,9 @@ class GraphInit{
         let hoverObj = new HoverFeature();
         hoverObj.main();
 
+        let hoverPoint = new HoverPosition();
+        hoverPoint.main();
+
         let camera = Graph.camera;
         let renderer = Graph.renderer;
 
