@@ -244,7 +244,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="jumbotron">
+		<div class="jumbotron" id ="center-div">
 			<div>
 				<span class="projectsummary">
 					<div class="row">
@@ -340,7 +340,7 @@
 			</div>
 
 			<hr>
-			<div>
+			<div id="graph3d-entire-div">
 				<div class="scanleveltitle row">
 					<div class="col-sm-2">
 						<div><strong>Current graph data:</strong></div>
@@ -390,15 +390,15 @@
 					<button class="btn" type="submit" id="btn-save-file-name">OK</button>
 				</div>
 				<div>
-					<div class="graph-metadata-container">
 					<span id="graph-metadata"></span>
 				</div>			
 				<div id="tooltip">
 					<span id="tooltiptext">hello</span>
 				</div>
 				<div class="col-md-11 col2" id="graph-container"></div>
+				<div>
+					<button class="btn" type="submit" id="graph-expand">Expand</button>
 				</div>
-				
 				<div class="hover-label-container">
 					<span id="graph-hover-label"></span>
 				</div>
@@ -538,6 +538,7 @@
 	<script src="js/3d_graph/graph_util/graph_util.js"></script>
 	<script src="js/3d_graph/graph_util/graph_label.js"></script>
 	<script src="js/3d_graph/graph_util/graph_download.js"></script>
+	<script src="js/3d_graph/graph_util/graph_resize.js"></script>
 	<script src="js/3d_graph/graph_data/load_data.js"></script>
 	<script src="js/3d_graph/graph_data/graph_data.js"></script>
 	<script src="js/3d_graph/graph_data/graph_feature.js"></script>
