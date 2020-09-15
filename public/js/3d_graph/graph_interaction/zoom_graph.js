@@ -5,9 +5,6 @@ peak intensity is also adjusted by ctrl + mouse wheel
 
 class GraphZoom
 {   
-    restoreIntensity = true;/*intensity for low peaks are edited when graph is drawn for the first time. 
-    original intensity need to be restored before changing intenity of peaks by scorlling*/
-
     scrollTimer;//detect if scroll has ended or not
     constructor(){}
     
@@ -34,10 +31,6 @@ class GraphZoom
 
             if (axis == null){
                 if (e.ctrlKey){//if control key is pressed --> intensity zoom
-                    if (this.restoreIntensity){
-                        GraphData.restoreIntensity();
-                        this.restoreIntensity = false;
-                    }
                     let scaleFactor = 0;
                     if (e.deltaY > 0) {
                         scaleFactor = 0.75;
