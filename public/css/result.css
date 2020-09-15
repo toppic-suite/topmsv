@@ -422,3 +422,6 @@ button#minusBtn {
 #graph-container{
     min-height: 600px;
 }
+#graph3d-entire-div{
+    height: 700px;
+}

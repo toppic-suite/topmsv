@@ -112,6 +112,9 @@ class GraphInit{
         let hoverPoint = new HoverPosition();
         hoverPoint.main();
 
+        let graphResize = new GraphResize();
+        graphResize.main();
+
         let camera = Graph.camera;
         let renderer = Graph.renderer;
 
