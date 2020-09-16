@@ -39,7 +39,7 @@ class Topview2D {
         });
     }
 
-    loadPeakList1(scanID, prec_mz) {
+    loadPeakList1(scanID) {
         const graphFeatures = new GraphFeatures();
         if (scanID !== '0') {
             axios.get('/peaklist', {
