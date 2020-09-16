@@ -141,10 +141,11 @@ class GraphData{
                 GraphData.drawCurrentScanMarker(curRT);
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
-        }).then(() => {
+            return 0;
+        }).then(result => {
             let promise = GraphFeature.drawFeature(Graph.viewRange);
-            promise.then(function(){})
-        }).then(() => {
+            promise.then(()=>{return 0;})
+        }).then(result => {
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
         })
