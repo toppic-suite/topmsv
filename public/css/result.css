@@ -425,3 +425,16 @@ button#minusBtn {
 #graph3d-entire-div{
     height: 700px;
 }
+/*default css for all buttons*/
+button#graph-expand{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
