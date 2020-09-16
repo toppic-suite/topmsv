@@ -57,6 +57,7 @@ class GraphUtil{
             xhttpRT.send();
         })
     }
+    /*related to mouse interaction*/
     static findObjectHover = (event, objGroup) => {
         let el = Graph.renderer.domElement;
         let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
