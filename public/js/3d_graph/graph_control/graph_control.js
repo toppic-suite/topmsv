@@ -205,6 +205,35 @@ class GraphControl{
             rtmin: newrtmin, rtmax: newrtmax, rtrange: newrtrange,
         }
     }
+    static resizeCameraWhenExpanded = () => {
+        Graph.renderer.setSize(window.innerWidth * 0.8, window.innerHeight, true);
+        let aspectRatio = Graph.renderer.getSize().width / Graph.renderer.getSize().height;
+
+        let vs = Graph.viewSize;
+        if (aspectRatio > 1) 
+        {
+            // width greater than height; scale height to view size to fit content
+            // and scale width based on the aspect ratio (this creates extra space on the sides)
+            Graph.camera.left = vs * aspectRatio / -2;
+            Graph.camera.right = vs * aspectRatio / 2;
+            Graph.camera.top = vs / 2;
+            Graph.camera.bottom = vs / -2;
+        } 
+        else 
+        {
+            // height greater than width; same as above but with top+bottom switched with left+right
+            Graph.camera.left = vs / -2;
+            Graph.camera.right = vs / 2;
+            Graph.camera.top = vs / aspectRatio / 2;
+            Graph.camera.bottom = vs / aspectRatio / -2;
+        }
+        // render the view to show the changes
+        Graph.camera.updateProjectionMatrix();
+
+        GraphRender.renderImmediate();
+
+        Graph.resizedCamera = Graph.camera;
+    }
     static resizeCamera = () => {
         Graph.renderer.setSize(Graph.graphEl.clientWidth, Graph.graphEl.clientHeight, true);
         let aspectRatio = Graph.renderer.getSize().width / Graph.renderer.getSize().height;
