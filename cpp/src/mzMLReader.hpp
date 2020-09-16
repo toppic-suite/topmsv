@@ -56,7 +56,7 @@ public:
 	char *sql_;
 	char *data_;
 	bool is_new_;
-	std::vector<std::string> peak_color_{"#00007f","#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000","#7f0000"};
+	std::vector<std::string> peak_color_{"#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000"};//7 colors totla
 
 	mzMLReader();
 	void setName(std::string file_name);
