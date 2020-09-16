@@ -90,7 +90,7 @@ class GraphInit{
     }
     static initRenderer = () => {
         Graph.renderer.setPixelRatio( window.devicePixelRatio );
-        Graph.renderer.setSize(window.innerWidth, window.innerHeight * 0.3);
+        Graph.renderer.setSize(window.innerWidth, window.innerHeight * 0.6);
         Graph.renderer.setClearColor(0xEEEEEE, 1);
         Graph.renderer.domElement.id = "canvas3D";
         Graph.graphEl.appendChild(Graph.renderer.domElement);
@@ -111,6 +111,9 @@ class GraphInit{
 
         let hoverPoint = new HoverPosition();
         hoverPoint.main();
+
+        let graphResize = new GraphResize();
+        graphResize.main();
 
         let camera = Graph.camera;
         let renderer = Graph.renderer;
