@@ -151,25 +151,12 @@ class GraphData{
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
     static plotPoint2D = () => {
-        let curRTRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
-        let totalRTRange = (Graph.dataRange.rtmax - Graph.dataRange.rtmin)/60;
+        let prevSpecRT = Graph.viewRange.rtmax; 
+        let prevPeakRT = 0;
 
-        let rtCount = [];
-        for (let i = 0; i < Graph.currentData.length; i++){
-            rtCount.push(Graph.currentData[i].RETENTIONTIME);
-        }
-        let uniqueRT = new Set(rtCount);
-        let ySize = (totalRTRange / uniqueRT.size) * 3 * curRTRange;
-
-        if (ySize < curRTRange/3){
-            ySize = curRTRange/3;
-        }else if(ySize > curRTRange * 5){
-            ySize = curRTRange * 5;
-        }
         let rt = document.getElementById("scan1RT").innerText;
     
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
-    
         let peak2DGroup; 
         
         if (dataGroup.children.length > 2){
@@ -184,29 +171,45 @@ class GraphData{
             peak2DGroup = new THREE.Group(); 
             peak2DGroup.name = "peak2DGroup";
         }
-        for (let i = 0; i < Graph.currentData.length; i++){   
+        //sort data by rt
+        Graph.currentData.sort(GraphUtil.sortByRT);
+        
+        if (Graph.currentData.length > 0){
+            prevPeakRT = Graph.currentData[Graph.currentData.length - 1].RETENTIONTIME;
+        }
+        for (let i = Graph.currentData.length - 1; i >= 0; i--){   
             let point = Graph.currentData[i];
             let linegeo = new THREE.BufferGeometry();
+
+            //ySize is current retention time - prevRT
+            //for the first spectra peaks, it is a set length;
+            //while current peak has same RT as the previous peak, keep iterating
+            //if current peak has different RT as the previous peak, update prevRT as the previous peak RT
             
-            if (point.RETENTIONTIME + ySize > Graph.viewRange.rtmax){//when the total length of the peak goes over the boundary, reduce length
-               linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+            if (point.RETENTIONTIME != prevPeakRT){
+                prevSpecRT = prevPeakRT;
+            }
+
+            let ySize = prevSpecRT - point.RETENTIONTIME; //peak length
+            let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
+            let minSize = rtRange/3;
+
+            if (ySize < minSize){//minimum length for the peak
+    
+                ySize = minSize;
+            }
+            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
                 0, 0, 0,
-                0, 0, Graph.viewRange.rtmax - point.RETENTIONTIME,
-                ]), 3));
-            }
-            else{
-                linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
-                    0, 0, 0,
-                    0, 0, ySize,
-                ]), 3));
-            }
+                0, 0, ySize,
+            ]), 3));
+            
             let linemat = new THREE.LineBasicMaterial({color: point.COLOR, linewidth:0.8});
         
             if ((point.RETENTIONTIME/60).toFixed(4) == rt){
                 linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
             }
             let line = new THREE.Line(linegeo, linemat);
-            
+
             line.position.set(point.MZ, 0, point.RETENTIONTIME);
             line.pointid = point.ID;
             line.mz = point.MZ;
@@ -215,6 +218,8 @@ class GraphData{
             line.name = "peak";
             line.scanID = point.SPECTRAID;
             peak2DGroup.add(line);
+
+            prevPeakRT = point.RETENTIONTIME;
         }
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.add(peak2DGroup);

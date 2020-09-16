@@ -44,6 +44,19 @@ class GraphUtil{
         let power = Math.pow(10, places);
         return Math.round(number * power) / power;
     }
+    static sortByRT = (a, b) => {
+        const rtA = a.RETENTIONTIME;
+        const rtB = b.RETENTIONTIME;
+        
+        let comparison = 0;
+        
+        if (rtA > rtB) {
+            comparison = 1;
+        } else if (rtA < rtB) {
+            comparison = -1;
+        }
+        return comparison;
+    }
     static getRT = (scanID) => {
         return new Promise((resolve, reject) => {
             var xhttpRT = new XMLHttpRequest();
