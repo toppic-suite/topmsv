@@ -152,7 +152,7 @@ class GraphData{
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
     static plotPoint2D = () => {
-        let prevSpecRT = Graph.viewRange.rtmax; 
+        let prevSpecRT = 0; 
         let prevPeakRT = 0;
 
         let rt = document.getElementById("scan1RT").innerText;
@@ -195,9 +195,12 @@ class GraphData{
             let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
             let minSize = rtRange/3;
 
+            //for special cases when should not be using the calculated ysize value
             if (ySize < minSize){//minimum length for the peak
-    
                 ySize = minSize;
+            }
+            if (prevSpecRT == 0){//when it is the spectra peaks with the highets rt (no previous spectra)
+                ySize = rtRange / 2;
             }
             linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
                 0, 0, 0,
