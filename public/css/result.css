@@ -451,7 +451,7 @@ button#graph-expand{
     padding: 0;
     left:0;
     top:0;
-    position: absolute;
+    position: fixed;
 }
 #loading-div-contents{
     position: absolute;
