@@ -144,11 +144,11 @@ class GraphData{
             return 0;
         }).then(result => {
             let promise = GraphFeature.drawFeature(Graph.viewRange);
-            promise.then(()=>{return 0;})
-        }).then(result => {
-            GraphControl.updateViewRange(Graph.viewRange);
-            GraphRender.renderImmediate();
-        })
+            promise.then(()=>{
+                GraphControl.updateViewRange(Graph.viewRange);
+                GraphRender.renderImmediate();
+            })
+        });
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
     static plotPoint2D = () => {
