@@ -1,6 +1,5 @@
 class Topview2D {
-    constructor(scanId) {
-        this.scanId = this.scanId;
+    constructor() {
     }
 
     findNextLevelOneScan(scan) {
@@ -21,7 +20,7 @@ class Topview2D {
         });
     }
 
-    getScanLevel(scanID,nextScan) {
+    getScanLevel(scanID) {
         return axios.get('/scanlevel', {
                 params: {
                     projectDir: document.getElementById("projectDir").value,
@@ -39,10 +38,32 @@ class Topview2D {
         });
     }
 
+    getPeakList(scanId) {
+        if (scanId !== '0') {
+            return axios.get('/peaklist', {
+                params: {
+                    projectDir: document.getElementById("projectDir").value,
+                    scanID: scanId
+                }
+            });
+        }else{
+            alert("NULL");
+        }
+    }
+
+    getEnvList(scan) {
+        return axios.get('/envlist', {
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                scanID: scan,
+                projectCode: document.getElementById("projectCode").value
+            }
+        })
+    }
+
     loadPeakList1(scanID) {
-        const graphFeatures = new GraphFeatures();
         if (scanID !== '0') {
-            axios.get('/peaklist', {
+            return axios.get('/peaklist', {
                 params: {
                     projectDir: document.getElementById("projectDir").value,
                     scanID: scanID
@@ -119,7 +140,7 @@ class Topview2D {
         }
     }
 
-    loadInteSumList() {
+    getInteSumList() {
         return axios.get('/getInteSumList', {
             params: {
                 projectDir: document.getElementById("projectDir").value
@@ -145,7 +166,7 @@ class Topview2D {
         });
     }
 
-    getScanLevelTwoList(scanID,target) {
+    getScanLevelTwoList(scanID) {
         return axios.get('/scanTwoList', {
             params: {
                 projectDir: document.getElementById("projectDir").value,
