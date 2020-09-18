@@ -145,9 +145,12 @@ class GraphData{
         }).then(result => {
             let promise = GraphFeature.drawFeature(Graph.viewRange);
             promise.then(()=>{
-                GraphControl.updateViewRange(Graph.viewRange);
                 GraphRender.renderImmediate();
+                return 0;
             })
+        }).then(result => {
+            GraphControl.updateViewRange(Graph.viewRange);
+            GraphRender.renderImmediate();
         });
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
