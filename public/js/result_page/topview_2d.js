@@ -12,6 +12,7 @@ class Topview2D {
     }
 
     getRelatedScan2 (scanID) {
+        console.log("scanID:",scanID);
         return axios.get('/relatedScan2', {
             params: {
                 projectDir: document.getElementById("projectDir").value,
@@ -24,7 +25,7 @@ class Topview2D {
         return axios.get('/scanlevel', {
                 params: {
                     projectDir: document.getElementById("projectDir").value,
-                    scanId: scanID
+                    scanID: scanID
                 }
         });
     }
@@ -94,7 +95,7 @@ class Topview2D {
                 scanID: scanNum
             }
         }).then(function(response){
-            let rt = parseFloat(response);
+            let rt = parseFloat(response.data);
             moveLine(rt/60);
             document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
         }).catch(function(error) {
