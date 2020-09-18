@@ -20,7 +20,9 @@ function getRelatedScan2(dir, scanID, callback) {
         //console.log('Connected to the result database.');
     });
     resultDb.get(sql, [scanID], (err, row) => {
+        console.log("row:", row);
         if (err) {
+            console.log(error);
             throw err;
         }
         return callback(null, row);
