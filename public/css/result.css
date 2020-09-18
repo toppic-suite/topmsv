@@ -164,7 +164,30 @@ button#home {
     text-decoration: none;
     display: inline-block;
 }
-
+button#request3dGraphRedraw{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#save3dGraph{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button#next1 {
     position: relative;
     /*left: 84%;*/
@@ -259,6 +282,18 @@ button.export-button {
     text-align: center;
     text-decoration: none;
 }
+button#btn-save-file-name{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button.dt-button{
     background-color: #555555;
     color: white;
@@ -332,3 +367,101 @@ button#minusBtn {
     position: relative;
     right: 130%;
 }*/
+/*3d graph tooltip*/
+#tooltip {
+    display:none;
+    position:fixed;
+    border-bottom: 1px dotted black;
+    z-index: 1;
+  }
+  
+  #tooltiptext {
+    width: 120px;
+    background-color: #555555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 5px;
+    margin: 5px;
+    font-size:10px;
+  
+    /* Position the tooltip */
+    position: absolute;
+   
+  }
+/*save-as-image popup css*/
+#save-as-image-form{
+    /*padding: 10px;
+    background-color: #555555;*/
+    display:none;
+    position: absolute;
+    border-radius: 5px;
+}
+#input-file-name{
+    width:200px;
+    font-size:10px;
+
+}
+/*3d graph div size*/
+#graph-container{
+    min-height: 600px;
+}
+#graph3d-entire-div{
+    height: 700px;
+}
+/*default css for all buttons*/
+button#graph-expand{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+/*loading div*/
+#loading-div{
+    background-color: #5e5e5e;
+    color:white;
+    font-size:30px;
+    min-height:100%;
+    min-width:100%;
+    opacity:0.8;
+    z-index: 99;
+    margin: 0;
+    padding: 0;
+    left:0;
+    top:0;
+    position: fixed;
+}
+#loading-div-contents{
+    position: absolute;
+    left:45%;
+    top:40%;
+    width: 200px;
+    height: 200px;
+}
+#loading-animation-div{
+    margin: 20px 0px 0px 0px;
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+#loading-msg-div{
+    position: absolute;
+    left:42%;
+    top:35%;
+    width: 200px;
+    height: 200px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
