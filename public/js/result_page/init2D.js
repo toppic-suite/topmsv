@@ -15,12 +15,14 @@ function init2D(scan) {
 
     topview_2d.findNextLevelOneScan(scan)
         .then(function(response) {
-            nextScan = parseInt(response); // next scan level one
+            nextScan = parseInt(response.data); // next scan level one
             return topview_2d.getScanLevel(scan); // current scan
         })
         .then(function(response) {
-            if (response === "1") { // scan level 1
+            console.log("scan level response:", response.data);
+            if (response.data === 1) { // scan level 1
                 if (nextScan - scan === 1) { // if there are scan level 2 for this scan
+                    console.log("Scan Level 1, nextScan - scan === 1");
                     $('#scanLevelTwoInfo').show();
                     $("#tabs").show();
                     $("#noScanLevelTwo").hide();
@@ -29,7 +31,7 @@ function init2D(scan) {
                             $( "#tabs" ).tabs();
                             $("#tabs li").remove();
                             $( "#tabs" ).tabs("destroy");
-                            response.forEach(function (item) {
+                            response.data.forEach(function (item) {
                                 let scanTwoNum = item.scanID;
                                 let rt = item.rt;
                                 $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
@@ -41,18 +43,19 @@ function init2D(scan) {
                             console.log(error);
                         });
                 } else { // if there is no scan level 2
+                    console.log("Scan Level 1, nextScan - scan !== 1")
                     $("#noScanLevelTwo").show();
                     $("#tabs").hide();
                     $('#scanLevelTwoInfo').hide();
                     topview_2d.getRT(scan);
                     topview_2d.getPeakList(scan)
                         .then(function(response) {
-                            peakList1_g = JSON.parse(response);
+                            peakList1_g = JSON.parse(response.data);
                             document.getElementById("scanID1").innerText = scan;
                             return topview_2d.getEnvList(scan);
                         })
                         .then(function(response) {
-                            envList1_g = JSON.parse(response);
+                            envList1_g = JSON.parse(response.data);
                             if (envList1_g !== 0){
                                 graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, null, null, graphFeatures);
                             }else {
@@ -64,17 +67,18 @@ function init2D(scan) {
                         });
                 }
             } else { // scan level 2
+                console.log("scan level 2");
                 let scanLevelOne;
                 topview_2d.getRelatedScan2(scan)
                     .then(function(response) {
-                        scanLevelOne = response;
-                        return topview_2d.getScanLevelTwoList(response);
+                        scanLevelOne = response.data;
+                        return topview_2d.getScanLevelTwoList(scanLevelOne);
                     })
                     .then(function(response){
                         $( "#tabs" ).tabs();
                         $("#tabs li").remove();
                         $( "#tabs" ).tabs("destroy");
-                        response.forEach(function (item) {
+                        response.data.forEach(function (item) {
                             let scanTwoNum = item.scanID;
                             let rt = item.rt;
                             $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
@@ -99,12 +103,12 @@ function loadPeakList1(scanID, prec_mz) {
         topview_2d.getPeakList(scanID)
             .then(function(response){
                 topview_2d.getRT(scanID);
-                peakList1_g = JSON.parse(response);
+                peakList1_g = response.data;
                 document.getElementById("scanID1").innerText = scanID;
                 return topview_2d.getEnvList(scanID);
             })
             .then(function(response){
-                envList1_g = JSON.parse(response);
+                envList1_g = JSON.parse(response.data);
                 if (envList1_g !== 0){
                     graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, prec_mz, null, graphFeatures);
                 }else {
@@ -132,7 +136,8 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 scanID: scanID
             }
         }).then(function(response) {
-            peakList2_g = JSON.parse(response);
+            // console.log("response from peaklist:", response);
+            peakList2_g = response.data;
             return axios.get('/envlist', {
                 params: {
                     projectDir: document.getElementById("projectDir").value,
@@ -141,7 +146,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 }
             });
         }).then(function(response) {
-            envList2_g = JSON.parse(response);
+            envList2_g = JSON.parse(response.data);
             if (envList2_g !== 0){
                 graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
             }else {
