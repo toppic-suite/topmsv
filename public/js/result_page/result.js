@@ -705,7 +705,7 @@ next1.addEventListener('click', function () {
     }
 },false)
 $( document ).ready(function() {
-    var min = document.getElementById("rangeMin").value;
+   /* var min = document.getElementById("rangeMin").value;
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
         $("#envInfo").hide();
@@ -745,7 +745,7 @@ $( document ).ready(function() {
         };
         xhttp.open("GET", "scanlevel?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + min, true);
         xhttp.send();
-    }
+    }*/
 
 });
 $("#scanID").keyup(function(event) {

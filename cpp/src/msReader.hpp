@@ -1,7 +1,6 @@
 #ifndef MSREADER_HPP_
 #define MSREADER_HPP_
 
-
 #include <iostream>
 #include <memory>
 #include <cmath>
@@ -30,33 +29,19 @@ public:
 	pwiz::msdata::DefaultReaderList readers_;
 	MSDataFilePtr msd_ptr_;
 	pwiz::msdata::SpectrumListPtr spec_list_ptr_;
+	std::string file_name_;
 
-
-
-	msReader(std::string filename);
-	std::string file_name;
+	msReader(std::string file_name);
 	//pwiz::msdata::MSData test_msdata;
 	//boost::shared_ptr<std::istream> is;
 	//Index_mzML_Ptr index;
 	SpectrumListPtr sl;
 	mzMLReader databaseReader;
-	Range RANGE;
-	void getScans(int scanLevel);
-	void getSinglePeaks(int scan);
-	void getScanRangeDB();
+	DataRange Range;
 	void getRange();
-	void getAllPeaks(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void createDtabase_normal();
 	void createDtabase();
-	void getRangeDB();
+	void getScanRangeDB();
 	void getPeaksFromScanDB(int scan);
-	void getAllPeaksDB(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void getRangeFromRaw();
-	void createDtabaseOneTable();
-	void getRangeDBOneTable();
-	void getAllPeaksDBOneTable(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
-	void createDtabaseOneTableRTree();
-	void getAllPeaksDBOneTableRTree(double mzmin, double mzmax, double rtmin, double rtmax, int numpoints, double intmin);
 };
 
 
