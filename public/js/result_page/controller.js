@@ -7,8 +7,15 @@ $( document ).ready(function() {
     }
     $('#envFileInfo').hide();
     showEnvTable(min);
-    findNextLevelOneScan(min);
-    loadInteSumList();
+    init2D(min);
+    const topview_2d = Topview2D();
+    topview_2d.getInteSumList()
+        .then((response) => {
+            addFigure(JSON.parse(response));
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
@@ -23,23 +30,38 @@ $( document ).ready(function() {
     if(apix === '.txt') {
         $('#rt-sum_panel').hide();
 
-        axios.get('/scanlevel', {
-            params: {
-                projectDir: document.getElementById("projectDir").value,
-                scanID: min
-            }
-        }).then(function(response) {
-            if (response === "1") {
-                loadPeakList1(min, null);
-                $('#scanLevelTwo').hide();
-            }
-            else {
-                $('#scanLevelOne').hide();
-                //loadPeakList2(min, )
-                getRelatedScan2(min);
-            }
-        }).catch(function(error){
-            console.log(error);
-        });
+        topview_2d.getScanLevel(min)
+            .then((response) => {
+                if (response === "1") {
+                    loadPeakList1(min, null);
+                    $('#scanLevelTwo').hide();
+                }
+                else {
+                    $('#scanLevelOne').hide();
+                    topview_2d.getRelatedScan2(min)
+                        .then(function(response) {
+                            scanLevelOne = response;
+                            return topview_2d.getScanLevelTwoList(response);
+                        })
+                        .then(function(response){
+                            $( "#tabs" ).tabs();
+                            $("#tabs li").remove();
+                            $( "#tabs" ).tabs("destroy");
+                            response.forEach(function (item) {
+                                let scanTwoNum = item.scanID;
+                                let rt = item.rt;
+                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                            });
+                            $( "#tabs" ).tabs();
+                            document.getElementById(min).click();
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }
 });
