@@ -11,7 +11,7 @@ $( document ).ready(function() {
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
         .then((response) => {
-            addFigure(JSON.parse(response));
+            addFigure(response.data);
         })
         .catch((error) => {
             console.log(error);
