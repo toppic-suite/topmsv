@@ -8,7 +8,7 @@ class GraphData{
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
-    static drawCurrentScanMarker = (rt) => {
+    static drawCurrentScanMarker = () => {
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         //draw a red line horizontal to x axis where y = current scan retention time
         let linegeo = new THREE.Geometry();
@@ -22,7 +22,7 @@ class GraphData{
         marker.name = "currentScanMarker";
         markerGroup.add(marker);
 
-        marker.position.set(0, 0, rt);
+        marker.position.set(0, 0, Graph.curRT);
     }
     /******** CALCULATE AND SET DATA RANGE ******/
     static getInteRange = (points) => {
@@ -117,7 +117,8 @@ class GraphData{
      /******** PLOT PEAKS ******/
     static draw = (curRT) => {          
         const curViewRange = Graph.viewRange;
-        
+        Graph.curRT = curRT;
+
         let promise = LoadData.load3dData(curViewRange);
 
         promise.then(peakData => {
@@ -137,8 +138,8 @@ class GraphData{
             Graph.viewRange["intscale"] = 1;
 
             // make sure the groups are plotted and update the view
-            if (parseFloat(curRT) <= Graph.viewRange.rtmax && parseFloat(curRT) >= Graph.viewRange.rtmin){
-                GraphData.drawCurrentScanMarker(curRT);
+            if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
+                GraphData.drawCurrentScanMarker();
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
             return 0;
@@ -158,7 +159,8 @@ class GraphData{
         let prevSpecRT = 0; 
         let prevPeakRT = 0;
 
-        let rt = document.getElementById("scan1RT").innerText;
+        let rt = (Graph.curRT/60).toFixed(4);
+        //let rt = document.getElementById("scan1RT").innerText;
     
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let peak2DGroup; 
@@ -244,6 +246,8 @@ class GraphData{
         let lowPeak = false;
 
         let currt = (Graph.curRT/60).toFixed(4);
+        //let currt = document.getElementById("scan1RT").innerText;
+        console.log(currt, document.getElementById("scan1RT").innerText, (Graph.curRT/60))
         let y = inten;    
         let minHeight = Graph.minPeakHeight;
         let scale = Graph.gridRangeVertical / Graph.viewRange.intmax;
