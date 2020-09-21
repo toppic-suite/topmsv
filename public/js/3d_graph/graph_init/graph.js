@@ -2,8 +2,8 @@
 //and call to initialize empty 3D graph
 
 class Graph{
-    constructor(graphEl, projectDir){
-        Graph.graphEl = graphEl; 
+    constructor(projectDir){
+        Graph.graphEl = document.querySelector("#graph-container"); 
         Graph.projectDir = projectDir;
     }
     setProperties = () => {
