@@ -246,8 +246,6 @@ class GraphData{
         let lowPeak = false;
 
         let currt = (Graph.curRT/60).toFixed(4);
-        //let currt = document.getElementById("scan1RT").innerText;
-        console.log(currt, document.getElementById("scan1RT").innerText, (Graph.curRT/60))
         let y = inten;    
         let minHeight = Graph.minPeakHeight;
         let scale = Graph.gridRangeVertical / Graph.viewRange.intmax;
