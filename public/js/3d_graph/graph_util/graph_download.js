@@ -16,11 +16,22 @@ class GraphDownload{
 			
 			canvas.toBlob((blob) => {
 				var filesize = Math.round( blob.length/1024 ) + ' KB';
-				console.log(callback)
 				if (callback) callback( blob, filesize );
 			});
 		};
 		image.src = imgsrc;
+	}
+	static getImageName = () => {
+		let trimStart = Graph.projectDir.lastIndexOf("/");
+		if (trimStart < 0){
+			trimStart = Graph.projectDir.lastIndexOf("\\");
+		}
+		let trimEnd = Graph.projectDir.lastIndexOf(".");
+		
+		console.log(Graph.projectDir);
+		console.log(Graph.projectDir.slice(trimStart, trimEnd))
+
+		return Graph.projectDir.slice(trimStart + 1, trimEnd);
 	}
 	static popupnamewindow = (x, y) => {
 		//save-as-image-form
@@ -30,8 +41,8 @@ class GraphDownload{
 		formDiv.style.left = (x - 90) + "px"
 		formDiv.style.top = (y + 20) + "px";
 
-		$("#btn-save-file-name").click(function(){
-			let imagename = $("#input-file-name").val();
+		document.getElementById("btn-save-file-name").onclick = () => {
+			let imagename = GraphDownload.getImageName();
 			if( imagename == null || imagename == ""){
 				imagename = "peak3DGraph";
 			}
@@ -41,7 +52,7 @@ class GraphDownload{
 				saveAs( dataBlob, imagename ); 
 			}
 			GraphDownload.createImage(save); 
-		})
+		}
 	}
 	static save3dGraph = (e) => {
 		//get mouse x y position for location of pop up
