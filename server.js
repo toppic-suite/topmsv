@@ -423,7 +423,10 @@ app.use('/', require("./router/editManage"));
 
 app.use('/', require("./router/projectview"));
 
-
+/**router for 3D graph */
+app.use('/', require("./router/getMax"));
+app.use('/', require("./router/load3dDataByParaRange"));
+app.use('/', require("./router/loadMzrtData"));
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']

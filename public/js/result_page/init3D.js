@@ -22,7 +22,7 @@ function getMax(){
         xhttp3.send();
     });
 }
-function init3dGraph(){
+function init3D(localStorage){
     let promise = getMax();
     
     promise.then(function(tableData){//to make sure max values are fetched before creating graph
@@ -31,6 +31,9 @@ function init3dGraph(){
         let graph3D = new Graph(document.querySelector("#graph-container"), tableData);
         graph3D.main();
 
+        console.log("localStorage", window.localStorage)
+        GraphData.drawInitGraph(localStorage.mzmin, localStorage.mzmax, localStorage.curRT, true)
+        
     }, function(err){
         console.log(err);
     })
