@@ -6,12 +6,14 @@ let peakList2_g;
 let envList2_g;
 let graph2_g;
 
+let rtInteGraph;
+
 const topview_2d = new Topview2D();
 
 function init2D(scan) {
     // const topview_2d = new Topview2D(scan);
     let nextScan;
-    const graphFeatures = new GraphFeatures();
+    // const graphFeatures = new GraphFeatures();
 
     topview_2d.findNextLevelOneScan(scan)
         .then(function(response) {
@@ -47,19 +49,24 @@ function init2D(scan) {
                     $("#noScanLevelTwo").show();
                     $("#tabs").hide();
                     $('#scanLevelTwoInfo').hide();
-                    topview_2d.getRT(scan);
+                    topview_2d.getRT(scan, rtInteGraph);
                     topview_2d.getPeakList(scan)
                         .then(function(response) {
-                            peakList1_g = JSON.parse(response.data);
+                            peakList1_g = response.data;
                             document.getElementById("scanID1").innerText = scan;
                             return topview_2d.getEnvList(scan);
                         })
                         .then(function(response) {
-                            envList1_g = JSON.parse(response.data);
+                            // console.log("envList1_g:", response);
+                            envList1_g = response.data;
                             if (envList1_g !== 0){
-                                graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, null, null, graphFeatures);
+                                graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
+                                graph1_g.redraw();
+                                // graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, null, null, graphFeatures);
                             }else {
-                                graph1_g = addSpectrum("spectrum1", peakList1_g, [], null, null, graphFeatures);
+                                graph1_g = new SpectrumGraph("spectrum1", peakList1_g, [],[],null);
+                                graph1_g.redraw();
+                                // graph1_g = addSpectrum("spectrum1", peakList1_g, [], null, null, graphFeatures);
                             }
                         })
                         .catch(function(error) {
@@ -97,22 +104,26 @@ function init2D(scan) {
 }
 
 function loadPeakList1(scanID, prec_mz) {
-    const graphFeatures = new GraphFeatures();
+    // const graphFeatures = new GraphFeatures();
     // const topview_2d = new Topview2D();
     if (scanID !== '0') {
         topview_2d.getPeakList(scanID)
             .then(function(response){
-                topview_2d.getRT(scanID);
+                topview_2d.getRT(scanID, rtInteGraph);
                 peakList1_g = response.data;
                 document.getElementById("scanID1").innerText = scanID;
                 return topview_2d.getEnvList(scanID);
             })
             .then(function(response){
-                envList1_g = JSON.parse(response.data);
+                envList1_g = response.data;
                 if (envList1_g !== 0){
-                    graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, prec_mz, null, graphFeatures);
+                    graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
+                    graph1_g.redraw();
+                    // graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, prec_mz, null, graphFeatures);
                 }else {
-                    graph1_g = addSpectrum("spectrum1", peakList1_g, [], prec_mz, null, graphFeatures);
+                    graph1_g = new SpectrumGraph("spectrum1", peakList1_g, [],[],null);
+                    graph1_g.redraw();
+                    // graph1_g = addSpectrum("spectrum1", peakList1_g, [], prec_mz, null, graphFeatures);
                 }
             })
             .catch(function(error) {
@@ -125,7 +136,7 @@ function loadPeakList1(scanID, prec_mz) {
 
 function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
     if(scanID !== '0') {
-        const graphFeatures = new GraphFeatures();
+        // const graphFeatures = new GraphFeatures();
         // show envelope table for MS2
         showEnvTable(scanID);
         $("#switch").text('MS1');
@@ -146,11 +157,16 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 }
             });
         }).then(function(response) {
-            envList2_g = JSON.parse(response.data);
+            console.log("envList2_g", response.data);
+            envList2_g = response.data;
             if (envList2_g !== 0){
-                graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
+                graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
+                graph2_g.redraw();
+                // graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
             }else {
-                graph2_g = addSpectrum("spectrum2",peakList2_g, [],null,null, graphFeatures);
+                graph2_g = new SpectrumGraph("spectrum2", peakList2_g, [],[],null);
+                graph2_g.redraw();
+                // graph2_g = addSpectrum("spectrum2",peakList2_g, [],null,null, graphFeatures);
             }
             document.getElementById("scanID2").innerHTML = scanID;
             document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
