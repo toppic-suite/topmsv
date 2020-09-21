@@ -2,9 +2,9 @@
 //and call to initialize empty 3D graph
 
 class Graph{
-    constructor(graphEl, tableData){
+    constructor(graphEl, projectDir){
         Graph.graphEl = graphEl; 
-        Graph.tablePeakCount = tableData;
+        Graph.projectDir = projectDir;
     }
     setProperties = () => {
         /*add properties to Graph class*/
@@ -47,9 +47,6 @@ class Graph{
         Graph.cutoff = []; //intensity cutoff point for each color in gradient
 
         Graph.currentScanColor = "#ff5797";
-        //Graph.surfaceColor = "#eee";
-        //Graph.gridColor = "#7a7a7a";
-        //Graph.surfaceColor = "#7a7a7a";
         Graph.surfaceColor = "#000030";
         Graph.gridColor = "#555555";
         Graph.featureColor = "#a8b5ff";
@@ -91,20 +88,37 @@ class Graph{
         Graph.scene.add(Graph.axisGroup);
     }
     initDataRange = () => {
-        let dataTotal = Graph.tablePeakCount[0];
+        return new Promise(function(resolve, reject){
+            let promise = LoadData.getConfigData();
+    
+            promise.then(tableData => {//to make sure max values are fetched before creating graph
+                let dataTotal = tableData[0];
+    
+                Graph.dataRange.rtmax = dataTotal.RTMAX;
+                Graph.dataRange.rtmin = dataTotal.RTMIN;
+                Graph.dataRange.intmax = dataTotal.INTMAX;
+                Graph.dataRange.intmin = dataTotal.INTMIN;
+                Graph.dataRange.mzmax = dataTotal.MZMAX;
+                Graph.dataRange.mzmin = dataTotal.MZMIN;  
+                
+                Graph.tablePeakCount = tableData;
 
-        Graph.dataRange.rtmax = dataTotal.RTMAX;
-        Graph.dataRange.rtmin = dataTotal.RTMIN;
-        Graph.dataRange.intmax = dataTotal.INTMAX;
-        Graph.dataRange.intmin = dataTotal.INTMIN;
-        Graph.dataRange.mzmax = dataTotal.MZMAX;
-        Graph.dataRange.mzmin = dataTotal.MZMIN;    
+                resolve();
+    
+            }, function(err){
+                console.log(err);
+            }) 
+        })
     }
     main = () => {
         this.setProperties();
         this.createGroups();
-        this.initDataRange();
 
-        GraphInit.main();
+        let promise = this.initDataRange();
+
+        promise.then(()=>{
+            console.log(Graph.projectDir)
+            GraphInit.main();
+        })
     }
 }
