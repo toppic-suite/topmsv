@@ -117,7 +117,6 @@ class Graph{
         let promise = this.initDataRange();
 
         promise.then(()=>{
-            console.log(Graph.projectDir)
             GraphInit.main();
         })
     }
