@@ -14,9 +14,9 @@ class HoverPosition{
         }else{
             mz = mz.toFixed(3);
         }
-        if(rt/60 < Graph.viewRange.rtmin){
+        if(rt < Graph.viewRange.rtmin){
             rt = "";
-        }else if(rt/60 > Graph.viewRange.rtmax){
+        }else if(rt > Graph.viewRange.rtmax){
             rt = "";
         }else{
             rt = (rt/60).toFixed(3);
