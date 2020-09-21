@@ -57,13 +57,17 @@ function loadPeakList1(scanID, prec_mz) {
     if (scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
+            
             if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("loading-div").style.display = "inline-block";
                 getRT(scanID);
                 peakList1_g = JSON.parse(this.responseText);
                 
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
+                    
                     if (this.readyState == 4 && this.status == 200) {
+                        
                         envList1_g = JSON.parse(this.responseText);
                         console.log("envList1_g", envList1_g);
 
@@ -78,7 +82,7 @@ function loadPeakList1(scanID, prec_mz) {
                             window.localStorage.setItem('mzmin', graph1_g.para.minMz);
                             
                         }  
-                        document.getElementById("loading-div").remove();
+                        document.getElementById("loading-div").style.display = "none";
                         GraphData.drawInitGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
                     }
                 };
@@ -108,66 +112,10 @@ function getRT(scanNum) {
     xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum, true);
     xhttpRT.send();
 }
-function getMax(){
-    return new Promise(function(resolve, reject){
-        let fullDir = (document.getElementById("projectDir").value).split("/");
-        let fileName = (fullDir[fullDir.length -1].split("."))[0];
-        let dir = fullDir[0].concat("/");
-        dir = dir.concat(fullDir[1]);
 
-        var xhttp3 = new XMLHttpRequest();
-        xhttp3.onreadystatechange = function (){
-            if (this.readyState == 4 && this.status == 200) {
-                var result = JSON.parse(this.responseText);
-
-                if (result != undefined){
-                    resolve(result);
-                }
-                else{
-                    reject("max values are undefined")
-                }
-            }
-        }
-        xhttp3.open("GET","getMax?projectDir=" + dir + "/" + fileName + ".db" + "&colName=" + 'MZ',true);
-        xhttp3.send();
-    });
-}
-function getPeaksPerTable(totalLayer){
-    return new Promise(function(resolve, reject){
-        let fullDir = (document.getElementById("projectDir").value).split("/");
-        let fileName = (fullDir[fullDir.length -1].split("."))[0];
-        let dir = fullDir[0].concat("/");
-        dir = dir.concat(fullDir[1]);
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function (){
-            if (this.readyState == 4 && this.status == 200) {
-                var result = this.responseText;
-                
-                if (result != undefined){
-                    resolve(result);
-                }
-                else{
-                    reject("trouble counting rows of each table")
-                }
-            }
-        }
-        xhttp.open("GET","getPeaksPerTable?projectDir=" + dir + "/" + fileName + ".db" + "&layerCount=" + totalLayer,true);
-        xhttp.send();
-    });
-}
 function init3dGraph(){
-    let promise = getMax();
-    
-    promise.then(function(tableData){//to make sure max values are fetched before creating graph
-        Graph.tablePeakCount = tableData;
-
-        let graph3D = new Graph(document.querySelector("#graph-container"), tableData);
-        graph3D.main();
-
-    }, function(err){
-        console.log(err);
-    })
+    let graph3D = new Graph(document.getElementById("projectDir").value);
+    graph3D.main();
 }
 function findNextLevelOneScan(scan) {
     var xhttp = new XMLHttpRequest();
