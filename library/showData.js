@@ -12,8 +12,8 @@ const sqlite3 = require('sqlite3').verbose();
  */
 function showData(resultDB,scan_id,res) {
     getEnvNum(resultDB, scan_id, function (err, rows) {
-        //console.log(rows.length);
-        //console.log(typeof rows);
+        // console.log(rows.length);
+        // console.log(typeof rows);
         let max = rows.length;
         if (rows.length === 0){
             //console.log("Empty rows!");
@@ -34,7 +34,7 @@ function showData(resultDB,scan_id,res) {
                     result.push(oneEnvelope);
                     ++times;
                     if(times === max){
-                        // console.log('envlist return: ',JSON.stringify(result));
+                        console.log('envlist return: ',JSON.stringify(result));
                         res.write(JSON.stringify(result));
                         res.end();
                         times = 0;
