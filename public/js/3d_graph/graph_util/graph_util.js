@@ -57,19 +57,6 @@ class GraphUtil{
         }
         return comparison;
     }
-    static getRT = (scanID) => {
-        return new Promise((resolve, reject) => {
-            var xhttpRT = new XMLHttpRequest();
-            xhttpRT.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                    var rt = parseFloat(this.responseText);
-                    resolve(rt);
-                }
-            };
-            xhttpRT.open("GET", "getRT?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID, true);
-            xhttpRT.send();
-        })
-    }
     /*related to mouse interaction*/
     static findObjectHover = (event, objGroup) => {
         let el = Graph.renderer.domElement;
