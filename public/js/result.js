@@ -57,13 +57,17 @@ function loadPeakList1(scanID, prec_mz) {
     if (scanID !== '0') {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
+            
             if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("loading-div").style.display = "inline-block";
                 getRT(scanID);
                 peakList1_g = JSON.parse(this.responseText);
                 
                 var xhttp2 = new XMLHttpRequest();
                 xhttp2.onreadystatechange = function () {
+                    
                     if (this.readyState == 4 && this.status == 200) {
+                        
                         envList1_g = JSON.parse(this.responseText);
                         console.log("envList1_g", envList1_g);
 
@@ -78,7 +82,7 @@ function loadPeakList1(scanID, prec_mz) {
                             window.localStorage.setItem('mzmin', graph1_g.para.minMz);
                             
                         }  
-                        document.getElementById("loading-div").remove();
+                        document.getElementById("loading-div").style.display = "none";
                         console.log(window.localStorage.curRT)
                         GraphData.drawInitGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
                     }
@@ -111,7 +115,7 @@ function getRT(scanNum) {
 }
 
 function init3dGraph(){
-    let graph3D = new Graph(document.querySelector("#graph-container"), document.getElementById("projectDir").value);
+    let graph3D = new Graph(document.getElementById("projectDir").value);
     graph3D.main();
 }
 function findNextLevelOneScan(scan) {
