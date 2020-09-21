@@ -7,7 +7,9 @@ $( document ).ready(function() {
     }
     $('#envFileInfo').hide();
     showEnvTable(min);
+    
     init2D(min);
+
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
         .then((response) => {
@@ -21,7 +23,7 @@ $( document ).ready(function() {
     if(scanRef) {
         // console.log(scanRef);
         $('#scanID').val(scanRef);
-        $('#request').click();
+        $('#request').click();   
         localStorage.clear();
     }
 
@@ -64,4 +66,8 @@ $( document ).ready(function() {
                 console.log(error);
             });
     }
+    //draw 3d graph
+    console.log(window.localStorage)
+    init3D(window.localStorage);
+    
 });
