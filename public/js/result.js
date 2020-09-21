@@ -83,7 +83,6 @@ function loadPeakList1(scanID, prec_mz) {
                             
                         }  
                         document.getElementById("loading-div").style.display = "none";
-                        console.log(window.localStorage.curRT)
                         GraphData.drawInitGraph(window.localStorage.mzmin, window.localStorage.mzmax, window.localStorage.curRT, true)
                     }
                 };
