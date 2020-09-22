@@ -155,13 +155,15 @@ function showEnvTable(scan) {
 
 function jumpTo(mono_mz) {
     if($('#msType').text() === 'MS2'){
-        relocSpet2(mono_mz);
+        graph2_g.redraw(mono_mz);
+        // relocSpet2(mono_mz);
     } else {
-        relocSpet1(mono_mz);
+        graph1_g.redraw(mono_mz);
+        // relocSpet1(mono_mz);
     }
 }
 
-function relocSpet1 (mono_mz) {
+/* function relocSpet1 (mono_mz) {
     const graphFeatures = new GraphFeatures();
     graph1_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
     //addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5,null, graphFeatures);
@@ -172,7 +174,7 @@ function relocSpet2 (mono_mz) {
     // console.log("relocSpect2 on", mono_mz+0.5);
     graph2_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
     //addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5,null, graphFeatures);
-}
+} */
 
 function preprocessSeq(seq) {
     let firstIsDot = 1;
