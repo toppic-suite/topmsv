@@ -118,11 +118,11 @@ function loadPeakList1(scanID, prec_mz) {
                 envList1_g = response.data;
                 if (envList1_g !== 0){
                     graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
-                    graph1_g.redraw();
+                    graph1_g.redraw(prec_mz);
                     // graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, prec_mz, null, graphFeatures);
                 }else {
                     graph1_g = new SpectrumGraph("spectrum1", peakList1_g, [],[],null);
-                    graph1_g.redraw();
+                    graph1_g.redraw(prec_mz);
                     // graph1_g = addSpectrum("spectrum1", peakList1_g, [], prec_mz, null, graphFeatures);
                 }
             })
