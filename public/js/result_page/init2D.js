@@ -21,10 +21,10 @@ function init2D(scan) {
             return topview_2d.getScanLevel(scan); // current scan
         })
         .then(function(response) {
-            console.log("scan level response:", response.data);
+            // console.log("scan level response:", response.data);
             if (response.data === 1) { // scan level 1
                 if (nextScan - scan === 1) { // if there are scan level 2 for this scan
-                    console.log("Scan Level 1, nextScan - scan === 1");
+                    // console.log("Scan Level 1, nextScan - scan === 1");
                     $('#scanLevelTwoInfo').show();
                     $("#tabs").show();
                     $("#noScanLevelTwo").hide();
@@ -45,7 +45,7 @@ function init2D(scan) {
                             console.log(error);
                         });
                 } else { // if there is no scan level 2
-                    console.log("Scan Level 1, nextScan - scan !== 1")
+                    // console.log("Scan Level 1, nextScan - scan !== 1")
                     $("#noScanLevelTwo").show();
                     $("#tabs").hide();
                     $('#scanLevelTwoInfo').hide();
@@ -74,7 +74,7 @@ function init2D(scan) {
                         });
                 }
             } else { // scan level 2
-                console.log("scan level 2");
+                // console.log("scan level 2");
                 let scanLevelOne;
                 topview_2d.getRelatedScan2(scan)
                     .then(function(response) {
@@ -157,7 +157,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 }
             });
         }).then(function(response) {
-            console.log("envList2_g", response.data);
+            // console.log("envList2_g", response.data);
             envList2_g = response.data;
             if (envList2_g !== 0){
                 graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
