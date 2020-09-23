@@ -154,7 +154,7 @@ function updatePreview(scanID, envID, charge, mono_mass) {
         // dataType: 'json',
         success: function (res) {
             let data = (typeof res === "string") ? JSON.parse(res) : res;
-            console.log("returnList preview update", data);
+            // console.log("returnList preview update", data);
             data.envlist[0].charge = parseInt(data.envlist[0].charge);
             data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
             data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
@@ -164,8 +164,6 @@ function updatePreview(scanID, envID, charge, mono_mass) {
             data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
             peakList_temp = data.peaklist;
             envList_temp = data.envlist;
-            // addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass /data.envlist[0].charge + 1, null, graphFeatures);
-            // addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, parseFloat(mono_mass)/parseInt(charge) + 1, null, graphFeatures);
             graph_preview1_g = new SpectrumGraph('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks,[],null);
             graph_preview1_g.redraw(data.envlist[0].mono_mass/data.envlist[0].charge + 1);
             graph_preview2_g = new SpectrumGraph("previewSpectrum2", data.originalPeakList, envList_temp,[],null);
@@ -174,25 +172,27 @@ function updatePreview(scanID, envID, charge, mono_mass) {
     });
 }
 
-$("#previewSaveBtn").click(function () {
-    // var result = confirm("Are you sure that you want to save this change?");
-    if (true) {
-        //Logic to delete the item
-        $.ajax({
-            url:"editrow?projectDir=" + document.getElementById("projectDir").value +
-                "&scan_id=" + envList_temp[0].env.scan_id +
-                "&envelope_id=" + envList_temp[0].env.envelope_id +
-                "&charge=" + envList_temp[0].env.charge +
-                "&intensity=" + envList_temp[0].env.intensity +
-                "&mono_mass=" + envList_temp[0].env.mono_mass,
-            type: "get",
-            // dataType: 'json',
-            success: function (res) {
-                alert('Your change has been saved!');
-                $('#previewModal').modal('hide');
-                refresh();
-                $('#envTable').DataTable().ajax.reload();
-            }
-        });
-    }
+$(function() {
+    $("#previewSaveBtn").on('click',function () {
+        let result = confirm("Are you sure that you want to save this change?");
+        if (result) {
+            //Logic to delete the item
+            $.ajax({
+                url:"editrow?projectDir=" + document.getElementById("projectDir").value +
+                    "&scan_id=" + envList_temp[0].env.scan_id +
+                    "&envelope_id=" + envList_temp[0].env.envelope_id +
+                    "&charge=" + envList_temp[0].env.charge +
+                    "&intensity=" + envList_temp[0].env.intensity +
+                    "&mono_mass=" + envList_temp[0].env.mono_mass,
+                type: "get",
+                // dataType: 'json',
+                success: function (res) {
+                    alert('Your change has been saved!');
+                    $('#previewModal').modal('hide');
+                    refresh();
+                    $('#envTable').DataTable().ajax.reload();
+                }
+            });
+        }
+    });
 });
