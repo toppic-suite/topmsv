@@ -16,8 +16,8 @@ var envtable = router.get('/envtable', function (req, res) {
     getEnvTable(projectDir, scanNum, function (err, rows) {
         //console.log("Env Table rows:", rows);
         if (rows !== undefined) {
-            console.log(scanNum);
-            console.log(rows);
+            // console.log(scanNum);
+            // console.log(rows);
             res.json(rows);
             //res.write(JSON.stringify(rows));
             res.end();
