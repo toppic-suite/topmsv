@@ -43,21 +43,25 @@ function change_mono_mz() {
     $('#preview_mono_mz').val(result.toFixed(5));
 }
 
-let specPara1_g;
-let lockPara1 = false;
-let specPara2_g;
-let lockPara2 = false;
+// let specPara1_g;
+// let lockPara1 = false;
+// let specPara2_g;
+// let lockPara2 = false;
+let graphMz1;
+let graphMz2;
 function refresh() {
-    const graphFeatures = new GraphFeatures();
+    // const graphFeatures = new GraphFeatures();
     let msType_old = $('#msType').text();
     let scanID;
     if (msType_old === 'MS1') {
-        lockPara1 = true;
+        graphMz1 = graph1_g.para.winCenterMz;
+        // lockPara1 = true;
         scanID = $('#scanID1').text();
         showEnvTable($("#scanID1").text());
         $("#switch").text('MS2');
     } else {
-        lockPara2 = true;
+        graphMz2 = graph2_g.para.winCenterMz;
+        // lockPara2 = true;
         scanID = $('#scanID2').text();
     }
     $.ajax({
@@ -70,14 +74,18 @@ function refresh() {
                 if(envList1_g===0) {
                     envList1_g = [];
                 }
-                graph1_g = addSpectrum('spectrum1', peakList1_g, envList1_g, null, null, graphFeatures);
+                graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
+                graph1_g.redraw(graphMz1);
+                // graph1_g = addSpectrum('spectrum1', peakList1_g, envList1_g, null, null, graphFeatures);
             } else {
                 envList2_g = JSON.parse(res);
-                console.log(envList2_g);
+                // console.log(envList2_g);
                 if(envList2_g===0) {
                     envList2_g = [];
                 }
-                graph2_g = addSpectrum('spectrum2', peakList2_g, envList2_g, null, null, graphFeatures);
+                graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
+                graph2_g.redraw(graphMz2);
+                // graph2_g = addSpectrum('spectrum2', peakList2_g, envList2_g, null, null, graphFeatures);
             }
         }
     });
