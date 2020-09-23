@@ -93,14 +93,13 @@ function refresh() {
 
 let peakList_temp;
 let envList_temp;
-let specPara3_g;
-let lockPara_3 = false;
+// let specPara3_g;
+// let lockPara_3 = false;
 let preview_scanID_g;
 let graph_preview1_g;
 let graph_preview2_g;
 function preview(dataObj) {
     // console.log("dataObj:",dataObj);
-    const graphFeatures = new GraphFeatures();
     let envID = dataObj.envelope_id;
     let scanID = dataObj.scan_id;
     preview_scanID_g = scanID;
@@ -113,8 +112,6 @@ function preview(dataObj) {
     $('#preview_charge').val(charge);
     $('#preview_mono_mass').val(mono_mass);
     $('#preview_mono_mz').val(mono_mz);
-    //addSpectrum('previewSpectrum1', oriPeakList, oriEnvList, mono_mass);
-    // addSpectrum("previewSpectrum2", peakList_temp, envList_temp, mono_mass);
     $.ajax({
         url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
             "&scan_id=" + scanID +
@@ -126,7 +123,6 @@ function preview(dataObj) {
         // dataType: 'json',
         success: function (res) {
             let data = (typeof res === "string") ? JSON.parse(res) : res;
-            // console.log("returnList preview", data);
             data.envlist[0].charge = parseInt(data.envlist[0].charge);
             data.envlist[0].mono_mass = parseFloat(data.envlist[0].mono_mass);
             data.envlist[0].env.charge = parseInt(data.envlist[0].env.charge);
@@ -136,16 +132,18 @@ function preview(dataObj) {
             data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
             peakList_temp = data.peaklist;
             envList_temp = data.envlist;
-            // console.log("type: ", typeof mono_mass);
-            graph_preview1_g = addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass/data.envlist[0].charge + 1,null, graphFeatures);
-            graph_preview2_g = addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, mono_mass/charge + 1,null, graphFeatures);
+            graph_preview1_g = new SpectrumGraph('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks,[],null);
+            graph_preview1_g.redraw(data.envlist[0].mono_mass/data.envlist[0].charge + 1);
+            graph_preview2_g = new SpectrumGraph("previewSpectrum2", data.originalPeakList, envList_temp,[],null);
+            graph_preview2_g.redraw(mono_mass/charge + 1);
+            // graph_preview1_g = addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass/data.envlist[0].charge + 1,null, graphFeatures);
+            // graph_preview2_g = addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, mono_mass/charge + 1,null, graphFeatures);
         }
     });
     $('#previewModal').modal('show');
 }
 
 function updatePreview(scanID, envID, charge, mono_mass) {
-    const graphFeatures = new GraphFeatures();
     $.ajax({
         url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
             "&scan_id=" + scanID +
@@ -166,10 +164,12 @@ function updatePreview(scanID, envID, charge, mono_mass) {
             data.envlist[0].env.intensity = parseFloat(data.envlist[0].env.intensity);
             peakList_temp = data.peaklist;
             envList_temp = data.envlist;
-            // graph_preview1_g.redraw(data.envlist[0].mono_mass + 1, graphFeatures);
-            addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass /data.envlist[0].charge + 1, null, graphFeatures);
-            // graph_preview2_g.redraw(parseFloat(mono_mass) + 1, graphFeatures);
-            addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, parseFloat(mono_mass)/parseInt(charge) + 1, null, graphFeatures);
+            // addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass /data.envlist[0].charge + 1, null, graphFeatures);
+            // addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, parseFloat(mono_mass)/parseInt(charge) + 1, null, graphFeatures);
+            graph_preview1_g = new SpectrumGraph('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks,[],null);
+            graph_preview1_g.redraw(data.envlist[0].mono_mass/data.envlist[0].charge + 1);
+            graph_preview2_g = new SpectrumGraph("previewSpectrum2", data.originalPeakList, envList_temp,[],null);
+            graph_preview2_g.redraw(parseFloat(mono_mass)/parseInt(charge) + 1);
         }
     });
 }
@@ -196,5 +196,3 @@ $("#previewSaveBtn").click(function () {
         });
     }
 });
-
-var correspondingSpecParams_g = [];
