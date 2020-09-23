@@ -71,11 +71,12 @@ function showEnvTable(scan) {
                 className: 'btn',
                 name: 'delete'      // do not change name
             },
-            {
+            // refresh button for datatable
+/*             {
                 text: 'Refresh',
                 className: 'btn',
                 name: 'refresh'      // do not change name
-            },
+            }, */
             {
                 extend: 'selected',
                 text: 'Jump to',
@@ -89,6 +90,7 @@ function showEnvTable(scan) {
             type: "GET"
         },
         "columns": [
+            // select checkbox
             /*{
                 data: null,
                 defaultContent: '',
@@ -98,19 +100,13 @@ function showEnvTable(scan) {
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            // { "data": "mono_mass",type:'number', required: 'true'},
             { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true', readonly: 'true',"visible": true, type:"hidden"},
             {
                 "data": "mono_mz",
-                render: function (data, type, row ) {
+                render: function (data, type, row) {
                     let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(5);
                     row.mono_mz = mono_mz; // set mono_mz value
-                    /*if($('#msType').text() === 'MS2'){
-                        return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
-                    } else {
-                        return `<a href="#spectrum1" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
-                    }*/
                     return mono_mz;
                 }
                 // ,type: "readonly"
