@@ -34,7 +34,7 @@ function showData(resultDB,scan_id,res) {
                     result.push(oneEnvelope);
                     ++times;
                     if(times === max){
-                        console.log('envlist return: ',JSON.stringify(result));
+                        // console.log('envlist return: ',JSON.stringify(result));
                         res.write(JSON.stringify(result));
                         res.end();
                         times = 0;
