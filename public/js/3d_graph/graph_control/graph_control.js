@@ -203,9 +203,7 @@ class GraphControl{
             rtmin: newrtmin, rtmax: newrtmax, rtrange: newrtrange,
         }
     }
-    static resizeCameraUserControl = (windowAdjust) => {
-        //Graph.renderer.setSize(Graph.graphEl.clientWidth * windowAdjust, Graph.graphEl.clientHeight * windowAdjust, true);
-
+    static resizeCameraUserControl = () => {
         let size = new THREE.Vector3();
         Graph.renderer.getSize(size);
         let aspectRatio = size.x / size.y;

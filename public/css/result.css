@@ -35,8 +35,10 @@ div#input {
     /*left: 53%;*/
 }
 .rangeTextBox{
-    width: 120%;
-    position: relative;
+    width: 70px;
+}
+.rangeMarker{
+    margin:0px 3px 0px 3px;
 }
 hr {
     margin-bottom: 7px;
@@ -439,6 +441,7 @@ button#graph-expand{
     text-align: center;
     text-decoration: none;
     display: inline-block;
+    margin: 0px 3px 0px 0px;
 }
 button#graph-shrink{
     position: relative;
