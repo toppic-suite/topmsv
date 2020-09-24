@@ -71,11 +71,12 @@ function showEnvTable(scan) {
                 className: 'btn',
                 name: 'delete'      // do not change name
             },
-            {
+            // refresh button for datatable
+/*             {
                 text: 'Refresh',
                 className: 'btn',
                 name: 'refresh'      // do not change name
-            },
+            }, */
             {
                 extend: 'selected',
                 text: 'Jump to',
@@ -89,6 +90,7 @@ function showEnvTable(scan) {
             type: "GET"
         },
         "columns": [
+            // select checkbox
             /*{
                 data: null,
                 defaultContent: '',
@@ -98,19 +100,13 @@ function showEnvTable(scan) {
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            // { "data": "mono_mass",type:'number', required: 'true'},
             { "data": "mono_mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true', readonly: 'true',"visible": true, type:"hidden"},
             {
                 "data": "mono_mz",
-                render: function (data, type, row ) {
+                render: function (data, type, row) {
                     let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(5);
                     row.mono_mz = mono_mz; // set mono_mz value
-                    /*if($('#msType').text() === 'MS2'){
-                        return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
-                    } else {
-                        return `<a href="#spectrum1" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
-                    }*/
                     return mono_mz;
                 }
                 // ,type: "readonly"
@@ -129,7 +125,7 @@ function showEnvTable(scan) {
             });
         },
         onDeleteRow: function(datatable, rowdata, success, error) {
-            console.log(rowdata);
+            // console.log(rowdata);
             //rowdata=JSON.stringify(rowdata);
             $.ajax({
                 // a tipycal url would be /{id} with type='DELETE'
@@ -155,13 +151,15 @@ function showEnvTable(scan) {
 
 function jumpTo(mono_mz) {
     if($('#msType').text() === 'MS2'){
-        relocSpet2(mono_mz);
+        graph2_g.redraw(mono_mz);
+        // relocSpet2(mono_mz);
     } else {
-        relocSpet1(mono_mz);
+        graph1_g.redraw(mono_mz);
+        // relocSpet1(mono_mz);
     }
 }
 
-function relocSpet1 (mono_mz) {
+/* function relocSpet1 (mono_mz) {
     const graphFeatures = new GraphFeatures();
     graph1_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
     //addSpectrum("spectrum1", peakList1_g, envList1_g, mono_mz+0.5,null, graphFeatures);
@@ -172,7 +170,7 @@ function relocSpet2 (mono_mz) {
     // console.log("relocSpect2 on", mono_mz+0.5);
     graph2_g.redraw(parseFloat(mono_mz+0.5), graphFeatures);
     //addSpectrum("spectrum2", peakList2_g, envList2_g, mono_mz+0.5,null, graphFeatures);
-}
+} */
 
 function preprocessSeq(seq) {
     let firstIsDot = 1;
