@@ -131,19 +131,20 @@ class GraphInit{
         GraphInit.initRenderer();
         GraphInit.initCamera();
         // rendering element
-        window.addEventListener("resize", GraphControl.resizeCamera.bind(Graph.scene));
+        window.addEventListener("resize", GraphControl.resizeCamera);
         GraphControl.resizeCamera();
     }
-    static main = () => {
+    static main = (mzmin, mzmax, scanNum) => {
         GraphInit.initScene();
-        //GraphInit.initColorSet();
         GraphInit.initGraphControl();
 
         GraphInit.createPlane();
         GraphInit.createAxis();
         GraphInit.createRedrawEvent();
         GraphInit.createSaveGraphEvent();
-       
+        
+        GraphData.drawInitGraph(mzmin, mzmax, scanNum);
+        
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
         })
