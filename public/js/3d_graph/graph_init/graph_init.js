@@ -131,7 +131,7 @@ class GraphInit{
         GraphInit.initRenderer();
         GraphInit.initCamera();
         // rendering element
-        window.addEventListener("resize", GraphControl.resizeCamera.bind(Graph.scene));
+        window.addEventListener("resize", GraphControl.resizeCamera);
         GraphControl.resizeCamera();
     }
     static main = () => {
