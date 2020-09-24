@@ -1,4 +1,4 @@
-$( document ).ready(function() {
+function initGraph(){
     let min = document.getElementById("rangeMin").value;
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
@@ -9,6 +9,7 @@ $( document ).ready(function() {
     showEnvTable(min);
     
     init2D(min);
+    init3D();
 
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
@@ -66,8 +67,9 @@ $( document ).ready(function() {
                 console.log(error);
             });
     }
-    //draw 3d graph
-    console.log(window.localStorage)
+}
+$( document ).ready(function() {
+    initGraph();
     init3D(window.localStorage);
     
 });

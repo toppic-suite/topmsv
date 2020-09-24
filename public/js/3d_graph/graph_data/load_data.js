@@ -32,16 +32,39 @@ class LoadData{
         console.log("current table number : ", tableNum);
         return tableNum;
     }
+    static getConfigData = () => {
+        return new Promise(function(resolve, reject){
+            let fullDir = Graph.projectDir;
+            let dotIndex = fullDir.lastIndexOf(".");
+            let dir = (fullDir.substr(0, dotIndex)).concat(".db");
+    
+            var xhttp3 = new XMLHttpRequest();
+            xhttp3.onreadystatechange = function (){
+                if (this.readyState == 4 && this.status == 200) {
+                    var result = JSON.parse(this.responseText);
+    
+                    if (result != undefined){
+                        resolve(result);
+                    }
+                    else{
+                        reject("max values are undefined")
+                    }
+                }
+            }
+            xhttp3.open("GET","getMax?projectDir=" + dir + "&colName=" + 'MZ',true);
+            xhttp3.send();
+        });
+    }
     static load3dData = (curViewRange) => {
         /*load data from database based on current graph range*/
         return new Promise((resolve, reject) => {
             let xhttp = new XMLHttpRequest();
             let tableNum = LoadData.calculateTableNum();
-            let fullDir = (document.getElementById("projectDir").value).split("/");
-            let fileName = (fullDir[fullDir.length -1].split("."))[0];
-            let dir = fullDir[0].concat("/");
-            dir = dir.concat(fullDir[1]);
-            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "/" + fileName + ".db" + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
+            let fullDir = Graph.projectDir;
+            let dotIndex = fullDir.lastIndexOf(".");
+            let dir = (fullDir.substr(0, dotIndex)).concat(".db");
+ 
+            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
 
             xhttp.onload = () => {
                 if (xhttp.status == 200 && xhttp.readyState == 4) {
