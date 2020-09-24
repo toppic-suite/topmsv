@@ -2,11 +2,15 @@
 //and call to initialize empty 3D graph
 
 class Graph{
-    constructor(graphEl, tableData){
-        Graph.graphEl = graphEl; 
-        Graph.tablePeakCount = tableData;
+    constructor(projectDir){
+        Graph.graphEl = document.querySelector("#graph-container"); 
+        Graph.projectDir = projectDir;
     }
     setProperties = () => {
+        /*default values at startup */
+        Graph.defaultMinMz = 550;
+        Graph.defaultMaxMz = 1000;
+        
         /*add properties to Graph class*/
         Graph.gridRange = 20;
         Graph.gridRangeVertical = 6;
@@ -32,7 +36,8 @@ class Graph{
 
         Graph.rtRange = 30;
         Graph.curRT = -1;
-
+        Graph.scanID = 1;
+        
         /*metadata and data control*/
         Graph.minPeakHeight = 0.05;
         Graph.maxPeaks = 2000;
@@ -47,15 +52,21 @@ class Graph{
         Graph.cutoff = []; //intensity cutoff point for each color in gradient
 
         Graph.currentScanColor = "#ff5797";
-        //Graph.surfaceColor = "#eee";
-        //Graph.gridColor = "#7a7a7a";
-        //Graph.surfaceColor = "#7a7a7a";
         Graph.surfaceColor = "#000030";
         Graph.gridColor = "#555555";
         Graph.featureColor = "#a8b5ff";
 
-        /*for deciding whether to plot cylinder or line*/
+        /*whether to plot cylinder or line*/
         Graph.isPerpendicular = false;
+
+        /*whether to call functions for plotting feature anno. */
+        Graph.isFeatureAnnotated = false;
+
+        /*whether to highlight current scan*/
+        Graph.isCurrentHighlighted = false;
+
+        /*whether to update values in the text box*/
+        Graph.isUpdateTextBox = true;
     }
     createGroups = () => {
         /*groups to hold different graph elements */
@@ -91,20 +102,35 @@ class Graph{
         Graph.scene.add(Graph.axisGroup);
     }
     initDataRange = () => {
-        let dataTotal = Graph.tablePeakCount[0];
-
-        Graph.dataRange.rtmax = dataTotal.RTMAX;
-        Graph.dataRange.rtmin = dataTotal.RTMIN;
-        Graph.dataRange.intmax = dataTotal.INTMAX;
-        Graph.dataRange.intmin = dataTotal.INTMIN;
-        Graph.dataRange.mzmax = dataTotal.MZMAX;
-        Graph.dataRange.mzmin = dataTotal.MZMIN;    
+        return new Promise(function(resolve, reject){
+            let promise = LoadData.getConfigData();
+    
+            promise.then(tableData => {//to make sure max values are fetched before creating graph
+                let dataTotal = tableData[0];
+    
+                Graph.dataRange.rtmax = dataTotal.RTMAX;
+                Graph.dataRange.rtmin = dataTotal.RTMIN;
+                Graph.dataRange.intmax = dataTotal.INTMAX;
+                Graph.dataRange.intmin = dataTotal.INTMIN;
+                Graph.dataRange.mzmax = dataTotal.MZMAX;
+                Graph.dataRange.mzmin = dataTotal.MZMIN;  
+                
+                Graph.tablePeakCount = tableData;
+                resolve();
+    
+            }, function(err){
+                console.log(err);
+            }) 
+        })
     }
-    main = () => {
+    main = (mzmin = 550, mzmax = 1000, scanNum = 1) => {
         this.setProperties();
         this.createGroups();
-        this.initDataRange();
 
-        GraphInit.main();
+        let promise = this.initDataRange();
+
+        promise.then(()=>{
+            GraphInit.main(mzmin, mzmax, scanNum);
+        })
     }
 }

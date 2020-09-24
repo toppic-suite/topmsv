@@ -11,6 +11,8 @@ body {
 }
 body.container{
     padding-bottom: 5px;
+    padding-right: 0px;
+    padding-left: 0px;
 }
 div.modal-header {
     padding-bottom: 10px;
@@ -25,11 +27,16 @@ div#input {
 .jumbotron {
     padding-top: 10px;
     padding-bottom: 5px;
+
 }
 #scanID {
     width: 120%;
     position: relative;
     /*left: 53%;*/
+}
+.rangeTextBox{
+    width: 120%;
+    position: relative;
 }
 hr {
     margin-bottom: 7px;
@@ -47,7 +54,20 @@ span.ms1EnvFile{
     position: relative;
     left: 50%;
 }
-
+.defaultBtn {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.defaultBtn:hover{
+    color: white;
+}
 button#modalUpload {
     position: relative;
     font-size: 100%;
@@ -273,15 +293,6 @@ button#switch {
     text-decoration: none;
     display: inline-block;
 }
-
-button.export-button {
-    background-color: #555555;
-    color: white;
-    border: none;
-    padding: 2px 15px;
-    text-align: center;
-    text-decoration: none;
-}
 button#btn-save-file-name{
     position: relative;
     /*left: 54.5%;*/
@@ -293,6 +304,14 @@ button#btn-save-file-name{
     text-align: center;
     text-decoration: none;
     display: inline-block;
+}
+button.export-button {
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
 }
 button.dt-button{
     background-color: #555555;
@@ -366,7 +385,7 @@ svg#spectrum2{
 button#minusBtn {
     position: relative;
     right: 130%;
-}*/
+}
 /*3d graph tooltip*/
 #tooltip {
     display:none;
@@ -404,13 +423,36 @@ button#minusBtn {
 }
 /*3d graph div size*/
 #graph-container{
-    min-height: 600px;
-}
-#graph3d-entire-div{
-    height: 700px;
+    min-width:100%;
+    padding:0px;
+    margin:0px;
 }
 /*default css for all buttons*/
 button#graph-expand{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#graph-shrink{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#graph-full-screen{
     position: relative;
     /*left: 54.5%;*/
     /*font-size: 100%;*/

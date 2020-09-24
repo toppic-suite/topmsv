@@ -327,72 +327,64 @@
 				<hr>
 			</div>
 			<hr>
-			<div id="graph3d-entire-div">
-				<div class="scanleveltitle row">
-					<div class="col-sm-2">
-						<div><strong>Current graph data:</strong></div>
-						<span id="graph-cursor-data"></span>
+			<div class="scanleveltitle row" id ="3d-graph-parameter">
+				<div class="col-sm-2">
+					<div><strong>Graph data:</strong></div>
+					<span id="graph-cursor-data"></span>
+				</div>
+				<div class="col-sm-3">
+					<div class="col-sm-4">
+						<strong>Retention Time:</strong>
 					</div>
+					<div class="col-sm-8" style="display:flex">
+						<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+						<span class ="rangeMarker"> - </span>
+						<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+					</div>
+				</div>
+				<div class="col-sm-3" style="display:flex">
 					<div class="col-sm-1">
-						<div><strong>Retention Time:</strong></div>
+						<strong>m/z:</strong>
+					</div>
+					<div class="col-sm-11" style="display:flex">
+						<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+						<span class ="rangeMarker"> - </span>
+						<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="col-sm-3">
+						<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+					</div>
+					<div class="col-sm-4">
+						<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+					</div>
+					<div class="col-sm-2" style="display:flex">
+						<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+						<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
 					</div>
 					<div class="col-sm-3">
-						<div class="col-sm-5">
-							<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
-						</div>
-						<div class="col-sm-2 rangeMarker">
-							<span>-</span>
-						</div>
-						<div class="col-sm-5">
-							<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
-						</div>
-					</div>
-					<div class="col-sm-1">
-						<div><strong>m/z:</strong></div>
-					</div>
-					<div class="col-sm-3">
-						<div class="col-sm-5">
-							<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
-						</div>
-						<div class="col-sm-2 rangeMarker">
-							<span>-</span>
-						</div>
-						<div class="col-sm-5">
-							<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
-						</div>
-					</div>
-					
-					<div class="col-sm-2">
-						<div class="col-sm-6">
-							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
-						</div>
-						<div class="col-sm-6">
-							<button class="btn" type="submit" id="save3dGraph">Save as Image</button>
-						</div>
-					</div>
-					
-				</div>
-				<div id ="save-as-image-form">
-					<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
-					<button class="btn" type="submit" id="btn-save-file-name">OK</button>
-				</div>
-				<div>
-					<span id="graph-metadata"></span>
-				</div>			
-				<div id="tooltip">
-					<span id="tooltiptext"></span>
-				</div>
-				<div>
-					<div class="col-md-11 col2" id="graph-container"></div>
-					<div class="col-md-1 col2">
-						<button class="btn default-btn" type="submit" id="graph-expand">Expand</button>
+						<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
 					</div>
 				</div>
-				
-				<div class="hover-label-container">
-					<span id="graph-hover-label"></span>
-				</div>
-			</div>	
+			</div>
+			<div id ="save-as-image-form">
+				<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
+				<button class="btn" type="submit" id="btn-save-file-name">OK</button>
+			</div>
+			<div>
+				<span id="graph-metadata"></span>
+			</div>			
+			<div id="tooltip">
+				<span id="tooltiptext"></span>
+			</div>
+			<div>
+				<div class="col-md-11 col2" id="graph-container"></div>
+			</div>
+			
+			<div class="hover-label-container">
+				<span id="graph-hover-label"></span>
+			</div>
 
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">

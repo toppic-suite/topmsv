@@ -58,8 +58,6 @@ class GraphControl{
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
         
-        //console.log(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish)
-
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
 
@@ -205,11 +203,12 @@ class GraphControl{
             rtmin: newrtmin, rtmax: newrtmax, rtrange: newrtrange,
         }
     }
-    static resizeCameraWhenExpanded = () => {
-        Graph.renderer.setSize(window.innerWidth * 0.8, window.innerHeight, true);
-        let aspectRatio = Graph.renderer.getSize().width / Graph.renderer.getSize().height;
+    static resizeCameraUserControl = () => {
+        let size = new THREE.Vector3();
+        Graph.renderer.getSize(size);
+        let aspectRatio = size.x / size.y;
 
-        let vs = Graph.viewSize;
+        let vs = Graph.viewSize ;
         if (aspectRatio > 1) 
         {
             // width greater than height; scale height to view size to fit content
@@ -236,7 +235,9 @@ class GraphControl{
     }
     static resizeCamera = () => {
         Graph.renderer.setSize(Graph.graphEl.clientWidth, Graph.graphEl.clientHeight, true);
-        let aspectRatio = Graph.renderer.getSize().width / Graph.renderer.getSize().height;
+        let size = new THREE.Vector3();
+        Graph.renderer.getSize(size);
+        let aspectRatio = size.x / size.y;
 
         let vs = Graph.viewSize;
         if (aspectRatio > 1) 
