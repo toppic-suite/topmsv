@@ -106,9 +106,9 @@ $( document ).ready(function() {
         window.localStorage.setItem('scanID', masslistID);
         window.localStorage.setItem('projectCode', document.getElementById('projectCode').value);
         if($('#proteoform').text() === 'N/A') {
-            window.localStorage.setItem('proteoform', '');
+            window.localStorage.setItem('sequence', '');
         } else {
-            window.localStorage.setItem('proteoform', $('#proteoform').text());
+            window.localStorage.setItem('sequence', $('#proteoform').text());
         }
         $.ajax({
             url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + masslistID,
