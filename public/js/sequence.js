@@ -1,6 +1,6 @@
 function inspect(scanID,scanNum) {
     $.ajax({
-        url:"peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID,
+        url:"peaklist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum,
         type:"get",
         dataType: 'json',
         success: function (res) {
@@ -14,8 +14,9 @@ function inspect(scanID,scanNum) {
             window.localStorage.setItem('scan', scanNum);
             window.localStorage.setItem('scanID', scanID);
             window.localStorage.setItem('projectCode', document.getElementById('projectCode').value);
+            
             $.ajax({
-                url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID,
+                url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum,
                 type: "get",
                 dataType: 'json',
                 success: function (res) {
@@ -28,19 +29,27 @@ function inspect(scanID,scanNum) {
                     window.localStorage.setItem('ionType', 'Y,B');
                     //console.log(res);
                     $.ajax({
-                        url:"seqQuery?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById('projectCode').value,
+                        url:"seqQuery?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum + "&projectCode=" + document.getElementById('projectCode').value,
                         type: "get",
                         success: function (res) {
                             //console.log(res);
                             if(res!== '0') {
                                 let sequence = preprocessSeq(res);
-                                $('#proteoform').text(sequence);
-                                window.localStorage.setItem('proteoform', sequence);
+                                window.localStorage.setItem('sequence', sequence);
                             } else {
-                                $('#proteoform').text('N/A');
-                                window.localStorage.setItem('proteoform', '');
+                                window.localStorage.setItem('sequence', '');
                             }
-                            window.open('/resources/topview/inspect/spectrum.html', '_self');
+                            axios.get('/precMZ',{
+                                params:{
+                                    projectDir: document.getElementById("projectDir").value,
+                                    scanID: scanNum
+                                }
+                            }).then((response)=>{
+                                window.localStorage.setItem('precursorMass', parseFloat(response.data));
+                                window.open('/resources/topview/inspect/spectrum.html', '_self');
+                            }).catch((error) => {
+                                console.log(error);
+                            })
                         }
                     })
                 }
