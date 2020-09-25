@@ -12,7 +12,7 @@ function getPeakListByMZRange(dir, min, max, scan) {
     let resultDB = new BetterDB(dbDir);
     let stmt = resultDB.prepare('SELECT PEAKS.MZ AS mz, PEAKS.INTENSITY AS intensity ' +
         'FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID = SPECTRA.ID ' +
-        'WHERE SPECTRA.SCAN = ? AND PEAKS.mz <= ? AND PEAKS.mz >= ?;');
+        'WHERE SPECTRA.ID = ? AND PEAKS.mz <= ? AND PEAKS.mz >= ?;');
     let peakList = stmt.all(scan, max, min);
     resultDB.close();
     return peakList;

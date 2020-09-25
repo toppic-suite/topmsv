@@ -10,7 +10,7 @@ var envlist = router.get('/envlist', function(req, res) {
     let projectDir = req.query.projectDir;
     let scanid = req.query.scanID;
     let projectCode = req.query.projectCode;
-    //console.log(scanid);
+    // console.log(scanid);
     getProjectSummary(projectCode, function (err, row) {
 
     })
@@ -22,6 +22,7 @@ var envlist = router.get('/envlist', function(req, res) {
         // console.log('Connected to the result database.');
     });
     ifEnvExists(projectCode,(err, row)=> {
+        // console.log("row:", row);
         if(row.EnvelopeStatus === 1) {
             showData(resultDb,scanid,res);
         }else {
