@@ -20,7 +20,7 @@ $( document ).ready(function() {
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
-        console.log("scanRef:",scanRef);
+        // console.log("scanRef:",scanRef);
         init2D(scanRef);
         localStorage.clear();
     }
