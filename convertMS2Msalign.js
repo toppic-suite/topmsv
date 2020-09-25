@@ -1,6 +1,6 @@
 var fs = require('fs');
 const Database = require('better-sqlite3');
-const molecularFormulae = require('./distribution_calc/molecularformulae');
+const molecularFormulae = require('./distribution_calc/molecular_formulae');
 const calcDistrubution = new molecularFormulae();
 var myArgs = process.argv.slice(2);
 const betterDB = new Database(myArgs[0]);
