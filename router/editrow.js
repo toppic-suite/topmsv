@@ -4,7 +4,7 @@ const getPeakListByScanID = require("../library/getPeakListByScanID");
 const editEnv = require("../library/editEnv");
 const addEnvPeak = require("../library/addEnvPeak");
 const getEnv = require("../library/getEnv");
-const molecularFormulae = require('../distribution_calc/molecularformulae');
+const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 
 var editrow = router.get("/editrow", function (req, res) {
