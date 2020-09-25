@@ -7,11 +7,11 @@ class Graph{
         Graph.projectDir = projectDir;
     }
     setProperties = () => {
-        /*default values at startup */
+        /*default m/z range when scan changes*/
         Graph.defaultMinMz = 550;
         Graph.defaultMaxMz = 1000;
         
-        /*add properties to Graph class*/
+        /*graph and grid size*/
         Graph.gridRange = 20;
         Graph.gridRangeVertical = 6;
         Graph.viewSize = 25; // in world units; large enough to fit the graph and labels at reasonable angles
@@ -21,11 +21,10 @@ class Graph{
         Graph.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
         Graph.camera = new THREE.OrthographicCamera( 5000, 5000, 5000, 5000, 0, 5000 );
         Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
-
-        Graph.rulerTickes = 5;
+        
+        /*rounding for grpah axis labels */
         Graph.roundMz = 3;
         Graph.roundRt = 3;
-        Graph.roundInte = 3;
 
         /*on scaling and repositioning objects*/
         Graph.rangeTransform = new THREE.Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
@@ -105,17 +104,17 @@ class Graph{
         return new Promise(function(resolve, reject){
             let promise = LoadData.getConfigData();
     
-            promise.then(tableData => {//to make sure max values are fetched before creating graph
-                let dataTotal = tableData[0];
-    
-                Graph.dataRange.rtmax = dataTotal.RTMAX;
-                Graph.dataRange.rtmin = dataTotal.RTMIN;
-                Graph.dataRange.intmax = dataTotal.INTMAX;
-                Graph.dataRange.intmin = dataTotal.INTMIN;
-                Graph.dataRange.mzmax = dataTotal.MZMAX;
-                Graph.dataRange.mzmin = dataTotal.MZMIN;  
+            promise.then(configData => {//configData[0] contains the metadata about the entire mzML file (max m/z, max retention time, peakCount...)
+
+                Graph.dataRange.rtmax = configData[0].RTMAX;
+                Graph.dataRange.rtmin = configData[0].RTMIN;
+                Graph.dataRange.intmax = configData[0].INTMAX;
+                Graph.dataRange.intmin = configData[0].INTMIN;
+                Graph.dataRange.mzmax = configData[0].MZMAX;
+                Graph.dataRange.mzmin = configData[0].MZMIN;  
                 
-                Graph.tablePeakCount = tableData;
+                Graph.configData = configData;
+                
                 resolve();
     
             }, function(err){
@@ -123,7 +122,7 @@ class Graph{
             }) 
         })
     }
-    main = (mzmin = 550, mzmax = 1000, scanNum = 1) => {
+    main = (mzmin, mzmax, scanNum) => {
         this.setProperties();
         this.createGroups();
 
