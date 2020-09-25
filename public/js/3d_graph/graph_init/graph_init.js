@@ -143,6 +143,8 @@ class GraphInit{
         GraphInit.createRedrawEvent();
         GraphInit.createSaveGraphEvent();
         
+        UploadMzrt.main();
+        
         GraphData.drawInitGraph(mzmin, mzmax, scanNum);
         
         Graph.renderer.setAnimationLoop(function() {
