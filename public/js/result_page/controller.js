@@ -71,6 +71,4 @@ function initGraph(){
 }
 $( document ).ready(function() {
     initGraph();
-    init3D(window.localStorage);
-    
 });
