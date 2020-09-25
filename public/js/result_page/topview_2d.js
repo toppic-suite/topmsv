@@ -12,7 +12,7 @@ class Topview2D {
     }
 
     getRelatedScan2 (scanID) {
-        console.log("scanID:",scanID);
+        // console.log("scanID:",scanID);
         return axios.get('/relatedScan2', {
             params: {
                 projectDir: document.getElementById("projectDir").value,
@@ -62,7 +62,7 @@ class Topview2D {
         })
     }
 
-    loadPeakList1(scanID) {
+/*     loadPeakList1(scanID) {
         if (scanID !== '0') {
             return axios.get('/peaklist', {
                 params: {
@@ -86,9 +86,9 @@ class Topview2D {
         }else{
             alert("NULL");
         }
-    }
+    } */
 
-    getRT(scanNum) {
+    getRT(scanNum, rtInteGraph) {
         axios.get('/getRT', {
             params: {
                 projectDir: document.getElementById("projectDir").value,
@@ -96,7 +96,8 @@ class Topview2D {
             }
         }).then(function(response){
             let rt = parseFloat(response.data);
-            moveLine(rt/60);
+            // console.log(rtInteGraph);
+            rtInteGraph.moveLine(rt/60);
             document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
         }).catch(function(error) {
             console.log(error);
@@ -112,7 +113,7 @@ class Topview2D {
         });
     }
 
-    loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
+/*     loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
         if(scanID !== '0') {
             const graphFeatures = new GraphFeatures();
             // show envelope table for MS2
@@ -139,7 +140,7 @@ class Topview2D {
         }else{
             alert("NULL");
         }
-    }
+    } */
 
     getInteSumList() {
         return axios.get('/getInteSumList', {
