@@ -8,6 +8,7 @@ $( document ).ready(function() {
         if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
             //console.log("Yes");
             init2D(parseInt(requestID));
+            update3D(parseInt(requestID));
             showEnvTable(parseInt(requestID));
             $("#scanID").val("");
         }else {
@@ -32,6 +33,7 @@ $( document ).ready(function() {
                 .then((response) => {
                     response = response.data;
                     init2D(response);
+                    update3D(response);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -55,6 +57,7 @@ $( document ).ready(function() {
                 .then((response) => {
                     response = response.data;
                     init2D(response);
+                    update3D(response);
                 })
                 .catch((error) => {
                     console.log(error);
