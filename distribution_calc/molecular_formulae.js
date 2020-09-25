@@ -1,4 +1,3 @@
-const getIsotopicMassOfAtom = require('./isotopes');
 /**
  * Code to calculate distribution based on molecular formula
  */
@@ -53,8 +52,7 @@ class MolecularFormulae{
 		}
 		totDistributionList = this.getMZwithHighInte(totDistributionList,charge,massError,modifiedPeakList);
 		let peakDataProcessed  = this.getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList,modifiedPeakList);
-		return peakDataProcessed[0];
-		// return totDistributionList;
+		return peakDataProcessed;
 	}
 	/**
 	 * Logic to calculate distribution 
@@ -480,4 +478,3 @@ class MolecularFormulae{
 	}
 
 }
-module.exports = MolecularFormulae;

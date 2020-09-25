@@ -1,4 +1,6 @@
 /**
+ * @function getIsotopicMassOfAtom
+ * @description 
  * Code to get absolute mass and intensity values of atoms
  */
 getIsotopicMassOfAtom = function(atom){
@@ -113,5 +115,3 @@ getSulfurRef = function(isotope){
 	l_asulfurIsotopes.push(S36);
 	return l_asulfurIsotopes;
 }
-
-module.exports = getIsotopicMassOfAtom;

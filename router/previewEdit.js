@@ -5,7 +5,7 @@ const getPeakListByMZRange = require("../library/getPeakListByMZRange");
 const getEnvPeakListSync = require("../library/getEnvPeakListSync");
 const getEnvInfoSync = require("../library/getEnvInfoSync");
 const getEnvIDListByMZRange = require("../library/getEnvIDListByMZRange");
-const molecularFormulae = require('../distribution_calc/molecularformulae');
+const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 
 var previewEdit = router.get("/previewEdit", function (req, res) {
