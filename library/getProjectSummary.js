@@ -18,6 +18,7 @@ function getProjectSummary(id, callback) {
                     ProjectDir AS projectDir,
                     FileName AS fileName,
                     EnvelopeStatus AS envelopeStatus,
+					FeatureStatus AS featureStatus,
                     SequenceStatus AS sequenceStatus,
                     MS1_envelope_file AS ms1_envelope_file,
                     uid AS uid,

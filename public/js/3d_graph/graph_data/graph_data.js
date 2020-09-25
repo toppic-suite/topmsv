@@ -144,13 +144,11 @@ class GraphData{
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
             return 0;
         }).then(result => {
-            if (Graph.isFeatureAnnotated){
-                let promise = GraphFeature.drawFeature(Graph.viewRange);
-                promise.then(()=>{
-                    GraphRender.renderImmediate();
-                    return 0;
-                })
-            }
+            let promise = GraphFeature.drawFeature(Graph.viewRange);
+            promise.then(()=>{
+                GraphRender.renderImmediate();
+                return 0;
+            })  
         }).then(result => {
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
