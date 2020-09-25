@@ -7,8 +7,8 @@ class LoadData{
         if the ratio is small (1:100), the detail level is high, and the peaks in that range are more*/
         let tableNum = -1;
       
-        let totalMzRange = Graph.tablePeakCount[0].MZMAX- Graph.tablePeakCount[0].MZMIN; 
-        let totalRtRange = Graph.tablePeakCount[0].RTMAX - Graph.tablePeakCount[0].RTMIN;
+        let totalMzRange = Graph.configData[0].MZMAX- Graph.configData[0].MZMIN; 
+        let totalRtRange = Graph.configData[0].RTMAX - Graph.configData[0].RTMIN;
     
         let xRatio = (Graph.viewRange.mzmax - Graph.viewRange.mzmin) / totalMzRange;
         let yRatio = (Graph.viewRange.rtmax - Graph.viewRange.rtmin) / totalRtRange;
@@ -18,10 +18,10 @@ class LoadData{
         let diff = Number.MAX_VALUE;
         
         //find which table has the closet number of peaks
-        for (let i = 0; i < Graph.tablePeakCount.length; i++){
+        for (let i = 0; i < Graph.configData.length; i++){
             
-            if (Math.abs(Graph.tablePeakCount[i].COUNT - peakCnt) < diff){
-                diff = Math.abs(Graph.tablePeakCount[i].COUNT - peakCnt);
+            if (Math.abs(Graph.configData[i].COUNT - peakCnt) < diff){
+                diff = Math.abs(Graph.configData[i].COUNT - peakCnt);
                 tableNum = i;
             }
         }
@@ -31,6 +31,26 @@ class LoadData{
         }
         console.log("current table number : ", tableNum);
         return tableNum;
+    }
+    static getRT = (scanNum) => {
+        return new Promise(function(resolve, reject){
+            let fullDir = Graph.projectDir;
+            let dotIndex = fullDir.lastIndexOf(".");
+            let dir = (fullDir.substr(0, dotIndex)).concat(".db");
+
+            let xhttpRT = new XMLHttpRequest();
+            xhttpRT.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var rt = parseFloat(this.responseText);
+                    
+                    if (rt != undefined){
+                        resolve(rt);
+                    }
+                }
+            };
+            xhttpRT.open("GET", "getRT?projectDir=" + dir + "&scanID=" + scanNum, true);
+            xhttpRT.send();
+        })
     }
     static getConfigData = () => {
         return new Promise(function(resolve, reject){

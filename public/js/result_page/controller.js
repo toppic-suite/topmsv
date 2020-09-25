@@ -9,7 +9,7 @@ function initGraph(){
     showEnvTable(min);
     
     init2D(min);
-    init3D();
+    init3D(min);
 
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
