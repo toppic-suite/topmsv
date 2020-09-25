@@ -427,6 +427,8 @@ app.use('/', require("./router/projectview"));
 app.use('/', require("./router/getMax"));
 app.use('/', require("./router/load3dDataByParaRange"));
 app.use('/', require("./router/loadMzrtData"));
+app.use('/', require("./router/mzrt"));
+app.use('/', require("./router/deleteMzrt"));
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']
