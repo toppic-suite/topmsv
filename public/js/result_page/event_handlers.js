@@ -5,7 +5,6 @@ $( document ).ready(function() {
         let requestID = document.getElementById("scanID").value;
         let min = document.getElementById("rangeMin").value;
         let max = document.getElementById("rangeMax").value;
-        // console.log(parseInt(requestID));
         if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
             //console.log("Yes");
             init2D(parseInt(requestID));
@@ -15,7 +14,6 @@ $( document ).ready(function() {
             //console.log("No");
             alert("Please type in one scanID within range!")
         }
-        // getScanLevelTwoList(document.getElementById("scanID").value);
     },false)
 
     let prev1 = document.getElementById('prev1');

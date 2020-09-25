@@ -14,7 +14,8 @@ function initGraph(){
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
         .then((response) => {
-            addFigure(response.data);
+            rtInteGraph = new InteRtGraph("rt-sum", response.data, init2D);
+            rtInteGraph.drawGraph();
         })
         .catch((error) => {
             console.log(error);
