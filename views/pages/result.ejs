@@ -54,6 +54,7 @@
 	<script src="js/result_page/env_table.js"></script>
 	<script src="js/result_page/event_handlers.js"></script>
 	<script src="js/result_page/init2D.js"></script>
+	<script src="js/result_page/init3D.js"></script>
 	<script src="js/result_page/preview.js"></script>
 	<script src="js/result_page/upload.js"></script>
 
@@ -98,6 +99,30 @@
 								</td>
 							</tr>
 						</table>
+						<hr style="margin-bottom: 7px; margin-top: 10px">
+						<div>
+							<h4>mzrt file</h4>
+							<p>
+								If you want to delete current existing mzrt file, please click the button below.
+							</p>
+							<button class="btn defaultBtn" id="deleteMzrt">Delete existing mzrt file</button>
+							<p>If you want to add annotated feature information to this project, please upload a csv file for it below.</p>
+							<label for="mzrtFile">New mzrt file</label>
+							<input class="form-control-file" type="file" id="mzrtFile">
+							<br>
+							<table>
+								<tr>
+									<td><button class="btn defaultBtn" id="mzrtUpload">Upload</button></td>
+									<td width="40pt"></td>
+									<td style="width: 300pt">
+										<div id="mzrtProgress" class="progress">
+											<div id="mzrtProgressbar" class="progress-bar progress-bar-striped" role="progressbar"
+												 style="width: 0%">0%</div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
 						<hr style="margin-bottom: 7px; margin-top: 10px">
 						<div>
 							<h4>Sequence file</h4>
@@ -230,7 +255,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="jumbotron">
+		<div class="jumbotron" id ="center-div">
 			<div>
 				<span class="projectsummary">
 					<div class="row">
@@ -315,6 +340,7 @@
 					<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
 					<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
 					<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
+					<input type="hidden" id="featureStatus" value=<%= summary.featureStatus %>>
 					<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
 					<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
 					<input type="hidden" id="fileName" value="<%= fileName %>">
@@ -326,72 +352,64 @@
 				<hr>
 			</div>
 			<hr>
-			<div id="graph3d-entire-div">
-				<div class="scanleveltitle row">
-					<div class="col-sm-2">
-						<div><strong>Current graph data:</strong></div>
-						<span id="graph-cursor-data"></span>
+			<div class="scanleveltitle row" id ="3d-graph-parameter">
+				<div class="col-sm-2">
+					<div><strong>Graph data:</strong></div>
+					<span id="graph-cursor-data"></span>
+				</div>
+				<div class="col-sm-3">
+					<div class="col-sm-4">
+						<strong>Retention Time:</strong>
 					</div>
+					<div class="col-sm-8" style="display:flex">
+						<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+						<span class ="rangeMarker"> - </span>
+						<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+					</div>
+				</div>
+				<div class="col-sm-3" style="display:flex">
 					<div class="col-sm-1">
-						<div><strong>Retention Time:</strong></div>
+						<strong>m/z:</strong>
+					</div>
+					<div class="col-sm-11" style="display:flex">
+						<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+						<span class ="rangeMarker"> - </span>
+						<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="col-sm-3">
+						<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+					</div>
+					<div class="col-sm-4">
+						<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+					</div>
+					<div class="col-sm-2" style="display:flex">
+						<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+						<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
 					</div>
 					<div class="col-sm-3">
-						<div class="col-sm-5">
-							<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
-						</div>
-						<div class="col-sm-2 rangeMarker">
-							<span>-</span>
-						</div>
-						<div class="col-sm-5">
-							<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
-						</div>
-					</div>
-					<div class="col-sm-1">
-						<div><strong>m/z:</strong></div>
-					</div>
-					<div class="col-sm-3">
-						<div class="col-sm-5">
-							<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
-						</div>
-						<div class="col-sm-2 rangeMarker">
-							<span>-</span>
-						</div>
-						<div class="col-sm-5">
-							<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
-						</div>
-					</div>
-					
-					<div class="col-sm-2">
-						<div class="col-sm-6">
-							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
-						</div>
-						<div class="col-sm-6">
-							<button class="btn" type="submit" id="save3dGraph">Save as Image</button>
-						</div>
-					</div>
-					
-				</div>
-				<div id ="save-as-image-form">
-					<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
-					<button class="btn" type="submit" id="btn-save-file-name">OK</button>
-				</div>
-				<div>
-					<span id="graph-metadata"></span>
-				</div>			
-				<div id="tooltip">
-					<span id="tooltiptext"></span>
-				</div>
-				<div>
-					<div class="col-md-11 col2" id="graph-container"></div>
-					<div class="col-md-1 col2">
-						<button class="btn default-btn" type="submit" id="graph-expand">Expand</button>
+						<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
 					</div>
 				</div>
-				
-				<div class="hover-label-container">
-					<span id="graph-hover-label"></span>
-				</div>
-			</div>	
+			</div>
+			<div id ="save-as-image-form">
+				<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
+				<button class="btn" type="submit" id="btn-save-file-name">OK</button>
+			</div>
+			<div>
+				<span id="graph-metadata"></span>
+			</div>			
+			<div id="tooltip">
+				<span id="tooltiptext"></span>
+			</div>
+			<div>
+				<div class="col-md-11 col2" id="graph-container"></div>
+			</div>
+			
+			<div class="hover-label-container">
+				<span id="graph-hover-label"></span>
+			</div>
 
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">
@@ -539,6 +557,7 @@
 	<script src="js/3d_graph/graph_data/load_data.js"></script>
 	<script src="js/3d_graph/graph_data/graph_data.js"></script>
 	<script src="js/3d_graph/graph_data/graph_feature.js"></script>
+	<script src="js/3d_graph/graph_data/upload_mzrt.js"></script>
 
 	<!--library related to image download-->
 	<script src="js/download/FileSaver.js"></script>

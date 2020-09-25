@@ -237,12 +237,12 @@ class SpectrumParameters {
     this.winMaxInte = winMaxInte;
     this.yScale = this.specHeight/this.winMaxInte;
   }
-
-  /**
+/**
    * @function initParameters
    * @description Initializing the spectrum Parameters with the data from the peak list and envilopelist.
    * initializing xScale, yScale.
    */
+
   initParameters = function(peakList) {
     let [dataMinMz, dataMaxMz, dataMaxInte] = this.compDataRanges(peakList);
     this.dataMinMz = dataMinMz;
@@ -251,7 +251,6 @@ class SpectrumParameters {
     // add 1/4th of max intensity to keep the max point at 3/4 of the y axis*
     this.updateScale(this.dataMinMz, this.dataMaxMz, this.dataMaxInte * this.inteMargin);
   }
-
   /**
    * @function drag
    * @description 
@@ -356,7 +355,6 @@ class SpectrumParameters {
     this.specHeight = this.svgHeight - this.padding.head - this.padding.bottom;
     this.updateScale(this.winMinMz, this.winMaxMz, this.winMaxInte);
   }
-
   /**
    * @function updataMzRange
    * @description 

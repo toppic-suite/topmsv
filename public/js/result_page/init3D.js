@@ -1,37 +1,78 @@
-function getMax(){
+function getMs2Scan(projectDir, scanID){
     return new Promise(function(resolve, reject){
-        let fullDir = (document.getElementById("projectDir").value).split("/");
-        let fileName = (fullDir[fullDir.length -1].split("."))[0];
-        let dir = fullDir[0].concat("/");
-        dir = dir.concat(fullDir[1]);
+        let xhttp = new XMLHttpRequest();
+        let fullDir = projectDir;
+        let dotIndex = fullDir.lastIndexOf(".");
+        let dir = (fullDir.substr(0, dotIndex)).concat(".db");
+        xhttp.open("GET","relatedScan1?projectDir=" + dir + "&scanID=" + scanID.toString(), true);
 
-        var xhttp3 = new XMLHttpRequest();
-        xhttp3.onreadystatechange = function (){
-            if (this.readyState == 4 && this.status == 200) {
-                var result = JSON.parse(this.responseText);
-
-                if (result != undefined){
-                    resolve(result);
-                }
-                else{
-                    reject("max values are undefined")
-                }
-            }
+        xhttp.onload = () => {
+            if (xhttp.status == 200 && xhttp.readyState == 4) {
+                let ms2Scan = JSON.parse(xhttp.response);
+                resolve(ms2Scan);
+            }     
         }
-        xhttp3.open("GET","getMax?projectDir=" + dir + "/" + fileName + ".db" + "&colName=" + 'MZ',true);
-        xhttp3.send();
-    });
+        xhttp.send();
+    })
 }
-function init3dGraph(){
-    let promise = getMax();
+function getPrecursorMz(ms2Scan, projectDir){
+    return new Promise(function(resolve, reject){
+        let xhttp = new XMLHttpRequest();
+        let fullDir = projectDir;
+        let dotIndex = fullDir.lastIndexOf(".");
+        let dir = (fullDir.substr(0, dotIndex)).concat(".db");
+        xhttp.open("GET","precMZ?projectDir=" + dir + "&scanID=" + ms2Scan, true);
+
+        xhttp.onload = () => {
+            if (xhttp.status == 200 && xhttp.readyState == 4) {
+                let precMz = JSON.parse(xhttp.response);
+                resolve(precMz);
+            }     
+        }
+        xhttp.send();
+    })
+}
+function calcInitRange(precMz){
+    let mzRange = {};
+    let specPara = new SpectrumParameters();
+    if (parseFloat(precMz) > 0){//if has ms2 scan, calculate m/z range}
+        specPara.updateMzRange(precMz);
+        mzRange["mzmin"] = specPara.winMinMz;
+        mzRange["mzmax"] = specPara.winMaxMz;
+    }
+    else{
+        specPara.initParameters(peakList1_g);
+        mzRange["mzmin"] = specPara.winMinMz;
+        mzRange["mzmax"] = specPara.winMaxMz;
+    }
+    return mzRange;
+}
+function update3D(scanID){
+    let projectDir = document.getElementById("projectDir").value;
+    let promise = getMs2Scan(projectDir, scanID);
     
-    promise.then(function(tableData){//to make sure max values are fetched before creating graph
-        Graph.tablePeakCount = tableData;
+    promise.then((ms2Scan) => {
+        return getPrecursorMz(ms2Scan, projectDir);
+    }).then((precMz)=>{
+        let mzRange = calcInitRange(precMz);
+        GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+function init3D(scanID){
+    let projectDir = document.getElementById("projectDir").value;
+    let dir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    let graph = new Graph(dir);
 
-        let graph3D = new Graph(document.querySelector("#graph-container"), tableData);
-        graph3D.main();
+    let promise = getMs2Scan(projectDir, scanID);
 
-    }, function(err){
+    promise.then((ms2Scan) => {
+        return getPrecursorMz(ms2Scan, projectDir);
+    }).then((precMz)=>{
+        let mzRange = calcInitRange(precMz);
+        graph.main(mzRange.mzmin, mzRange.mzmax, scanID);
+    }).catch((err) => {
         console.log(err);
     })
 }

@@ -7,9 +7,14 @@ var precMZ = router.get('/precMZ', function (req, res) {
     var projectDir = req.query.projectDir;
     var scanID = req.query.scanID;
     getPrecMZ(projectDir, scanID, function (err, row) {
-        let precMZ = row.precMZ.toString();
-        res.write(precMZ);
-        res.end();
+        if (row !== undefined){
+            let precMZ = row.precMZ.toString();
+            res.write(precMZ);
+            res.end();
+        }else {
+            res.write("-1");
+            res.end();
+        }
     })
 });
 
