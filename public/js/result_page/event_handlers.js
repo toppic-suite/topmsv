@@ -122,6 +122,7 @@ $( document ).ready(function() {
                 massAndIntensityList = massAndIntensityList.slice(0, -1);
                 window.localStorage.setItem('massAndIntensityList', massAndIntensityList);
                 window.localStorage.setItem('ionType', 'Y,B');
+                window.localStorage.setItem('precursorMass', $('#prec_mz').text());
                 window.open('/resources/topview/inspect/spectrum.html', '_blank');
                 //console.log(res);
             }
