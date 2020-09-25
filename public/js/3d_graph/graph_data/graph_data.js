@@ -110,7 +110,7 @@ class GraphData{
     static drawInitGraph = (minmz, maxmz, curRT) => {
         GraphData.setInitViewRange(minmz, maxmz, curRT);
         GraphData.draw(curRT);
-        if (Graph.updateTextBox){
+        if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
         }
     }
