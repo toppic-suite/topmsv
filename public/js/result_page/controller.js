@@ -23,9 +23,8 @@ function initGraph(){
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
-        // console.log(scanRef);
-        $('#scanID').val(scanRef);
-        $('#request').click();   
+        // console.log("scanRef:",scanRef);
+        init2D(scanRef);
         localStorage.clear();
     }
 

@@ -109,9 +109,9 @@ $( document ).ready(function() {
         window.localStorage.setItem('scanID', masslistID);
         window.localStorage.setItem('projectCode', document.getElementById('projectCode').value);
         if($('#proteoform').text() === 'N/A') {
-            window.localStorage.setItem('proteoform', '');
+            window.localStorage.setItem('sequence', '');
         } else {
-            window.localStorage.setItem('proteoform', $('#proteoform').text());
+            window.localStorage.setItem('sequence', $('#proteoform').text());
         }
         $.ajax({
             url:"envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + masslistID,
@@ -125,6 +125,7 @@ $( document ).ready(function() {
                 massAndIntensityList = massAndIntensityList.slice(0, -1);
                 window.localStorage.setItem('massAndIntensityList', massAndIntensityList);
                 window.localStorage.setItem('ionType', 'Y,B');
+                window.localStorage.setItem('precursorMass', $('#prec_mz').text());
                 window.open('/resources/topview/inspect/spectrum.html', '_blank');
                 //console.log(res);
             }

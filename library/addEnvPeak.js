@@ -1,6 +1,6 @@
 const getPeakListByScanID = require("./getPeakListByScanID");
 const getEnvPeakMax = require("./getEnvPeakMax");
-const molecularFormulae = require('../distribution_calc/molecularformulae');
+const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 const BetterDB = require('better-sqlite3');
 
