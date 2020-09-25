@@ -10,7 +10,7 @@ var getEnvMax = require("../library/getEnvMax");
 var addEnv = require("../library/addEnv");
 var addEnvPeak = require("../library/addEnvPeak");
 var getEnv = require("../library/getEnv");
-const molecularFormulae = require('../distribution_calc/molecularformulae');
+const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 
 var addrow = router.get('/addrow', function (req,res) {

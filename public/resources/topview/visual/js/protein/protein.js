@@ -1,22 +1,35 @@
-/*	Build Title,Description,URL and get best prsm for each proteoform */
+/**
+ * Build Title,Description,URL and get best prsm for each proteoform 
+ * @param {String} folderpath - Provides path to the data folder
+ */
 function protein(folderpath){
-	document.title = "Proteoforms for protein " + prsm_data.protein.sequence_name + " "+ prsm_data.protein.sequence_description;
-	document.getElementById('sequence_description').innerHTML = prsm_data.protein.compatible_proteoform_number+" proteoforms for protein "
-																+ prsm_data.protein.sequence_name + " "+ prsm_data.protein.sequence_description; 
-	if(Array.isArray(prsm_data.protein.compatible_proteoform))
-	{
+	// Generate title for the webpage from the data
+	document.title = "Proteoforms for protein " + prsm_data.protein.sequence_name 
+    + " "+ prsm_data.protein.sequence_description;
+	// Generate description of the protein from the data
+  document.getElementById('sequence_description').innerHTML 
+    = prsm_data.protein.compatible_proteoform_number+" proteoforms for protein "
+    + prsm_data.protein.sequence_name + " "+ prsm_data.protein.sequence_description; 
+	// Check if protein has multiple proteoforms															
+	if(Array.isArray(prsm_data.protein.compatible_proteoform)) {
 		prsm_data.protein.compatible_proteoform.forEach(function(compatible_proteoform,index){
 			proteoformToHtml(compatible_proteoform,index,folderpath);
 		})
 	}
-	else
-	{
+	else {
 		proteoformToHtml(prsm_data.protein.compatible_proteoform,0,folderpath);
 	}
 }
-/*	Get best prsm and build HTML tags */
-function proteoformToHtml(compatible_proteoform,index,folderpath)
-{
+/**
+ * This function builds a header for a proteoform, gets information of best prsm.
+ * Forms SVG visualization of the best prsm.
+ * @param {object} compatible_proteoform - Contains information of a single proteoform 
+ * @param {Int} index - Index of proteoform
+ * @param {String} folderpath - Provides path to data files
+ */
+function proteoformToHtml(compatible_proteoform,index,folderpath) {
+	// Get the div element with class name proteoformcontainer
+	// All the details of a each proteoform is under the proteoformcontainer div
 	var div_container = document.getElementsByClassName("proteoformcontainer")[0];
 	var div = document.createElement('div');
 	let id = "p"+ compatible_proteoform.proteoform_id;
@@ -25,14 +38,16 @@ function proteoformToHtml(compatible_proteoform,index,folderpath)
 	let p = document.createElement("p");
 	let e_value;
 	let BestPrSM ;
-	if(compatible_proteoform.prsm.length > 0)
-	{
+	if(compatible_proteoform.prsm.length > 0) {
+		// Forms header for a proteoform
 		h2.innerHTML = "Proteoform #" + compatible_proteoform.proteoform_id + " Feature intensity: "
-						+ compatible_proteoform.prsm[0].ms.ms_header.precursor_inte;
+						+ compatible_proteoform.prsm[0].ms.ms_header.feature_inte;
 		let precursor_mass;
 		let prsm_id ;
+		// Gets Best prsm with low e value
 		[e_value,precursor_mass,prsm_id] = getBestPrsm(compatible_proteoform.prsm);
-		p = Build_BestPrSM(e_value,precursor_mass,prsm_id,compatible_proteoform.proteoform_id, compatible_proteoform.prsm.length,folderpath);
+		p = Build_BestPrSM(e_value,precursor_mass,prsm_id,compatible_proteoform.proteoform_id, 
+      compatible_proteoform.prsm.length,folderpath);
 		for(let i = 0; i< compatible_proteoform.prsm.length ; i++)
 		{
 			if(prsm_id == compatible_proteoform.prsm[i].prsm_id)
@@ -42,10 +57,10 @@ function proteoformToHtml(compatible_proteoform,index,folderpath)
 			}
 		}
 	}
-	else
-	{
+	else {
+		// Forms header for a proteoform
 		h2.innerHTML = "Proteoform #" + compatible_proteoform.proteoform_id + " Feature intensity: "
-										+ compatible_proteoform.prsm.ms.ms_header.precursor_inte;
+										+ compatible_proteoform.prsm.ms.ms_header.feature_inte;
 		p.setAttribute("style","font-size:16px;");
 		let text1 = document.createElement("text");
 		text1.innerHTML = "There is only ";
@@ -65,36 +80,23 @@ function proteoformToHtml(compatible_proteoform,index,folderpath)
 	div_container.appendChild(h2);
 	div_container.appendChild(p);
 	
-	let Svg_id = "svgContainer" + index;
+	let containerId = "svg_container" + index;
 	let svgContainer = document.createElement("div");
-	svgContainer.setAttribute("id",Svg_id);
-	svgContainer.setAttribute("class","svgContainer");
+	svgContainer.setAttribute("id", containerId);
+	svgContainer.setAttribute("class","svg_container");
 	div_container.appendChild(svgContainer);
-	id = "l_svg"+ index;
-	l_svgContainer = d3.select("#"+Svg_id).append("svg")
-									.attr("id",id);
-	let para  = new parameters();
-	[para,id] = buildSvg(para,BestPrSM,id);
-	/*	Get the amount of skipped acid and write the amount 
-	 * 	of skipped acid at the start and end of the sequence 
-	 */
-	skippedAcidNotification(para,BestPrSM,id) ;
-	if(para.show_num)
-	{
-		/*Get the numerical count at the start enad end of 
-		 * each row of sequence */
-		getNumValues(para,BestPrSM,id);
-	}
-	/*	Determine the start and end position of the sequence */
-	drawAnnoOfStartEndPosition(para,BestPrSM,id) ;
-	/*	Get the position of the fixed ptms and color them to red */
-	addColorToFixedPtms(para,BestPrSM,id);
-	/*	Color the background of occurence of mass shift */
-	massShiftBackgroundColor(para,BestPrSM,id);
+	let svgId = "prsm_svg"+ index;
+  d3.select("#"+containerId).append("svg")
+    .attr("id",svgId);
+  //console.log(svgId, BestPrSM);
+  let graph = new PrsmGraph(svgId, BestPrSM);
+  graph.redraw();
 }
-/*	Get "precursor mass","prsm Id" and least "e value" for each proteoform  */
-function getBestPrsm(prsm)
-{
+/**
+ * Get "precursor mass","prsm Id" and least "e value" for each proteoform
+ * @param {object} prsm - COntains information of the prsms of a proteoform
+ */
+function getBestPrsm(prsm) {
 	let e_value = " " ;
 	let precursor_mass = " " ;
 	let prsm_id = "";
@@ -115,9 +117,16 @@ function getBestPrsm(prsm)
 	return [e_value,precursor_mass,prsm_id];
 }
 
-/*	Create HTML URL link to navigate to best prsm and to navigae to proteoform page */
-function Build_BestPrSM(e_value,precursor_mass,prsm_id,proteoform_id, PrSM_Count,folderpath )
-{
+/**
+ * Create HTML URL link to navigate to best prsm and to navigae to proteoform page
+ * @param {Float} e_value - Contains e value of the best prsm
+ * @param {Float} precursor_mass - Contains precursor mass of the best prsm
+ * @param {Int} prsm_id - Contains the best prsm id
+ * @param {Int} proteoform_id - Contains the proteoform Id
+ * @param {Int} PrSM_Count - Contians numbe rof prsms for a proteoform
+ * @param {String} folderpath - Contains path to the data folder
+ */
+function Build_BestPrSM(e_value,precursor_mass,prsm_id,proteoform_id, PrSM_Count,folderpath) {
 	let p = document.createElement("p");
 	p.setAttribute("style","font-size:16px;");
 	let text1 = document.createElement("text");
