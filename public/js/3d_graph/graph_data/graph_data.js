@@ -50,7 +50,7 @@ class GraphData{
         let mzmax = parseFloat(mzmaxRaw);
         let mzmin = parseFloat(mzminRaw);
         
-        let dataTotal = Graph.tablePeakCount[0];
+        let dataTotal = Graph.configData[0];
 
         if (rtmax > dataTotal.RTMAX){
             rtmax = dataTotal.RTMAX;
@@ -58,9 +58,9 @@ class GraphData{
         if (rtmin < 0){
             rtmin = 0;
         }
-        if (mzmax > dataTotal.MZMAX){
+        /*if (mzmax > dataTotal.MZMAX){
             mzmax = dataTotal.MZMAX;
-        }
+        }*/
         if (mzmin < 0){
             mzmin = 0;
         }
@@ -75,7 +75,7 @@ class GraphData{
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
     static setViewRange = (mzmin, mzmax, rtmax, rtmin, curRT) => {
-        let dataTotal = Graph.tablePeakCount[0];
+        let dataTotal = Graph.configData[0];
 
         if (rtmax > dataTotal.RTMAX){
             rtmax = dataTotal.RTMAX;
@@ -83,9 +83,9 @@ class GraphData{
         if (rtmin < 0){
             rtmin = 0;
         }
-        if (mzmax > dataTotal.MZMAX){
+        /*if (mzmax > dataTotal.MZMAX){
             mzmax = dataTotal.MZMAX;
-        }
+        }*/
         if (mzmin < 0){
             mzmin = 0;
         }
@@ -100,25 +100,27 @@ class GraphData{
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
      /******** PLOT PEAKS ******/
-    static updateGraph = (minmz, maxmz,minrt,maxrt, curRT) => {
-        GraphData.setViewRange(minmz, maxmz, maxrt, minrt, curRT);
+    static updateGraph = (mzmin, mzmax,rtmin, rtmax, curRT) => {
+        GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         GraphData.draw(curRT);
         if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
         }
     }
-    static drawInitGraph = (minmz, maxmz, curRT) => {
-        GraphData.setInitViewRange(minmz, maxmz, curRT);
-        GraphData.draw(curRT);
-        if (Graph.isUpdateTextBox){
-            GraphUtil.updateTextBox();
-        }
+    static drawInitGraph = (mzmin, mzmax, scanID) => {
+        let promise = LoadData.getRT(scanID);
+        promise.then((curRT) =>{
+            GraphData.setInitViewRange(mzmin, mzmax, curRT);
+            GraphData.draw(curRT);
+            if (Graph.isUpdateTextBox){
+                GraphUtil.updateTextBox();
+            }
+        })
     }
      /******** PLOT PEAKS ******/
     static draw = (curRT) => {          
         const curViewRange = Graph.viewRange;
         Graph.curRT = curRT;
-
         let promise = LoadData.load3dData(curViewRange);
 
         promise.then(peakData => {
