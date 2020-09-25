@@ -8,7 +8,7 @@ class GraphData{
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
-    static drawCurrentScanMarker = (rt) => {
+    static drawCurrentScanMarker = () => {
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         //draw a red line horizontal to x axis where y = current scan retention time
         let linegeo = new THREE.Geometry();
@@ -22,7 +22,7 @@ class GraphData{
         marker.name = "currentScanMarker";
         markerGroup.add(marker);
 
-        marker.position.set(0, 0, rt);
+        marker.position.set(0, 0, Graph.curRT);
     }
     /******** CALCULATE AND SET DATA RANGE ******/
     static getInteRange = (points) => {
@@ -50,7 +50,7 @@ class GraphData{
         let mzmax = parseFloat(mzmaxRaw);
         let mzmin = parseFloat(mzminRaw);
         
-        let dataTotal = Graph.tablePeakCount[0];
+        let dataTotal = Graph.configData[0];
 
         if (rtmax > dataTotal.RTMAX){
             rtmax = dataTotal.RTMAX;
@@ -58,9 +58,9 @@ class GraphData{
         if (rtmin < 0){
             rtmin = 0;
         }
-        if (mzmax > dataTotal.MZMAX){
+        /*if (mzmax > dataTotal.MZMAX){
             mzmax = dataTotal.MZMAX;
-        }
+        }*/
         if (mzmin < 0){
             mzmin = 0;
         }
@@ -75,7 +75,7 @@ class GraphData{
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
     static setViewRange = (mzmin, mzmax, rtmax, rtmin, curRT) => {
-        let dataTotal = Graph.tablePeakCount[0];
+        let dataTotal = Graph.configData[0];
 
         if (rtmax > dataTotal.RTMAX){
             rtmax = dataTotal.RTMAX;
@@ -83,9 +83,9 @@ class GraphData{
         if (rtmin < 0){
             rtmin = 0;
         }
-        if (mzmax > dataTotal.MZMAX){
+        /*if (mzmax > dataTotal.MZMAX){
             mzmax = dataTotal.MZMAX;
-        }
+        }*/
         if (mzmin < 0){
             mzmin = 0;
         }
@@ -100,24 +100,27 @@ class GraphData{
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
      /******** PLOT PEAKS ******/
-    static updateGraph = (minmz, maxmz,minrt,maxrt, curRT, updateTextBox) => {
-        GraphData.setViewRange(minmz, maxmz, maxrt, minrt, curRT);
+    static updateGraph = (mzmin, mzmax,rtmin, rtmax, curRT) => {
+        GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         GraphData.draw(curRT);
-        if (updateTextBox){
+        if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
         }
     }
-    static drawInitGraph = (minmz, maxmz, curRT, updateTextBox) => {
-        GraphData.setInitViewRange(minmz, maxmz, curRT);
-        GraphData.draw(curRT);
-        if (updateTextBox){
-            GraphUtil.updateTextBox();
-        }
+    static drawInitGraph = (mzmin, mzmax, scanID) => {
+        let promise = LoadData.getRT(scanID);
+        promise.then((curRT) =>{
+            GraphData.setInitViewRange(mzmin, mzmax, curRT);
+            GraphData.draw(curRT);
+            if (Graph.isUpdateTextBox){
+                GraphUtil.updateTextBox();
+            }
+        })
     }
      /******** PLOT PEAKS ******/
     static draw = (curRT) => {          
         const curViewRange = Graph.viewRange;
-        
+        Graph.curRT = curRT;
         let promise = LoadData.load3dData(curViewRange);
 
         promise.then(peakData => {
@@ -137,17 +140,20 @@ class GraphData{
             Graph.viewRange["intscale"] = 1;
 
             // make sure the groups are plotted and update the view
-            if (parseFloat(curRT) <= Graph.viewRange.rtmax && parseFloat(curRT) >= Graph.viewRange.rtmin){
-                GraphData.drawCurrentScanMarker(curRT);
+            if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
+                GraphData.drawCurrentScanMarker();
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
             return 0;
         }).then(result => {
             let promise = GraphFeature.drawFeature(Graph.viewRange);
             promise.then(()=>{
-                GraphControl.updateViewRange(Graph.viewRange);
                 GraphRender.renderImmediate();
-            })
+                return 0;
+            })  
+        }).then(result => {
+            GraphControl.updateViewRange(Graph.viewRange);
+            GraphRender.renderImmediate();
         });
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
@@ -155,7 +161,8 @@ class GraphData{
         let prevSpecRT = 0; 
         let prevPeakRT = 0;
 
-        let rt = document.getElementById("scan1RT").innerText;
+        let rt = (Graph.curRT/60).toFixed(4);
+        //let rt = document.getElementById("scan1RT").innerText;
     
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let peak2DGroup; 
@@ -240,7 +247,7 @@ class GraphData{
 
         let lowPeak = false;
 
-        let currt = document.getElementById("scan1RT").innerText;
+        let currt = (Graph.curRT/60).toFixed(4);
         let y = inten;    
         let minHeight = Graph.minPeakHeight;
         let scale = Graph.gridRangeVertical / Graph.viewRange.intmax;

@@ -1,54 +1,58 @@
 /*expand/reduce graph div size when a button is clicked */
 class GraphResize{
-    isExpanded = false;
     oriWidth;
     oriHeight;
     oriViewSize;
+    viewSize = Graph.viewSize;
+    viewAdjust = 3;
+    isFullScreen = false;
 
     constructor(){};
     /*graph div resizing*/
-    resizeGraphDiv = () => {
+    expandGraph = () => {
+        Graph.viewSize = Graph.viewSize - this.viewAdjust; 
+        GraphControl.resizeCameraUserControl(this.viewAdjust);
+    }
+    shrinkGraph = () => {
+        Graph.viewSize = Graph.viewSize + this.viewAdjust; 
+        GraphControl.resizeCameraUserControl(1/this.viewAdjust);
+    }
+    fullScreen = () => {
+        let graphDiv = document.getElementById("3d-graph-parameter"); 
 
-        if (this.isExpanded){
-            let graphDiv = document.getElementById("graph3d-entire-div"); 
-
+        if (this.isFullScreen){//shrink back
             document.body.style.width = this.oriWidth;
-            graphDiv.style.height = this.oriHeight;
+            document.getElementById("center-div").style.paddingLeft = "60px";
+            document.getElementById("center-div").style.paddingRight = "60px";
 
-            graphDiv.scrollIntoView();
-            graphDiv.scrollIntoView(false);
-            graphDiv.scrollIntoView({block: "start"});
-
-            Graph.viewSize = this.oriViewSize;
-            GraphControl.resizeCamera();
-
-            document.getElementById("graph-expand").innerText = "Expand";
-
-            this.isExpanded = false;
-        }else{
-            //let graphDiv = document.getElementById("graph-container"); 
-            let graphDiv = document.getElementById("graph3d-entire-div"); 
-
-            this.oriHeight = graphDiv.style.height;
-            document.body.style.width = "100%";
-            graphDiv.style.height = (window.innerHeight).toString() + "px";
-            //document.getElementById("graph-container").style.height = (window.innerHeight).toString() + "px";
+            document.getElementById("graph-container").style.height = this.oriHeight;
 
             graphDiv.scrollIntoView();
             graphDiv.scrollIntoView(false);
             graphDiv.scrollIntoView({block: "end"});
 
-            //change graph viewsize
-            this.oriViewSize = Graph.viewSize;
-            Graph.viewSize = 23;
-            GraphControl.resizeCameraWhenExpanded();
+            Graph.renderer.setSize(Graph.graphEl.clientWidth, this.oriHeight, true);
 
-            document.getElementById("graph-expand").innerText = "Reduce";
-            this.isExpanded = true;
+            this.isFullScreen = false;
+        }else{//expand to full screen
+            this.oriWidth = document.getElementById("center-div").style.width;
+            this.oriHeight = Graph.graphEl.clientHeight;
+            
+            document.getElementById("center-div").style.padding = "0px";
+            document.body.style.width = "100%";
+            
+            graphDiv.scrollIntoView();
+            graphDiv.scrollIntoView(false);
+            graphDiv.scrollIntoView({block: "start"});
+
+            this.isFullScreen = true;
+
+            Graph.renderer.setSize(window.innerWidth, window.innerHeight, true);
         }
     }
     main = () => {
-        document.getElementById("graph-expand").addEventListener("click", this.resizeGraphDiv, false);
-        this.oriWidth = document.getElementById("center-div").style.width;
+        document.getElementById("graph-expand").addEventListener("click", this.expandGraph, false);
+        document.getElementById("graph-shrink").addEventListener("click", this.shrinkGraph, false);
+        document.getElementById("graph-full-screen").addEventListener("click", this.fullScreen, false);
     }
 }

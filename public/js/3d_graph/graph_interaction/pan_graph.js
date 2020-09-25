@@ -11,7 +11,7 @@ class GraphPan{
     let rtmin = viewRange.rtmin + (z * viewRange.rtrange);
 
     let newRange = GraphControl.constrainBoundsPan(mzmin, viewRange.mzrange, rtmin, viewRange.rtrange);
-    GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT, true);
+    GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT);
 }
   onMouseDown = (e) => {
     if (e.button === 0) {
