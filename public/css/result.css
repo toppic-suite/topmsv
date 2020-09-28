@@ -424,6 +424,7 @@ button#minusBtn {
 /*3d graph div size*/
 #graph-container{
     min-width:100%;
+    line-height:0;
     padding:0px;
     margin:0px;
 }
