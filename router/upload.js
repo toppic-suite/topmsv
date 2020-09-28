@@ -102,7 +102,7 @@ var upload = router.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            let projectsID = insertRowSync(id, projectname, txtFile.name, description,des_txtFile,4, emailtosend,0,0,0,uid,publicStatus);
+                            let projectsID = insertRowSync(id, projectname, txtFile.name, description, des_txtFile, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus);
                             // insertDataset(eid, projectname, description, projectsID);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + txtFile.name + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
@@ -208,7 +208,7 @@ var upload = router.post('/upload', function (req, res) {
                             while (true) {
                                 // console.log(result);
                                 if(!result) {
-                                    let projectsID = insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,envFile1.name,uid,publicStatus);
+                                    let projectsID = insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,0, envFile1.name,uid,publicStatus);
                                     insertDataset(eid, projectname, description, projectsID);
                                     message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                     message.subject = "Your data has been uploaded, please wait for processing";
@@ -336,7 +336,7 @@ var upload = router.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                let projectsID = insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,uid,publicStatus);
+                                let projectsID = insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus);
                                 // insertDataset(eid, projectname, description, projectsID);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
