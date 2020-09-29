@@ -22,8 +22,8 @@ class GraphResize{
 
         if (this.isFullScreen){//shrink back
             document.body.style.width = this.oriWidth;
-            document.getElementById("center-div").style.paddingLeft = "60px";
-            document.getElementById("center-div").style.paddingRight = "60px";
+            document.getElementById("left-jumbotron").style.paddingLeft = "60px";
+            document.getElementById("left-jumbotron").style.paddingRight = "60px";
 
             document.getElementById("graph-container").style.height = this.oriHeight;
 
@@ -35,10 +35,10 @@ class GraphResize{
 
             this.isFullScreen = false;
         }else{//expand to full screen
-            this.oriWidth = document.getElementById("center-div").style.width;
+            this.oriWidth = document.getElementById("left-jumbotron").style.width;
             this.oriHeight = Graph.graphEl.clientHeight;
             
-            document.getElementById("center-div").style.padding = "0px";
+            document.getElementById("left-jumbotron").style.padding = "0px";
             document.body.style.width = "100%";
             
             graphDiv.scrollIntoView();
