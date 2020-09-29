@@ -1,3 +1,8 @@
+:root {
+    --default-font-size: x-small;
+    -webkit-text-size-adjust: none;
+  }
+  
 .projectsummary {
     font-size: 16px;
 }
@@ -44,11 +49,14 @@ hr {
 }
 
 span.fileName{
-
+    
 }
 span.ms1EnvFile{
     position: relative;
     left: 20%;
+}
+.titleText{
+    font-size:var(--default-font-size);
 }
 #scanRange {
     position: relative;
@@ -56,7 +64,7 @@ span.ms1EnvFile{
 }
 .defaultBtn {
     position: relative;
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -139,7 +147,7 @@ button#deleteSeq {
 button#topfdtask {
     position: relative;
     left: 40%;
-    font-size: 93%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -151,7 +159,7 @@ button#topfdtask {
 button#toppicTask {
     position: relative;
     left: 40%;
-    font-size: 93%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -163,7 +171,7 @@ button#toppicTask {
 button#home {
     position: relative;
     left: 61%;
-    /*font-size: 95%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -175,8 +183,8 @@ button#home {
 #request {
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
-    background-color: #555555;
+    font-size: var(--default-font-size);
+    background-color: #4e4e4e;
     color: white;
     border: none;
     padding: 2px 8px;
@@ -187,7 +195,7 @@ button#home {
 button#request3dGraphRedraw{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -199,7 +207,7 @@ button#request3dGraphRedraw{
 button#save3dGraph{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -211,7 +219,7 @@ button#save3dGraph{
 button#next1 {
     position: relative;
     /*left: 84%;*/
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -223,7 +231,7 @@ button#next1 {
 button#prev1 {
     position: relative;
     /*left: 82%;*/
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -236,7 +244,7 @@ button#prev1 {
 button#uploadMsalign {
     position: relative;
     left: 40%;
-    /*font-size: 95%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -248,7 +256,7 @@ button#uploadMsalign {
 button#uploadSequence {
     position: relative;
     left: 25%;
-    /*font-size: 95%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -337,7 +345,7 @@ p#scanid2 {
     font-size: 100%;
 }
 .scanleveltitle{
-    font-size: 14px;
+    font-size: var(--default-font-size);
 }
 div#shiftRight{
     position: relative;
@@ -392,9 +400,9 @@ button#minusBtn {
     position:fixed;
     border-bottom: 1px dotted black;
     z-index: 1;
-  }
+}
   
-  #tooltiptext {
+#tooltiptext {
     width: 120px;
     background-color: #555555;
     color: #fff;
@@ -402,12 +410,15 @@ button#minusBtn {
     border-radius: 6px;
     padding: 5px 5px;
     margin: 5px;
-    font-size:10px;
+    font-size: var(--default-font-size);
   
     /* Position the tooltip */
     position: absolute;
    
-  }
+}
+#graph-metadata{
+    font-size: var(--default-font-size);
+}
 /*save-as-image popup css*/
 #save-as-image-form{
     /*padding: 10px;
@@ -418,7 +429,7 @@ button#minusBtn {
 }
 #input-file-name{
     width:200px;
-    font-size:10px;
+    font-size: var(--default-font-size);
 
 }
 /*3d graph div size*/
@@ -427,12 +438,13 @@ button#minusBtn {
     line-height:0;
     padding:0px;
     margin:0px;
+    line-height: 0px;
 }
 /*default css for all buttons*/
 button#graph-expand{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -444,7 +456,7 @@ button#graph-expand{
 button#graph-shrink{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -456,7 +468,7 @@ button#graph-shrink{
 button#graph-full-screen{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
@@ -508,3 +520,14 @@ button#graph-full-screen{
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+  /*override default jumbotron style*/
+  #left-jumbotron{
+      margin: 0px;
+      padding: 0px 5px 0px 5px;
+      border-radius: 0;
+  }
+  #right-jumbotron{
+    margin: 0px;
+    padding: 0px 5px 0px 5px;
+    border-radius: 0;
+}
