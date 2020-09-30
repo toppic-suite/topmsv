@@ -1,8 +1,11 @@
 :root {
     --default-font-size: x-small;
+    --default-btn-padding: 2px 5px;
     -webkit-text-size-adjust: none;
   }
-  
+a{
+    font-size:var(--default-font-size);
+}
 .projectsummary {
     font-size: 16px;
 }
@@ -10,14 +13,25 @@ h2 {
     font-size: 18px;
 }
 body {
+    margin:0px;
+    padding:0px;
     padding-top:10px;
-    padding-bottom: 2px;
     font-family: Arial, serif;
 }
-body.container{
-    padding-bottom: 5px;
-    padding-right: 0px;
-    padding-left: 0px;
+#body-container{
+    margin:0px;
+    padding:0px;
+    min-width:99%;
+    min-height:100%;
+}
+#menu-container{
+    margin:0px;
+    padding:0px;
+    min-width:100%;
+}
+#menu-container div{
+    margin:0px;
+    padding:0px;
 }
 div.modal-header {
     padding-bottom: 10px;
@@ -25,18 +39,16 @@ div.modal-header {
 div#input {
     font-size: 100%;
 }
-
 .jumbotron p{
     margin-bottom: 5px;
 }
 .jumbotron {
     padding-top: 10px;
     padding-bottom: 5px;
-
 }
 #scanID {
-    width: 120%;
-    position: relative;
+    width: 30px;
+    /*position: relative;*/
     /*left: 53%;*/
 }
 .rangeTextBox{
@@ -151,7 +163,7 @@ button#topfdtask {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -163,7 +175,7 @@ button#toppicTask {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -175,7 +187,7 @@ button#home {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 15px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -187,7 +199,7 @@ button#home {
     background-color: #4e4e4e;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -199,7 +211,7 @@ button#request3dGraphRedraw{
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -211,7 +223,7 @@ button#save3dGraph{
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -223,7 +235,7 @@ button#next1 {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 20px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -235,7 +247,7 @@ button#prev1 {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: block;
@@ -248,7 +260,7 @@ button#uploadMsalign {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 12px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -260,7 +272,7 @@ button#uploadSequence {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 5px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -272,7 +284,7 @@ button#inspect {
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 12px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -284,7 +296,7 @@ button#hide{
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 20px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -448,7 +460,7 @@ button#graph-expand{
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -460,7 +472,7 @@ button#graph-shrink{
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -472,7 +484,7 @@ button#graph-full-screen{
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -522,12 +534,21 @@ button#graph-full-screen{
   }
   /*override default jumbotron style*/
   #left-jumbotron{
-      margin: 0px;
-      padding: 0px 5px 0px 5px;
-      border-radius: 0;
+    margin: 0px;
+    padding: 5px 5px;
+    border-radius: 0;
+    min-height:480px;
+    background-color: #EEEEEE;
+
   }
   #right-jumbotron{
     margin: 0px;
-    padding: 0px 5px 0px 5px;
+    padding: 5px 5px;
     border-radius: 0;
+    min-height:480px;
+    background-color: #EEEEEE;
+}
+#3d-graph-parameter div{
+    margin: 0px;
+    padding:0px;
 }
