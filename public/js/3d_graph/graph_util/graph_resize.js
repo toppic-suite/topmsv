@@ -24,6 +24,9 @@ class GraphResize{
             document.body.style.width = this.oriWidth;
 
             document.getElementById("graph-container").style.height = this.oriHeight;
+            
+            document.getElementById("left-jumbotron").style.width = this.oriWidth;
+            document.getElementById("right-jumbotron").style.width = this.oriWidth;
 
             graphDiv.scrollIntoView();
             graphDiv.scrollIntoView(false);
@@ -36,8 +39,10 @@ class GraphResize{
             this.oriWidth = document.getElementById("left-jumbotron").style.width;
             this.oriHeight = Graph.graphEl.clientHeight;
             
-            document.body.style.width = "100%";
-            
+            document.getElementById("left-jumbotron").style.width = "100%";
+            document.getElementById("right-jumbotron").style.width = "100%";
+
+            console.log(graphDiv)
             graphDiv.scrollIntoView();
             graphDiv.scrollIntoView(false);
             graphDiv.scrollIntoView({block: "start"});
