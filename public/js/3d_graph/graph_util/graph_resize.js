@@ -18,7 +18,7 @@ class GraphResize{
         GraphControl.resizeCameraUserControl(1/this.viewAdjust);
     }
     fullScreen = () => {
-        let graphDiv = document.getElementById("3d-graph-parameter"); 
+        let graphDiv = document.getElementById("graph-3d-parameter"); 
 
         if (this.isFullScreen){//shrink back
             document.body.style.width = this.oriWidth;
