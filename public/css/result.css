@@ -21,8 +21,9 @@ body {
 #body-container{
     margin:0px;
     padding:0px;
-    min-width:99%;
+    min-width:100%;
     min-height:100%;
+    height:100%;
 }
 #menu-container{
     margin:0px;
@@ -32,6 +33,12 @@ body {
 #menu-container div{
     margin:0px;
     padding:0px;
+}
+#columns-container{
+    margin:0px;
+    padding:0px;
+    width:100%;
+    height:100%;
 }
 div.modal-header {
     padding-bottom: 10px;
@@ -527,28 +534,33 @@ button#graph-full-screen{
     width: 200px;
     height: 200px;
 }
-
+#graph-3d-parameter div{
+    margin: 0px;
+    padding-left:15px;
+    padding-right:0px;
+}
+.rangeTextBox{
+    width:50px;
+}
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
   /*override default jumbotron style*/
-  #left-jumbotron{
+#left-jumbotron{
     margin: 0px;
-    padding: 5px 5px;
+    padding: 5px 15px;
     border-radius: 0;
-    min-height:480px;
+    min-height:100%;
+    height:100%;
     background-color: #EEEEEE;
-
   }
-  #right-jumbotron{
+#right-jumbotron{
     margin: 0px;
     padding: 5px 5px;
     border-radius: 0;
-    min-height:480px;
+    min-height:100%;
+    height:100%;
     background-color: #EEEEEE;
 }
-#3d-graph-parameter div{
-    margin: 0px;
-    padding:0px;
-}
+
