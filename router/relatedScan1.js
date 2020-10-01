@@ -9,11 +9,11 @@ var relatedScan1 = router.get('/relatedScan1', function (req, res) {
 
     getRelatedScan1(projectDir, scanID, function (err, row) {
         if(row !== undefined) {
-            let levelTwoScanID = row.LevelTwoScanID.toString();
-            res.write(levelTwoScanID);
+            let levelOneScanID = row.LevelOneScanID.toString();
+            res.write(levelOneScanID);
             res.end();
         }else {
-            res.write("0");
+            res.write("-1");
             res.end();
         }
     })
