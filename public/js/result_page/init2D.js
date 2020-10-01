@@ -76,7 +76,7 @@ function init2D(scan) {
             } else { // scan level 2
                 // console.log("scan level 2");
                 let scanLevelOne;
-                topview_2d.getRelatedScan2(scan)
+                topview_2d.getRelatedScan1(scan)
                     .then(function(response) {
                         scanLevelOne = response.data;
                         return topview_2d.getScanLevelTwoList(scanLevelOne);

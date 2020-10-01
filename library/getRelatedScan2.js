@@ -1,16 +1,15 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
- * Get corresponding level one scan by given level two scan. Async mode.
+ * Get the first related scan level two scan by given scan level one scan. Async mode.
  * @param {string} dir
  * @param {number} scanID
  * @param {function} callback
  * @async
  */
-
 function getRelatedScan2(dir, scanID, callback) {
-    let sql = `SELECT LevelOneScanID
+    let sql = `SELECT LevelTwoScanID
            FROM ScanPairs
-           WHERE LevelTwoScanID = ?
+           WHERE LevelOneScanID = ?
            LIMIT 1`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
@@ -20,9 +19,7 @@ function getRelatedScan2(dir, scanID, callback) {
         //console.log('Connected to the result database.');
     });
     resultDb.get(sql, [scanID], (err, row) => {
-        console.log("row:", row);
         if (err) {
-            console.log(error);
             throw err;
         }
         return callback(null, row);
