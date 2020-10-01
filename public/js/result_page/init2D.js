@@ -40,6 +40,7 @@ function init2D(scan) {
                             });
                             $( "#tabs" ).tabs();
                             document.getElementById(nextScan).click(); // show next scan which is the first scan of scan level 2
+                            
                         })
                         .catch(function(error) {
                             console.log(error);
