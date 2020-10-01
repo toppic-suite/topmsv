@@ -20,7 +20,15 @@ class Topview2D {
             }
         });
     }
-
+    getRelatedScan1 (scanID) {
+        // console.log("scanID:",scanID);
+        return axios.get('/relatedScan1', {
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                scanID: scanID
+            }
+        });
+    }
     getScanLevel(scanID) {
         return axios.get('/scanlevel', {
                 params: {
