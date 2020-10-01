@@ -29,7 +29,6 @@ class LoadData{
             console.log("something wrong during calculateTableNum")
             return;
         }
-        console.log("current table number : ", tableNum);
         return tableNum;
     }
     static getRT = (scanNum) => {
