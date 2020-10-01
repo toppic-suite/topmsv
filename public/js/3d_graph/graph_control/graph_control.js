@@ -232,7 +232,6 @@ class GraphControl{
         Graph.resizedCamera = Graph.camera;
     }
     static resizeCamera = () => {
-        console.log(Graph.graphEl.clientWidth, Graph.graphEl.clientHeight)
         Graph.renderer.setSize(Graph.graphEl.clientWidth, Graph.graphEl.clientHeight, true);
         let size = new THREE.Vector3();
         Graph.renderer.getSize(size);
