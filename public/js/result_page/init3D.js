@@ -44,13 +44,11 @@ function checkRelatedScan(projectDir, scanID){
     return new Promise(function(resolve, reject){
         let promise = getMs2Scan(projectDir, scanID);
         promise.then((ms2Scan)=>{
-            console.log("ms2Scan", ms2Scan)
             if (ms2Scan >= 0){
                 resolve(ms2Scan);
             }else{
                 let promise = getMs1Scan(projectDir, scanID);
                 promise.then((ms1Scan) => {
-                    console.log("ms1Scan", ms1Scan)
                     if(ms1Scan >= 0){
                         resolve(scanID);
                     }else{
