@@ -584,6 +584,17 @@ void mzMLReader::createIndex() {
     // fprintf(stdout, "Records created successfully\n");
     std::cout << "Scan_index created successfully" << std::endl;
   }
+  sqlstr = "CREATE INDEX id_index ON SPECTRA (ID);";
+  sql_ = (char *)sqlstr.c_str();
+  rc_ = sqlite3_exec(db_, sql_, 0, 0, &z_err_msg_);
+  if( rc_ != SQLITE_OK ){
+    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+    std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
+    sqlite3_free(z_err_msg_);
+  }else{
+    // fprintf(stdout, "Records created successfully\n");
+    std::cout << "id_index created successfully" << std::endl;
+  }
   sqlstr = "CREATE INDEX scanPairs_index ON ScanPairs (LevelOneScanID,LevelTwoScanID);";
   sql_ = (char *)sqlstr.c_str();
   rc_ = sqlite3_exec(db_, sql_, 0, 0, &z_err_msg_);
@@ -594,6 +605,17 @@ void mzMLReader::createIndex() {
   }else{
     // fprintf(stdout, "Records created successfully\n");
     std::cout << "scanPairs_index created successfully" << std::endl;
+  }
+  sqlstr = "CREATE INDEX peak_index ON PEAKS (SPECTRAID);";
+  sql_ = (char *)sqlstr.c_str();
+  rc_ = sqlite3_exec(db_, sql_, 0, 0, &z_err_msg_);
+  if( rc_ != SQLITE_OK ){
+    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+    std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
+    sqlite3_free(z_err_msg_);
+  }else{
+    // fprintf(stdout, "Records created successfully\n");
+    std::cout << "peak_index created successfully" << std::endl;
   }
 };
 void mzMLReader::createIndexOnIdOnly(){
