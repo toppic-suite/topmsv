@@ -74,7 +74,7 @@ var toppicTask = router.post('/toppicTask', function (req, res) {
                 let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
                 let seqName = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2_toppic_prsm.tsv';
                 let seq_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqName;
-                let seqParameter = './sequenceParse.js ' + dbDir + ' ' + seq_dir;
+                let seqParameter = './utilities/sequenceParse.js ' + dbDir + ' ' + seq_dir;
                 console.log(seqParameter);
                 updateSeqStatusSync(1, projectCode);
                 submitTask(projectCode, seqApp, seqParameter, 1);
