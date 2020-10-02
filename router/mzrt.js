@@ -42,7 +42,7 @@ var mzrt = router.post('/mzrt', function (req, res) {
                 return res.send({"error": 403, "message": "Error on saving file!"});
             }
             res.end();
-            let parameterTask1 = __dirname + '/../annotateFeature.js '+ dbDir + ' ' + des_ms1;
+            let parameterTask1 = __dirname + '/../utilities/annotateFeature.js '+ dbDir + ' ' + des_ms1;
             submitTask(projectCode, 'node', parameterTask1, 1);
 
             updateFeatureStatusSync(1, projectCode);
