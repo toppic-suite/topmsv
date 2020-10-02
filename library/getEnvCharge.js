@@ -1,9 +1,9 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get envelope charge by envelope_id. Async mode.
- * @param {sqliteDB} resultDB
- * @param {number} envelope_id
- * @param {function} callback
+ * @param {sqliteDB} resultDB - sqlite database object
+ * @param {number} envelope_id - Envelope id
+ * @param {function} callback - Callback function that handles query results
  * @deprecated
  */
 function getEnvCharge(resultDB, envelope_id, callback) {

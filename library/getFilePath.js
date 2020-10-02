@@ -2,9 +2,10 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Get project directory path by projectCode. Async mode.
- * @param {sqliteDB} db
- * @param {string} id
- * @param {function} callback
+ * @param {sqliteDB} db - Sqlite database object
+ * @param {string} id - Project code
+ * @param {function} callback - Callback function that handles query result
+ * @returns {function} Callback function
  * @async
  */
 

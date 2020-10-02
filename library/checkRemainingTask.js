@@ -1,8 +1,8 @@
 const BetterDB = require('better-sqlite3');
 /**
  * Check if one project has remaining tasks to do. Sync mode.
- * @param {string} projectCode
- * @returns {number} 0 or 1
+ * @param {string} projectCode - Project code
+ * @returns {number} 0 if no remaining tast, 1 if exists remaining tasks
  */
 function checkRemainingTask(projectCode) {
     let resultDb = new BetterDB('./db/projectDB.db');

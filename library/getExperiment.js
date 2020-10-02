@@ -1,5 +1,11 @@
 const BetterDB = require("better-sqlite3");
 
+/**
+ * Get all experiments under one user's specific project.
+ * @param {number} uid - User ID
+ * @param {number} pid - Project ID
+ * @returns {array} All experiments under one user's specific project
+ */
 function getExperiment(uid, pid) {
     let resultDb = new BetterDB("./db/projectDB.db");
     let stmt = resultDb.prepare(`SELECT Experiment.eid as eid, Experiment.ename as ename

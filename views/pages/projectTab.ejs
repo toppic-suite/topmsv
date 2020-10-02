@@ -33,6 +33,44 @@
 </head>
 <body class="container">
 
+
+<!-- Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel"><strong>Create</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-2">
+                        <button onclick="location.href='/createProject'" type="button" class="btn btn-primary">Create project</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <button onclick="location.href='/createExperiment'" type="button" class="btn btn-primary">Create experiment</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <button onclick="location.href='/createDataset'" type="button" class="btn btn-primary">Create dataset</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <main>
     <div class="row">
         <div class="col-sm-11">
@@ -51,32 +89,11 @@
     <br>
     <div class="row">
         <div class="col-sm-2">
-            <button onclick="location.href='/createProject'" type="button" class="btn btn-primary">Create Project</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create</button>
         </div>
     </div>
     <br>
-<!--
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="thead-light">
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Project Name</th>
-                <th scope="col">Manage</th>
-            </tr>
-            </thead>
 
-            <% for (var i = 0; i < projects.length; i++) { %>
-                <tr>
-                    <td scope="row"><%= i+1%></td>
-                    <td><%= projects[i].projectName %></td>
-                    <td><button onclick="location.href='<%= projects[i].link%>'" type="button" class="btn btn-primary">Manage</button></td>
-                </tr>
-            <% } %>
-
-        </table>
-    </div>
--->
     <div class="row">
         <div class="col-sm-3">
             <div id="tree"></div>
@@ -86,15 +103,35 @@
         </div>
         <div class="col-sm-8">
             <div class="row" style="font-size: large">
+                <h3 id="type"></h3>
+            </div>
+            <br>
+            <div class="row" style="font-size: large">
                 <strong>Name: </strong><span id="name"></span>
             </div>
             <br>
             <div class="row" style="font-size: large">
                 <strong>Description: </strong><span id="description"></span>
             </div>
+            <br>
+            <div class="row" style="font-size: large">
+                <strong>Permission: </strong><span id="permission"></span>
+            </div>
+            <br>
+            <div class="row" style="font-size: large; display: none" id="passwordDiv">
+                <strong>Password: </strong><span id="password">NULL</span>
+                <br>
+            </div>
+
+            <div class="row" style="font-size: large; display: none" id="datasetLink">
+                <strong>Link: </strong><a id="link" href="">Dataset Link</a>
+            </div>
+            <br>
             <div class="row">
                 <button type="button" class="btn btn-primary" id="createExperiment" style="display: none">Create Experiment</button>
                 <button type="button" class="btn btn-primary" id="createDataset" style="display: none">Create Dataset</button>
+                <button type="button" class="btn btn-danger" id="deleteButton" style="display: none">Delete</button>
+                <button type="button" class="btn btn-primary" id="editButton" style="display: none">Edit</button>
             </div>
         </div>
     </div>

@@ -5,7 +5,7 @@ const getPeakListByMZRange = require("../library/getPeakListByMZRange");
 const getEnvPeakListSync = require("../library/getEnvPeakListSync");
 const getEnvInfoSync = require("../library/getEnvInfoSync");
 const getEnvIDListByMZRange = require("../library/getEnvIDListByMZRange");
-const molecularFormulae = require('../distribution_calc/molecularformulae');
+const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 
 var previewEdit = router.get("/previewEdit", function (req, res) {
@@ -18,8 +18,9 @@ var previewEdit = router.get("/previewEdit", function (req, res) {
     // let theoInteSum = req.query.intensity;
 
     getPeakListByScanID(projectDir, scan_id, function (rows) {
+        // console.dir(rows, {'maxArrayLength': null});
         let peakList = calcDistribution.emass(monoMass,charge,rows);
-
+        // console.log("monoMass, charge, rows", monoMass, charge, JSON.stringify(rows));
         if (!peakList) {
             console.log('No peaks match!');
             // res.send(500, {errors: 'No peak match found!'});
@@ -34,9 +35,6 @@ var previewEdit = router.get("/previewEdit", function (req, res) {
                 }
                 peaksum = peaksum + peakList[i].intensity;
             }
-            // peakList.forEach(peak => {
-            //     peaksum = peaksum + peak.intensity;
-            // });
             let theoInteSum = peaksum.toFixed(5);
             // console.log(peakList);
             // find the range of envlist

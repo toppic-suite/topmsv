@@ -4,12 +4,19 @@ var getRelatedScan2 = require("../library/getRelatedScan2");
 
 var relatedScan2 = router.get('/relatedScan2', function (req, res) {
     console.log("Hello, relatedScan2!");
-    var projectDir = req.query.projectDir;
-    var scanID = req.query.scanID;
+    let projectDir = req.query.projectDir;
+    let scanID = req.query.scanID;
+    // console.log("scanID:",scanID);
     getRelatedScan2(projectDir, scanID, function (err, row) {
-        let levelOneScanID = row.LevelOneScanID.toString();
-        res.write(levelOneScanID);
-        res.end();
+         console.log("row:", row);
+        if(row !== undefined) {
+            let levelTwoScanID = row.LevelTwoScanID.toString();
+            res.write(levelTwoScanID);
+            res.end();
+        } else {
+            res.write("-1");
+            res.end();
+        }
     })
 });
 

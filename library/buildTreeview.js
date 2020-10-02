@@ -3,8 +3,12 @@ const getProjectNew = require("./getProjectNew");
 const getExperiment = require("./getExperiment");
 const getDataset = require("./getDataset");
 
+/**
+ * Build tree view for a specific user, it contains projects, experiments, datasets.
+ * @param {number} uid - User ID
+ * @returns {string} Tree view that contains projects, experiments, datasets for given user
+ */
 function buildTreeview(uid) {
-    let resultDb = new BetterDB("./db/projectDB.db");
     let projects = getProjectNew(uid);
     console.log("projects: ", projects);
     let result = [];
