@@ -1,8 +1,8 @@
 var BetterDB = require("better-sqlite3");
 /**
  * Update project name by given projectCode. Sync mode.
- * @param {string} projectName
- * @param {string} projectCode
+ * @param {string} projectName - Project name
+ * @param {string} projectCode - Project code
  */
 function updateProjectNameSync(projectName, projectCode) {
     const resultDb = new BetterDB('./db/projectDB.db');

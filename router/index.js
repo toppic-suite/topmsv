@@ -31,7 +31,7 @@ var index = router.get('/', function (req, res) {
             } else {
                 row.envStatus = 'No';
             }
-            if(row.featureStatus === 1) {
+			if(row.featureStatus === 1) {
                 row.featureStatus = 'Yes';
             } else {
                 row.featureStatus = 'No';

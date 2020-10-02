@@ -1,11 +1,11 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Insert a new task to waitlist. Sync mode.
- * @param {string} projectCode
- * @param {string} app
- * @param {string} parameter
- * @param {number} threadNum
- * @param {number} finish
+ * @param {string} projectCode - Project code
+ * @param {string} app - The application that is going to run for this task 
+ * @param {string} parameter - The parameter for this task
+ * @param {number} threadNum - Thread number to run this task
+ * @param {number} finish - Finish status code
  */
 function insertTaskSync(projectCode, app, parameter, threadNum, finish) {
     let resultDb = new BetterDB('./db/projectDB.db');

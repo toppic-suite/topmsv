@@ -435,6 +435,28 @@ app.use('/', require("./router/test"));
 
 app.use('/',require("./router/getInfo"));
 
+app.use('/', require("./router/newExperiment"));
+
+app.use('/', require("./router/createDataset"));
+
+app.use('/', require("./router/getExperimentList"));
+
+app.use('/', require("./router/newDataset"));
+
+app.use('/', require("./router/deleteRequest"));
+
+app.use('/', require("./router/editRequest"));
+
+app.use('/', require("./router/editManage"));
+
+app.use('/', require("./router/projectview"));
+
+/**router for 3D graph */
+app.use('/', require("./router/getMax"));
+app.use('/', require("./router/load3dDataByParaRange"));
+app.use('/', require("./router/loadMzrtData"));
+app.use('/', require("./router/mzrt"));
+app.use('/', require("./router/deleteMzrt"));
 
 app.get('/auth/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']

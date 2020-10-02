@@ -1,8 +1,9 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get a list which contains all the tasks that finish = 0 and projectStatus = 4. Async mode.
- * @param {sqliteDB} db
- * @param {function} callback
+ * @param {sqliteDB} db - Sqlite database object
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function getTaskListAsync(db, callback) {

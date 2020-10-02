@@ -94,7 +94,7 @@ class GraphZoom
         let newrtmin = currt - (rtscale * newrtrange);
 
         let newRange = GraphControl.constrainBoundsZoom(newmzmin, newmzrange, newrtmin, newrtrange);
-        GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT, true);
+        GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT);
     }
     main(){
         Graph.renderer.domElement.addEventListener('wheel', this.onZoom, false);

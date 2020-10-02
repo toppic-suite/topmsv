@@ -1,8 +1,9 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get all peak intensity sums of scan level one. Async mode.
- * @param {string} dir
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 

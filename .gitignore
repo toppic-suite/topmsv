@@ -78,3 +78,10 @@ Thumbs.db
 .idea
 
 .vscode
+
+# ignore proteomics_cpp
+proteomics_cpp/
+
+# ignore database file and txt file
+*.db
+*.txt

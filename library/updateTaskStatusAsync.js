@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Update task status by taskID. Async mode.
- * @param {number} status
- * @param {number} taskID
- * @param {callback} callback
+ * @param {number} status - Finish status code
+ * @param {number} taskID - Task ID
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  * @deprecated
  */

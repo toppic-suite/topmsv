@@ -2,9 +2,11 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Delete envelope data by envelope_id. Async Mode.
- * @param {string} dir
- * @param {number} envID
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {number} envID - Envelope ID
+ * @param {function} callback - Callback function that handles query results.
+ * @returns {function} callback function
+ * @async
  */
 function deleteEnv(dir, envID, callback) {
     let sql = `DELETE FROM envelope

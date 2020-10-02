@@ -26,14 +26,23 @@
             <a href="/auth/google" id="signIn">Sign In</a>
         </div>-->
     </div>
-    <input type="hidden" id="pid" value=<%= pinfo.pid %>>
     <div class="panel panel-default">
         <div class="panel-body" style="padding-top: 0px;">
             <h3><strong>New Experiment</strong></h3>
             <br>
             <div class="form-group">
-                <label for="project_Name">Experiment Name</label>
+                <label for="selectProject">Project</label>
+                <select id="selectProject" class="form-control">
+                    <% for (var i = 0; i < projectList.length; i++) { %>
+                        <option value="<%= projectList[i].pid%>"><%= projectList[i].projectName%></option>
+                    <% } %>
+                </select>
+                <label for="experiment_Name">Experiment Name</label>
                 <input type="text" class="form-control" id="experiment_Name" name="experiment_Name" placeholder="Experiment Name">
+                <label for="description">Experiment Description</label>
+                <input type="text" class="form-control" id="description" name="description" placeholder="Experiment Description">
+<!--                <input type="checkbox" class="form-check-input" id="public" name="public">-->
+<!--                <label class="form-check-label" for="public">Public</label>-->
             </div>
 
             <button type="button" class="btn btn-primary" id="createButton" style="margin-top: 8px;">Confirm</button>

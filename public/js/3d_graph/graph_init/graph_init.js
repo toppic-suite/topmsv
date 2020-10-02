@@ -80,11 +80,11 @@ class GraphInit{
     }
     static initColorSet = () => {
         //pick peak color based on each peak intensity -- currently 5 levels gradient
-        let intRange = Graph.tablePeakCount[0].INTMAX - Graph.tablePeakCount[0].INTMIN;
+        let intRange = Graph.configData[0].INTMAX - Graph.configData[0].INTMIN;
         
         for (let i = 1; i <= Graph.gradientColor.length; i++)
         {
-            let val = Graph.tablePeakCount[0].INTMIN + Math.pow(intRange, i/Graph.gradientColor.length);
+            let val = Graph.configData[0].INTMIN + Math.pow(intRange, i/Graph.gradientColor.length);
             Graph.cutoff.push(val);
         } 
     }
@@ -134,16 +134,19 @@ class GraphInit{
         window.addEventListener("resize", GraphControl.resizeCamera);
         GraphControl.resizeCamera();
     }
-    static main = () => {
+    static main = (mzmin, mzmax, curRT) => {
         GraphInit.initScene();
-        //GraphInit.initColorSet();
         GraphInit.initGraphControl();
 
         GraphInit.createPlane();
         GraphInit.createAxis();
         GraphInit.createRedrawEvent();
         GraphInit.createSaveGraphEvent();
-       
+        
+        UploadMzrt.main();
+        
+        GraphData.drawInitGraph(mzmin, mzmax, curRT);
+        
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
         })

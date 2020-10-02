@@ -2,23 +2,32 @@
     'use strict';
 
     var file = document.querySelector('#dbfile');
+    var txtfile = document.querySelector('#txtfile');
     var envfile1 = document.querySelector('#envfile1');
     // var envfile2 = document.querySelector('#envfile2');
     var project = document.getElementById('projectName');
     // var email = document.getElementById('emailAddress');
     var description = document.getElementById('description');
     var pub = document.getElementById('public');
+
+    var scan_level = document.getElementById('scan_level');
+    var prec_mz = document.getElementById('prec_mz');
+    var prec_charge = document.getElementById('prec_charge');
+    var prec_inte = document.getElementById('prec_inte');
+
     //console.log(pub.checked);
     var dbfilename = document.getElementById('dbfilename');
+    var txtfilename = document.getElementById('txtfilename');
     var envfilename1 = document.getElementById('envfilename1');
     // var envfilename2 = document.getElementById('envfilename2');
-    //var choosename = document.getElementById('dbfilename');
+    // var choosename = document.getElementById('dbfilename');
     var upload = document.querySelector('#uploadbutton');
     var progress = document.querySelector('#dbbar');
     var xhr = new XMLHttpRequest();
 
     upload.addEventListener('click', uploadFile, false);
     file.addEventListener('change', chooseFile, false);
+    txtfile.addEventListener('change', chooseTxtFile, false);
     envfile1.addEventListener('change', chooseEnvFile1, false);
     // envfile2.addEventListener('change', chooseEnvFile2, false);
 
@@ -27,6 +36,9 @@
     }
     function chooseEnvFile1(event) {
         envfilename1.innerHTML = envfile1.files[0].name;
+    }
+    function chooseTxtFile(event) {
+        txtfilename.innerHTML = txtfile.files[0].name;
     }
     function chooseEnvFile2(event) {
         envfilename2.innerHTML = envfile2.files[0].name;
@@ -50,10 +62,10 @@
     // 点击上传
     function uploadFile(event) {
         //console.log(ValidateEmail(email.value));
-        if (project.value === '' || file.files[0] === undefined) {
+        if (project.value === '' || (file.files[0] === undefined && txtfile.files[0] === undefined)) {
             alert("Please fill in all information above!");
-        }else if(!file.files[0].name.match(/.(mzML)$/i)){
-            alert('Please upload a mzML file!');
+        /*}else if(!file.files[0].name.match(/.(mzML)$/i) && file.files !== undefined){
+            alert('Please upload a mzML file!');*/
         }else if(envfile1.files[0] !== undefined && !envfile1.files[0].name.match(/.(env)$/i)){
             alert('Please upload an env file for envelopes!');
         /*}else if(envfile2.files[0] !== undefined && !envfile2.files[0].name.match(/.(env)$/i)){
@@ -63,12 +75,19 @@
         } else {
             var formData = new FormData();
             formData.append('dbfile', file.files[0]);
+            formData.append('txtfile', txtfile.files[0]);
             formData.append('envfile1', envfile1.files[0]);
             // formData.append('envfile2', envfile2.files[0]);
             formData.append('projectname', project.value);
             // formData.append('emailaddress', email.value);
             formData.append('description', description.value);
             formData.append('public', pub.checked);
+
+            formData.append('scan_level', scan_level.value);
+            formData.append('prec_mz', prec_mz.value);
+            formData.append('prec_charge', prec_charge.value);
+            formData.append('prec_inte', prec_inte.value);
+
             xhr.onload = uploadSuccess;
             xhr.upload.onprogress = setProgress;
             xhr.open('post', '/upload', true);
@@ -123,3 +142,15 @@ $( document ).ready(function() {
     }
 });
 
+$('#txtMode').click(function () {
+    if ($('#txtMode').text() === 'Txt Mode') {
+        $('#txtMode_panel').show();
+        $('#txtMode').text('mzML Mode');
+        $('#mzML_buttons').hide();
+    } else {
+        $('#txtMode_panel').hide();
+        $('#txtMode').text('Txt Mode');
+        $('#mzML_buttons').show();
+    }
+
+})

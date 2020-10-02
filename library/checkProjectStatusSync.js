@@ -1,7 +1,8 @@
 const BetterDB = require('better-sqlite3');
 /**
  * Get project status by Tasks.projectCode. Sync mode.
- * @param {string} projectCode
+ * @param {string} projectCode - Project Code
+ * @returns {Object} Object contains projectStatus
  */
 function checkProjectStatusSync(projectCode) {
     let resultDb = new BetterDB('./db/projectDB.db');
