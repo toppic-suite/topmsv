@@ -7,10 +7,11 @@ const sqlite3 = require('sqlite3').verbose();
  * @returns {function} Callback function
  * @async
  */
+
 function getRelatedScan1(dir, scanID, callback) {
-    let sql = `SELECT LevelTwoScanID
+    let sql = `SELECT LevelOneScanID
            FROM ScanPairs
-           WHERE LevelOneScanID = ?
+           WHERE LevelTwoScanID = ?
            LIMIT 1`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
@@ -21,6 +22,7 @@ function getRelatedScan1(dir, scanID, callback) {
     });
     resultDb.get(sql, [scanID], (err, row) => {
         if (err) {
+            console.log(error);
             throw err;
         }
         return callback(null, row);
