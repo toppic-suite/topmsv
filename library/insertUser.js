@@ -1,11 +1,11 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Insert new user into database. Async mode.
- * @param {string} uid
- * @param {string} email
- * @param {string} firstname
- * @param {string} lastname
- * @param {string} fullname
+ * @param {number} uid - User ID
+ * @param {string} email - Email address
+ * @param {string} firstname - First name
+ * @param {string} lastname - Last name
+ * @param {string} fullname - Full name
  * @async
  */
 function insertUser(uid, email, firstname, lastname, fullname){

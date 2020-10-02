@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get scan of next level one. Async mode.
- * @param {string} dir
- * @param {number} rt
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {number} rt - Retention time
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, maxPeaks, callback) {

@@ -32,121 +32,105 @@
             <li role="presentation" class="active"><a href="/submit">Upload</a></li>
             <li role="presentation"><a href="/projects">My projects</a></li>
         </ul>
-        <!--<div class="masthead">
-            <h1 class="muted">
-                <span style="color: #0099DD; "><strong>Top View</strong></span>
-            </h1>
-        </div>-->
         <div class="panel panel-default">
-<!--            <div class="panel-heading">Data Information</div>-->
             <div class="panel-body">
-<!--
-                <form &lt;!&ndash;action="upload"&ndash;&gt; method="post" enctype="multipart/form-data">
--->
-<!--                <form>-->
+                <div class="input-group">
+                    <span class="input-group-addon">Project Name:</span>
+                    <input type="text" class="form-control" id="projectName"
+                           name="projectname" value="" required autofocus>
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon">Description:</span>
+                    <textarea class="form-control" id="description"
+                              name="description" required></textarea>
+                </div>
+                <br>
+
+                <div id="txtMode_panel" hidden>
                     <div class="input-group">
-                        <span class="input-group-addon">Project Name:</span>
-                        <input type="text" class="form-control" id="projectName"
-                               name="projectname" value="" required autofocus>
-                    </div>
-                    <!--<br>
-                    <div class="input-group">
-                        <span class="input-group-addon">Email:</span>
-                        <input type="email" class="form-control" id="emailAddress"
-                               name="emailaddress" value="" required>
-                    </div>-->
-                    <br>
-                    <div class="input-group">
-                        <span class="input-group-addon">Description:</span>
-                        <textarea class="form-control" id="description"
-                                  name="description" required></textarea>
+                        <span class="input-group-addon">Scan Level:</span>
+                        <input type="text" class="form-control" id="scan_level"
+                               name="scan_level" value="">
                     </div>
                     <br>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="public">
-                        <label class="form-check-label" for="public">Public</label>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">Precurser_M/Z:</span>
+                        <input type="text" class="form-control" id="prec_mz"
+                               name="prec_mz" value="">
                     </div>
                     <br>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">Precurser_Charge:</span>
+                        <input type="text" class="form-control" id="prec_charge"
+                               name="prec_charge" value="">
+                    </div>
+                    <br>
+
+                    <div class="input-group">
+                        <span class="input-group-addon">Precurser_intensity:</span>
+                        <input type="text" class="form-control" id="prec_inte"
+                               name="prec_inte" value="">
+                    </div>
+                    <br>
+
                     <div>
-                        <div>
-                            <span class="btn btn-primary fileinput-button"> <i
-                                    class="icon-plus icon-white"></i> <span>Select mzML file</span>
-                                    <input class="form-control" id="dbfile" type="file" name="dbfile">
-                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dbfilename"></span>
-                        </div>
-                        <br>
-                        <div>
-                            <span class="btn btn-primary fileinput-button"> <i
-                                    class="icon-plus icon-white"></i> <span>Select env file (Optional)</span>
-                                    <input class="form-control" id="envfile1" type="file" name="envfile1">
-                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="envfilename1"></span>
-                        </div>
-                        <br>
-                        <!--<div>
-                            <span class="btn btn-primary fileinput-button"> <i
-                                    class="icon-plus icon-white"></i> <span>Select ms2 env file...</span>
-                                    <input class="form-control" id="envfile2" type="file" name="envfile2">
-                                            </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="envfilename2"></span>
-                        </div>
-                        <br>-->
-                        <!--<table>
-                            <tr>
-                                <td><span class="btn btn-primary fileinput-button"> <i
-                                        class="icon-plus icon-white"></i> <span>Select mzML file...</span>
-                                    <input class="form-control" id="dbfile" type="file" name="dbfile">
-                                            </span></td>
-                                <td width="10pt"></td>
-                                <td><span id="dbfilename"></span></td>
-                                <td width="10pt"></td>
-
-
-
-                            </tr>
-                            <tr>
-                                <td><span class="btn btn-primary fileinput-button"> <i
-                                        class="icon-plus icon-white"></i> <span>Select env file...</span>
-                                    <input class="form-control" id="envfile" type="file" name="envfile">
-                                            </span></td>
-                                <td width="10pt"></td>
-                                <td><div id="envfilename"></div></td>
-                            </tr>
-                            <tr>
-                                <td id="dbtd" style="width: 300pt">
-                                    <div id="dbprogress" class="progress">
-                                        <div id="dbbar" class="progress-bar progress-bar-striped" role="progressbar"
-                                             style="width: 0%">0%</div>
-                                    </div>
-                                </td>
-                                <td width="10pt"></td>
-                            </tr>
-                        </table>-->
-<!--                        <div id="dbbutton">-->
-                        <table>
-                            <tr>
-                                <td><button id="uploadbutton" class="btn btn-primary">Upload</button></td>
-                                <td width="40pt"></td>
-                                <td id="dbtd" style="width: 300pt">
-                                    <div id="dbprogress" class="progress">
-                                        <div id="dbbar" class="progress-bar progress-bar-striped" role="progressbar"
-                                             style="width: 0%">0%</div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-<!--                        </div>-->
-
+                        <span class="btn btn-primary fileinput-button"> <i
+                                class="icon-plus icon-white"></i> <span>Select txt file</span>
+                                <input class="form-control" id="txtfile" type="file" name="txtfile">
+                                        </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="txtfilename"></span>
                     </div>
-<!--                    <div class="input-group">-->
-                        <!--<input type="hidden" id="finalsubmit" name="finalsubmit"
-                               value=true>-->
-<!--
+                    <br>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="public">
+                    <label class="form-check-label" for="public">Public</label>
+                </div>
+                <br>
+
+                <div>
+                    <div id="mzML_buttons">
                         <div>
-                            <button type="submit" id="submitBtn" class="btn btn-primary">Submit</button>
+                        <span class="btn btn-primary fileinput-button"> <i
+                                class="icon-plus icon-white"></i> <span>Select mzML file</span>
+                                <input class="form-control" id="dbfile" type="file" name="dbfile">
+                                        </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dbfilename"></span>
                         </div>
--->
-<!--                    </div>-->
-<!--                </form>-->
-<!--                <br>-->
+                        <br>
+
+
+
+                        <div>
+                        <span class="btn btn-primary fileinput-button"> <i
+                                class="icon-plus icon-white"></i> <span>Select env file (Optional)</span>
+                                <input class="form-control" id="envfile1" type="file" name="envfile1">
+                                        </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="envfilename1"></span>
+                        </div>
+                        <br>
+                    </div>
+
+
+                    <div>
+                        <button class="btn btn-primary" id="txtMode">Txt Mode</button>
+                    </div>
+                    <br>
+
+                    <table>
+                        <tr>
+                            <td><button id="uploadbutton" class="btn btn-primary">Upload</button></td>
+                            <td width="40pt"></td>
+                            <td id="dbtd" style="width: 300pt">
+                                <div id="dbprogress" class="progress">
+                                    <div id="dbbar" class="progress-bar progress-bar-striped" role="progressbar"
+                                         style="width: 0%">0%</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -1,8 +1,8 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Update sequence status in project table by projectCode. Sync Mode.
- * @param {number} status
- * @param {string} id
+ * @param {number} status - Sequence status code
+ * @param {string} id - Project code
  */
 function updateSeqStatusSync(status,id) {
     let resultDb = new BetterDB('./db/projectDB.db');

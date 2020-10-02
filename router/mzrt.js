@@ -15,6 +15,7 @@ const formidable = require('formidable');
 const fs = require("fs");
 
 var mzrt = router.post('/mzrt', function (req, res) {
+	console.log("Hello, mzrt!")
     var form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
@@ -26,7 +27,6 @@ var mzrt = router.post('/mzrt', function (req, res) {
         var projectName = fields.projectName;
         var projectCode = fields.projectCode;
         deleteFeature(dbDir, projectCode);
-
         console.log('Deleted previous Feature!');
         var email = fields.email;
         dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';

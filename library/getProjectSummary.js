@@ -2,8 +2,9 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Get project information summary by projectCode. Async Mode.
- * @param {string} id
- * @param {function} callback
+ * @param {string} id - Project code
+ * @param {function} callback - Callback function that handles query results
+ * @async
  */
 function getProjectSummary(id, callback) {
     let db = new sqlite3.Database('./db/projectDB.db', (err) => {
@@ -18,7 +19,7 @@ function getProjectSummary(id, callback) {
                     ProjectDir AS projectDir,
                     FileName AS fileName,
                     EnvelopeStatus AS envelopeStatus,
-                    FeatureStatus AS featureStatus,
+					FeatureStatus AS featureStatus,
                     SequenceStatus AS sequenceStatus,
                     MS1_envelope_file AS ms1_envelope_file,
                     uid AS uid,

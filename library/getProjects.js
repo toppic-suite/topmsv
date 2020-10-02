@@ -1,8 +1,9 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get all projects of one user, which is not in waiting status. Async mode.
- * @param {string} uid
- * @param {function} callback
+ * @param {number} uid - User ID
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function getProjects(uid,callback) {

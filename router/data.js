@@ -42,7 +42,7 @@ var data = router.get('/data', function(req, res) {
                         EmailAddress: row.email,
                         MS1_envelope_file: row.ms1_envelope_file,
                         envStatus: row.envelopeStatus,
-                        featureStatus: row.featureStatus
+						featureStatus: row.featureStatus
                     };
                     //console.log(summary);
                     let projectDir = row.projectDir;

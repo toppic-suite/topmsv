@@ -2,8 +2,8 @@ const BetterDB = require('better-sqlite3');
 const updateFeatureStatusSync = require('./updateFeatureStatusSync');
 /**
  * Delete all feature data by projectCode. Sync mode.
- * @param {string} projectDir
- * @param {string} projectCode
+ * @param {string} projectDir - Project directory
+ * @param {string} projectCode - Project code
  */
 function deleteFeature(projectDir, projectCode) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";

@@ -2,9 +2,10 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Update sequence status code in project database by projectCode. Async Mode.
- * @param {number} status
- * @param {string} id
- * @param {function} callback
+ * @param {number} status - Sequence status code
+ * @param {string} id - Project code
+ * @param {function} callback - Callback function that handles the query results
+ * @returns {function} Callback function
  * @async
  */
 function updateSeqStatus(status,id,callback) {

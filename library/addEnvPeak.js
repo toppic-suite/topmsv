@@ -1,17 +1,18 @@
 const getPeakListByScanID = require("./getPeakListByScanID");
 const getEnvPeakMax = require("./getEnvPeakMax");
-const molecularFormulae = require('../distribution_calc/molecularformulae');
+const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 const BetterDB = require('better-sqlite3');
 
 /**
  * Calculate distribution by envelope information and add envelope peaks into database. Async mode.
- * @param {string} dir
- * @param {number} charge
- * @param {number} theo_mono_mass
- * @param {number} scan_id
- * @param {number} envelope_id
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {number} charge - Charge
+ * @param {number} theo_mono_mass - Theoretical mono mass
+ * @param {number} scan_id - Scan ID
+ * @param {number} envelope_id - Envelope ID
+ * @param {function} callback - The callback function that handles request
+ * @returns {function} Callback function
  * @async
  */
 module.exports = function addEnvPeak(dir, charge, theo_mono_mass, scan_id, envelope_id, callback) {

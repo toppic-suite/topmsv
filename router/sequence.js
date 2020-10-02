@@ -41,7 +41,7 @@ var sequence = router.post('/sequence', function (req,res) {
             deleteSeq(projectDir, projectCode);
             updateSeqStatusSync(0,projectCode);
             res.end();
-            let parameter = __dirname + '/sequenceParse.js ' + dbDir + ' ' + des_seq;
+            let parameter = __dirname + '/utilities/sequenceParse.js ' + dbDir + ' ' + des_seq;
             submitTask(projectCode, 'node', parameter, 1);
             updateSeqStatusSync(1, projectCode);
             /*execFile('node',[__dirname + '/sequenceParse.js',dbDir,des_seq],((err, stdout, stderr) => {

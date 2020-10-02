@@ -1,9 +1,10 @@
 const BetterDB = require('better-sqlite3');
 /**
  * Delete multiple envelopes by a list of envelope_id. Sync mode.
- * @param {string} dir
- * @param {array} envList
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {array} envList - Envelope list
+ * @param {function} callback - Callback function that handles query request
+ * @returns {function} callback function
  */
 function deleteMultiEnvs(dir, envList,callback) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";

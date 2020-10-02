@@ -16,12 +16,13 @@ var createExperiment = router.get('/createExperiment', function (req,res) {
     else {
         //console.log(req.session.passport.user.profile);
         let uid = req.session.passport.user.profile.id;
-        let pid = req.query.pid;
-        console.log(pid);
-
+        // let pid = req.query.pid;
+        // console.log(pid);
+        let projectList = getProjectNew(uid);
+        console.log("projectList", projectList);
         res.render('pages/createExperiment', {
             info: uid,
-            pinfo: pid
+            projectList: projectList
         });
     }
 });

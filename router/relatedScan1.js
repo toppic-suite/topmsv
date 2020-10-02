@@ -6,13 +6,14 @@ var relatedScan1 = router.get('/relatedScan1', function (req, res) {
     console.log("Hello, relatedScan1!");
     var projectDir = req.query.projectDir;
     var scanID = req.query.scanID;
+
     getRelatedScan1(projectDir, scanID, function (err, row) {
         if(row !== undefined) {
-            let levelTwoScanID = row.LevelTwoScanID.toString();
-            res.write(levelTwoScanID);
+            let levelOneScanID = row.LevelOneScanID.toString();
+            res.write(levelOneScanID);
             res.end();
         }else {
-            res.write("0");
+            res.write("-1");
             res.end();
         }
     })
