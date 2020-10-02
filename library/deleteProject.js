@@ -4,7 +4,7 @@ const rimraf = require("rimraf");
 
 /**
  * Delete project by given projectCode. Sync mode.
- * @param {string} projectCode
+ * @param {string} projectCode - Project code
  */
 function deleteProject(projectCode) {
     updateProjectStatusSync(3, projectCode);

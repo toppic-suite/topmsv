@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Check if there were an existing envelope information. Async mode.
- * @param {object} db
- * @param {string} ProjectCode
- * @param {function} callback
+ * @param {sqliteDB} db - Sqlite database object
+ * @param {string} ProjectCode  - Project code
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function ifEnvExists(ProjectCode, callback) {

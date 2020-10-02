@@ -1,8 +1,8 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Update envelope status code by projectCode. Sync mode.
- * @param {number} status
- * @param {string} id
+ * @param {number} status - Envelope status code
+ * @param {string} id - Project code
  */
 function updateEnvStatusSync(status, id) {
     let resultDb = new BetterDB('./db/projectDB.db');

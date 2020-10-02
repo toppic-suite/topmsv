@@ -2,9 +2,10 @@ const sqlite3 = require('sqlite3').verbose();
 /**
  * Get all information of one envelope by given envelope_id. Async mode.
  *
- * @param {string} dir
- * @param {number} envID
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {number} envID - Envelope ID
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function getEnv(dir, envID,callback) {

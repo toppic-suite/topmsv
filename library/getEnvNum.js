@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get envelope information by scanID. Async mode.
- * @param {sqliteDB} resultDB
- * @param {string} scanid
- * @param {function} callback
+ * @param {sqliteDB} resultDB - Sqlite database
+ * @param {string} scanid - Scan number
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function getEnvNum(resultDB, scanid,callback) {

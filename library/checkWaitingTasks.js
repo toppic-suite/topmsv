@@ -2,7 +2,8 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Get the first task on waitlist. Async mode.
- * @param {function} callback
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} callback function
  * @async
  */
 function checkWaitingTasks(callback) {

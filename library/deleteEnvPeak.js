@@ -2,8 +2,8 @@ const BetterDB = require('better-sqlite3');
 const updateEnvStatusSync = require('./updateEnvStatusSync');
 /**
  * Delete all envelope peaks data by projectCode. Sync mode.
- * @param {string} projectDir
- * @param {string} projectCode
+ * @param {string} projectDir - Project directory
+ * @param {string} projectCode - Prject Code
  */
 function deleteEnvPeak(projectDir, projectCode) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
