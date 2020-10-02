@@ -85,8 +85,8 @@ var topfdTask = router.get('/topfdTask', function (req,res) {
         let des_ms2 = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_ms2.msalign';
 
         updateEnvStatusSync(1, projectCode);
-        submitTask(projectCode, 'node','./convertMS1Msalign.js ' + dbDir + ' ' + des_ms1, 1);
-        submitTask(projectCode, 'node','./convertMS2Msalign.js ' + dbDir + ' ' + des_ms2, 1);
+        submitTask(projectCode, 'node','./utilities/convertMS1Msalign.js ' + dbDir + ' ' + des_ms1, 1);
+        submitTask(projectCode, 'node','./utilities/convertMS2Msalign.js ' + dbDir + ' ' + des_ms2, 1);
     } else {
         res.write("No such project exists!");
         res.end();

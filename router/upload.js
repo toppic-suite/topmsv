@@ -156,7 +156,7 @@ var upload = router.post('/upload', function (req, res) {
                             stmtInsertSpectra.run(1,1,0,scan_level,prec_mz,prec_charge,prec_inte,0,0,0);
 
                             let app = 'node';
-                            let parameter = './convertTxt.js ' + dbpath + ' ' + des_txtFile;
+                            let parameter = './utilities/convertTxt.js ' + dbpath + ' ' + des_txtFile;
                             submitTask(id, app, parameter, 1);
 
                             res.end();
@@ -230,7 +230,7 @@ var upload = router.post('/upload', function (req, res) {
 
                                     app = 'node';
                                     let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
-                                    parameter = './convertEnv ' + dbDir + ' ' + des_envFile1;
+                                    parameter = './utilities/convertEnv ' + dbDir + ' ' + des_envFile1;
                                     submitTask(id, app, parameter, 1);
 
                                     res.end();
