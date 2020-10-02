@@ -1,8 +1,8 @@
 var BetterDB = require("better-sqlite3");
 /**
  * Update project description by given projectCode. Sync mode.
- * @param {string} description
- * @param {string} projectCode
+ * @param {string} description - Project description to be updated
+ * @param {string} projectCode - Project code
  */
 
 function updateDescriptionSync(description, projectCode) {

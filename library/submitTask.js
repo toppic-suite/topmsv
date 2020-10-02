@@ -4,10 +4,10 @@ const insertTaskSync = require("./insertTaskSync");
 
 /**
  * Submit a task to task scheduler. Sync Mode.
- * @param {string} projectCode
- * @param {string} app
- * @param {string} parameter
- * @param {number} threadNum
+ * @param {string} projectCode - Project code
+ * @param {string} app - Application name
+ * @param {string} parameter - Parameter for app
+ * @param {number} threadNum - The number of threads to run the app
  */
 function submitTask(projectCode, app, parameter, threadNum) {
     let queryResult = checkProjectStatusSync(projectCode);

@@ -6,9 +6,9 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Helper function for router envlist
- * @param resultDB
- * @param scan_id
- * @param res
+ * @param {sqliteDB} resultDB - Sqlite database
+ * @param {number} scan_id - Scan number
+ * @param {object} res - Response
  */
 function showData(resultDB,scan_id,res) {
     getEnvNum(resultDB, scan_id, function (err, rows) {

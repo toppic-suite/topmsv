@@ -2,13 +2,13 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Add a new envelope into database. Async mode.
- * @param {string} dir
- * @param {number} envID
- * @param {number} scan
- * @param {number} charge
- * @param {number} monoMass
- * @param {number} theoInteSum
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {number} envID - Envelope ID
+ * @param {number} scan - Scan ID
+ * @param {number} charge - Charge
+ * @param {number} monoMass - Mono mass
+ * @param {number} theoInteSum -Theoretical intensity sum
+ * @param {function} callback - The callback that handles the response
  * @async
  */
 function addEnv(dir, envID, scan, charge, monoMass,theoInteSum,callback) {

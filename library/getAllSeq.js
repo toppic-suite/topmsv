@@ -1,7 +1,8 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Get all sequence information of one project. Sync mode.
- * @param {string} dir
+ * @param {string} dir - Project directory
+ * @returns {array} All sequences of specific dataset
  */
 function getAllSeq(dir) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";

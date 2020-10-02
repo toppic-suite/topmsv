@@ -2,10 +2,10 @@ const BetterDB = require("better-sqlite3");
 
 /**
  * Get a list of Envelope ID, whose Mz value is between min and max. Async mode.
- * @param {string} dir
- * @param {number} min
- * @param {number} max
- * @param {number} scan
+ * @param {string} dir - Project directory
+ * @param {number} min - Minimum envelope m/z value
+ * @param {number} max - Maximum envelope m/z value
+ * @param {number} scan - Scan number
  * @return {array} EnvelopeIDList
  * @async
  */

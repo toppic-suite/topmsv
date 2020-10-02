@@ -2,12 +2,13 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Edit envelope data by envelope_id. Delete previous corresponding envelope peaks first. Async mode.
- * @param {string} dir
- * @param {number} envID
- * @param {number} charge
- * @param {number} monoMass
- * @param {number} theoInteSum
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {number} envID - Envelope ID
+ * @param {number} charge - Charge
+ * @param {number} monoMass - Mono mass
+ * @param {number} theoInteSum - Theoretical intensity sum
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} callback function
  * @async
  */
 function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {

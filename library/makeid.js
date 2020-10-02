@@ -1,7 +1,7 @@
 /**
  * Generate a random id by given length
- * @param {number} length
- * @returns {string} randomID
+ * @param {number} length - Length for ID
+ * @returns {string} random ID with specific length
  */
 function makeid(length) {
     var result           = '';

@@ -1,8 +1,8 @@
 /**
  * Check project status by tasks.projectCode
- * @param {sqliteDB} db
- * @param {string} projectCode
- * @param {function} callback
+ * @param {string} projectCode - Project code
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function checkProjectStatusAsync(projectCode, callback) {

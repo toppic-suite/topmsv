@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Update envelope status code by projectCode. Async mode.
- * @param {number} status
- * @param {string} id
- * @param {function} callback function
+ * @param {number} status - Envelope status code
+ * @param {string} id - Project code
+ * @param {function} callback - Callback function that handles the query results
+ * @returns {function} Callback function
  * @async
  */
 function updateEnvStatus(status,id,callback) {

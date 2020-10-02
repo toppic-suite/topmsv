@@ -1,8 +1,8 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Update project public status code by given projectCode. Sync mode.
- * @param {number} status
- * @param {string} projectCode
+ * @param {number} status - Public status code
+ * @param {string} projectCode - Project code
  */
 
 function updatePublicStatusSync(status, projectCode) {
