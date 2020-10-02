@@ -165,11 +165,9 @@ mzMLReader::mzMLReader() {
 void mzMLReader::setNameInMemory(std::string file_name) {
    file_name.insert(file_name.length() - 5, "_3D"); 
    database_name_in_memory_ = file_name.replace(file_name.length() - 4,4,"memory");
-  // std::cout << "databaseName" << databaseName << std::endl;
 };
 void mzMLReader::setName(std::string file_name) {
    database_name_ = file_name.replace(file_name.length() - 4,4,"db");
-  // std::cout << "databaseName" << databaseName << std::endl;
 };
 void mzMLReader::openDatabaseInMemory(std::string file_name) {
    setName(file_name);
@@ -537,7 +535,6 @@ void mzMLReader::updateSpSumStmt(int current_id, double peaks_int_sum) {
   }
 }
 void mzMLReader::insertPeakStmt(int peak_index, int scan_index, double intensity, double mz, double retention_time) {
-  // std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std::endl;
   sqlite3_reset(stmt_peak);
   sqlite3_bind_int(stmt_peak,1,peak_index);
   sqlite3_bind_int(stmt_peak,2,scan_index);
@@ -550,7 +547,6 @@ void mzMLReader::insertPeakStmt(int peak_index, int scan_index, double intensity
   }
 };
 void mzMLReader::insertPeakStmtMs1(int peak_index, double intensity, double mz, double retention_time, std::string color) {
-  // std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std::endl;
   char *color_code = (char *)color.c_str();
   sqlite3_reset(stmt_peak_ms1_only);
   sqlite3_bind_int(stmt_peak_ms1_only,1,peak_index);
@@ -564,7 +560,6 @@ void mzMLReader::insertPeakStmtMs1(int peak_index, double intensity, double mz, 
   }
 };
 void mzMLReader::insertPeakStmtInMemory(int peak_index, int scanIndex, double intensity, double mz, double retention_time, std::string color) {
-  // std::cout << peakIndex << "," << scanIndex << "," << intensity << "," << mz <<  std::endl;
   char *color_code = (char *)color.c_str();
   sqlite3_reset(stmt_peak_in_memory);
   sqlite3_bind_int(stmt_peak_in_memory,1,peak_index);
@@ -589,6 +584,17 @@ void mzMLReader::createIndex() {
     // fprintf(stdout, "Records created successfully\n");
     std::cout << "Scan_index created successfully" << std::endl;
   }
+  sqlstr = "CREATE INDEX id_index ON SPECTRA (ID);";
+  sql_ = (char *)sqlstr.c_str();
+  rc_ = sqlite3_exec(db_, sql_, 0, 0, &z_err_msg_);
+  if( rc_ != SQLITE_OK ){
+    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+    std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
+    sqlite3_free(z_err_msg_);
+  }else{
+    // fprintf(stdout, "Records created successfully\n");
+    std::cout << "id_index created successfully" << std::endl;
+  }
   sqlstr = "CREATE INDEX scanPairs_index ON ScanPairs (LevelOneScanID,LevelTwoScanID);";
   sql_ = (char *)sqlstr.c_str();
   rc_ = sqlite3_exec(db_, sql_, 0, 0, &z_err_msg_);
@@ -599,6 +605,17 @@ void mzMLReader::createIndex() {
   }else{
     // fprintf(stdout, "Records created successfully\n");
     std::cout << "scanPairs_index created successfully" << std::endl;
+  }
+  sqlstr = "CREATE INDEX peak_index ON PEAKS (SPECTRAID);";
+  sql_ = (char *)sqlstr.c_str();
+  rc_ = sqlite3_exec(db_, sql_, 0, 0, &z_err_msg_);
+  if( rc_ != SQLITE_OK ){
+    // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+    std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
+    sqlite3_free(z_err_msg_);
+  }else{
+    // fprintf(stdout, "Records created successfully\n");
+    std::cout << "peak_index created successfully" << std::endl;
   }
 };
 void mzMLReader::createIndexOnIdOnly(){
@@ -710,7 +727,6 @@ void mzMLReader::createSmallestTable(int &table_cnt, std::vector<int> &prev_peak
     insertConfigOneTable();
 
     endTransaction();
-    std::cout << "peak table " << table_cnt << " has peaks " << cnt << std::endl;
     table_cnt++;
   }
 }
@@ -725,9 +741,6 @@ void mzMLReader::assignDataToGrid(int table_cnt,std::vector<int> &selected_peak_
   int x_range = pow(Range.mz_scale, table_cnt - 1);
   int y_range = pow(Range.rt_scale, table_cnt - 1);
  
-  std::cout << "grid " << Grid.grid_blocks.size() / x_range << " * " << Grid.grid_blocks[0].size() / y_range << std::endl;
-  std::cout << "xrange : " << Range.mz_size * x_range << " yrange : " << y_range << std::endl; 
-
   while (y < Grid.grid_blocks[0].size()){
     while (x < Grid.grid_blocks.size()){
       double highest_intensity = 0;
@@ -796,16 +809,12 @@ void mzMLReader::insertDataLayerTable(){
   double rt_range = Range.rt_max - Range.rt_min;//range of rt in mzmML
   int grid_height = floor(rt_range / Range.rt_size);
 
-  std::cout << "mzrange: " << mz_range << " rt_range : " << rt_range << " grid_w : " << grid_width << "grid_h : " << grid_height << std::endl; 
-
   Grid.grid_blocks = std::vector<std::vector<std::vector<double> > > (grid_width, std::vector<std::vector<double> >(grid_height, std::vector<double>({-1, -1, -1, -1})));  
-  std::cout << "grid size : " << Grid.grid_blocks.size() << " * " << Grid.grid_blocks[0].size() << std::endl;
   
   clock_t t1 = clock();
   insertPeakDataToGridBlocks();//peaks assigned to GRID.GRIDBLOCKS
   closeDatabaseInMemory();//close in-memory database. local disk db is still open.
 
-  std::cout << "total peak in the GRIDBLOCKS is " << peak_in_grid << std::endl;
   std::cout <<"insertPeakDataToGridBlocks finished: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 
@@ -813,8 +822,6 @@ void mzMLReader::insertDataLayerTable(){
   int table_cnt = 1;
 
   std::vector<int> prev_peak_id;//peakID in previous table
-
-  std::cout << "peak_cnt : " << peak_cnt << " in PEAKS" << table_cnt << std::endl;
 
   while (peak_cnt >= Range.min_peaks){
     if (table_cnt == 1){
@@ -870,8 +877,6 @@ void mzMLReader::insertDataLayerTable(){
       assignDataToGrid(table_cnt, selected_peak_id);
 
       peak_cnt = selected_peak_id.size();
-
-      std::cout << "peak_cnt : " << peak_cnt << " in PEAKS" << table_cnt << std::endl;
       
       if (peak_cnt >= Range.min_peaks){
         beginTransaction();
@@ -929,7 +934,7 @@ void mzMLReader::createLayerTable(std::string num) {
     sqlite3_free(z_err_msg_);
   }else{
     // fprintf(stdout, "Table created successfully\n");
-    std::cout << "One table PEAKS" + num +" created successfully" << std::endl;
+    //std::cout << "One table PEAKS" + num +" created successfully" << std::endl;
   }
 };
 void mzMLReader::createIndexLayerTable() {

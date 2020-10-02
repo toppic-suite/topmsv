@@ -1,3 +1,7 @@
+function redrawGrph(scanID){
+    init2D(scanID);
+    update3D(scanID);
+}
 function initGraph(){
     let min = document.getElementById("rangeMin").value;
     if($('#envStatus').val() === "0"){
@@ -14,7 +18,7 @@ function initGraph(){
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
         .then((response) => {
-            rtInteGraph = new InteRtGraph("rt-sum", response.data, init2D);
+            rtInteGraph = new InteRtGraph("rt-sum", response.data, redrawGrph);
             rtInteGraph.drawGraph();
         })
         .catch((error) => {
