@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get all successful public projects. Async mode.
- * @param {function} callback
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 function getProjectsGuest(callback) {

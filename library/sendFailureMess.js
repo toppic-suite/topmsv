@@ -3,9 +3,9 @@ var nodemailer = require('nodemailer');
 
 /**
  * Send failure message to user. Async mode.
- * @param {string} projectName
- * @param {string} projectCode
- * @param {string} email
+ * @param {string} projectName - Project name
+ * @param {string} projectCode - Project code
+ * @param {string} email - User email address
  * @async
  */
 function sendFailureMess(projectName,projectCode,email) {

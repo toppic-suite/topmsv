@@ -1,6 +1,7 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Get a list which contains all the tasks that finish = 0 and projectStatus = 4. Sync mode.
+ * @returns {array} An array contains all available tasks
  */
 function getTaskListSync() {
     let resultDb = new BetterDB('./db/projectDB.db');

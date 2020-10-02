@@ -1,11 +1,11 @@
 const betterDB = require("better-sqlite3");
 /**
- * Insert envelope peaks by peak.mz and peak.intensity. Sync mode. Deprecated.
- * @param dir
- * @param envPeakID
- * @param envID
- * @param mz
- * @param intensity
+ * Insert envelope peaks by peak.mz and peak.intensity. Sync mode.
+ * @param {string} dir - Project directory
+ * @param {number} envPeakID - Envelope peak ID
+ * @param {number} envID - Envelope ID
+ * @param {number} mz - M/z value
+ * @param {number} intensity - Intensity
  * @deprecated
  */
 function insertEnvPeak(dir, envPeakID, envID, mz, intensity) {

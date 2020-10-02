@@ -2,6 +2,11 @@ const BetterDB = require("better-sqlite3");
 const getExperimentByPid = require("./getExperimentByPid");
 const getDataset = require("./getDataset");
 
+/**
+ * Build tree view for projects
+ * @param {number} pid - Project ID
+ * @returns {string} Tree view contains experiments and datasets
+ */
 function buildProjectView(pid) {
     let result = [];
     let experiments = getExperimentByPid(pid);

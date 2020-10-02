@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Update project status code by projectID. Async mode.
- * @param {number} status
- * @param {string} id
- * @param {function} callback
+ * @param {number} status - Project status code
+ * @param {string} id - Project code
+ * @param {function} callback - Callback function that handles the query results
+ * @returns {function} Callback function
  * @async
  */
 function updateProjectStatus(status,id,callback) {

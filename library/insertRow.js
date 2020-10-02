@@ -11,7 +11,7 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {number} EnvStatus
  * @param {number} SeqStatus
  * @param {string} ms1EnvFile
- * @param {string} uid
+ * @param {number} uid
  * @param {number} publicStatus
  * @async
  * @deprecated

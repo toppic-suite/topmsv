@@ -2,8 +2,8 @@ const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Get all expired projects in database, which uploaded more than 30 days ago. Async mode.
- * @param {sqliteDB} db
- * @param {function} callback
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} callback function
  * @async
  */
 function checkExpiredProj(callback) {

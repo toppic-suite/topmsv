@@ -1,9 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get corresponding level one scan by given level two scan. Async mode.
- * @param {string} dir
- * @param {number} scanID
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {number} scanID - Level two scan ID
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 

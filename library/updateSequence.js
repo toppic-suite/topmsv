@@ -1,10 +1,9 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Update proteoform of sequence table by scan. Sync Mode.
- *
- * @param {string} projectDir
- * @param {string} proteoform
- * @param {number} scan
+ * @param {string} projectDir - Project directory
+ * @param {string} proteoform - Proteoform sequence
+ * @param {number} scan - Scan number
  */
 function updateSequence(projectDir, proteoform, scan) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";

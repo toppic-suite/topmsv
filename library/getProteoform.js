@@ -1,9 +1,9 @@
 const BetterDB = require("better-sqlite3");
 /**
  * Get proteoform by given scan. Sync mode.
- *
- * @param {string} dir
- * @param {number} scanNum
+ * @param {string} dir - Project directory
+ * @param {number} scanNum - Scan number
+ * @returns {Object} Object contains proteoform
  */
 function getProteoform(dir, scanNum) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";

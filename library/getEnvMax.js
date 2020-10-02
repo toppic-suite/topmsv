@@ -3,8 +3,9 @@ const sqlite3 = require('sqlite3').verbose();
 /**
  * Get maximum id of envelopes. Async mode.
  *
- * @param {string} dir
- * @param {function} callback
+ * @param {string} dir - Project directory
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @async
  */
 
