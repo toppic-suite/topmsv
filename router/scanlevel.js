@@ -1,11 +1,16 @@
-var express = require("express");
-var router = express.Router();
-var getScanLevel = require("../library/getScanLevel");
+const express = require("express");
+const router = express.Router();
+const getScanLevel = require("../library/getScanLevel");
 
-var scanlevel = router.get('/scanlevel', function (req, res) {
+/**
+ * Express.js router for /scanlevel
+ * 
+ * Return scan level of specific scan.
+ */
+const scanlevel = router.get('/scanlevel', function (req, res) {
     console.log("Hello, scanlevel!");
-    var projectDir = req.query.projectDir;
-    var scanID = req.query.scanID;
+    const projectDir = req.query.projectDir;
+    const scanID = req.query.scanID;
     getScanLevel(projectDir, scanID, function (err, row) {
         let scanLevel = row.scanLevel.toString();
         res.write(scanLevel);

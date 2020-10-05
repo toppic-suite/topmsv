@@ -1,12 +1,12 @@
+const express = require("express");
+const router = express.Router();
+
 /**
  * Express router for /topfd
  *
  * Render topfd configure page to user
  */
-var express = require("express");
-var router = express.Router();
-
-var topfd = router.get('/topfd', function (req, res) {
+const topfd = router.get('/topfd', function (req, res) {
     if (req.session.passport === undefined) {
         res.write("Please log in first to use topfd for your projecct");
         res.end();

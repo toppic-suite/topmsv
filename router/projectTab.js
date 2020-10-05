@@ -1,8 +1,13 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const getProjectNew = require("../library/getProjectNew");
 
-var projects = router.get('/projectTab', function (req,res) {
+/**
+ * Express.js router for /projectTab
+ * 
+ * Render project tabs page to users
+ */
+const projects = router.get('/projectTab', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);

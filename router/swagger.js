@@ -1,3 +1,4 @@
+// Swagger UI config js file. Unused currently
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const express = require("express");
@@ -21,7 +22,7 @@ const options = {
 };
 const specs = swaggerJsdoc(options);
 router.use("/docs", swaggerUi.serve);
-var swaggerDoc = router.get(
+const swaggerDoc = router.get(
     "/docs",
     swaggerUi.setup(specs, {
         explorer: true

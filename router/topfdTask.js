@@ -1,17 +1,17 @@
+const express = require("express");
+const router = express.Router();
+const BetterDB = require("better-sqlite3");
+const deleteEnvPeak = require("../library/deleteEnvPeak");
+const submitTask = require("../library/submitTask");
+const updateEnvStatusSync = require("../library/updateEnvStatusSync");
+const path = require("path");
+
 /**
  * Express router for /topfdTask
  *
  * Handle request to create a topFD task, generate parameter for task and delete previous envelope peaks
  */
-var express = require("express");
-var router = express.Router();
-var BetterDB = require("better-sqlite3");
-var deleteEnvPeak = require("../library/deleteEnvPeak");
-var submitTask = require("../library/submitTask");
-var updateEnvStatusSync = require("../library/updateEnvStatusSync");
-var path = require("path");
-
-var topfdTask = router.get('/topfdTask', function (req,res) {
+const topfdTask = router.get('/topfdTask', function (req,res) {
     const app = './proteomics_cpp/bin/topfd';
     let commandArr = '';
     let projectCode = req.query.projectCode;

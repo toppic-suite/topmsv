@@ -2,15 +2,15 @@
  * Express router for /download
  *
  * If envStatus is 0, then render mzML file to user.
- * IF envStatus is 1, then zip all results files then render zip back to user.
+ * If envStatus is 1, then zip all results files then render zip back to user.
  */
-var express = require("express");
-var router = express.Router();
-var archiver = require("archiver");
-var getProjectSummary = require("../library/getProjectSummary");
-var fs = require("fs");
+const express = require("express");
+const router = express.Router();
+const archiver = require("archiver");
+const getProjectSummary = require("../library/getProjectSummary");
+const fs = require("fs");
 
-var download = router.get('/download', function (req,res) {
+let download = router.get('/download', function (req,res) {
     let projectCode = req.query.id;
     getProjectSummary(projectCode, function (err,row) {
         let projectDir = row.projectDir;
@@ -24,9 +24,9 @@ var download = router.get('/download', function (req,res) {
             let dbDir = projectDir.substr(0, projectDir.lastIndexOf("/"));
 
             let zipName = '/'+projectName+'.zip';
-            var output = fs.createWriteStream(dbDir + zipName);
+            let output = fs.createWriteStream(dbDir + zipName);
 
-            var archive = archiver('zip', {
+            let archive = archiver('zip', {
                 zlib: { level: 9 } // Sets the compression level.
             });
 
@@ -42,11 +42,11 @@ var download = router.get('/download', function (req,res) {
 
             archive.pipe(output);
 
-            var file1 = dbDir + '/' + fName + '_ms2.feature';
-            var file2 = dbDir + '/' + fName + '_ms2.msalign';
-            var file3 = dbDir + '/' + fName + '_ms1.feature';
-            var file4 = dbDir + '/' + fName + '_feature.xml';
-            var dir5 = dbDir + '/' + fName + '_file';
+            let file1 = dbDir + '/' + fName + '_ms2.feature';
+            let file2 = dbDir + '/' + fName + '_ms2.msalign';
+            let file3 = dbDir + '/' + fName + '_ms1.feature';
+            let file4 = dbDir + '/' + fName + '_feature.xml';
+            let dir5 = dbDir + '/' + fName + '_file';
             archive
                 .append(fs.createReadStream(file1), { name: fName + '_ms2.feature' })
                 .append(fs.createReadStream(file2), { name: fName + '_ms2.msalign' })

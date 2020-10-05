@@ -1,14 +1,14 @@
+const express = require("express");
+const router = express.Router();
+const getProjectSummary = require("../library/getProjectSummary");
+const deleteProject = require("../library/deleteProject");
+
 /**
  * Express router for /removeProject
  *
  * Remove project by projectCode
  */
-var express = require("express");
-var router = express.Router();
-var getProjectSummary = require("../library/getProjectSummary");
-var deleteProject = require("../library/deleteProject");
-
-var removeProject = router.post('/removeProject', function (req, res) {
+const removeProject = router.post('/removeProject', function (req, res) {
     console.log("Hello, removeProject!");
     const projectCode = req.query.projectCode;
     getProjectSummary(projectCode, function (err, row) {

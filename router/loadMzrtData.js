@@ -1,14 +1,17 @@
-var express = require("express");
-var router = express.Router();
-var loadMzrtDataLib = require("../library/loadMzrtData");
+const express = require("express");
+const router = express.Router();
+const loadMzrtDataLib = require("../library/loadMzrtData");
 
-var loadMzrtData = router.get('/loadMzrtData', function (req, res) {
+/**
+ * Express.js router for /loadMzrtData
+ */
+const loadMzrtData = router.get('/loadMzrtData', function (req, res) {
     console.log("Hello, loadMzrtData!");
-    var projectDir = req.query.projectDir;
-    var minRT = req.query.minRT;
-    var maxRT = req.query.maxRT;
-    var minMZ = req.query.minMZ;
-    var maxMZ = req.query.maxMZ;
+    const projectDir = req.query.projectDir;
+    const minRT = req.query.minRT;
+    const maxRT = req.query.maxRT;
+    const minMZ = req.query.minMZ;
+    const maxMZ = req.query.maxMZ;
     loadMzrtDataLib(projectDir, minRT, maxRT, minMZ, maxMZ, function (err, rows) {
         res.write(JSON.stringify(rows));
         res.end();

@@ -1,8 +1,11 @@
-var express = require("express");
-var fs = require("fs");
-var router = express.Router();
+const express = require("express");
+const fs = require("fs");
+const router = express.Router();
 
-var loadDataRange = router.get('/loadDataRange', function (req, res) {
+/**
+ * Express.js router for /loadDataRange
+ */
+const loadDataRange = router.get('/loadDataRange', function (req, res) {
   console.log("Hello, loadDataRange!");
   let projectDir = req.query.projectDir;
   let rangeData;

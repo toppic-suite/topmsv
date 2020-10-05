@@ -1,15 +1,15 @@
+const express = require("express");
+const router = express.Router();
+const getProjectSummary = require("../library/getProjectSummary");
+const getAllSeq = require("../library/getAllSeq");
+
 /**
  * Express router for /seqResults
  *
  * Query proteoform list by projectCode and
  * render a sequence list web page to users
  */
-var express = require("express");
-var router = express.Router();
-const getProjectSummary = require("../library/getProjectSummary");
-const getAllSeq = require("../library/getAllSeq");
-
-var seqResults = router.get('/seqResults', function (req,res) {
+const seqResults = router.get('/seqResults', function (req,res) {
     console.log('Hello, seqResults');
     let projectCode = req.query.projectCode;
     getProjectSummary(projectCode, function (err,row) {

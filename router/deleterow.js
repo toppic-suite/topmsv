@@ -3,11 +3,11 @@
  *
  * Delete multiple envelopes by envelope_id
  */
-var express = require("express");
-var router = express.Router();
-var deleteMultiEnvs = require("../library/deleteMultiEnvs");
+const express = require("express");
+const router = express.Router();
+const deleteMultiEnvs = require("../library/deleteMultiEnvs");
 
-var deleterow = router.get('/deleterow', function (req,res) {
+let deleterow = router.get('/deleterow', function (req,res) {
     console.log("Hello, deleterow!");
     let projectDir = req.query.projectDir;
     let envelopeIDs = req.query.envList;

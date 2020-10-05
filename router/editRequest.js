@@ -1,8 +1,13 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const BetterDB = require("better-sqlite3");
 
-var editRequest = router.get('/editRequest', function (req,res) {
+/**
+ * Express.js router for /edietRequest
+ * 
+ * Render edit page for user to edit their project, experiment or dataset.
+ */
+let editRequest = router.get('/editRequest', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
@@ -20,8 +25,8 @@ var editRequest = router.get('/editRequest', function (req,res) {
         const type = req.query.type;
         const id = req.query.id;
         let name, description;
-        console.log("type:", type);
-        console.log("id:", id);
+        // console.log("type:", type);
+        // console.log("id:", id);
         if (type === 'pid') {
             let resultDb = new BetterDB("./db/projectDB.db");
             let stmt = resultDb.prepare(`SELECT pid as pid, pname as projectName, description AS description

@@ -1,5 +1,5 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const getPeakListByScanID = require("../library/getPeakListByScanID");
 const editEnv = require("../library/editEnv");
 const addEnvPeak = require("../library/addEnvPeak");
@@ -7,7 +7,13 @@ const getEnv = require("../library/getEnv");
 const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 
-var editrow = router.get("/editrow", function (req, res) {
+/**
+ * Expree.js router for /editrow
+ * 
+ * Edit envelope information and then calculate envelope peaks again based on the new 
+ * evenlope information. In the end, save new envelope peaks into database.
+ */
+let editrow = router.get("/editrow", function (req, res) {
     console.log("Hello, editrow!");
     let projectDir = req.query.projectDir;
     let scan_id = req.query.scan_id;
