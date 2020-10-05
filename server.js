@@ -1,19 +1,19 @@
-var fs = require('fs');
-var nodemailer = require('nodemailer');
-var favicon = require('serve-favicon');
+const fs = require('fs');
+const nodemailer = require('nodemailer');
+const favicon = require('serve-favicon');
 const sqlite3 = require('sqlite3').verbose();
-var bodyParser = require('body-parser');
-var compression = require('compression');
-var helmet = require('helmet');
-var express = require('express');
+const bodyParser = require('body-parser');
+const compression = require('compression');
+const helmet = require('helmet');
+const express = require('express');
 
-var cookieParser = require('cookie-parser');
-var cookieSession = require('cookie-session');
-var passport = require('passport');
+const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
 const auth = require('./auth');
 const os = require('os');
 const cpuCount = os.cpus().length;
-var app = express();
+const app = express();
 
 app.use(helmet());
 app.use(cookieSession({
@@ -46,7 +46,7 @@ const job = new CronJob('00 00 00 * * *', function() {
 });
 job.start();
 
-var avaiResourse = cpuCount - 2;
+const avaiResourse = cpuCount - 2;
 console.log("cpuCount", cpuCount);
 
 const getTaskListSync = require("./library/getTaskListSync");
@@ -468,9 +468,9 @@ app.use('/*', function(req, res){
     res.sendFile( __dirname + "/public/" + "404.html" );
 });
 
-var server = app.listen(8443, function () {
-    // var host = server.address().address;
-    var port = server.address().port;
+const server = app.listen(8443, function () {
+    // const host = server.address().address;
+    const port = server.address().port;
     console.log("Started on PORT %s", port)
 });
 
@@ -504,18 +504,18 @@ function authGoogleSignUp(token, callback) {
     verify().catch(console.error);
 }
 
-var db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+const db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
         console.error(err.message);
     }
     console.log('Connected to the projectDB.db database.');
-    var sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'FeatureStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
+    let sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'FeatureStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
     db.run(sqlToCreateTable, function (err) {
         if (err) {
             return console.log(err.message);
         }
         console.log("Table for project is ready!");
-        var sqlToCreateIndex = "CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectCode` )";
+        let sqlToCreateIndex = "CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectCode` )";
         db.run(sqlToCreateIndex, function (err) {
             if (err) {
                 return console.log(err.message);
@@ -523,13 +523,13 @@ var db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
             console.log("Index for project is ready!");
         });
 
-        var sqlToUserTable = "CREATE TABLE IF NOT EXISTS \"Users\" ( `uid` TEXT NOT NULL, `email` TEXT NULL, `firstname` TEXT NULL, `lastname` TEXT NULL, `fullname` TEXT NULL, PRIMARY KEY(`uid`) )";
+        let sqlToUserTable = "CREATE TABLE IF NOT EXISTS \"Users\" ( `uid` TEXT NOT NULL, `email` TEXT NULL, `firstname` TEXT NULL, `lastname` TEXT NULL, `fullname` TEXT NULL, PRIMARY KEY(`uid`) )";
         db.run(sqlToUserTable, function (err) {
             if (err) {
                 return console.log(err.message);
             }
             console.log("Table for Users is ready!");
-            var sqlToUserIndex = "CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )";
+            let sqlToUserIndex = "CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )";
             db.run(sqlToUserIndex, function (err) {
                 if (err) {
                     return console.log(err.message);
@@ -538,13 +538,13 @@ var db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
             });
         });
 
-        var sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
+        let sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
         db.run(sqlToCreateTaskTable, function (err) {
             if (err) {
                 return console.log(err.message);
             }
             console.log("Table for Tasks is ready!");
-            var sqlToTasksIndex = "CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )";
+            let sqlToTasksIndex = "CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )";
             db.run(sqlToTasksIndex, function (err) {
                 if (err) {
                     return console.log(err.message);
@@ -555,7 +555,7 @@ var db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqli
     });
 });
 
-var transport = nodemailer.createTransport({
+const transport = nodemailer.createTransport({
     host: "smtp-mail.outlook.com", // hostname
     secureConnection: false, // TLS requires secureConnection to be false
     port: 587, // port for secure SMTP
