@@ -3,20 +3,19 @@
  *
  * Add one envelope and calculate its distribution then save it in existing database
  */
-var express = require("express");
-var router = express.Router();
-var getPeakListByScanID = require("../library/getPeakListByScanID");
-var getEnvMax = require("../library/getEnvMax");
-var addEnv = require("../library/addEnv");
-var addEnvPeak = require("../library/addEnvPeak");
-var getEnv = require("../library/getEnv");
+const express = require("express");
+const router = express.Router();
+const getPeakListByScanID = require("../library/getPeakListByScanID");
+const getEnvMax = require("../library/getEnvMax");
+const addEnv = require("../library/addEnv");
+const addEnvPeak = require("../library/addEnvPeak");
+const getEnv = require("../library/getEnv");
 const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 
-var addrow = router.get('/addrow', function (req,res) {
+let addrow = router.get('/addrow', function (req,res) {
     console.log("Hello, addrow!");
     let projectDir = req.query.projectDir;
-    //let envID = req.query.envelope_id;
     let scan_id = req.query.scan_id;
     let charge = req.query.charge;
     let monoMass = req.query.mono_mass;

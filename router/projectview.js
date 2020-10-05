@@ -1,11 +1,17 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const BetterDB = require("better-sqlite3");
 const getProjectNew = require("../library/getProjectNew");
 const getExperiment = require("../library/getExperiment");
 const buildProjectView = require("../library/buildProjectView");
 
-var projectview = router.get('/projectview', function (req,res) {
+/**
+ * Express.js router for /projectview. Unfinished
+ * 
+ * Render project share page to users
+ */
+
+const projectview = router.get('/projectview', function (req,res) {
     console.log("hello projectview");
     const pid = req.query.pid;
 

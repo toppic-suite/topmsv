@@ -1,11 +1,16 @@
-var express = require("express");
-var router = express.Router();
-var getRTAsync = require("../library/getRTAsync");
+const express = require("express");
+const router = express.Router();
+const getRTAsync = require("../library/getRTAsync");
 
-var getRT = router.get('/getRT', function (req, res) {
+/**
+ * Express.js router for /getRT
+ * 
+ * Return retention time of one scan by given scan number
+ */
+const getRT = router.get('/getRT', function (req, res) {
     console.log("Hello, getRT!");
-    var projectDir = req.query.projectDir;
-    var scanNum = req.query.scanID;
+    const projectDir = req.query.projectDir;
+    const scanNum = req.query.scanID;
 
     getRTAsync(projectDir, scanNum, function (err, row) {
         if(!row) {

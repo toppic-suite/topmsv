@@ -5,21 +5,21 @@
  * and save project information into project database,
  * then submit task to task scheduler
  */
-var express = require("express");
-var router = express.Router();
-var insertRowSync = require("../library/insertRowSync");
+const express = require("express");
+const router = express.Router();
+const insertRowSync = require("../library/insertRowSync");
 const insertDataset = require("../library/insertDataset");
-var submitTask = require("../library/submitTask");
+const submitTask = require("../library/submitTask");
 const makeid = require("../library/makeid");
 const ifExists = require("../library/ifExists");
 const BetterDB = require('better-sqlite3');
 const nodemailer = require('nodemailer');
-var fs = require('fs');
+const fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
 const sqlite3 = require('sqlite3').verbose();
 
-var upload = router.post('/upload', function (req, res) {
+const upload = router.post('/upload', function (req, res) {
     console.log("hello,upload");
     let uid = req.session.passport.user.profile.id;
     let resultDb = new BetterDB('./db/projectDB.db');
@@ -35,7 +35,7 @@ var upload = router.post('/upload', function (req, res) {
     } else {
         email = queryResult.email;
     }
-    var form = new formidable.IncomingForm();
+    let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
     form.uploadDir = "tmp";
@@ -44,26 +44,26 @@ var upload = router.post('/upload', function (req, res) {
         //console.log(fields.projectname);
         //console.log(fields.emailaddress);
         //console.log(files.dbfile);
-        var projectname = fields.projectname;
-        var emailtosend = email;
-        var description = fields.description;
-        var publicStatus = fields.public;
-        var file = files.dbfile;
+        let projectname = fields.projectname;
+        let emailtosend = email;
+        let description = fields.description;
+        let publicStatus = fields.public;
+        let file = files.dbfile;
         /*if (file === undefined) {
             console.log("Upload files failed!");
             return;
         }*/
-        var eid = fields.eid;
-        var fname = file.name; // hello.txt
-        var envFile1 = files.envfile1;
-        var txtFile = files.txtfile;
+        let eid = fields.eid;
+        let fname = file.name; // hello.txt
+        let envFile1 = files.envfile1;
+        let txtFile = files.txtfile;
         console.log(txtFile);
-        // var envFile2 = files.envfile2;
-        var folderid = uuidv1();
-        var des_path = "data/" + folderid + "/";
-        var des_file = "data/" + folderid + "/" + fname;
-        // var des_envFile1 = "data/" + folderid + "/" + "ms1.env";
-        var des_envFile2 = "data/" + folderid + "/" + "ms2.env";
+        // let envFile2 = files.envfile2;
+        let folderid = uuidv1();
+        let des_path = "data/" + folderid + "/";
+        let des_file = "data/" + folderid + "/" + fname;
+        // let des_envFile1 = "data/" + folderid + "/" + "ms1.env";
+        let des_envFile2 = "data/" + folderid + "/" + "ms2.env";
         //console.log(envFile1);
         // Generate new path for file
         if (!fs.existsSync(des_path)) {
@@ -84,7 +84,7 @@ var upload = router.post('/upload', function (req, res) {
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
 
-                var adr =  'https://toppic.soic.iupui.edu/data?id=';
+                let adr =  'https://toppic.soic.iupui.edu/data?id=';
                 // output result into screen
 
                 res.write('<h1>File uploaded successfully!</h1>');
@@ -93,7 +93,7 @@ var upload = router.post('/upload', function (req, res) {
                 res.write('<h2>File Path: </h2>');
                 // res.write(des_file);
 
-                var id = makeid(11);
+                let id = makeid(11);
 
                 ifExists(id, function (err, result) {
                     if(err) {
@@ -152,7 +152,7 @@ var upload = router.post('/upload', function (req, res) {
                             stmtCreatePeaksTable.run();
 
                             // const stmtCreatePairTable = betterDB.prepare(`CREATE TABLE IF NOT EXISTS `ScanPairs` ( `LevelOneScanID ')
-                            var stmtInsertSpectra = betterDB.prepare('INSERT INTO SPECTRA(ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES(?,?,?,?,?,?,?,?,?,?)');
+                            let stmtInsertSpectra = betterDB.prepare('INSERT INTO SPECTRA(ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES(?,?,?,?,?,?,?,?,?,?)');
                             stmtInsertSpectra.run(1,1,0,scan_level,prec_mz,prec_charge,prec_inte,0,0,0);
 
                             let app = 'node';
@@ -177,7 +177,7 @@ var upload = router.post('/upload', function (req, res) {
                 return;
             })
         } else {
-            // var fname = file.name; // hello.txt
+            // let fname = file.name; // hello.txt
             if(envFile1 !== undefined) {
                 let des_envFile1 = "data/" + folderid + "/" + envFile1.name;
                 fs.rename(envFile1.path, des_envFile1, function (err) {
@@ -190,7 +190,7 @@ var upload = router.post('/upload', function (req, res) {
                             console.log(err);
                             return res.send({"error": 403, "message": "Error on saving file!"});
                         }
-                        var adr =  'https://toppic.soic.iupui.edu/data?id=';
+                        let adr =  'https://toppic.soic.iupui.edu/data?id=';
                         // output result into screen
 
                         res.write('<h1>File uploaded successfully!</h1>');
@@ -199,7 +199,7 @@ var upload = router.post('/upload', function (req, res) {
                         res.write('<h2>File Path: </h2>');
                         res.write(des_file);
 
-                        var id = makeid(11);
+                        let id = makeid(11);
 
                         ifExists(id, function (err, result) {
                             if(err) {
@@ -318,7 +318,7 @@ var upload = router.post('/upload', function (req, res) {
                         console.log(err);
                         return res.send({"error": 403, "message": "Error on saving file!"});
                     }
-                    var adr =  'https://toppic.soic.iupui.edu/data?id=';
+                    let adr =  'https://toppic.soic.iupui.edu/data?id=';
                     // output result into screen
 
                     res.write('<h1>File uploaded successfully!</h1>');
@@ -327,7 +327,7 @@ var upload = router.post('/upload', function (req, res) {
                     res.write('<h2>File Path: </h2>');
                     res.write(des_file);
 
-                    var id = makeid(11);
+                    let id = makeid(11);
 
                     ifExists(id, function (err, result) {
                         if(err) {
@@ -412,7 +412,7 @@ var upload = router.post('/upload', function (req, res) {
     })
 });
 
-var transport = nodemailer.createTransport({
+const transport = nodemailer.createTransport({
     host: "smtp-mail.outlook.com", // hostname
     secureConnection: false, // TLS requires secureConnection to be false
     port: 587, // port for secure SMTP

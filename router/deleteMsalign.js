@@ -3,11 +3,11 @@
  *
  * Delete current envelope peaks
  */
-var express = require("express");
-var router = express.Router();
-var deleteEnvPeak = require("../library/deleteEnvPeak");
+const express = require("express");
+const router = express.Router();
+const deleteEnvPeak = require("../library/deleteEnvPeak");
 
-var deleteMsalign = router.get('/deleteMsalign', function (req,res) {
+let deleteMsalign = router.get('/deleteMsalign', function (req,res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
     deleteEnvPeak(projectDir, projectCode);

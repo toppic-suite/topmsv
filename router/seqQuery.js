@@ -1,15 +1,15 @@
+const express = require("express");
+const router = express.Router();
+const getProjectSummary = require("../library/getProjectSummary");
+const getProteoform = require("../library/getProteoform");
+
 /**
  * Express router for /seqQuery
  *
  * Query proteoform by projectCode and scan,
  * send back proteoform result to user
  */
-var express = require("express");
-var router = express.Router();
-var getProjectSummary = require("../library/getProjectSummary");
-var getProteoform = require("../library/getProteoform");
-
-var seqQuery = router.get('/seqQuery', function (req, res) {
+const seqQuery = router.get('/seqQuery', function (req, res) {
     let projectDir = req.query.projectDir;
     let projectCode = req.query.projectCode;
     let scanNum = req.query.scanID;

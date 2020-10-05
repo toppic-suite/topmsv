@@ -1,10 +1,15 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const deleteDataset = require("../library/deleteDataset");
 const deleteExperiment = require("../library/deleteExperiment");
 const deleteProject = require("../library/deleteProjectNew");
 
-var deleteRequest = router.post('/deleteRequest', function (req,res) {
+/**
+ * Express.js router for /deleteRequest
+ * 
+ * Delete dataset, experiment, or project with given id and type
+ */
+let deleteRequest = router.post('/deleteRequest', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
@@ -21,7 +26,6 @@ var deleteRequest = router.post('/deleteRequest', function (req,res) {
         let uid = req.session.passport.user.profile.id;
         let type = req.query.type;
         let id = req.query.id;
-        // console.log(pid);
 
         if (type === 'datasetID') {
             deleteDataset(id);

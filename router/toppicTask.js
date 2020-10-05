@@ -1,35 +1,35 @@
+const express = require("express");
+const router = express.Router();
+const formidable = require("formidable");
+const getProjectSummary = require("../library/getProjectSummary");
+const submitTask = require("../library/submitTask");
+const fs = require("fs");
+const deleteSeq = require("../library/deleteSeqSync");
+const updateSeqStatusSync = require("../library/updateSeqStatusSync");
+
 /**
  * Express router for /toppicTask
  *
  * Hanld request to generate a toppic task, save files and delete previous sequence information in database
  */
-var express = require("express");
-var router = express.Router();
-var formidable = require("formidable");
-var getProjectSummary = require("../library/getProjectSummary");
-var submitTask = require("../library/submitTask");
-var fs = require("fs");
-var deleteSeq = require("../library/deleteSeqSync");
-var updateSeqStatusSync = require("../library/updateSeqStatusSync");
-
-var toppicTask = router.post('/toppicTask', function (req, res) {
+const toppicTask = router.post('/toppicTask', function (req, res) {
     console.log("Hello, toppicTask");
     const app = './proteomics_cpp/bin/toppic';
     let commandArr = '';
-    var form = new formidable.IncomingForm();
+    let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
     form.uploadDir = "tmp";
     form.keepExtensions = true;
 
     form.parse(req, function (err, fields, files) {
-        var fastaFile = files.fastaFile;
-        var lcmsFeatureFile = files.lcmsFeatureFile;
-        var fixedPTMFile = files.fixedPTMFile;
-        var ptmShiftFile = files.ptmShiftFile;
-        var projectCode = fields.projectCode;
-        var threadNum = fields.threadNum;
-        var parameter = fields.command;
+        let fastaFile = files.fastaFile;
+        let lcmsFeatureFile = files.lcmsFeatureFile;
+        let fixedPTMFile = files.fixedPTMFile;
+        let ptmShiftFile = files.ptmShiftFile;
+        let projectCode = fields.projectCode;
+        let threadNum = fields.threadNum;
+        let parameter = fields.command;
         console.log("parameter",parameter);
         console.log(projectCode);
         getProjectSummary(projectCode, function (err, row) {
@@ -38,7 +38,7 @@ var toppicTask = router.post('/toppicTask', function (req, res) {
             let fileName = row.fileName;
             let msalign_name = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2.msalign';
             let msalign_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + msalign_name;
-            var des_fastaFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fastaFile.name;
+            let des_fastaFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fastaFile.name;
             fs.rename(fastaFile.path, des_fastaFile, function (err) {
                 if (err) {
                     console.log(err);
@@ -52,13 +52,13 @@ var toppicTask = router.post('/toppicTask', function (req, res) {
                 }
 
                 if(fixedPTMFile !== undefined) {
-                    var des_fixedPTMFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fixedPTMFile.name;
+                    let des_fixedPTMFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fixedPTMFile.name;
                     fs.renameSync(fixedPTMFile.path, des_fixedPTMFile);
                     parameter = parameter + ' -f '+ des_fixedPTMFile;
                 }
 
                 if (ptmShiftFile !== undefined) {
-                    var des_ptmShiftFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + ptmShiftFile.name;
+                    let des_ptmShiftFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + ptmShiftFile.name;
                     fs.renameSync(ptmShiftFile.path, des_ptmShiftFile);
                     parameter = parameter + ' -i '+ des_ptmShiftFile;
                 }

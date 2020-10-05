@@ -1,13 +1,14 @@
+const express = require("express");
+const router = express.Router();
+const getProjectsGuest = require("../library/getProjectGuest");
+
 /**
- * Express router for main webpage
+ * Express router for main webpage (/index)
  *
  * Show all public projects in database to both guests and users
  */
-var express = require("express");
-var router = express.Router();
-var getProjectsGuest = require("../library/getProjectGuest");
 
-var index = router.get('/', function (req, res) {
+const index = router.get('/', function (req, res) {
     if (req.session.token) {
         res.cookie('token', req.session.token);
     }else {

@@ -3,18 +3,18 @@
  *
  * Check project status and render result page back to users
  */
-var express = require("express");
-var router = express.Router();
-var getProjectSummary = require("../library/getProjectSummary");
-var getScanRange = require("../library/getScanRange");
+const express = require("express");
+const router = express.Router();
+const getProjectSummary = require("../library/getProjectSummary");
+const getScanRange = require("../library/getScanRange");
 
-var data = router.get('/data', function(req, res) {
+let data = router.get('/data', function(req, res) {
     console.log("Hello data!");
-    var projectCode = req.query.id;
+    let projectCode = req.query.id;
     let uid = 0;
     if (req.session.passport === undefined)
     {
-        //console.log('No user auth!');
+        console.log('No user auth!');
     }
     else {
         //console.log(req.session.passport.user.profile);
@@ -44,21 +44,18 @@ var data = router.get('/data', function(req, res) {
                         envStatus: row.envelopeStatus,
 						featureStatus: row.featureStatus
                     };
-                    //console.log(summary);
+                    
                     let projectDir = row.projectDir;
                     let projectUid = row.uid;
-                    var fileName = row.fileName;
-                    //console.log(projectUid);
-                    //res.write(JSON.stringify(summary));
-                    //console.log(row.projectDir);
+                    let fileName = row.fileName;
+                    
                     if(uid === projectUid) {
                         getScanRange(projectDir, function (err, row) {
                             let scanRange = {
                                 MIN: row.minScan,
                                 MAX: row.maxScan
                             };
-                            //res.write(JSON.stringify(scanRange));
-                            //console.log(projectDir);
+                            
                             res.render('pages/result', {
                                 summary,
                                 scanRange,
@@ -73,8 +70,7 @@ var data = router.get('/data', function(req, res) {
                                 MIN: row.minScan,
                                 MAX: row.maxScan
                             };
-                            //res.write(JSON.stringify(scanRange));
-                            //console.log(projectDir);
+                            
                             res.render('pages/guestResult', {
                                 summary,
                                 scanRange,
@@ -83,8 +79,6 @@ var data = router.get('/data', function(req, res) {
                                 fileName
                             });
                         });
-                        /*res.send('You are not the owner of this project');
-                        res.end();*/
                     }
                 } else if (row.projectStatus === 0) {
                     console.log("Project status: 0");

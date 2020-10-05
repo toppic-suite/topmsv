@@ -1,9 +1,13 @@
-var express = require("express");
-var router = express.Router();
-const sqlite3 = require('sqlite3').verbose();
+const express = require("express");
+const router = express.Router();
 const getProjects = require("../library/getProjects");
 
-var projects = router.get('/projects', function (req,res) {
+/**
+ * Express.js router for /projects
+ * 
+ * Render project list page for user by given user ID
+ */
+const projects = router.get('/projects', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
@@ -17,7 +21,7 @@ var projects = router.get('/projects', function (req,res) {
     else {
         //console.log(req.session.passport.user.profile);
         let uid = req.session.passport.user.profile.id;
-        console.log(uid);
+        // console.log(uid);
         getProjects(uid,function (rows) {
             rows.forEach(row=>{
                 console.log("row", row);

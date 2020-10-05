@@ -1,8 +1,11 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const buildTreeview = require("../library/buildTreeview");
 
-var test = router.get('/test', function (req,res) {
+/**
+ * Express.js router for /test
+ */
+const test = router.get('/test', function (req,res) {
     console.log("hello test");
     if (req.session.passport === undefined)
         console.log("undefined passport");
