@@ -1,16 +1,21 @@
-var express = require("express");
-var router = express.Router();
-var BetterDB = require("better-sqlite3");
+const express = require("express");
+const router = express.Router();
+const BetterDB = require("better-sqlite3");
 
-var editManage = router.post('/editManage', function (req,res) {
+/**
+ * Express.js router for /editManage
+ * 
+ * Update name, description and public status code for project, experiment or dataset.
+ */
+let editManage = router.post('/editManage', function (req,res) {
     console.log("Hello, editManage!");
     const type = req.query.type;
     const id = req.query.id;
     const name = req.query.name;
     const description = req.query.description;
     const publicStatus = req.query.publicStatus;
-    console.log("type", type);
-    console.log("publicStatus", publicStatus);
+    // console.log("type", type);
+    // console.log("publicStatus", publicStatus);
     const resultDb = new BetterDB('./db/projectDB.db');
     if (type === 'pid') {
         let stmt = resultDb.prepare(`UPDATE Project

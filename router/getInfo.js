@@ -1,8 +1,13 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const BetterDB = require("better-sqlite3");
 
-var getInfo = router.get('/getInfo', function (req,res) {
+/**
+ * Express.js router for /getInfo
+ * 
+ * Return information of project, experiment or dataset with given type and ID
+ */
+let getInfo = router.get('/getInfo', function (req,res) {
     console.log("Hello, getInfo!");
     // const uid = req.session.passport.user.profile.id;
     const type = req.query.type;

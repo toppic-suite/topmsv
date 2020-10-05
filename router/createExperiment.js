@@ -1,8 +1,12 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const getProjectNew = require("../library/getProjectNew");
 
-var createExperiment = router.get('/createExperiment', function (req,res) {
+/**
+ * Express router for /createExperiment
+ * Render createExperiment page to users
+ */
+let createExperiment = router.get('/createExperiment', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
@@ -19,7 +23,7 @@ var createExperiment = router.get('/createExperiment', function (req,res) {
         // let pid = req.query.pid;
         // console.log(pid);
         let projectList = getProjectNew(uid);
-        console.log("projectList", projectList);
+        // console.log("projectList", projectList);
         res.render('pages/createExperiment', {
             info: uid,
             projectList: projectList

@@ -1,9 +1,13 @@
-var express = require("express");
-var router = express.Router();
-var insertExperiment = require("../library/insertExperiment");
+const express = require("express");
+const router = express.Router();
+const insertExperiment = require("../library/insertExperiment");
 
-
-var newExperiment = router.post('/newExperiment', function (req,res) {
+/**
+ * Express.js router for /newExperiment
+ * 
+ * Create a new experiment under specific project with given experiment information
+ */
+const newExperiment = router.post('/newExperiment', function (req,res) {
     console.log("Hello, newProject!");
     const uid = req.session.passport.user.profile.id;
     const ename = req.query.ename;

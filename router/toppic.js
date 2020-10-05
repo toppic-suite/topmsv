@@ -1,12 +1,12 @@
+const express = require("express");
+const router = express.Router();
+
 /**
  * Express router for /toppic
  *
  * Render a toppic task configure web page back to user
  */
-var express = require("express");
-var router = express.Router();
-
-var toppic = router.get('/toppic', function (req, res) {
+const toppic = router.get('/toppic', function (req, res) {
     if (req.session.passport === undefined) {
         res.write("Please log in first to use topic for your projecct");
         res.end();

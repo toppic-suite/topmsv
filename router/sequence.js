@@ -1,33 +1,33 @@
+const express = require("express");
+const router = express.Router();
+const deleteSeq = require("../library/deleteSeqSync")
+const updateSeqStatusSync = require("../library/updateSeqStatusSync");
+const submitTask = require("../library/submitTask");
+const sendFailureMess = require("../library/sendFailureMess");
+const formidable = require('formidable');
+const fs = require('fs');
+
 /**
  * Express router for /sequence
  *
  * Handle request to upload sequence file, delete current sequence information in database
  * then submit task to process sequence file
  */
-var express = require("express");
-var router = express.Router();
-var deleteSeq = require("../library/deleteSeqSync")
-var updateSeqStatusSync = require("../library/updateSeqStatusSync");
-var submitTask = require("../library/submitTask");
-var sendFailureMess = require("../library/sendFailureMess");
-const formidable = require('formidable');
-const fs = require('fs');
-
-var sequence = router.post('/sequence', function (req,res) {
+let sequence = router.post('/sequence', function (req,res) {
     console.log('Hello, sequence!');
-    var form = new formidable.IncomingForm();
+    let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
     form.uploadDir = "tmp";
     form.keepExtensions = true;
     form.parse(req, function (err, fields, files) {
-        var seqFile = files.seqFile;
-        var email = fields.email;
-        var projectDir = fields.projectDir;
-        var projectName = fields.projectName;
-        var projectCode = fields.projectCode;
-        var dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
-        var des_seq = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqFile.name;
+        let seqFile = files.seqFile;
+        let email = fields.email;
+        let projectDir = fields.projectDir;
+        let projectName = fields.projectName;
+        let projectCode = fields.projectCode;
+        let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
+        let des_seq = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqFile.name;
         if (seqFile === undefined) {
             console.log("Upload files failed!");
             sendFailureMess(projectName, projectCode, email);
@@ -44,18 +44,6 @@ var sequence = router.post('/sequence', function (req,res) {
             let parameter = __dirname + '/utilities/sequenceParse.js ' + dbDir + ' ' + des_seq;
             submitTask(projectCode, 'node', parameter, 1);
             updateSeqStatusSync(1, projectCode);
-            /*execFile('node',[__dirname + '/sequenceParse.js',dbDir,des_seq],((err, stdout, stderr) => {
-                if(err) {
-                    console.log('Processing sequence file failed!');
-                    sendFailureMess(db, projectName, projectCode, email);
-                    return;
-                }
-                updateSeqStatus(db,1, projectCode, function () {
-                    updateProjectStatus(db, 1, projectCode, function () {
-                        console.log('Sequence process is done!');
-                    });
-                });
-            }))*/
         })
     })
 });

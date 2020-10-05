@@ -1,5 +1,5 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const getPeakListByScanID = require("../library/getPeakListByScanID");
 const getPeakListByMZRange = require("../library/getPeakListByMZRange");
 const getEnvPeakListSync = require("../library/getEnvPeakListSync");
@@ -8,7 +8,13 @@ const getEnvIDListByMZRange = require("../library/getEnvIDListByMZRange");
 const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
 
-var previewEdit = router.get("/previewEdit", function (req, res) {
+/**
+ * Express.js router for /previewEdit
+ * 
+ * Return a json object for preview specific enevelope
+ */
+
+const previewEdit = router.get("/previewEdit", function (req, res) {
     console.log("Hello, previewEdit!");
     let projectDir = req.query.projectDir;
     let scan_id = req.query.scan_id;

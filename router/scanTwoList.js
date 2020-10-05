@@ -1,11 +1,16 @@
-var express = require("express");
-var router = express.Router();
-var getScanLevelTwoList = require("../library/getScanLevelTwoList");
+const express = require("express");
+const router = express.Router();
+const getScanLevelTwoList = require("../library/getScanLevelTwoList");
 
-var scanTwoList = router.get('/scanTwoList', function (req, res) {
+/**
+ * Express.js router for /scanTwoList
+ * 
+ * Return array of scan level two information by given scan level one ID
+ */
+const scanTwoList = router.get('/scanTwoList', function (req, res) {
     console.log("Hello, scanTwoList!");
-    var projectDir = req.query.projectDir;
-    var scanID = req.query.scanID;
+    const projectDir = req.query.projectDir;
+    const scanID = req.query.scanID;
     getScanLevelTwoList(projectDir, scanID, function (err, rows) {
         res.write(JSON.stringify(rows));
         // console.log(rows);

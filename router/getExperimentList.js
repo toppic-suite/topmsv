@@ -1,8 +1,13 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const BetterDB = require("better-sqlite3");
 
-var getExperimentList = router.get('/getExperimentList', function (req,res) {
+/**
+ * Express.js router for /getExperimentList
+ * 
+ * Return array of all experiments with given project id
+ */
+let getExperimentList = router.get('/getExperimentList', function (req,res) {
     console.log("Hello, getExperimentList!");
     const uid = req.session.passport.user.profile.id;
     const pid = req.query.pid;

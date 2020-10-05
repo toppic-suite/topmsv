@@ -1,14 +1,14 @@
+const express = require("express");
+const router = express.Router();
+const getProjectSummary = require("../library/getProjectSummary");
+const updateSequence = require("../library/updateSequence");
+
 /**
  * Express router for /updateSeq
  *
  * Handle request to update one proteoform in database by scan
  */
-var express = require("express");
-var router = express.Router();
-var getProjectSummary = require("../library/getProjectSummary");
-const updateSequence = require("../library/updateSequence");
-
-var updateSeq = router.post('/updateSeq', function (req, res) {
+const updateSeq = router.post('/updateSeq', function (req, res) {
     console.log('Hello updateSeq!');
     let uid;
     //console.log(req.session.passport.user.profile);

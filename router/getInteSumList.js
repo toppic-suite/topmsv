@@ -1,10 +1,15 @@
-var express = require("express");
-var router = express.Router();
-var getSumList = require("../library/getSumList");
+const express = require("express");
+const router = express.Router();
+const getSumList = require("../library/getSumList");
 
-var getInteSumList = router.get('/getInteSumList', function (req, res) {
+/**
+ * Express.js router for /getInteSumList
+ * 
+ * Return array of {intensity, retention time, scan number}
+ */
+let getInteSumList = router.get('/getInteSumList', function (req, res) {
     console.log("Hello, getInteSumList!");
-    var projectDir = req.query.projectDir;
+    const projectDir = req.query.projectDir;
     getSumList(projectDir, function (err, rows) {
         res.write(JSON.stringify(rows));
         // console.log(rows);

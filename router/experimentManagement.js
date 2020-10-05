@@ -1,8 +1,13 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 const getExperiment = require("../library/getExperiment");
 
-var experimentManagement = router.get('/experimentManagement', function (req,res) {
+/**
+ * Express.js router for /experimentMangement
+ * 
+ * Render experiment management page to users
+ */
+let experimentManagement = router.get('/experimentManagement', function (req,res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);

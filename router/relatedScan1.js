@@ -1,11 +1,16 @@
-var express = require("express");
-var router = express.Router();
-var getRelatedScan1 = require("../library/getRelatedScan1");
+const express = require("express");
+const router = express.Router();
+const getRelatedScan1 = require("../library/getRelatedScan1");
 
-var relatedScan1 = router.get('/relatedScan1', function (req, res) {
+/**
+ * Express.js router for /relatedScan1
+ * 
+ * Return scan level one of specific scan level two
+ */
+const relatedScan1 = router.get('/relatedScan1', function (req, res) {
     console.log("Hello, relatedScan1!");
-    var projectDir = req.query.projectDir;
-    var scanID = req.query.scanID;
+    const projectDir = req.query.projectDir;
+    const scanID = req.query.scanID;
 
     getRelatedScan1(projectDir, scanID, function (err, row) {
         if(row !== undefined) {

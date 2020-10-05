@@ -1,11 +1,15 @@
-var express = require("express");
-var router = express.Router();
-var getPrev = require("../library/getPrev");
+const express = require("express");
+const router = express.Router();
+const getPrev = require("../library/getPrev");
 
-var prev = router.get('/prev', function(req, res) {
+/**
+ * Express.js router for /prev
+ * Return previous scan number of given scan
+ */
+const prev = router.get('/prev', function(req, res) {
     console.log("Hello, prev!");
-    var projectDir = req.query.projectDir;
-    var scanID = req.query.scanID;
+    const projectDir = req.query.projectDir;
+    const scanID = req.query.scanID;
     getPrev(projectDir, scanID, function (err, row) {
         let prevID = row.prev.toString();
         res.write(prevID);
