@@ -1,6 +1,6 @@
-var fs = require('fs');
+const fs = require('fs');
 const Database = require('better-sqlite3');
-var myArgs = process.argv.slice(2);
+const myArgs = process.argv.slice(2);
 console.log("myArgs: ", myArgs);
 
 const betterDB = new Database(myArgs[0]);
@@ -27,7 +27,7 @@ stmtCreateFeatureTable.run();
 fs.readFile(myArgs[1], ((err, data) => {
     if (err) throw err;
     insertMany(betterDB,data.toString());
-    var stmtFeatureIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `feature_index` ON `feature` ( rt_high,rt_low,mz_high,mz_low )");
+    const stmtFeatureIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `feature_index` ON `feature` ( rt_high,rt_low,mz_high,mz_low )");
     stmtFeatureIndex.run();
     betterDB.close();
 }));
