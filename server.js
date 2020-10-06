@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const favicon = require('serve-favicon');
-const sqlite3 = require('sqlite3').verbose();
+const betterDB = require('better-sqlite3');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const helmet = require('helmet');
@@ -47,7 +47,7 @@ job.start();
  * Show available resourses based on cpu counts
  */
 const avaiResourse = cpuCount - 2;
-console.log("The number of CPU cores:", cpuCount);
+// console.log("The number of CPU cores:", cpuCount);
 
 /**
  * Create a task scheduler for topview app
@@ -446,65 +446,25 @@ app.use('/*', function(req, res){
     res.sendFile( __dirname + "/public/" + "404.html" );
 });
 
-const server = app.listen(8443, function () {
-    // const host = server.address().address;
-    const port = server.address().port;
-    console.log("Sever started on PORT %s", port);
-});
-
 /**
- * Create project database during server startup
+ * Create server database during server startup. Better-sqlite version. Sync mode.
  */
-const db = new sqlite3.Database('./db/projectDB.db', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-    if (err) {
-        console.error(err.message);
-    }
-    console.log('Connected to the projectDB.db database!');
-    let sqlToCreateTable = "CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'FeatureStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))";
-    db.run(sqlToCreateTable, function (err) {
-        if (err) {
-            return console.log(err.message);
-        }
-        console.log("Table for project is ready!");
-        let sqlToCreateIndex = "CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectCode` )";
-        db.run(sqlToCreateIndex, function (err) {
-            if (err) {
-                return console.log(err.message);
-            }
-            console.log("Index for project is ready!");
-        });
+const projectDB = new betterDB('./db/projectDB.db');
+const sqlToCreateTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'FeatureStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))");
+sqlToCreateTable.run();
+const sqlToCreateIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectCode` )");
+sqlToCreateIndex.run();
+const sqlToUserTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Users\" ( `uid` TEXT NOT NULL, `email` TEXT NULL, `firstname` TEXT NULL, `lastname` TEXT NULL, `fullname` TEXT NULL, PRIMARY KEY(`uid`) )");
+sqlToUserTable.run();
+const sqlToUserIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )");
+sqlToUserIndex.run();
+const sqlToCreateTaskTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))");
+sqlToCreateTaskTable.run();
+const sqlToTasksIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )");
+sqlToTasksIndex.run();
+projectDB.close();
 
-        let sqlToUserTable = "CREATE TABLE IF NOT EXISTS \"Users\" ( `uid` TEXT NOT NULL, `email` TEXT NULL, `firstname` TEXT NULL, `lastname` TEXT NULL, `fullname` TEXT NULL, PRIMARY KEY(`uid`) )";
-        db.run(sqlToUserTable, function (err) {
-            if (err) {
-                return console.log(err.message);
-            }
-            console.log("Table for Users is ready!");
-            let sqlToUserIndex = "CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )";
-            db.run(sqlToUserIndex, function (err) {
-                if (err) {
-                    return console.log(err.message);
-                }
-                console.log("Index for Users is ready!");
-            });
-        });
-
-        let sqlToCreateTaskTable = "CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))";
-        db.run(sqlToCreateTaskTable, function (err) {
-            if (err) {
-                return console.log(err.message);
-            }
-            console.log("Table for Tasks is ready!");
-            let sqlToTasksIndex = "CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )";
-            db.run(sqlToTasksIndex, function (err) {
-                if (err) {
-                    return console.log(err.message);
-                }
-                console.log("Index for Tasks is ready!");
-            });
-        })
-    });
-});
+console.log("Server database is Ready!");
 
 const transport = nodemailer.createTransport({
     host: "smtp-mail.outlook.com", // hostname
@@ -526,15 +486,15 @@ const message = {
     text: 'Default text' // Plain text body
 };
 
+const server = app.listen(8443, function () {
+    // const host = server.address().address;
+    const port = server.address().port;
+    console.log("Server started on PORT %s", port);
+});
+
 process.on('SIGINT', () => {
-    db.close((err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log('Database connection closed! Please wait for server close...');
-        server.close(()=> {
-            console.log('Server closed!');
-            process.exit(0);
-        });
+    server.close(()=> {
+        console.log('Server closed!');
+        process.exit(0);
     });
 });
