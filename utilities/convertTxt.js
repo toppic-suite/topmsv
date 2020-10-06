@@ -1,6 +1,6 @@
-var fs = require('fs');
+const fs = require('fs');
 const Database = require('better-sqlite3');
-var myArgs = process.argv.slice(2);
+const myArgs = process.argv.slice(2);
 // console.log("myArgs", myArgs);
 const betterDB = new Database(myArgs[0]);
 const stmtCreateSpectraTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS `SPECTRA` (\n' +
@@ -35,15 +35,15 @@ fs.readFile(myArgs[1], ((err, data) => {
 const insertMany = betterDB.transaction(importData);
 
 function importData(database,data) {
-    var stmtInsertPeaks = database.prepare('INSERT INTO PEAKS(id,mz,intensity) VALUES(?,?,?)');
-    var stmtMaxID = database.prepare('SELECT MAX(id) AS maxPeakID FROM PEAKS');
-    var stmtCurrentSum = database.prepare('SELECT PEAKSINTESUM AS inteSum FROM SPECTRA WHERE ID = ?');
+    const stmtInsertPeaks = database.prepare('INSERT INTO PEAKS(id,mz,intensity) VALUES(?,?,?)');
+    const stmtMaxID = database.prepare('SELECT MAX(id) AS maxPeakID FROM PEAKS');
+    const stmtCurrentSum = database.prepare('SELECT PEAKSINTESUM AS inteSum FROM SPECTRA WHERE ID = ?');
 
-    // var stmtInsertSpectra = database.prepare('INSERT INTO SPECTRA(ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES(?,?,?,?,?,?,?,?,?,?)');
+    // const stmtInsertSpectra = database.prepare('INSERT INTO SPECTRA(ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES(?,?,?,?,?,?,?,?,?,?)');
     // stmtInsertSpectra.run(1,1,0,1,0,1,0,0,0,0);
 
     let curInteSum = stmtCurrentSum.get(1).inteSum;
-    var id = stmtMaxID.get().maxPeakID + 1;
+    let id = stmtMaxID.get().maxPeakID + 1;
 
     let intensitySum = curInteSum;
     let lines = data.split("\n");
@@ -57,6 +57,6 @@ function importData(database,data) {
         id++;
     })
 
-    var stmtUpdateInteSum = database.prepare('UPDATE SPECTRA SET PEAKSINTESUM = ? WHERE ID = ?;')
+    const stmtUpdateInteSum = database.prepare('UPDATE SPECTRA SET PEAKSINTESUM = ? WHERE ID = ?;')
     stmtUpdateInteSum.run(intensitySum,1);
 }
