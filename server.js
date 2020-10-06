@@ -50,7 +50,7 @@ const avaiResourse = cpuCount - 2;
 // console.log("The number of CPU cores:", cpuCount);
 
 /**
- * Create a task scheduler for topview app
+ * Create a task scheduler for topview server
  * It will check Tasks table in project database every second, if taskList is not empty then check
  * whether it has enough resources, if there are available resources then execute tasks, if not then check again
  * next second.
@@ -170,6 +170,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // set express static directory
 app.use(express.static(__dirname + '/public'));
+
+// Express routers start from here
 
 /**
  * Express router for main webpage
@@ -441,6 +443,7 @@ app.use('/', require("./router/deleteMzrt"));
 
 app.use('/', require("./router/auth_google"));
 
+// 404 router
 app.use('/*', function(req, res){
     console.log('404 handler..');
     res.sendFile( __dirname + "/public/" + "404.html" );
@@ -487,7 +490,6 @@ const message = {
 };
 
 const server = app.listen(8443, function () {
-    // const host = server.address().address;
     const port = server.address().port;
     console.log("Server started on PORT %s", port);
 });
