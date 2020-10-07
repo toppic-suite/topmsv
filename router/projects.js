@@ -24,7 +24,7 @@ const projects = router.get('/projects', function (req,res) {
         // console.log(uid);
         getProjects(uid,function (rows) {
             rows.forEach(row=>{
-                console.log("row", row);
+                // console.log("row", row);
                 if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
                 if(row.description === '') row.description = 'N/A';
                 if(row.projectStatus === 0) {
