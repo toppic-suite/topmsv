@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const EmailSender = require('./library/email_sender');
 const favicon = require('serve-favicon');
 const betterDB = require('better-sqlite3');
 const bodyParser = require('body-parser');
@@ -94,20 +95,47 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     let emailtosend = task.email;
                     let adr =  'https://toppic.soic.iupui.edu/data?id=';
 
-                    avaiResourse = avaiResourse - threadNum;
-                    updateProjectStatusSync(0, projectCode);
-                    exec(app+' '+parameter, {maxBuffer: 1024 * 50000}, (err, stdout, stderr) => {
-                        console.log(stdout);
-                        console.log(stderr);
-                        if(err) {
-                            console.log(err);
-                            updateTaskStatusSync(1, taskID);
-                            avaiResourse = avaiResourse + threadNum;
-                            setTimeout(function () {
-                                processFailure(projectCode, function (err) {
-                                    console.log("Process failed!");
-                                    message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                                    message.subject = "Your data processing failed";
+                    if(app === 'email') {
+                        let subject = "Your Topview task is done";
+                        let text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                        let emailAddress = emailtosend;
+                        let email_sender = new EmailSender(subject, text, emailAddress);
+                        email_sender.sendEmail();
+                    } else {
+                        avaiResourse = avaiResourse - threadNum;
+                        updateProjectStatusSync(0, projectCode);
+                        exec(app+' '+parameter, {maxBuffer: 1024 * 50000}, (err, stdout, stderr) => {
+                            // console.log(stdout);
+                            console.log(stderr);
+                            if(err) {
+                                console.log(err);
+                                updateTaskStatusSync(1, taskID);
+                                avaiResourse = avaiResourse + threadNum;
+                                setTimeout(function () {
+                                    processFailure(projectCode, function (err) {
+                                        console.log("Process failed!");
+                                        message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                                        message.subject = "Your data processing failed";
+                                        message.to = emailtosend;
+                                        transport.sendMail(message, function(err, info) {
+                                            if (err) {
+                                                console.log(err)
+                                            } else {
+                                                console.log(info);
+                                            }
+                                        });
+                                    });
+                                }, 60000);
+                            }else{
+                                updateTaskStatusSync(1, taskID);
+                                avaiResourse = avaiResourse + threadNum;
+                                let remainingTask = checkRemainingTask(projectCode);
+                                if (remainingTask === 1) {
+                                    updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
+                                } else {
+                                    updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
+                                    message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                    message.subject = "Your task is done";
                                     message.to = emailtosend;
                                     transport.sendMail(message, function(err, info) {
                                         if (err) {
@@ -116,39 +144,10 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                             console.log(info);
                                         }
                                     });
-                                });
-                            }, 60000);
-                        }else{
-                            updateTaskStatusSync(1, taskID);
-                            avaiResourse = avaiResourse + threadNum;
-                            let remainingTask = checkRemainingTask(projectCode);
-                            if (remainingTask === 1) {
-                                updateProjectStatusSync(4, projectCode);
-                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
-                                message.subject = "Your data processing is done";
-                                message.to = emailtosend;
-                                transport.sendMail(message, function(err, info) {
-                                    if (err) {
-                                        console.log(err)
-                                    } else {
-                                        console.log(info);
-                                    }
-                                });
-                            } else {
-                                updateProjectStatusSync(1,projectCode);
-                                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
-                                message.subject = "Your data processing is done";
-                                message.to = emailtosend;
-                                transport.sendMail(message, function(err, info) {
-                                    if (err) {
-                                        console.log(err)
-                                    } else {
-                                        console.log(info);
-                                    }
-                                });
+                                }
                             }
-                        }
-                    });
+                        });    
+                    }
                 }
             } else {
                 console.log("No enough resources!");
