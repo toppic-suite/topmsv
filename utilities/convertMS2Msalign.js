@@ -60,7 +60,8 @@ function importData(database,data) {
                 // stmtEnv.run(env_id,scan_id,mass,inte,charge);
 
                 let peaks = stmtGetPeakList.all(scan_id);
-                let peakList = calcDistrubution.emass(mass,charge,peaks);
+                let distributionResult = calcDistrubution.emass(mass,charge,peaks);
+                let peakList = distributionResult[0];
                 if (peakList === null) {
                     env_id = env_id + 1;
                     return;
