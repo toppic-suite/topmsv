@@ -41,30 +41,25 @@ const upload = router.post('/upload', function (req, res) {
     form.uploadDir = "tmp";
     form.keepExtensions = true;
     form.parse(req, function (err, fields, files) {
-        //console.log(fields.projectname);
-        //console.log(fields.emailaddress);
-        //console.log(files.dbfile);
+        if (err) {
+            console.log(err);
+        }
         let projectname = fields.projectname;
         let emailtosend = email;
         let description = fields.description;
         let publicStatus = fields.public;
         let file = files.dbfile;
-        /*if (file === undefined) {
-            console.log("Upload files failed!");
-            return;
-        }*/
         let eid = fields.eid;
-        let fname = file.name; // hello.txt
+        let fname = file.name;
         let envFile1 = files.envfile1;
         let txtFile = files.txtfile;
-        console.log(txtFile);
+        // console.log(txtFile);
         // let envFile2 = files.envfile2;
         let folderid = uuidv1();
         let des_path = "data/" + folderid + "/";
         let des_file = "data/" + folderid + "/" + fname;
         // let des_envFile1 = "data/" + folderid + "/" + "ms1.env";
-        let des_envFile2 = "data/" + folderid + "/" + "ms2.env";
-        //console.log(envFile1);
+        // let des_envFile2 = "data/" + folderid + "/" + "ms2.env";
         // Generate new path for file
         if (!fs.existsSync(des_path)) {
             console.log('The path does not exist.');
@@ -77,7 +72,7 @@ const upload = router.post('/upload', function (req, res) {
             let prec_mz = fields.prec_mz;
             let prec_charge = fields.prec_charge;
             let prec_inte = fields.prec_inte;
-            console.log(scan_level, prec_mz, prec_charge, prec_inte);
+            // console.log(scan_level, prec_mz, prec_charge, prec_inte);
             fs.rename(txtFile.path, des_txtFile, function (err) {
                 if (err) {
                     console.log(err);
@@ -85,13 +80,6 @@ const upload = router.post('/upload', function (req, res) {
                 }
 
                 let adr =  'https://toppic.soic.iupui.edu/data?id=';
-                // output result into screen
-
-                res.write('<h1>File uploaded successfully!</h1>');
-                res.write('<h2>Project Name: </h2>');
-                res.write(projectname);
-                res.write('<h2>File Path: </h2>');
-                // res.write(des_file);
 
                 let id = makeid(11);
 
@@ -102,7 +90,7 @@ const upload = router.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            let projectsID = insertRowSync(id, projectname, txtFile.name, description, des_txtFile, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus);
+                            insertRowSync(id, projectname, txtFile.name, description, des_txtFile, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus);
                             // insertDataset(eid, projectname, description, projectsID);
                             message.text = "Project Name: " + projectname + "\nFile Name: " + txtFile.name + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             message.subject = "Your data has been uploaded, please wait for processing";
@@ -115,16 +103,7 @@ const upload = router.post('/upload', function (req, res) {
                                 }
                             });
 
-                            res.write('<h2>Link: </h2>');
-                            res.write(message.text);
-
                             let dbpath = des_txtFile.substr(0,des_txtFile.lastIndexOf('.')) + '.db';
-                            console.log('dbpath', dbpath);
-                            let db = new sqlite3.Database('./' + dbpath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-                                if (err) {
-                                    console.error(err.message);
-                                }
-                            });
 
                             let betterDB = new BetterDB('./' + dbpath);
                             const stmtCreateSpectraTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS `SPECTRA` (\n' +
@@ -174,11 +153,11 @@ const upload = router.post('/upload', function (req, res) {
                 };
                 //console.log(response);
                 res.write(JSON.stringify( response ));
+                res.end();
                 return;
             })
         } else {
-            // let fname = file.name; // hello.txt
-            if(envFile1 !== undefined) {
+            if(envFile1 !== undefined) { // process mzML file and envelope file
                 let des_envFile1 = "data/" + folderid + "/" + envFile1.name;
                 fs.rename(envFile1.path, des_envFile1, function (err) {
                     if (err) {
@@ -191,13 +170,6 @@ const upload = router.post('/upload', function (req, res) {
                             return res.send({"error": 403, "message": "Error on saving file!"});
                         }
                         let adr =  'https://toppic.soic.iupui.edu/data?id=';
-                        // output result into screen
-
-                        res.write('<h1>File uploaded successfully!</h1>');
-                        res.write('<h2>Project Name: </h2>');
-                        res.write(projectname);
-                        res.write('<h2>File Path: </h2>');
-                        res.write(des_file);
 
                         let id = makeid(11);
 
@@ -208,8 +180,8 @@ const upload = router.post('/upload', function (req, res) {
                             while (true) {
                                 // console.log(result);
                                 if(!result) {
-                                    let projectsID = insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,0, envFile1.name,uid,publicStatus);
-                                    insertDataset(eid, projectname, description, projectsID);
+                                    insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,0, envFile1.name,uid,publicStatus);
+                                    // insertDataset(eid, projectname, description, projectsID);
                                     message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                     message.subject = "Your data has been uploaded, please wait for processing";
                                     message.to = emailtosend;
@@ -220,9 +192,6 @@ const upload = router.post('/upload', function (req, res) {
                                             console.log(info);
                                         }
                                     });
-
-                                    res.write('<h2>Link: </h2>');
-                                    res.write(message.text);
 
                                     let app = './cpp/bin/mzMLReader';
                                     let parameter = des_file + ' -f';
@@ -248,85 +217,15 @@ const upload = router.post('/upload', function (req, res) {
                         };
                         //console.log(response);
                         res.write(JSON.stringify( response ));
-
-                        // execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
-                        //     if(err) {
-                        //         setTimeout(function () {
-                        //             processFailure(db,id, function (err) {
-                        //                 console.log("Process failed!");
-                        //                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                        //                 message.subject = "Your data processing failed";
-                        //                 message.to = emailtosend;
-                        //                 transport.sendMail(message, function(err, info) {
-                        //                     if (err) {
-                        //                         console.log(err)
-                        //                     } else {
-                        //                         console.log(info);
-                        //                     }
-                        //                 });
-                        //             });
-                        //             console.log(err);
-                        //             return;
-                        //         }, 60000);
-                        //     }
-                        //     //console.log(`stdout: ${stdout}`);
-                        //     let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
-                        //     execFile('node',[__dirname + '/convertEnv.js',dbDir,des_envFile1],((err, stdout, stderr) => {
-                        //         if(err) {
-                        //             setTimeout(function () {
-                        //                 processFailure(db,id, function (err) {
-                        //                     console.log("Process failed!");
-                        //                     message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                        //                     message.subject = "Your data processing failed";
-                        //                     message.to = emailtosend;
-                        //                     transport.sendMail(message, function(err, info) {
-                        //                         if (err) {
-                        //                             console.log(err)
-                        //                         } else {
-                        //                             console.log(info);
-                        //                         }
-                        //                     });
-                        //                 });
-                        //                 console.log(err);
-                        //                 return;
-                        //             }, 60000);
-                        //         }
-                        //         //console.log(`stdout: ${stdout}`);
-                        //         //console.log(data.toString());
-                        //         else {
-                        //             updateProjectStatus(db,1, id, function (err) {
-                        //                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
-                        //                 message.subject = "Your data processing is done";
-                        //                 message.to = emailtosend;
-                        //                 transport.sendMail(message, function(err, info) {
-                        //                     if (err) {
-                        //                         console.log(err)
-                        //                     } else {
-                        //                         console.log(info);
-                        //                     }
-                        //                 });
-                        //             });
-                        //
-                        //         }
-                        //     }));
-                        // });
                     });
                 })
-            } else {
+            } else { // only process mzML file
                 fs.rename(file.path, des_file, function (err) {
                     if(err) {
                         console.log(err);
                         return res.send({"error": 403, "message": "Error on saving file!"});
                     }
                     let adr =  'https://toppic.soic.iupui.edu/data?id=';
-                    // output result into screen
-
-                    res.write('<h1>File uploaded successfully!</h1>');
-                    res.write('<h2>Project Name: </h2>');
-                    res.write(projectname);
-                    res.write('<h2>File Path: </h2>');
-                    res.write(des_file);
-
                     let id = makeid(11);
 
                     ifExists(id, function (err, result) {
@@ -336,7 +235,7 @@ const upload = router.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                let projectsID = insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus);
+                                insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus);
                                 // insertDataset(eid, projectname, description, projectsID);
                                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 message.subject = "Your data has been uploaded, please wait for processing";
@@ -348,9 +247,6 @@ const upload = router.post('/upload', function (req, res) {
                                         console.log(info);
                                     }
                                 });
-
-                                res.write('<h2>Link: </h2>');
-                                res.write(message.text);
 
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter, 1);
@@ -368,44 +264,9 @@ const upload = router.post('/upload', function (req, res) {
                         link:message.text,
                         email: emailtosend
                     };
-
                     //console.log(response);
                     res.write(JSON.stringify( response ));
-
-                    // execFile(__dirname + "/cpp/bin/mzMLReader", [des_file,'-f'], (err, stdout, stderr) => {
-                    //     if(err) {
-                    //         setTimeout(function () {
-                    //             processFailure(db,id, function (err) {
-                    //                 console.log("Process failed!");
-                    //                 message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                    //                 message.subject = "Your data processing failed";
-                    //                 message.to = emailtosend;
-                    //                 transport.sendMail(message, function(err, info) {
-                    //                     if (err) {
-                    //                         console.log(err)
-                    //                     } else {
-                    //                         console.log(info);
-                    //                     }
-                    //                 });
-                    //             });
-                    //             console.log(err);
-                    //             return;
-                    //         }, 60000);
-                    //     }else{
-                    //         updateProjectStatus(db,1, id, function (err) {
-                    //             message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + id + '\nStatus: Done';
-                    //             message.subject = "Your data processing is done";
-                    //             message.to = emailtosend;
-                    //             transport.sendMail(message, function(err, info) {
-                    //                 if (err) {
-                    //                     console.log(err)
-                    //                 } else {
-                    //                     console.log(info);
-                    //                 }
-                    //             });
-                    //         });
-                    //     }
-                    // });
+                    return;
                 });
             }
         }
