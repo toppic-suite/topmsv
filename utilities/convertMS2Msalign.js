@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Database = require('better-sqlite3');
 const molecularFormulae = require('./distribution_calc/molecular_formulae');
-const calcDistrubution = new molecularFormulae();
+// const calcDistrubution = new molecularFormulae();
 const myArgs = process.argv.slice(2);
 const betterDB = new Database(myArgs[0]);
 const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope (\n' +
@@ -23,14 +23,14 @@ const stmtCreateEnvPeakTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS env_
     '       ON DELETE CASCADE\n' +
     ');');
 stmtCreateEnvTable.run();
-stmtCreateEnvPeakTable.run();
+// stmtCreateEnvPeakTable.run();
 fs.readFile(myArgs[1], ((err, data) => {
     if (err) throw err;
     insertMany(betterDB,data.toString());
     const stmtEnvIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `envelope_index` ON `envelope` ( `scan_id` )");
     stmtEnvIndex.run();
-    const stmtEnvPeakIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `env_peak_index` ON `env_peak` ( `envelope_id` )");
-    stmtEnvPeakIndex.run();
+    // const stmtEnvPeakIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `env_peak_index` ON `env_peak` ( `envelope_id` )");
+    // stmtEnvPeakIndex.run();
     betterDB.close();
 }));
 
@@ -38,15 +38,15 @@ const insertMany = betterDB.transaction(importData);
 
 function importData(database,data) {
     const stmtEnv = database.prepare('INSERT INTO envelope(envelope_id,scan_id,mono_mass,intensity,charge) VALUES(?,?,?,?,?)');
-    const stmtEnvPeak = database.prepare('INSERT INTO env_peak(env_peak_id, envelope_id, mz, intensity) VALUES(?,?,?,?)');
+    // const stmtEnvPeak = database.prepare('INSERT INTO env_peak(env_peak_id, envelope_id, mz, intensity) VALUES(?,?,?,?)');
 
     const stmtFindScanID = database.prepare('SELECT ID AS id FROM SPECTRA WHERE SCAN = ?');
     const stmtMaxEnvID = database.prepare('SELECT MAX(envelope_id) AS maxEnvID FROM envelope');
-    const stmtMaxEnvPeakID = database.prepare('SELECT MAX(env_peak_id) AS maxEnvPeakID FROM env_peak');
-    const stmtGetPeakList = database.prepare('SELECT MZ AS mz, INTENSITY AS intensity FROM PEAKS WHERE SPECTRAID = ?');
+    // const stmtMaxEnvPeakID = database.prepare('SELECT MAX(env_peak_id) AS maxEnvPeakID FROM env_peak');
+    // const stmtGetPeakList = database.prepare('SELECT MZ AS mz, INTENSITY AS intensity FROM PEAKS WHERE SPECTRAID = ?');
 
     let env_id = stmtMaxEnvID.get().maxEnvID + 1;
-    let envPeakID = stmtMaxEnvPeakID.get().maxEnvPeakID + 1;
+    // let envPeakID = stmtMaxEnvPeakID.get().maxEnvPeakID + 1;
 
     while(data.indexOf("END IONS")!== -1){
         let scan = findInfo("SCANS",data);
@@ -57,20 +57,20 @@ function importData(database,data) {
                 let mass = parseFloat(element.split("\t")[0]);
                 let inte = parseFloat(element.split("\t")[1]);
                 let charge = parseInt(element.split("\t")[2]);
-                // stmtEnv.run(env_id,scan_id,mass,inte,charge);
-
-                let peaks = stmtGetPeakList.all(scan_id);
-                let distributionResult = calcDistrubution.emass(mass,charge,peaks);
-                let peakList = distributionResult[0];
-                if (peakList === null) {
-                    env_id = env_id + 1;
-                    return;
-                }
                 stmtEnv.run(env_id,scan_id,mass,inte,charge);
-                peakList.forEach(peak => {
-                    stmtEnvPeak.run(envPeakID,env_id,peak.mz,peak.intensity);
-                    envPeakID++;
-                });
+
+                // let peaks = stmtGetPeakList.all(scan_id);
+                // let distributionResult = calcDistrubution.emass(mass,charge,peaks);
+                // let peakList = distributionResult[0];
+                // if (peakList === null) {
+                //     env_id = env_id + 1;
+                //     return;
+                // }
+                // stmtEnv.run(env_id,scan_id,mass,inte,charge);
+                // peakList.forEach(peak => {
+                //     stmtEnvPeak.run(envPeakID,env_id,peak.mz,peak.intensity);
+                //     envPeakID++;
+                // });
                 env_id = env_id + 1;
             });
         });
