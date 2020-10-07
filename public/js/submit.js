@@ -1,29 +1,29 @@
 (function () {
     'use strict';
 
-    var file = document.querySelector('#dbfile');
-    var txtfile = document.querySelector('#txtfile');
-    var envfile1 = document.querySelector('#envfile1');
-    // var envfile2 = document.querySelector('#envfile2');
-    var project = document.getElementById('projectName');
-    // var email = document.getElementById('emailAddress');
-    var description = document.getElementById('description');
-    var pub = document.getElementById('public');
+    let file = document.querySelector('#dbfile');
+    let txtfile = document.querySelector('#txtfile');
+    let envfile1 = document.querySelector('#envfile1');
+    // let envfile2 = document.querySelector('#envfile2');
+    let project = document.getElementById('projectName');
+    // let email = document.getElementById('emailAddress');
+    let description = document.getElementById('description');
+    let pub = document.getElementById('public');
 
-    var scan_level = document.getElementById('scan_level');
-    var prec_mz = document.getElementById('prec_mz');
-    var prec_charge = document.getElementById('prec_charge');
-    var prec_inte = document.getElementById('prec_inte');
+    let scan_level = document.getElementById('scan_level');
+    let prec_mz = document.getElementById('prec_mz');
+    let prec_charge = document.getElementById('prec_charge');
+    let prec_inte = document.getElementById('prec_inte');
 
     //console.log(pub.checked);
-    var dbfilename = document.getElementById('dbfilename');
-    var txtfilename = document.getElementById('txtfilename');
-    var envfilename1 = document.getElementById('envfilename1');
-    // var envfilename2 = document.getElementById('envfilename2');
-    // var choosename = document.getElementById('dbfilename');
-    var upload = document.querySelector('#uploadbutton');
-    var progress = document.querySelector('#dbbar');
-    var xhr = new XMLHttpRequest();
+    let dbfilename = document.getElementById('dbfilename');
+    let txtfilename = document.getElementById('txtfilename');
+    let envfilename1 = document.getElementById('envfilename1');
+    // let envfilename2 = document.getElementById('envfilename2');
+    // let choosename = document.getElementById('dbfilename');
+    let upload = document.querySelector('#uploadbutton');
+    let progress = document.querySelector('#dbbar');
+    let xhr = new XMLHttpRequest();
 
     upload.addEventListener('click', uploadFile, false);
     file.addEventListener('change', chooseFile, false);
@@ -49,7 +49,7 @@
      */
     function ValidateEmail(inputText)
     {
-        var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        let mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if(inputText.match(mailformat))
         {
             return true;
@@ -59,7 +59,7 @@
             return false;
         }
     }
-    // 点击上传
+    // upload file
     function uploadFile(event) {
         //console.log(ValidateEmail(email.value));
         if (project.value === '' || (file.files[0] === undefined && txtfile.files[0] === undefined)) {
@@ -73,7 +73,7 @@
         /*}else if (!ValidateEmail(email.value)){
             alert("You have entered an invalid email address!")*/
         } else {
-            var formData = new FormData();
+            let formData = new FormData();
             formData.append('dbfile', file.files[0]);
             formData.append('txtfile', txtfile.files[0]);
             formData.append('envfile1', envfile1.files[0]);
@@ -95,17 +95,17 @@
         }
     }
 
-    // 成功上传
+    // Upload success
     function uploadSuccess(event) {
         if (xhr.readyState === 4) {
             setTimeout(function(){ if(!alert("Data uploaded successfully!\nPlease check your email inbox for more information!"))window.location.reload();}, 100)
         }
     }
 
-    // 进度条
+    // progress bar
     function setProgress(event) {
         if (event.lengthComputable) {
-            var complete = Number.parseInt(event.loaded / event.total * 100);
+            let complete = Number.parseInt(event.loaded / event.total * 100);
             progress.style.width = complete + '%';
             progress.innerHTML = complete + '%';
             if (complete == 100) {
@@ -116,11 +116,11 @@
 })();
 
 function getCookie(cname) {
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
         }
@@ -152,5 +152,4 @@ $('#txtMode').click(function () {
         $('#txtMode').text('Txt Mode');
         $('#mzML_buttons').show();
     }
-
 })
