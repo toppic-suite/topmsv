@@ -13,10 +13,10 @@ function getEnvPeakList(resultDB, envelope_id, callback) {
                 WHERE envelope_id = ?`;
     resultDB.all(sql, [envelope_id], (err, rows) => {
         if (err) {
-            throw err;
+            // console.log(err);
+            // throw err;
         }
         return callback(null,rows);
     });
-    //db.close();
 }
 module.exports = getEnvPeakList;
