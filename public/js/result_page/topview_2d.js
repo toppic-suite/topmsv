@@ -70,6 +70,15 @@ class Topview2D {
         })
     }
 
+    getEnvTable(scan) {
+        return axios.get('/envtable', {
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                scanID: scan // scan number actually
+            }
+        })
+    }
+
 /*     loadPeakList1(scanID) {
         if (scanID !== '0') {
             return axios.get('/peaklist', {
