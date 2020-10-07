@@ -174,8 +174,16 @@ class MatchedPeaks {
 		for(let i = 0; i < len; i++)
 		{
 			let distributionList = {};
-      
-			if(matchedUnMatchedList[i].matchedInd == "Y")
+	  
+			distributionList.mono_mass = matchedUnMatchedList[i].mass;
+			distributionList.charge = matchedUnMatchedList[i].charge;
+			let peaks = molecularFormObj.emass(distributionList.mono_mass,distributionList.charge,peakDataList);
+			distributionList.env_peaks = peaks[0];
+			peakDataList = peaks[1];
+				
+			totalDistribution.push(distributionList);
+
+			/*if(matchedUnMatchedList[i].matchedInd == "Y")
 			{
 				if(this.CONST_A == matchedUnMatchedList[i].ion[0] || this.CONST_B == matchedUnMatchedList[i].ion[0] 
 																		|| this.CONST_C == matchedUnMatchedList[i].ion[0])
@@ -186,6 +194,7 @@ class MatchedPeaks {
 					* compare matchedPos with positons in completeMassShiftList.
 					* if matchedPos is bigger, there is a mass shift inside seq. 
 					* Send the position to emass so that the mass shift is reflected in the toDistribution list after the acid*/
+					/*
 					let massShiftList = [];
 					for (let i = 0; i < completeMassShiftList.length; i++){
 						if (matchedPos >= completeMassShiftList[i].position){
@@ -228,7 +237,7 @@ class MatchedPeaks {
 				peakDataList = peaks[1];
 				
 				totalDistribution.push(distributionList);
-			}
+			}*/
 		}
 		if(totalDistribution.length !== 0)
 		{	 
