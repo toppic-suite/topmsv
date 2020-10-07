@@ -248,6 +248,7 @@ const upload = router.post('/upload', function (req, res) {
                                     }
                                 });
 
+                                let app = './cpp/bin/mzMLReader';
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter, 1);
 
