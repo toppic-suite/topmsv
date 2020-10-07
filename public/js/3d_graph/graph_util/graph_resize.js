@@ -18,15 +18,14 @@ class GraphResize{
         GraphControl.resizeCameraUserControl(1/this.viewAdjust);
     }
     fullScreen = () => {
-        let graphDiv = document.getElementById("graph-3d-parameter"); 
+        let graphDiv = document.getElementById("3d-graph-parameter"); 
 
         if (this.isFullScreen){//shrink back
             document.body.style.width = this.oriWidth;
+            document.getElementById("center-div").style.paddingLeft = "60px";
+            document.getElementById("center-div").style.paddingRight = "60px";
 
             document.getElementById("graph-container").style.height = this.oriHeight;
-            
-            document.getElementById("left-jumbotron").style.width = this.oriWidth;
-            document.getElementById("right-jumbotron").style.width = this.oriWidth;
 
             graphDiv.scrollIntoView();
             graphDiv.scrollIntoView(false);
@@ -36,13 +35,12 @@ class GraphResize{
 
             this.isFullScreen = false;
         }else{//expand to full screen
-            this.oriWidth = document.getElementById("left-jumbotron").style.width;
+            this.oriWidth = document.getElementById("center-div").style.width;
             this.oriHeight = Graph.graphEl.clientHeight;
             
-            document.getElementById("left-jumbotron").style.width = "100%";
-            document.getElementById("right-jumbotron").style.width = "100%";
-
-            console.log(graphDiv)
+            document.getElementById("center-div").style.padding = "0px";
+            document.body.style.width = "100%";
+            
             graphDiv.scrollIntoView();
             graphDiv.scrollIntoView(false);
             graphDiv.scrollIntoView({block: "start"});
