@@ -47,7 +47,7 @@ job.start();
 /**
  * Show available resourses based on cpu counts
  */
-const avaiResourse = cpuCount - 2;
+let avaiResourse = cpuCount - 2;
 // console.log("The number of CPU cores:", cpuCount);
 
 /**
