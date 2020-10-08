@@ -48,7 +48,7 @@ function init2D(scan) {
                         });
                 } else { // if there is no scan level 2
                     // console.log("Scan Level 1, nextScan - scan !== 1")
-                    showEnvTable(scan); // update envtable even there is no scan level 2
+                    showEnvTable(scan); // update envtable even if there is no scan level 2
                     $("#noScanLevelTwo").show();
                     $("#tabs").hide();
                     $('#scanLevelTwoInfo').hide();
