@@ -62,17 +62,19 @@ function init2D(scan) {
                             console.log("envtabale_response:", response.data);
                             let envtable = response.data;
                             envList1_g = [];
-                            envtable.forEach( env => {
-                                let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList1_g);
-                                console.log("distribution results:", distributionResult);
-                                let envPeakList = distributionResult[0];
-                                let singleEnv = {
-                                    mono_mass: env.mono_mass,
-                                    charge: env.charge,
-                                    env_peaks: envPeakList
-                                }
-                                envList1_g.push(singleEnv);
-                            })
+                            if (envtable) {
+                                envtable.forEach( env => {
+                                    let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList1_g);
+                                    console.log("distribution results:", distributionResult);
+                                    let envPeakList = distributionResult[0];
+                                    let singleEnv = {
+                                        mono_mass: env.mono_mass,
+                                        charge: env.charge,
+                                        env_peaks: envPeakList
+                                    }
+                                    envList1_g.push(singleEnv);
+                                })
+                            }
                             console.log("envList1_g:", envList1_g);
                             if (envList1_g !== 0 && envList1_g.length !== 0){
                                 graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
@@ -133,17 +135,19 @@ function loadPeakList1(scanID, prec_mz) {
                 console.log("envtabale_response:", response.data);
                 let envtable = response.data;
                 envList1_g = [];
-                envtable.forEach( env => {
-                    let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList1_g);
-                    console.log("distribution results:", distributionResult);
-                    let envPeakList = distributionResult[0];
-                    let singleEnv = {
-                        mono_mass: env.mono_mass,
-                        charge: env.charge,
-                        env_peaks: envPeakList
-                    }
-                    envList1_g.push(singleEnv);
-                })
+                if (envtable) {
+                    envtable.forEach( env => {
+                        let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList1_g);
+                        console.log("distribution results:", distributionResult);
+                        let envPeakList = distributionResult[0];
+                        let singleEnv = {
+                            mono_mass: env.mono_mass,
+                            charge: env.charge,
+                            env_peaks: envPeakList
+                        }
+                        envList1_g.push(singleEnv);
+                    })
+                }
                 console.log("envList1_g:", envList1_g);
                 if (envList1_g !== 0 && envList1_g.length !== 0){
                     graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
@@ -183,17 +187,19 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             console.log("envtabale_response:", response.data);
             let envtable = response.data;
             envList2_g = [];
-            envtable.forEach( env => {
-                let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList2_g);
-                console.log("distribution results:", distributionResult);
-                let envPeakList = distributionResult[0];
-                let singleEnv = {
-                    mono_mass: env.mono_mass,
-                    charge: env.charge,
-                    env_peaks: envPeakList
-                }
-                envList2_g.push(singleEnv);
-            })
+            if (envtable) {
+                envtable.forEach( env => {
+                    let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList2_g);
+                    console.log("distribution results:", distributionResult);
+                    let envPeakList = distributionResult[0];
+                    let singleEnv = {
+                        mono_mass: env.mono_mass,
+                        charge: env.charge,
+                        env_peaks: envPeakList
+                    }
+                    envList2_g.push(singleEnv);
+                })
+            }
             console.log("envList2_g:", envList2_g);
             if (envList2_g !== 0 && envList2_g.length !== 0){
                 graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
