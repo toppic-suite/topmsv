@@ -92,8 +92,8 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
         res.end();
         return;
     }
-    res.sendFile( path.resolve(__dirname + "/../public/backToHome.html") );
-    // res.redirect('/');
+    // res.sendFile( path.resolve(__dirname + "/../public/backToHome.html") );
+    res.redirect('/projects');
     // res.write('Your task is submitted, please wait for result! Please go back to home page to wait result: <a href ="https://toppic.soic.iupui.edu/">Home</a>');
     // res.end();
 });
