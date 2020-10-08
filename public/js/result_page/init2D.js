@@ -9,6 +9,7 @@ let graph2_g;
 let rtInteGraph;
 
 const topview_2d = new Topview2D();
+const calcDistrubution = new MolecularFormulae();
 
 function init2D(scan) {
     // const topview_2d = new Topview2D(scan);
@@ -55,12 +56,27 @@ function init2D(scan) {
                         .then(function(response) {
                             peakList1_g = response.data;
                             document.getElementById("scanID1").innerText = scan;
-                            return topview_2d.getEnvList(scan);
+                            return topview_2d.getEnvTable(scan);
                         })
                         .then(function(response) {
-                            // console.log("envList1_g:", response);
-                            envList1_g = response.data;
-                            if (envList1_g !== 0){
+                            console.log("envtabale_response:", response.data);
+                            let envtable = response.data;
+                            envList1_g = [];
+                            if (envtable) {
+                                envtable.forEach( env => {
+                                    let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList1_g);
+                                    console.log("distribution results:", distributionResult);
+                                    let envPeakList = distributionResult[0];
+                                    let singleEnv = {
+                                        mono_mass: env.mono_mass,
+                                        charge: env.charge,
+                                        env_peaks: envPeakList
+                                    }
+                                    envList1_g.push(singleEnv);
+                                })
+                            }
+                            console.log("envList1_g:", envList1_g);
+                            if (envList1_g !== 0 && envList1_g.length !== 0){
                                 graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
                                 graph1_g.redraw();
                                 // graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, null, null, graphFeatures);
@@ -113,11 +129,27 @@ function loadPeakList1(scanID, prec_mz) {
                 topview_2d.getRT(scanID, rtInteGraph);
                 peakList1_g = response.data;
                 document.getElementById("scanID1").innerText = scanID;
-                return topview_2d.getEnvList(scanID);
+                return topview_2d.getEnvTable(scanID);
             })
             .then(function(response){
-                envList1_g = response.data;
-                if (envList1_g !== 0){
+                console.log("envtabale_response:", response.data);
+                let envtable = response.data;
+                envList1_g = [];
+                if (envtable) {
+                    envtable.forEach( env => {
+                        let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList1_g);
+                        console.log("distribution results:", distributionResult);
+                        let envPeakList = distributionResult[0];
+                        let singleEnv = {
+                            mono_mass: env.mono_mass,
+                            charge: env.charge,
+                            env_peaks: envPeakList
+                        }
+                        envList1_g.push(singleEnv);
+                    })
+                }
+                console.log("envList1_g:", envList1_g);
+                if (envList1_g !== 0 && envList1_g.length !== 0){
                     graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
                     graph1_g.redraw(prec_mz);
                     // graph1_g = addSpectrum("spectrum1", peakList1_g, envList1_g, prec_mz, null, graphFeatures);
@@ -150,17 +182,26 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
         }).then(function(response) {
             // console.log("response from peaklist:", response);
             peakList2_g = response.data;
-            return axios.get('/envlist', {
-                params: {
-                    projectDir: document.getElementById("projectDir").value,
-                    scanID: scanID,
-                    projectCode: document.getElementById("projectCode").value
-                }
-            });
+            return topview_2d.getEnvTable(scanID);
         }).then(function(response) {
-            // console.log("envList2_g", response.data);
-            envList2_g = response.data;
-            if (envList2_g !== 0){
+            console.log("envtabale_response:", response.data);
+            let envtable = response.data;
+            envList2_g = [];
+            if (envtable) {
+                envtable.forEach( env => {
+                    let distributionResult = calcDistrubution.emass(env.mono_mass,env.charge,peakList2_g);
+                    console.log("distribution results:", distributionResult);
+                    let envPeakList = distributionResult[0];
+                    let singleEnv = {
+                        mono_mass: env.mono_mass,
+                        charge: env.charge,
+                        env_peaks: envPeakList
+                    }
+                    envList2_g.push(singleEnv);
+                })
+            }
+            console.log("envList2_g:", envList2_g);
+            if (envList2_g !== 0 && envList2_g.length !== 0){
                 graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
                 graph2_g.redraw();
                 // graph2_g = addSpectrum("spectrum2",peakList2_g, envList2_g,null,null, graphFeatures);
