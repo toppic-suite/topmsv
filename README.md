@@ -32,7 +32,7 @@ make
 cd ../..
 
 # go to public/resources/topview and install dependencies for this folder
-cd public/resources/topvew
+cd public/resources/topview
 npm install
 cd ../../..
 
