@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const getProjects = require("../library/getProjects");
+const checkUser = require("../library/checkUser");
 
 /**
  * Express.js router for /projects
@@ -21,6 +22,12 @@ const projects = router.get('/projects', function (req,res) {
     else {
         //console.log(req.session.passport.user.profile);
         let uid = req.session.passport.user.profile.id;
+        let userInfo = checkUser(uid);
+        if(!userInfo) {
+            res.write("User does not exist in the system! Please log in first!");
+            res.end();
+            return;
+        }
         // console.log(uid);
         getProjects(uid,function (rows) {
             rows.forEach(row=>{
