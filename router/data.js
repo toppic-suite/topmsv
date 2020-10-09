@@ -55,13 +55,14 @@ let data = router.get('/data', function(req, res) {
                                 MIN: row.minScan,
                                 MAX: row.maxScan
                             };
-                            
+                            let userType = 'owner';
                             res.render('pages/result', {
                                 summary,
                                 scanRange,
                                 projectCode,
                                 projectDir,
-                                fileName
+                                fileName,
+                                userType
                             });
                         })
                     } else {
@@ -70,13 +71,14 @@ let data = router.get('/data', function(req, res) {
                                 MIN: row.minScan,
                                 MAX: row.maxScan
                             };
-                            
-                            res.render('pages/guestResult', {
+                            let userType = 'guest';
+                            res.render('pages/result', {
                                 summary,
                                 scanRange,
                                 projectCode,
                                 projectDir,
-                                fileName
+                                fileName,
+                                userType
                             });
                         });
                     }

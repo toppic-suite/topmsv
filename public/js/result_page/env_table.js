@@ -37,7 +37,7 @@ function showEnvTable(scan) {
         }
     });
 
-    $('#envTable').DataTable( {
+    let envTableObj = $('#envTable').DataTable( {
         destroy: true,
         paging: false,
         searching: false,
@@ -56,19 +56,19 @@ function showEnvTable(scan) {
             },
             {
                 text: 'Add',
-                className: 'btn',
+                className: 'btn owner_btn',
                 name: 'add'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Update',
-                className: 'btn',
+                className: 'btn owner_btn',
                 name: 'edit'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Delete',
-                className: 'btn',
+                className: 'btn owner_btn',
                 name: 'delete'      // do not change name
             },
             // refresh button for datatable
@@ -147,6 +147,11 @@ function showEnvTable(scan) {
             });
         }
     } );
+    if ($('#userType').val() === 'guest') {
+        let buttonsList = envTableObj.buttons(['.owner_btn']);
+        buttonsList.remove();
+        // buttonsList.disable();
+    }
 }
 
 function jumpTo(mono_mz) {
