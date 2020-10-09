@@ -22,6 +22,13 @@ let editrow = router.get("/editrow", function (req, res) {
     let monoMass = req.query.mono_mass;
     let theoInteSum = req.query.intensity;
 
+    editEnv(projectDir, envID, charge, monoMass, theoInteSum, function() {
+        getEnv(projectDir,envID, function(row) {
+            res.json(row);
+            res.end();
+        })
+    })
+    /*
     getPeakListByScanID(projectDir, scan_id, function (rows) {
         let peakList = calcDistribution.emass(monoMass,charge,rows);
         // console.log(peakList);
@@ -46,6 +53,7 @@ let editrow = router.get("/editrow", function (req, res) {
             })
         }
     });
+    */
 })
 
 module.exports = editrow;
