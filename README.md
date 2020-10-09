@@ -31,10 +31,20 @@ cmake ..
 make
 cd ../..
 
+# go to public/resources/topview and install dependencies for this folder
+cd public/resources/topvew
+npm install
+cd ../../..
+
+# copy and build proteomics_cpp for topview
+# please go to https://github.iu.edu/xwliu/proteomics_cpp and follow the instruction there
+
+# modify auth.js callbackURL for your use
+
 # start server by pm2
 pm2 start ecosystem.config.js --env production
 
-# start topview locally without pm2
+# if you just want to run topview for yourself, start topview locally without pm2
 npm start
 ```
 For more information about TopView setup, please visit TopView wiki page.
