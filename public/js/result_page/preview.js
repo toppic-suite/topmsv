@@ -50,20 +50,49 @@ function change_mono_mz() {
 let graphMz1;
 let graphMz2;
 function refresh() {
-    // const graphFeatures = new GraphFeatures();
     let msType_old = $('#msType').text();
     let scanID;
+    let scanLevelOneFlag = true;
     if (msType_old === 'MS1') {
         graphMz1 = graph1_g.para.winCenterMz;
-        // lockPara1 = true;
         scanID = $('#scanID1').text();
         showEnvTable($("#scanID1").text());
         $("#switch").text('MS2');
     } else {
         graphMz2 = graph2_g.para.winCenterMz;
-        // lockPara2 = true;
         scanID = $('#scanID2').text();
+        scanLevelOneFlag = false;
     }
+
+    topview_2d.getEnvTable(scanID)
+        .then(response => {
+            let envtable = response.data;
+            if (scanLevelOneFlag) {
+                envList1_g = calcDistrubution.getEnvDistribution(envtable, peakList1_g);
+                if (envList1_g !== 0 && envList1_g.length !== 0){
+                    graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
+                    graph1_g.redraw(graphMz1);
+                }else {
+                    graph1_g = new SpectrumGraph("spectrum1", peakList1_g, [],[],null);
+                    graph1_g.redraw(graphMz1);
+                }
+            } else {
+                envList2_g = calcDistrubution.getEnvDistribution(envtable, peakList2_g);
+                if (envList2_g !== 0 && envList2_g.length !== 0){
+                    graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
+                    graph2_g.redraw(graphMz2);
+                }else {
+                    graph2_g = new SpectrumGraph("spectrum2", peakList2_g, [],[],null);
+                    graph2_g.redraw(graphMz2);
+                }
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        })
+
+
+    /*
     $.ajax({
         url:"envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value,
         type: "get",
@@ -89,17 +118,16 @@ function refresh() {
             }
         }
     });
+    */
 }
 
 let peakList_temp;
 let envList_temp;
-// let specPara3_g;
-// let lockPara_3 = false;
 let preview_scanID_g;
+let preview_intensitySum_g;
 let graph_preview1_g;
 let graph_preview2_g;
 function preview(dataObj) {
-    // console.log("dataObj:",dataObj);
     let envID = dataObj.envelope_id;
     let scanID = dataObj.scan_id;
     preview_scanID_g = scanID;
@@ -112,7 +140,24 @@ function preview(dataObj) {
     $('#preview_charge').val(charge);
     $('#preview_mono_mass').val(mono_mass);
     $('#preview_mono_mz').val(mono_mz);
-    $.ajax({
+
+    updatePreview(scanID, envID, charge, mono_mass);
+    // let previewPeakList;
+    // if ($('#msType').text() === 'MS1') {
+    //     previewPeakList = peakList1_g;
+    //     previewOriginalEnvPeakList = envList1_g;
+    // } else if ($('#msType').text() === 'MS2') {
+    //     previewPeakList = peakList2_g;
+    //     previewOriginalEnvPeakList = envList2_g;
+    // }
+    // let previewNewEnvPeakList = calcDistrubution.getEnvDistribution([{mono_mass: mono_mass, charge: charge}],previewPeakList);
+    // // console.log("preivewNewEnvPeakList:", previewNewEnvPeakList);
+    // graph_preview1_g = new SpectrumGraph('previewSpectrum1', previewPeakList, previewOriginalEnvPeakList,[],null);
+    // graph_preview1_g.redraw(mono_mz);
+    // graph_preview2_g = new SpectrumGraph("previewSpectrum2", previewPeakList, previewNewEnvPeakList,[],null);
+    // graph_preview2_g.redraw(mono_mz);
+
+    /* $.ajax({
         url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
             "&scan_id=" + scanID +
             "&envelope_id=" + envID +
@@ -139,12 +184,33 @@ function preview(dataObj) {
             // graph_preview1_g = addSpectrum('previewSpectrum1', data.originalPeakList, data.originalEnvPeaks, data.envlist[0].mono_mass/data.envlist[0].charge + 1,null, graphFeatures);
             // graph_preview2_g = addSpectrum("previewSpectrum2", data.originalPeakList, envList_temp, mono_mass/charge + 1,null, graphFeatures);
         }
-    });
+    }); */
     $('#previewModal').modal('show');
 }
 
 function updatePreview(scanID, envID, charge, mono_mass) {
-    $.ajax({
+    let previewPeakList;
+    if ($('#msType').text() === 'MS1') {
+        previewPeakList = peakList1_g;
+        previewOriginalEnvPeakList = envList1_g;
+    } else if ($('#msType').text() === 'MS2') {
+        previewPeakList = peakList2_g;
+        previewOriginalEnvPeakList = envList2_g;
+    }
+    let previewNewEnvPeakList = calcDistrubution.getEnvDistribution([{mono_mass: mono_mass, charge: charge}],previewPeakList);
+    graph_preview1_g = new SpectrumGraph('previewSpectrum1', previewPeakList, previewOriginalEnvPeakList,[],null);
+    graph_preview1_g.redraw(mono_mass/charge + 1);
+    graph_preview2_g = new SpectrumGraph("previewSpectrum2", previewPeakList, previewNewEnvPeakList,[],null);
+    graph_preview2_g.redraw(mono_mass/charge + 1);
+    let intensitySum = 0;
+    if(previewNewEnvPeakList[0].env_peaks) {
+        previewNewEnvPeakList[0].env_peaks.forEach(envPeak => {
+            intensitySum += envPeak.intensity;
+        })
+    }
+    preview_intensitySum_g = intensitySum;
+    
+    /* $.ajax({
         url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
             "&scan_id=" + scanID +
             "&envelope_id=" + envID +
@@ -169,23 +235,25 @@ function updatePreview(scanID, envID, charge, mono_mass) {
             graph_preview2_g = new SpectrumGraph("previewSpectrum2", data.originalPeakList, envList_temp,[],null);
             graph_preview2_g.redraw(parseFloat(mono_mass)/parseInt(charge) + 1);
         }
-    });
+    }); */
 }
 
 $(function() {
     $("#previewSaveBtn").on('click',function () {
         let result = confirm("Are you sure that you want to save this change?");
         if (result) {
-            //Logic to delete the item
+            let envID = $('#preview_envelope_id').val();
+            let charge = $('#preview_charge').val();
+            let intensity = preview_intensitySum_g;
+            let mono_mass = $('#preview_mono_mass').val();
             $.ajax({
                 url:"editrow?projectDir=" + document.getElementById("projectDir").value +
-                    "&scan_id=" + envList_temp[0].env.scan_id +
-                    "&envelope_id=" + envList_temp[0].env.envelope_id +
-                    "&charge=" + envList_temp[0].env.charge +
-                    "&intensity=" + envList_temp[0].env.intensity +
-                    "&mono_mass=" + envList_temp[0].env.mono_mass,
+                    "&scan_id=" + preview_scanID_g +
+                    "&envelope_id=" + envID +
+                    "&charge=" + charge +
+                    "&intensity=" + intensity +
+                    "&mono_mass=" + mono_mass,
                 type: "get",
-                // dataType: 'json',
                 success: function (res) {
                     alert('Your change has been saved!');
                     $('#previewModal').modal('hide');
