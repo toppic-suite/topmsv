@@ -51,7 +51,8 @@ class MolecularFormulae{
 			}
 		}
 		totDistributionList = this.getMZwithHighInte(totDistributionList,charge,massError,modifiedPeakList);
-		let peakDataProcessed  = this.getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList,modifiedPeakList);
+		//let peakDataProcessed  = this.getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList,modifiedPeakList);
+		let peakDataProcessed  = this.getNormalizedIntensity(totDistributionList,modifiedPeakList);
 		return peakDataProcessed;
 	}
 	/**
@@ -475,6 +476,21 @@ class MolecularFormulae{
 			}
 		}
 		return envList;
+	}
+	getEnvDistribution(envList, peakList) {
+		let distributionList = [];
+		envList.forEach( env => {
+			let tempResult = this.emass(env.mono_mass, env.charge, peakList);
+			//peakList = tempResult[1];
+			let singleEnvObj = {
+				mono_mass: parseFloat(env.mono_mass),
+				charge: parseInt(env.charge),
+				//env_peaks: tempResult[0]
+				env_peaks: tempResult
+			}
+			distributionList.push(singleEnvObj);
+		})
+		return distributionList;
 	}
 
 }
