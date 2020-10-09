@@ -3,6 +3,13 @@ function redrawGrph(scanID){
     update3D(scanID);
 }
 function initGraph(){
+    if ($('#userType').val() === 'guest') {
+        $('#topfdtask').prop('disabled',true);
+        $('#toppicTask').prop('disabled',true);
+        $('#uploadMsalign').prop('disabled',true);
+    } else {
+        // console.log("Hello, owner!");
+    }
     let min = document.getElementById("rangeMin").value;
     if($('#envStatus').val() === "0"){
         $('#brhr').hide();
