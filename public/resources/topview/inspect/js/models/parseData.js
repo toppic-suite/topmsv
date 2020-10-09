@@ -21,8 +21,8 @@ function parseSeq(dataName){
 	let data = window.localStorage.getItem(dataName);
 	
 	if (data != "" && data != null){
-		data = data.replace("[", "")
-		data = data.replace("]", "")
+		// data = data.replace("[", "")
+		// data = data.replace("]", "")
 		data = data.replace(/"/g, "");
 	}
 	return data;
