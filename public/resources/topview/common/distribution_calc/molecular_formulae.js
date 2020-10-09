@@ -479,6 +479,9 @@ class MolecularFormulae{
 	}
 	getEnvDistribution(envList, peakList) {
 		let distributionList = [];
+		if (!envList) {
+			return [];
+		}
 		envList.forEach( env => {
 			let tempResult = this.emass(env.mono_mass, env.charge, peakList);
 			//peakList = tempResult[1];

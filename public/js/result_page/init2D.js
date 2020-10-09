@@ -145,10 +145,8 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             peakList2_g = response.data;
             return topview_2d.getEnvTable(scanID);
         }).then(function(response) {
-            console.log("envtabale_response:", response.data);
             let envtable = response.data;
             envList2_g = calcDistrubution.getEnvDistribution(envtable, peakList2_g);
-            console.log("envList2_g:", envList2_g);
             if (envList2_g !== 0 && envList2_g.length !== 0){
                 graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
                 graph2_g.redraw();
