@@ -43,9 +43,6 @@ hr {
     margin-top: 0px;
 }
 
-span.fileName{
-
-}
 span.ms1EnvFile{
     position: relative;
     left: 20%;
@@ -322,7 +319,7 @@ button.dt-button{
     text-decoration: none;
 }
 button#close{
-    visibility: hidden;!important;
+    visibility: hidden !important;
 }
 span#scanid1{
     font-size: 100%;
