@@ -138,7 +138,7 @@ void msReader::createDtabase() { //stmt
         count++;
         // std::cout << count << std::endl;
         peaks_int_sum = peaks_int_sum + pairs[j].intensity;
-        if (scan_level == 1){//PEAKS0 contains level 1 data only
+        if (scan_level == 1 && pairs[j].intensity > 0){//PEAKS0 contains level 1 peaks that have > 0 intensity only
           databaseReader.insertPeakStmtInMemory(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
           ms1_peak_count++ ;
           

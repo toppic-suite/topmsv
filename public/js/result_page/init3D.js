@@ -106,6 +106,7 @@ function update3D(scanID){
 function init3D(scanID){
     let projectDir = document.getElementById("projectDir").value;
     let dir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
+    console.log("dir", dir)
     let graph = new Graph(dir);
 
     let promise = getMs2Scan(projectDir, scanID);
@@ -116,7 +117,6 @@ function init3D(scanID){
             let promise = getMs1Scan(projectDir, scanID);
             promise.then((ms1Scan) => {
                 scan = ms1Scan;
-                console.log("scan", scan)
                 return getPrecursorMz(projectDir,scan);
             })
         }else{
