@@ -30,7 +30,7 @@ class GraphResize{
             graphDiv.scrollIntoView(false);
             graphDiv.scrollIntoView({block: "end"});
 
-           Graph.renderer.setSize(this.oriWidth, this.oriHeight, true);
+            Graph.renderer.setSize(this.oriWidth, this.oriHeight, true);
 
             this.isFullScreen = false;
         }else{//expand to full screen

@@ -478,22 +478,25 @@
 						</div>-->
 					</div>
 					<div class="row">
-						<div class="col-sm-9">
+						<div class="col-sm-8" id="env-table-label-div">
 							Proteoform: <span id="proteoform"></span>
 						</div>
-						<div class="col-sm-1">
-							<button class="btn" id="inspect">Inspect</button>
+						<div class="col-sm-4">
+							<div class="col-sm-4">
+								<button class="btn" id="inspect">Inspect</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" id="switch">MS1</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" id="hide">Hide</button>
+							</div>
 						</div>
-						<div class="col-sm-1">
-							<button class="btn" id="switch">MS1</button>
-						</div>
-						<div class="col-sm-1">
-							<button class="btn" id="hide">Hide</button>
-						</div>
+						
 					</div>
 	
 					<div id="datatable">
-					<table id="envTable" class="display" style="width:100%">
+					<table id="envTable" class="display" style="width:100%;">
 						<thead>
 						<tr>
 							<th>Envelope ID</th>

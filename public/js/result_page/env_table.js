@@ -29,9 +29,11 @@ function showEnvTable(scan) {
             if(res!== '0') {
                 let sequence = preprocessSeq(res);
                 $('#proteoform').text(sequence);
+                //$('#proteoform').class('env-table-text');
                 window.localStorage.setItem('proteoform', sequence);
             } else {
                 $('#proteoform').text('N/A');
+                //$('#proteoform').class('env-table-text');
                 window.localStorage.setItem('proteoform', '');
             }
         }
