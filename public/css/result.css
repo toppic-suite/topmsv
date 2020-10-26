@@ -2,7 +2,8 @@
     --default-font-size: x-small;
     --default-btn-padding: 2px 5px;
     -webkit-text-size-adjust: none;
-  }
+}
+/**{ border: 1px solid red; }*/
 a{
     font-size:var(--default-font-size);
 }
@@ -12,7 +13,14 @@ a{
 h2 {
     font-size: 18px;
 }
+html, main{
+    height:100%;
+    padding:0px;
+    margin:0px;
+    
+}
 body {
+    height:100%;
     margin:0px;
     padding:0px;
     padding-top:10px;
@@ -29,6 +37,7 @@ body {
     margin:0px;
     padding:0px;
     min-width:100%;
+    height:5%;
 }
 #menu-container div{
     margin:0px;
@@ -37,21 +46,16 @@ body {
 #columns-container{
     margin:0px;
     padding:0px;
-    width:100%;
+    max-width:100%;
     height:100%;
+    max-height:100%;
+    display:flex;
 }
 div.modal-header {
     padding-bottom: 10px;
 }
 div#input {
     font-size: 100%;
-}
-.jumbotron p{
-    margin-bottom: 5px;
-}
-.jumbotron {
-    padding-top: 10px;
-    padding-bottom: 5px;
 }
 #scanID {
     width: 30px;
@@ -549,18 +553,14 @@ button#graph-full-screen{
   /*override default jumbotron style*/
 #left-jumbotron{
     margin: 0px;
-    padding: 5px 15px;
-    border-radius: 0;
-    min-height:100%;
-    height:100%;
+    height:95%;
+    width:50%;
     background-color: #EEEEEE;
   }
 #right-jumbotron{
     margin: 0px;
-    padding: 5px 5px;
-    border-radius: 0;
-    min-height:100%;
-    height:100%;
+    height:95%;
+    width:50%;
     background-color: #EEEEEE;
 }
 

@@ -22,16 +22,20 @@ class GraphDownload{
 		image.src = imgsrc;
 	}
 	static getImageName = () => {
-		let trimStart = Graph.projectDir.lastIndexOf("/");
+		/*let trimStart = Graph.projectDir.lastIndexOf("/");
 		if (trimStart < 0){
 			trimStart = Graph.projectDir.lastIndexOf("\\");
 		}
 		let trimEnd = Graph.projectDir.lastIndexOf(".");
-		
+
 		console.log(Graph.projectDir);
 		console.log(Graph.projectDir.slice(trimStart, trimEnd))
-
 		return Graph.projectDir.slice(trimStart + 1, trimEnd);
+		*/
+
+		let imageName = document.getElementById("input-file-name").value;
+
+		return imageName;
 	}
 	static popupnamewindow = (x, y) => {
 		//save-as-image-form
