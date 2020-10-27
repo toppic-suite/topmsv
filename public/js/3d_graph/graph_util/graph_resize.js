@@ -26,9 +26,9 @@ class GraphResize{
             rightColumnDiv.style.display = "inline-block";
             leftColumnDiv.style.width = "50%";
 
-            graphDiv.scrollIntoView();
-            graphDiv.scrollIntoView(false);
-            graphDiv.scrollIntoView({block: "end"});
+            //graphDiv.scrollIntoView();
+           // graphDiv.scrollIntoView(false);
+            //graphDiv.scrollIntoView({block: "start"});
 
             Graph.renderer.setSize(this.oriWidth, this.oriHeight, true);
 
@@ -36,6 +36,7 @@ class GraphResize{
         }else{//expand to full screen
             let leftColumnDiv = document.getElementById("left-jumbotron"); 
             let rightColumnDiv = document.getElementById("right-jumbotron"); 
+            let graphMenuDiv = document.getElementById("graph-3d-parameter");
             
             this.oriHeight = Graph.graphEl.clientHeight;
             this.oriWidth = Graph.graphEl.clientWidth;
@@ -43,9 +44,9 @@ class GraphResize{
             rightColumnDiv.style.display = "none";
             leftColumnDiv.style.width = "100%";
             
-            graphDiv.scrollIntoView();
-            graphDiv.scrollIntoView(false);
-            graphDiv.scrollIntoView({block: "start"});
+            graphMenuDiv.scrollIntoView();
+            graphMenuDiv.scrollIntoView(true);
+            graphMenuDiv.scrollIntoView({block: "nearest"});
 
             this.isFullScreen = true;
 

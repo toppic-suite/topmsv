@@ -53,24 +53,24 @@ function showEnvTable(scan) {
             {
                 extend: 'csv',
                 text: 'Export CSV',
-                className: 'btn',
+                className: 'btn defaultBtn',
                 filename: 'envelope_data'
             },
             {
                 text: 'Add',
-                className: 'btn owner_btn',
+                className: 'btn owner_btn defaultBtn',
                 name: 'add'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Update',
-                className: 'btn owner_btn',
+                className: 'btn owner_btn defaultBtn',
                 name: 'edit'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Delete',
-                className: 'btn owner_btn',
+                className: 'btn owner_btn defaultBtn',
                 name: 'delete'      // do not change name
             },
             // refresh button for datatable
@@ -82,7 +82,7 @@ function showEnvTable(scan) {
             {
                 extend: 'selected',
                 text: 'Jump to',
-                className: 'btn',
+                className: 'btn defaultBtn',
                 name: 'jumpto'
             }
         ],
