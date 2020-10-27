@@ -41,12 +41,12 @@ function showEnvTable(scan) {
 
     let envTableObj = $('#envTable').DataTable( {
         destroy: true,
-        paging: false,
+        paging: true,
         searching: false,
         dom: 'Bfrtip',
-        scrollY: 200,
+        scrollY: false,
         scrollCollapse:true,
-        scroller: true,
+        scroller: false,
         altEditor: true,
         select: 'os',
         responsive: true,
