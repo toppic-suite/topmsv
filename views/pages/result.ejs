@@ -372,10 +372,28 @@
 					</div>
 				</div>
 				<div class="scanleveltitle row">
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						<span id="graph-metadata"></span>
 					</div>
-					<div class="col-sm-8"></div>
+					<div class="col-sm-5">
+					</div>
+					<div class="col-sm-4" id ="3d-graph-menu-div">
+							<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+							<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+							<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
+							<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
+							
+						<!--<div class="col-sm-4 test">
+							<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+						</div>
+						<div class="col-sm-4 test">
+							<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+							<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
+						</div>
+						<div class="col-sm-4 test">
+							<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
+						</div>-->
+					</div>
 				</div>
 				<div id ="save-as-image-form">
 					<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
@@ -390,23 +408,7 @@
 				<div>
 					<div id="graph-container"></div>
 				</div>
-				<div id ="3d-graph-menu-div">
-					<div class="col-sm-6"></div>
-					<div class="col-sm-6">
-						<div class="col-sm-4">
-							<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
-						</div>
-						<div class="col-sm-2" style="display:flex">
-							<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
-							<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
-						</div>
-						<div class="col-sm-3">
-							<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
-						</div>
-						<div class="col-sm-3">
-						</div>
-					</div>
-				</div>
+				
 				
 				
 			</div>
@@ -477,7 +479,7 @@
 							Proteoform: <span id="proteoform"></span>
 						</div>-->
 					</div>
-					<div class="row">
+					<div class="row" id="env-table-first-row-div">
 						<div class="col-sm-8" id="env-table-label-div">
 							Proteoform: <span id="proteoform"></span>
 						</div>

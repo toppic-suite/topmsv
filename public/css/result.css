@@ -4,6 +4,7 @@
     -webkit-text-size-adjust: none;
 }
 /**{ border: 1px solid red; }*/
+.test{ border: 1px solid red; }
 a{
     font-size:var(--default-font-size);
 }
@@ -577,11 +578,13 @@ button#graph-full-screen{
 #envInfo{
     height:30%;
     max-height: 30%;
+    width:100%;
     overflow:auto;
     padding:0px;
     margin:10px 0px 0px 0px;
     position:relative;
 }
+
 #scanLevelOne{
     height:25%;
     position:relative;
@@ -594,4 +597,17 @@ button#graph-full-screen{
     position:relative;
     max-height:90%;
     height:90%;
+}
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+  
+    > .col,
+    > [class*="col-"] {
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+#env-table-first-row-div{
+    max-width:100%;
 }
