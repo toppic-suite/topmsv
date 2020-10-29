@@ -2,7 +2,11 @@ function redrawGrph(scanID){
     init2D(scanID);
     update3D(scanID);
 }
-function initGraph(){
+function init3DGraph(){
+    let min = document.getElementById("rangeMin").value;
+    init3D(min);
+}
+function init2DGraph(){
     if ($('#userType').val() === 'guest') {
         $('#topfdtask').prop('disabled',true);
         $('#toppicTask').prop('disabled',true);
@@ -20,7 +24,6 @@ function initGraph(){
     showEnvTable(min);
     
     init2D(min);
-    init3D(min);
 
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
@@ -80,5 +83,5 @@ function initGraph(){
     }
 }
 $( document ).ready(function() {
-    initGraph();
+    init2DGraph();
 });

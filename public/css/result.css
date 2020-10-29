@@ -33,11 +33,13 @@ body {
     min-width:100%;
     min-height:100%;
     height:100%;
+    width:100%;
 }
 #menu-container{
     margin:0px;
     padding:0px;
-    min-width:100%;
+    width:100%;
+    overflow:hidden;
     height:4%;
 }
 #menu-container div{
@@ -77,6 +79,7 @@ hr {
 th, td{
     font-size:var(--default-font-size);
 }
+
 #env-table-label-div{
     font-size:var(--default-font-size);
 }
@@ -470,10 +473,10 @@ button#minusBtn {
 /*3d graph div size*/
 #graph-container{
     min-width:100%;
+    min-height:100%;
     line-height:0;
     padding:0px;
     margin:0px;
-    line-height: 0px;
 }
 /*default css for all buttons*/
 button#graph-expand{
@@ -566,13 +569,13 @@ button#graph-full-screen{
 #left-jumbotron{
     margin: 0px;
     height:100%;
-    width:10%;
+    width:5%;
     background-color: #EEEEEE;
 }
 #middle-jumbotron{
     margin: 0px;
     height:100%;
-    width:45%;
+    width:50%;
     background-color: #EEEEEE;
 }
 #right-jumbotron{
@@ -582,8 +585,8 @@ button#graph-full-screen{
     background-color: #EEEEEE;
 }
 #envInfo{
-    height:30%;
-    max-height: 30%;
+    height:96%;
+    max-height: 96%;
     width:100%;
     overflow:auto;
     padding:0px;
@@ -592,7 +595,7 @@ button#graph-full-screen{
 }
 
 #scanLevelOne{
-    height:25%;
+    height:40%;
     position:relative;
 }
 #scanLevelTwo{
@@ -607,18 +610,33 @@ button#graph-full-screen{
 #env-table-first-row-div{
     max-width:100%;
 }
-#rt-sum_panel{
-    min-height:100%;
-    height:100%;
+
+.view-switch-div{
+    display: flex;
+    justify-content: flex-end;
 }
-#rt-sum-inner-div{
-    min-height:100%;
-    height:100%;
-    
+.view-switch-div button{
+    position: relative;
+    /*left: 54.5%;*/
+    font-size: var(--default-font-size);
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
-#rt-sum{
-    min-height:100%;
-}
-#rt-sum-innermost-div{
-    height:100%;
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+  
+    > .col,
+    > [class*="col-"] {
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+.view-label{
+    margin: 0px 5px 0px 0px; 
 }

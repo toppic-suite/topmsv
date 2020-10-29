@@ -165,10 +165,6 @@ class InteRtGraph {
             .attr('fill', 'none')
             .attr('stroke-width', 1)
             .attr('stroke', 'black');
-
-       svg
-       //.attr("transform", "translate(0,0) rotate(90)")
-       .style("background-color", 'yellow')
     
         //Line chart mouse over
         let hoverLineGroup = svg.append("g")
