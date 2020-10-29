@@ -562,17 +562,23 @@ button#graph-full-screen{
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-  /*override default jumbotron style*/
+/*override default jumbotron style*/
 #left-jumbotron{
     margin: 0px;
     height:100%;
-    width:50%;
+    width:10%;
     background-color: #EEEEEE;
-  }
+}
+#middle-jumbotron{
+    margin: 0px;
+    height:100%;
+    width:45%;
+    background-color: #EEEEEE;
+}
 #right-jumbotron{
     margin: 0px;
     height:100%;
-    width:50%;
+    width:45%;
     background-color: #EEEEEE;
 }
 #envInfo{
@@ -598,16 +604,21 @@ button#graph-full-screen{
     max-height:90%;
     height:90%;
 }
-.no-gutters {
-    margin-right: 0;
-    margin-left: 0;
-  
-    > .col,
-    > [class*="col-"] {
-      padding-right: 0;
-      padding-left: 0;
-    }
-  }
 #env-table-first-row-div{
     max-width:100%;
+}
+#rt-sum_panel{
+    min-height:100%;
+    height:100%;
+}
+#rt-sum-inner-div{
+    min-height:100%;
+    height:100%;
+    
+}
+#rt-sum{
+    min-height:100%;
+}
+#rt-sum-innermost-div{
+    height:100%;
 }

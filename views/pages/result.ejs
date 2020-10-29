@@ -335,12 +335,14 @@
 						<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
 						<input type="hidden" id="fileName" value="<%= fileName %>">
 					</div>
-					<div class="row">
-						<div id="rt-sum" class="col-sm-12">
-						</div>
+					<div class="row" id ="rt-sum-innermost-div">
+						<div id="rt-sum"></div>
 					</div>
 					
 				</div>
+			</div>
+			<div class="container-fluid" id ="middle-jumbotron">
+				
 				<hr>
 				<div class="scanleveltitle row" id ="graph-3d-parameter">
 					<div class="col-sm-3">
@@ -409,9 +411,6 @@
 				<div>
 					<div id="graph-container"></div>
 				</div>
-				
-				
-				
 			</div>
 			<div class="container-fluid" id ="right-jumbotron">
 				<div id="scanLevelOne">
