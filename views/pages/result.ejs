@@ -356,49 +356,52 @@
 			</div>
 			<div class="col-sm-6" id ="middle-jumbotron">
 				<div id="3d-graph-div">
-					<div class="scanleveltitle row" id ="graph-3d-parameter">
-						<div class="col-sm-3">
-							<strong>Graph data:</strong>
-							<span id="graph-cursor-data"></span>
+					<div id ="graph-3d-menu-para-div" style="display:none">
+						<div class="scanleveltitle row" id ="graph-3d-parameter">
+							<div class="col-sm-3">
+								<strong>Graph data:</strong>
+								<span id="graph-cursor-data"></span>
+							</div>
+							<div class="col-sm-4" style="display:flex">
+								<div>
+									<strong>Retention <br/>Time:</strong>
+								</div>
+								<div>
+									<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+									<span class ="rangeMarker">-</span>
+									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+								</div>
+							</div>
+							<div class="col-sm-4" style="display:flex">
+								<div >
+									<strong>m/z:</strong>
+								</div>
+								<div>
+									<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+									<span class ="rangeMarker"> - </span>
+									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+									<button type="submit" class="btn" id="request3dGraphRedraw">Go</button>
+								</div>
+							
+							</div>
+							<div class="col-sm-1">
+							</div>
 						</div>
-						<div class="col-sm-4" style="display:flex">
-							<div>
-								<strong>Retention <br/>Time:</strong>
+						<div class="scanleveltitle row">
+							<div class="col-sm-3">
+								<span id="graph-metadata"></span>
 							</div>
-							<div>
-								<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
-								<span class ="rangeMarker">-</span>
-								<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+							<div class="col-sm-5">
 							</div>
-						</div>
-						<div class="col-sm-4" style="display:flex">
-							<div >
-								<strong>m/z:</strong>
+							<div class="col-sm-4" id ="3d-graph-menu-div">
+									<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+									<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+									<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
+									<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
 							</div>
-							<div>
-								<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
-								<span class ="rangeMarker"> - </span>
-								<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
-								<button type="submit" class="btn" id="request3dGraphRedraw">Go</button>
-							</div>
-						
-						</div>
-						<div class="col-sm-1">
 						</div>
 					</div>
-					<div class="scanleveltitle row">
-						<div class="col-sm-3">
-							<span id="graph-metadata"></span>
-						</div>
-						<div class="col-sm-5">
-						</div>
-						<div class="col-sm-4" id ="3d-graph-menu-div">
-								<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
-								<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
-								<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
-								<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
-						</div>
-					</div>
+					
 					<div id ="save-as-image-form">
 						<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
 						<button class="btn" type="submit" id="btn-save-file-name">OK</button>

@@ -569,13 +569,13 @@ button#graph-full-screen{
 #left-jumbotron{
     margin: 0px;
     height:100%;
-    width:5%;
+    width:8%;
     background-color: #EEEEEE;
 }
 #middle-jumbotron{
     margin: 0px;
     height:100%;
-    width:50%;
+    width:47%;
     background-color: #EEEEEE;
 }
 #right-jumbotron{
@@ -639,4 +639,22 @@ button#graph-full-screen{
   }
 .view-label{
     margin: 0px 5px 0px 0px; 
+}
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 2px 10px !important;
+}
+#envTable_info{
+    font-size:var(--default-font-size);
+}
+/*rt-sum graph*/
+#rt-sum_panel{
+    height:100%;
+}
+#rt-sum-innermost-div{
+    max-height:92%;
+    height:92%;
+}
+#rt-sum{
+    height:100%;
+    max-height:100%;
 }

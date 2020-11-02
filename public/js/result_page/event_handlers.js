@@ -226,6 +226,7 @@ $( document ).ready(function() {
             $( "#3d-graph-div" ).show();
         }else{
             init3DGraph();
+            $( "#graph-3d-menu-para-div" ).show();
         }  
     });
 
