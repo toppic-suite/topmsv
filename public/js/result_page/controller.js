@@ -1,6 +1,6 @@
 function redrawGrph(scanID){
     init2D(scanID);
-    update3D(scanID);
+    //update3D(scanID);
 }
 function init3DGraph(){
     let min = document.getElementById("rangeMin").value;

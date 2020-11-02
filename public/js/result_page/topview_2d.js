@@ -113,7 +113,6 @@ class Topview2D {
             }
         }).then(function(response){
             let rt = parseFloat(response.data);
-            // console.log(rtInteGraph);
             rtInteGraph.moveLine(rt/60);
             document.getElementById("scan1RT").innerText = (rt/60).toFixed(4);
         }).catch(function(error) {

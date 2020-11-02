@@ -1,5 +1,5 @@
 class InteRtGraph {
-    xScale_g;
+    yScale_g;
     fixedLine_g;
 
     inteRtArray;
@@ -62,7 +62,6 @@ class InteRtGraph {
     }
 
     drawGraph() {
-
         let inteRtArray = this.inteRtArray;
         let padding = this.padding;
         let rt_ID = this.rt_ID;
@@ -100,12 +99,13 @@ class InteRtGraph {
         let xScale = d3.scaleLinear()
             .domain([0, maxRT+5])
             .range([0, this.width - this.padding.left - this.padding.right]);
-        this.xScale_g = xScale;
 
         let yScale = d3.scaleLinear()
             .domain([0, max])
             .range([this.height - this.padding.top - this.padding.bottom, 0]);
-    
+
+        this.yScale_g = xScale;
+
         let svg = d3.select(this.svg_ID)
             .append('svg')
             .attr('viewBox', "0 0 "+ this.height + " "+ this.width)
@@ -169,15 +169,13 @@ class InteRtGraph {
         let hoverLine = hoverLineGroup
             .append("line")
             .attr("stroke", "#ff0000")
-            .attr("x1", this.padding.top).attr("x2", this.height-this.padding.bottom)
+            .attr("x1", (this.height - (this.height - this.padding.bottom))).attr("x2", (this.height - this.padding.right))
             .attr("y1", this.padding.left).attr("y2", this.height-this.padding.left);
         let fixedLine = hoverLineGroup
             .append("line")
             .attr("stroke", "#ff8000")
-            //.attr("x1", (this.height - (this.height - this.padding.bottom))).attr("x2", this.padding.left)
-            //.attr("y1", this.padding.top).attr("y2", this.height-this.padding.bottom);
-            .attr("x1", this.padding.top).attr("x2", this.height-this.padding.bottom)
-            .attr("y1", (this.height - (this.height - this.padding.bottom))).attr("y2", this.padding.left);
+            .attr("x1", (this.height - (this.height - this.padding.bottom))).attr("x2", (this.height - this.padding.right))
+            .attr("y1", this.padding.left).attr("y2", this.padding.left);
         this.fixedLine_g = fixedLine;
     
         hoverLine.style("opacity", 1e-6);
@@ -193,18 +191,18 @@ class InteRtGraph {
             let mouse_x = d3.mouse(this)[0];
             let mouse_y = d3.mouse(this)[1];
             let maxMouse = xScale(maxRT);
-            let mouseRT = xScale.invert(mouse_x-padding.left);
+            let mouseRT = xScale.invert(mouse_y-padding.left);
             let i = bisectRT(inteRtArray, mouseRT); // returns the index to the current data item
-    
-            if(i>0 && i < inteRtArray.length && mouse_y < height-padding.bottom && mouse_y > padding.top) {
+
+            if(i>0 && i < inteRtArray.length && mouse_x < height-padding.bottom && mouse_x > padding.top) {
                 let d0 = inteRtArray[i - 1];
                 let d1 = inteRtArray[i];
                 // work out which date value is closest to the mouse
                 let d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
-                fixedLine.attr("x1", mouse_x).attr("x2", mouse_x);
+                fixedLine.attr("y1", mouse_y).attr("y2", mouse_y);
                 fixedLine.style("opacity", 1);
                 self.onClickFunc(d.scanNum);
-            } else if (i === inteRtArray.length && mouse_x -padding.left<= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
+            } else if (i === inteRtArray.length && mouse_y -padding.left<= maxMouse+1 && mouse_x < height-padding.bottom && mouse_x > padding.top)
             {
                 let d = inteRtArray[i-1];
                 fixedLine.attr("y1", mouse_y).attr("y2", mouse_y);
@@ -274,8 +272,8 @@ class InteRtGraph {
     }
 
     moveLine(rt) {
-        let newX = this.xScale_g(rt) + this.padding.left;
-        this.fixedLine_g.attr("x1", newX).attr("x2", newX);
+        let newY = this.yScale_g(rt) + this.padding.left;
+        this.fixedLine_g.attr("y1", newY).attr("y2", newY);
         this.fixedLine_g.style("opacity", 1);
     }
 }
