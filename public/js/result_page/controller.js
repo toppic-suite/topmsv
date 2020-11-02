@@ -1,10 +1,6 @@
 function redrawGrph(scanID){
     init2D(scanID);
-    //update3D(scanID);
-}
-function init3DGraph(){
-    let min = document.getElementById("rangeMin").value;
-    init3D(min);
+    update3D(scanID);
 }
 function init2DGraph(){
     if ($('#userType').val() === 'guest') {
@@ -24,7 +20,8 @@ function init2DGraph(){
     showEnvTable(min);
     
     init2D(min);
-
+    init3D(min);
+    
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
         .then((response) => {

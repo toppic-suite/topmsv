@@ -93,14 +93,26 @@ function calcInitRange(precMz){
 function update3D(scanID){
     let projectDir = document.getElementById("projectDir").value;
     let promise = checkRelatedScan(projectDir, scanID);
+    let promise2 = LoadData.getRT(scanID);
 
-    promise.then((ms2Scan) => {
+    let promiseMZ = promise.then((ms2Scan) => {
         return getPrecursorMz(projectDir, ms2Scan);
     }).then((precMz)=>{
-        let mzRange = calcInitRange(precMz);
-        GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
+        return calcInitRange(precMz);
     }).catch((err) => {
         console.log(err);
+    })
+    
+    let promiseRT = promise2.then((curRT)=>{
+        return curRT;
+        //GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
+    }).catch((err) => {
+        console.log(err);
+    })
+    Promise.all([promiseMZ, promiseRT]).then((values)=>{
+        let mzRange = values[0];
+        let curRT = values[1];
+        GraphData.updateGraph(curRT, mzRange.mzmin, mzRange.mzmax);
     })
 }
 function init3D(scanID){

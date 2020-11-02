@@ -219,15 +219,8 @@ $( document ).ready(function() {
         $( "#3d-ms1-btn" ).css('background-color', 'blue');
         $( "#2d-ms1-btn" ).css('background-color', '#555555');
 
+        $( "#3d-graph-div" ).show();
         $( "#scanLevelOne" ).hide();
-
-        //if 3d graph is already initialized
-        if (document.getElementById("canvas3D") != null){
-            $( "#3d-graph-div" ).show();
-        }else{
-            init3DGraph();
-            $( "#graph-3d-menu-para-div" ).show();
-        }  
     });
 
 })

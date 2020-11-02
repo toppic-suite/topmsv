@@ -1,6 +1,9 @@
     /*graph_util.js: class for utility functions used throughout the 3d graph*/
 class GraphUtil{
     constructor(){}
+    static hideGraph = () => {
+        $( "#3d-graph-div" ).hide();
+    }
     static disposeObject = (obj) => {
         if (obj.material.map) 
         {

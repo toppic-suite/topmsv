@@ -100,8 +100,18 @@ class GraphData{
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
      /******** PLOT PEAKS ******/
-    static updateGraph = (mzmin, mzmax,rtmin, rtmax, curRT) => {
-        GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
+    static updateGraph = (curRT, mzmin, mzmax, rtmin = -1, rtmax = -1) => {
+        /*this function can be called in either of this 2 cases:
+        1. scan changed, 2. view range changed
+        in case 1, only mz parameters are passed. In case 2, both rt and mz are passed
+        so if rt parameters are also passed, they are used to set the new view range in setViewRange
+        if only mz parameters are passed, rt range are calculated by setInitViewRange.
+        */
+        if (rtmax < 0){
+            GraphData.setInitViewRange(mzmin, mzmax, curRT);
+        }else{
+            GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
+        }
         GraphData.draw(curRT);
         if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
@@ -115,6 +125,7 @@ class GraphData{
             if (Graph.isUpdateTextBox){
                 GraphUtil.updateTextBox();
             }
+            GraphUtil.hideGraph();
         })
     }
      /******** PLOT PEAKS ******/
