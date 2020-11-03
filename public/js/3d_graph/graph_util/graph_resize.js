@@ -22,9 +22,11 @@ class GraphResize{
         if (this.isFullScreen){//shrink back
             let leftColumnDiv = document.getElementById("left-jumbotron"); 
             let rightColumnDiv = document.getElementById("right-jumbotron"); 
+            let middleColumnDiv = document.getElementById("middle-jumbotron");
 
             rightColumnDiv.style.display = "inline-block";
-            leftColumnDiv.style.width = "50%";
+            leftColumnDiv.style.display = "inline-block";
+            middleColumnDiv.style.width = "47%";
 
             //graphDiv.scrollIntoView();
            // graphDiv.scrollIntoView(false);
@@ -36,13 +38,15 @@ class GraphResize{
         }else{//expand to full screen
             let leftColumnDiv = document.getElementById("left-jumbotron"); 
             let rightColumnDiv = document.getElementById("right-jumbotron"); 
+            let middleColumnDiv = document.getElementById("middle-jumbotron");
             let graphMenuDiv = document.getElementById("graph-3d-parameter");
             
             this.oriHeight = Graph.graphEl.clientHeight;
             this.oriWidth = Graph.graphEl.clientWidth;
 
             rightColumnDiv.style.display = "none";
-            leftColumnDiv.style.width = "100%";
+            leftColumnDiv.style.display = "none";
+            middleColumnDiv.style.width = "100%";
             
             graphMenuDiv.scrollIntoView();
             graphMenuDiv.scrollIntoView(true);

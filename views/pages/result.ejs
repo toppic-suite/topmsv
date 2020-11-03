@@ -359,39 +359,34 @@
 					<div id ="graph-3d-menu-para-div">
 						<div class="scanleveltitle row" id ="graph-3d-parameter">
 							<div class="col-sm-3">
-								<strong>Graph data:</strong>
+								<span><b>Graph data:</b></span>
 								<span id="graph-cursor-data"></span>
 							</div>
-							<div class="col-sm-4" style="display:flex">
-								<div>
-									<strong>Retention <br/>Time:</strong>
-								</div>
-								<div>
+							<div class="row col-sm-4" >
+								<div class="col-sm-3" style="left:-10px"><strong>Retention Time:</strong></div>
+								<div class="col-sm-9" style="display:flex">
 									<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
 									<span class ="rangeMarker">-</span>
-									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />	
 								</div>
 							</div>
-							<div class="col-sm-4" style="display:flex">
-								<div >
-									<strong>m/z:</strong>
-								</div>
-								<div>
+							<div class="row col-sm-5">
+								<div class="col-sm-2"><strong>m/z:</strong></div>
+								<div class="col-sm-7" style="display:flex">
 									<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
 									<span class ="rangeMarker"> - </span>
-									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />	
+								</div>
+								<div class="col-sm-3">
 									<button type="submit" class="btn" id="request3dGraphRedraw">Go</button>
 								</div>
-							
-							</div>
-							<div class="col-sm-1">
 							</div>
 						</div>
 						<div class="scanleveltitle row">
-							<div class="col-sm-3">
+							<div class="col-sm-4">
 								<span id="graph-metadata"></span>
 							</div>
-							<div class="col-sm-5">
+							<div class="col-sm-4">
 							</div>
 							<div class="col-sm-4" id ="3d-graph-menu-div">
 									<button class="btn" type="submit" id="save3dGraph">Save Graph</button>

@@ -105,7 +105,6 @@ function update3D(scanID){
     
     let promiseRT = promise2.then((curRT)=>{
         return curRT;
-        //GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
     }).catch((err) => {
         console.log(err);
     })
