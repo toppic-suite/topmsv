@@ -759,18 +759,19 @@ void mzMLReader::setColor(){
   sqlite3_stmt *select_all;  
   sqlite3_stmt *update;  
 
-  std::string sqlstr_1 = "SELECT * FROM PEAKS0 WHERE ID < 100;";
+  std::string sqlstr_1 = "SELECT * FROM PEAKS0;";
   std::string sqlstr_2 = "UPDATE PEAKS0 SET COLOR = ? WHERE ID = ?;";
 
   sql_ = (char *)sqlstr_1.c_str();
   
+  char *sql_subquery;      
+  sql_subquery = (char *)sqlstr_2.c_str();
+  
   sqlite3_prepare_v2(db_, sql_, -1, &select_all, NULL);
+  sqlite3_prepare_v2(db_, sql_subquery, -1, &update, NULL);
 
   while ( (rc_ = sqlite3_step(select_all)) == SQLITE_ROW) {       
     int rc_subquery;       
-    char *sql_subquery;      
-    
-    sql_subquery = (char *)sqlstr_2.c_str();
 
     double max = normalization_data[1];
     double min = normalization_data[0];
@@ -790,12 +791,10 @@ void mzMLReader::setColor(){
     else{
       color = peak_color_[idx];
     }
-    sqlite3_prepare_v2(db_, sql_subquery, -1, &update, NULL);
     updateColor(sqlite3_column_int(select_all, 0), color);
-    rc_subquery = sqlite3_step(update);
-    
-    sqlite3_finalize(update);
+    //rc_subquery = sqlite3_step(update);
   }
+  sqlite3_finalize(update);
   sqlite3_finalize(select_all);
 
   /*if( rc_ != SQLITE_OK ){
