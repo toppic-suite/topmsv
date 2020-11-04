@@ -6,10 +6,12 @@ GridProperties Grid;
 sqlite3_stmt *stmt_sp;
 sqlite3_stmt *stmt_peak;
 sqlite3_stmt *stmt_peak_ms1_only;
+sqlite3_stmt *stmt_peak_ms1_only_temp;
 sqlite3_stmt *stmt_peak_in_memory;
 sqlite3_stmt *stmt_level_pair;
 sqlite3_stmt *stmt_update;
 sqlite3_stmt *stmt_sp_sum_update;
+sqlite3_stmt *color_update;
 
 int peak_in_grid = 0;
 int peak_int_rank = 0;
@@ -91,7 +93,9 @@ int callbackUpdateData(void *ptr, int argc, char **argv, char **az_col_name){//m
     color = reader.peak_color_[idx];
   }
   //insert to PEAKS0 table at disk
-  reader.insertPeakStmtMs1(std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
+  reader.updateColor(std::stoi(argv[0]), color);
+  //reader.insertPeakStmtMs1(std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
+  std::cout << "insertPeakStmtMs1 finshed" << std::endl;
 }
 int callbackConvertData(void *not_used, int argc, char **argv, char **az_col_name){
   /*input : row from PEAKS0 table, with a column structure as above
@@ -261,6 +265,24 @@ void mzMLReader::creatTable() {
    }else{
       // fprintf(stdout, "Table created successfully\n");
        std::cout << "Table PEAKS0 created successfully" << std::endl;
+   }
+   /* Create SQL statement */
+   sql_ = (char*)("CREATE TABLE PEAKS0TEMP("  \
+         "ID INT PRIMARY KEY     NOT NULL," \
+         "MZ            REAL     NOT NULL," \
+         "INTENSITY     REAL     NOT NULL," \
+         "RETENTIONTIME     REAL     NOT NULL," \
+         "COLOR     TEXT);");
+
+   /* Execute SQL statement */
+   rc_ = sqlite3_exec(db_, sql_, callback, 0, &z_err_msg_);
+   if( rc_ != SQLITE_OK ){
+      // fprintf(stderr, "SQL error: %d%s\n", rc, zErrMsg);
+      std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
+      sqlite3_free(z_err_msg_);
+   }else{
+      // fprintf(stdout, "Table created successfully\n");
+       std::cout << "Table PEAKS0TEMP created successfully" << std::endl;
    }
   // create a table for levelOne and levelTwo pair
    /* Create SQL statement */
@@ -447,6 +469,14 @@ void mzMLReader::endTransactionInMemory() {
   }
 
 };
+void mzMLReader::openUpdateColor(){
+  std::string sqlstr = "UPDATE PEAKS0 SET COLOR = ?  WHERE ID = ?;";
+  sql_ = (char *)sqlstr.c_str();
+  sqlite3_prepare_v2(db_, sql_, sqlstr.length(), &color_update, 0);
+}
+void mzMLReader::closeUpdateColor(){
+  sqlite3_finalize(color_update);
+}
 void mzMLReader::openInsertStmt() {
   std::string sqlstr = "INSERT INTO SPECTRA (ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES (? ,? ,?, ?, ?, ?, ?, ?, ?, ?); ";
   sql_ = (char *)sqlstr.c_str();
@@ -468,6 +498,12 @@ void mzMLReader::openInsertStmt() {
   sql_ = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db_, sql_, sqlstr.length(), &stmt_sp_sum_update, 0);
 };
+void mzMLReader::openInsertStmtMs1OnlyTemp() {
+  //std::string sqlstr = "INSERT INTO PEAKS0TEMP (ID,MZ,INTENSITY, RETENTIONTIME, COLOR) VALUES (?,?, ?, ?, ?); ";
+  std::string sqlstr = "INSERT INTO PEAKS0 (ID,MZ,INTENSITY, RETENTIONTIME, COLOR) VALUES (?,?, ?, ?, ?); ";
+  sql_ = (char *)sqlstr.c_str();
+  sqlite3_prepare_v2(db_, sql_, sqlstr.length(), &stmt_peak_ms1_only_temp, 0);
+};
 void mzMLReader::openInsertStmtMs1Only() {
   std::string sqlstr = "INSERT INTO PEAKS0 (ID,MZ,INTENSITY, RETENTIONTIME, COLOR) VALUES (?,?, ?, ?, ?); ";
   sql_ = (char *)sqlstr.c_str();
@@ -486,6 +522,9 @@ void mzMLReader::closeInsertStmt() {
 };
 void mzMLReader::closeInsertStmtMs1Only() {
   sqlite3_finalize(stmt_peak_ms1_only);
+};
+void mzMLReader::closeInsertStmtMs1OnlyTemp() {
+  sqlite3_finalize(stmt_peak_ms1_only_temp);
 };
 void mzMLReader::closeInsertStmtInMemory() {
   sqlite3_finalize(stmt_peak_in_memory);
@@ -512,6 +551,16 @@ void mzMLReader::insertScanLevelPairStmt(int scan_level_one, int scan_level_two)
   sqlite3_bind_int(stmt_level_pair,1,scan_level_one);
   sqlite3_bind_int(stmt_level_pair,2,scan_level_two);
   int r = sqlite3_step(stmt_level_pair);
+  if (r != SQLITE_DONE) {
+    std::cout << sqlite3_errmsg(db_) << std::endl;
+  }
+};
+void mzMLReader::updateColor(int current_id, std::string color) {
+  char *color_code = (char *)color.c_str();
+  sqlite3_reset(color_update);
+  sqlite3_bind_int(color_update,2,current_id);
+  sqlite3_bind_text(color_update,1,color_code, color.size(), SQLITE_TRANSIENT);
+  int r = sqlite3_step(color_update);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db_) << std::endl;
   }
@@ -555,6 +604,19 @@ void mzMLReader::insertPeakStmtMs1(int peak_index, double intensity, double mz, 
   sqlite3_bind_double(stmt_peak_ms1_only,4,retention_time);
   sqlite3_bind_text(stmt_peak_ms1_only,5,color_code, color.size(), SQLITE_TRANSIENT);
   int r = sqlite3_step(stmt_peak_ms1_only);
+  if (r != SQLITE_DONE) {
+    std::cout << sqlite3_errmsg(db_) << std::endl;
+  }
+};
+void mzMLReader::insertPeakStmtMs1Temp(int peak_index, double intensity, double mz, double retention_time, std::string color) {
+  char *color_code = (char *)color.c_str();
+  sqlite3_reset(stmt_peak_ms1_only_temp);
+  sqlite3_bind_int(stmt_peak_ms1_only_temp,1,peak_index);
+  sqlite3_bind_double(stmt_peak_ms1_only_temp,3,intensity);
+  sqlite3_bind_double(stmt_peak_ms1_only_temp,2,mz);
+  sqlite3_bind_double(stmt_peak_ms1_only_temp,4,retention_time);
+  sqlite3_bind_text(stmt_peak_ms1_only_temp,5,color_code, color.size(), SQLITE_TRANSIENT);
+  int r = sqlite3_step(stmt_peak_ms1_only_temp);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db_) << std::endl;
   }
@@ -665,28 +727,85 @@ double mzMLReader::normalizeInte(std::vector<double> *normalization_data){
 
   return log_base;
 }
-void mzMLReader::setColor(){
-  std::string sqlstr = "SELECT * FROM PEAKS0;";
+/*void mzMLReader::setColor(){
+  std::string sqlstr = "SELECT * FROM PEAKS0TEMP;";
   std::vector<double> normalization_data{Range.int_min, Range.int_max};
 
   double log_base = normalizeInte(&normalization_data);
 
   normalization_data.push_back(log_base);
 
-  openInsertStmtMs1Only();
-
   std::vector<double> *max_min_ptr = &normalization_data;
   sql_ = (char *)sqlstr.c_str();
-  rc_ = sqlite3_exec(db_in_memory_, sql_, callbackUpdateData, max_min_ptr, &z_err_msg_);//after this function, gridBlocks has a peak for each grid
+
+  //rc_ = sqlite3_exec(db_in_memory_, sql_, callbackUpdateData, max_min_ptr, &z_err_msg_);//after this function, gridBlocks has a peak for each grid
+  rc_ = sqlite3_exec(db_, sql_, callbackUpdateData, max_min_ptr, &z_err_msg_);//after this function, gridBlocks has a peak for each grid
+
   if( rc_ != SQLITE_OK ){
     std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
     sqlite3_free(z_err_msg_);
   }else{
-    //std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
+    std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
   }
-  closeInsertStmtMs1Only();
-}
+  std::cout << "setColor finished" << std::endl;
+  std::cout << "closeInsertStmtMs1Only" << std::endl;
+}*/
+void mzMLReader::setColor(){
+  std::vector<double> normalization_data{Range.int_min, Range.int_max};
+  double log_base = normalizeInte(&normalization_data);
+  normalization_data.push_back(log_base);
+  std::vector<double> *max_min_ptr = &normalization_data;
 
+  sqlite3_stmt *select_all;  
+  sqlite3_stmt *update;  
+
+  std::string sqlstr_1 = "SELECT * FROM PEAKS0 WHERE ID < 100;";
+  std::string sqlstr_2 = "UPDATE PEAKS0 SET COLOR = ? WHERE ID = ?;";
+
+  sql_ = (char *)sqlstr_1.c_str();
+  
+  sqlite3_prepare_v2(db_, sql_, -1, &select_all, NULL);
+
+  while ( (rc_ = sqlite3_step(select_all)) == SQLITE_ROW) {       
+    int rc_subquery;       
+    char *sql_subquery;      
+    
+    sql_subquery = (char *)sqlstr_2.c_str();
+
+    double max = normalization_data[1];
+    double min = normalization_data[0];
+    double val_span = max - min;
+    double intensity = log(sqlite3_column_double(select_all, 2)) / log(log_base);
+
+    std::string color = "NONE";
+    
+    int idx = (int)(peak_color_.size() * (intensity-min)/val_span);
+
+    if (idx < 0) {
+      color = peak_color_[0];
+    } 
+    else if (idx >= peak_color_.size() -1) {
+      color = peak_color_[peak_color_.size() -1];
+    }
+    else{
+      color = peak_color_[idx];
+    }
+    sqlite3_prepare_v2(db_, sql_subquery, -1, &update, NULL);
+    updateColor(sqlite3_column_int(select_all, 0), color);
+    rc_subquery = sqlite3_step(update);
+    
+    sqlite3_finalize(update);
+  }
+  sqlite3_finalize(select_all);
+
+  /*if( rc_ != SQLITE_OK ){
+    std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
+    sqlite3_free(z_err_msg_);
+  }else{
+    std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
+  }*/
+  std::cout << "setColor finished" << std::endl;
+}
 void mzMLReader::resetRange(){
   Range.mz_min = 99999;
   Range.mz_max = 0;
@@ -699,12 +818,13 @@ void mzMLReader::resetRange(){
 void mzMLReader::insertPeakDataToGridBlocks(){
   std::string sqlstr = "SELECT * FROM PEAKS0;";
   sql_ = (char *)sqlstr.c_str();
-  rc_ = sqlite3_exec(db_in_memory_, sql_, callbackConvertData, db_in_memory_, &z_err_msg_);//after this function, gridBlocks has a peak for each grid
+  //rc_ = sqlite3_exec(db_in_memory_, sql_, callbackConvertData, db_in_memory_, &z_err_msg_);//after this function, gridBlocks has a peak for each grid
+  rc_ = sqlite3_exec(db_, sql_, callbackConvertData, db_, &z_err_msg_);//after this function, gridBlocks has a peak for each grid
   if( rc_ != SQLITE_OK ){
     std::cout << "SQL error: "<< rc_ << "-" << z_err_msg_ << std::endl;
     sqlite3_free(z_err_msg_);
   }else{
-    //std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
+    std::cout << "Operation done successfully - insertPreakDataToGridBlocks" << std::endl;
   }
 }
 void mzMLReader::createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_id){
@@ -812,8 +932,12 @@ void mzMLReader::insertDataLayerTable(){
   Grid.grid_blocks = std::vector<std::vector<std::vector<double> > > (grid_width, std::vector<std::vector<double> >(grid_height, std::vector<double>({-1, -1, -1, -1})));  
   
   clock_t t1 = clock();
+
+  std::cout << "insertPeakDataToGridBlocks starting" << std::endl;
+
   insertPeakDataToGridBlocks();//peaks assigned to GRID.GRIDBLOCKS
-  closeDatabaseInMemory();//close in-memory database. local disk db is still open.
+
+  //closeDatabaseInMemory();//close in-memory database. local disk db is still open.
 
   std::cout <<"insertPeakDataToGridBlocks finished: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();

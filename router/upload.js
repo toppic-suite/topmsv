@@ -18,6 +18,7 @@ const fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
 const sqlite3 = require('sqlite3').verbose();
+const os = require('os');
 
 const upload = router.post('/upload', function (req, res) {
     console.log("hello,upload");
@@ -194,6 +195,11 @@ const upload = router.post('/upload', function (req, res) {
                                     });
 
                                     let app = './cpp/bin/mzMLReader';
+
+                                    if (os.platform() == "win32"){
+                                        app = '.\\cpp\\bin\\mzMLReader';
+                                    }
+                                    
                                     let parameter = des_file + ' -f';
                                     submitTask(id, app, parameter,1);
 
@@ -247,8 +253,13 @@ const upload = router.post('/upload', function (req, res) {
                                         console.log(info);
                                     }
                                 });
-
+                                //create path based on OS type    
                                 let app = './cpp/bin/mzMLReader';
+
+                                if (os.platform() == "win32"){
+                                    app = '.\\cpp\\bin\\mzMLReader';
+                                }
+
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter, 1);
 
