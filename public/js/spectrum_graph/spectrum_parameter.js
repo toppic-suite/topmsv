@@ -8,9 +8,9 @@ class SpectrumParameters {
 
   // SVG size
   svgWidth = 910;
-  svgHeight = 270;
+  svgHeight = 200;
 	// SVG padding 
-	padding = {left:70, right:50, head:10, bottom:50};
+	padding = {left:70, right:50, head:0, bottom:0};
   // spectrum size
 	specWidth = this.svgWidth - this.padding.left - this.padding.right;
   specHeight = this.svgHeight - this.padding.head - this.padding.bottom;

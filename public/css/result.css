@@ -4,7 +4,7 @@
     -webkit-text-size-adjust: none;
 }
 /**{ border: 1px solid red; }*/
-.test{ border: 1px solid red; }
+
 a{
     font-size:var(--default-font-size);
 }
@@ -396,7 +396,9 @@ svg#spectrum1{
 }
 svg#spectrum2{
     padding: 0 !important;
-    padding-top: 10px !important;
+    padding-top: 0px !important;
+    max-height:80%;
+    overflow:hidden;
 }
 .ui-widget-content {
     background: #eee !important;
@@ -468,15 +470,16 @@ button#minusBtn {
 #input-file-name{
     width:200px;
     font-size: var(--default-font-size);
-
 }
 /*3d graph div size*/
 #graph-container{
-    min-width:100%;
-    min-height:100%;
     line-height:0;
     padding:0px;
     margin:0px;
+    height:75%;
+}
+#canvas3D{
+    max-height:100%;
 }
 /*default css for all buttons*/
 button#graph-expand{
@@ -575,6 +578,7 @@ button#graph-full-screen{
 #middle-jumbotron{
     margin: 0px;
     height:100%;
+    max-height:100%;
     width:47%;
     background-color: #EEEEEE;
 }
@@ -596,16 +600,19 @@ button#graph-full-screen{
 
 #scanLevelOne{
     height:40%;
+    max-height:40%;
     position:relative;
 }
 #scanLevelTwo{
     height:40%;
+    max-height:40%;
     position:relative;
 }
 #tabs{
     position:relative;
-    max-height:90%;
-    height:90%;
+    max-height:80%!important;
+    height:80%!important;
+    overflow:hidden!important;
 }
 #env-table-first-row-div{
     max-width:100%;
@@ -657,4 +664,10 @@ table.dataTable tbody th, table.dataTable tbody td {
 #rt-sum{
     height:100%;
     max-height:100%;
+}
+.ui-tabs-anchor{
+    padding: 3px!important;
+}
+.ui-widget-header{
+    padding: 0px!important;
 }

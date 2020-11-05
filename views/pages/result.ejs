@@ -67,7 +67,6 @@
 		<!-- Modal -->
 		<div id="msalignModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
-
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
@@ -159,7 +158,6 @@
 		<!-- Result Modal -->
 		<div id="seqModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
-
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
@@ -265,39 +263,39 @@
 					<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
 				</div>
 			</div>
-			<div class="scanleveltitle row col-sm-6">
-				<div class="view-switch-div col-sm-4">
+			<div class="scanleveltitle row col-sm-5">
+				<div class="view-switch-div col-sm-5">
 					<label id="ms1-graph-view-label" class="view-label">MS1 Graph View Mode</label>
 					<button id="2d-ms1-btn" class="btn" style="background-color:blue">2D</button>
 					<button id="3d-ms1-btn" class="btn">3D</button>
 				</div>
-				<div class="view-switch-div col-sm-4">
+				<div class="view-switch-div col-sm-5">
 					<label id="ms2-graph-view-label" class="view-label">MS2 Graph View Mode</label>
 					<button id="2d-ms2-btn" class="btn" style="background-color:blue">2D</button>
 					<button id="3d-ms2-btn" class="btn">3D</button>
 				</div>
-				<div class="view-switch-div col-sm-4"></div>
+				<div class="view-switch-div col-sm-2"></div>
 			</div>
-			<div class="scanleveltitle row col-sm-5">
-				<div class="scanleveltitle row col-sm-6 no-gutters">
+			<div class="scanleveltitle row col-sm-6">
+				<div class="scanleveltitle row col-sm-7 no-gutters">
 					<div class="col-sm-5">
 						<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
 					</div>
-					<div class="col-sm-3">
-						<div class="col-sm-6">
+					<div class="col-sm-4 row no-gutters">
+						<div class="col-sm-7">
 							<label for="scanID" id="scanRange">Scan:</label>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-5">
 							<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
 						</div>
 					</div>
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						<button class="btn" type="submit" id="prev1"><</button>
 						<button class="btn" type="submit" id="request">Request</button>
 						<button class="btn" type="submit" id="next1">></button>
 					</div>
 				</div>
-				<div class="scanleveltitle row col-sm-6 no-gutters">
+				<div class="scanleveltitle row col-sm-5 no-gutters">
 					<div class="col-sm-3">
 					<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
 					</div>
@@ -401,9 +399,9 @@
 						<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
 						<button class="btn" type="submit" id="btn-save-file-name">OK</button>
 					</div>
-					<div class="hover-label-container">
+					<!--<div class="hover-label-container">
 						<span id="graph-hover-label"></span>
-					</div>			
+					</div>-->			
 					<div id="tooltip">
 						<span id="tooltiptext"></span>
 					</div>
@@ -428,7 +426,6 @@
 					</div>
 					<svg id="spectrum1"></svg><br/>
 				</div>
-				<hr>
 				<div id="scanLevelTwo">
 					<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
 						<div class="col-sm-2" style="padding-right: 15px">
@@ -466,7 +463,6 @@
 					</div>
 	
 					<br>
-					<hr>
 				</div>
 			</div>
 			<div class="col-sm-5" id ="right-jumbotron">	

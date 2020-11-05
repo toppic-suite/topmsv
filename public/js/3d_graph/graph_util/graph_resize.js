@@ -23,10 +23,14 @@ class GraphResize{
             let leftColumnDiv = document.getElementById("left-jumbotron"); 
             let rightColumnDiv = document.getElementById("right-jumbotron"); 
             let middleColumnDiv = document.getElementById("middle-jumbotron");
+            let graphDiv = document.getElementById("3d-graph-div");
+            let graphContainerDiv = document.getElementById("graph-container");
 
             rightColumnDiv.style.display = "inline-block";
             leftColumnDiv.style.display = "inline-block";
             middleColumnDiv.style.width = "47%";
+            graphDiv.style.height = "55%";
+            graphContainerDiv.style.height = "75%";
 
             //graphDiv.scrollIntoView();
            // graphDiv.scrollIntoView(false);
@@ -40,13 +44,17 @@ class GraphResize{
             let rightColumnDiv = document.getElementById("right-jumbotron"); 
             let middleColumnDiv = document.getElementById("middle-jumbotron");
             let graphMenuDiv = document.getElementById("graph-3d-parameter");
-            
+            let graphDiv = document.getElementById("3d-graph-div");
+            let graphContainerDiv = document.getElementById("graph-container");
+
             this.oriHeight = Graph.graphEl.clientHeight;
             this.oriWidth = Graph.graphEl.clientWidth;
 
             rightColumnDiv.style.display = "none";
             leftColumnDiv.style.display = "none";
             middleColumnDiv.style.width = "100%";
+            graphDiv.style.height = "120%";
+            graphContainerDiv.style.height = "80%";
             
             graphMenuDiv.scrollIntoView();
             graphMenuDiv.scrollIntoView(true);

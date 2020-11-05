@@ -220,6 +220,7 @@ $( document ).ready(function() {
         $( "#2d-ms1-btn" ).css('background-color', '#555555');
 
         $( "#3d-graph-div" ).show();
+        $( "#3d-graph-div" ).css('height', '55%');
         $( "#scanLevelOne" ).hide();
     });
 

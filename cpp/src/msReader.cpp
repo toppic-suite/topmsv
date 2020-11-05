@@ -83,10 +83,12 @@ void msReader::createDtabase() { //stmt
   databaseReader.openDatabaseInMemory(file_name_);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+
   databaseReader.creatTable();
   databaseReader.creatTableInMemory();
   std::cout <<"Create table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+  
   int scan_level = 1;
   int count = 0;
   int sp_size = sl->size();
@@ -95,8 +97,8 @@ void msReader::createDtabase() { //stmt
   databaseReader.beginTransactionInMemory();
   std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
+  
   databaseReader.openInsertStmt();
-  //databaseReader.openInsertStmtMs1OnlyTemp();
   databaseReader.openInsertStmtInMemory();
 
   int level_one_id = 0;
@@ -140,7 +142,6 @@ void msReader::createDtabase() { //stmt
         peaks_int_sum = peaks_int_sum + pairs[j].intensity;
         if (scan_level == 1 && pairs[j].intensity > 0){//PEAKS0 contains level 1 peaks that have > 0 intensity only
           databaseReader.insertPeakStmtInMemory(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
-          //databaseReader.insertPeakStmtMs1Temp(count, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
           ms1_peak_count++ ;
           
           //compare with min max values to find overall min max value
@@ -180,7 +181,6 @@ void msReader::createDtabase() { //stmt
         if (prec_inte < 0) {
           prec_inte = 0.0;
         }
-
         databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,scan_level,prec_mz,prec_charge,prec_inte,peaks_int_sum,NULL,level_two_id);
         // update prev's next
         databaseReader.updateSpStmt(current_id,level_two_id);
@@ -199,7 +199,6 @@ void msReader::createDtabase() { //stmt
     // }
   }
   databaseReader.closeInsertStmt();
-  //databaseReader.closeInsertStmtMs1OnlyTemp();
   databaseReader.closeInsertStmtInMemory();
   std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
@@ -226,25 +225,21 @@ void msReader::createDtabase() { //stmt
   databaseReader.insertConfigOneTable();
 
   databaseReader.createIndexOnIdOnlyInMemory();//create index on PEAKS0 table by ID  
+  databaseReader.createIndex();
 
-  databaseReader.openUpdateColor();
   databaseReader.setColor();
-  databaseReader.closeUpdateColor();
+
+  databaseReader.createIndexOnIdOnly();
 
   databaseReader.endTransaction();
   databaseReader.endTransactionInMemory();
   
-  databaseReader.createIndexOnIdOnly();
-  std::cout << "createIndexOnIdOnly finished" << std::endl;
-
   t1 = clock();
   databaseReader.insertDataLayerTable();
   std::cout <<"End Insert to all layer tables: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   
   t1 = clock();
-  
   databaseReader.createIndexLayerTable();
-  databaseReader.createIndex();
   std::cout <<"Create Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   
   t1 = clock();
