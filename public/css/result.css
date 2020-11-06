@@ -76,10 +76,15 @@ hr {
 .btn{
     font-size:var(--default-font-size);
 }
-th, td{
+.sorting{
     font-size:var(--default-font-size);
 }
-
+.sorting_asc{
+    font-size:var(--default-font-size); 
+}
+#envTable td{
+    font-size:var(--default-font-size);
+}
 #env-table-label-div{
     font-size:var(--default-font-size);
 }
@@ -125,6 +130,17 @@ button#modalUpload {
     text-decoration: none;
     display: inline-block;
 }
+button#mzrtUpload {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button#seqUpload {
     position: relative;
     font-size: 100%;
@@ -159,6 +175,18 @@ button.bwButton {
     display: inline-block;
 }
 button#deleteMsalign {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+button#deleteMzrt {
     position: relative;
     font-size: 100%;
     background-color: #555555;
