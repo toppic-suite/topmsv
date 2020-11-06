@@ -29,9 +29,11 @@ function showEnvTable(scan) {
             if(res!== '0') {
                 let sequence = preprocessSeq(res);
                 $('#proteoform').text(sequence);
+                //$('#proteoform').class('env-table-text');
                 window.localStorage.setItem('proteoform', sequence);
             } else {
                 $('#proteoform').text('N/A');
+                //$('#proteoform').class('env-table-text');
                 window.localStorage.setItem('proteoform', '');
             }
         }
@@ -42,8 +44,9 @@ function showEnvTable(scan) {
         paging: false,
         searching: false,
         dom: 'Bfrtip',
-        scrollY: 370,
-        scroller: true,
+        scrollY: false,
+        scrollCollapse:true,
+        scroller: false,
         altEditor: true,
         select: 'os',
         responsive: true,
@@ -51,24 +54,24 @@ function showEnvTable(scan) {
             {
                 extend: 'csv',
                 text: 'Export CSV',
-                className: 'btn',
+                className: 'btn defaultBtn',
                 filename: 'envelope_data'
             },
             {
                 text: 'Add',
-                className: 'btn owner_btn',
+                className: 'btn owner_btn defaultBtn',
                 name: 'add'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Update',
-                className: 'btn owner_btn',
+                className: 'btn owner_btn defaultBtn',
                 name: 'edit'        // do not change name
             },
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Delete',
-                className: 'btn owner_btn',
+                className: 'btn owner_btn defaultBtn',
                 name: 'delete'      // do not change name
             },
             // refresh button for datatable
@@ -80,7 +83,7 @@ function showEnvTable(scan) {
             {
                 extend: 'selected',
                 text: 'Jump to',
-                className: 'btn',
+                className: 'btn defaultBtn',
                 name: 'jumpto'
             }
         ],

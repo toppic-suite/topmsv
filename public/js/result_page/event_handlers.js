@@ -207,4 +207,21 @@ $( document ).ready(function() {
             }
         }
     });
+    //event handler for buttons switching between 2d and 3d view
+    $( "#2d-ms1-btn" ).click(function() {
+        $( "#2d-ms1-btn" ).css('background-color', 'blue');
+        $( "#3d-ms1-btn" ).css('background-color', '#555555');
+
+        $( "#3d-graph-div" ).hide();
+        $( "#scanLevelOne" ).show();
+    });
+    $( "#3d-ms1-btn" ).click(function() {
+        $( "#3d-ms1-btn" ).css('background-color', 'blue');
+        $( "#2d-ms1-btn" ).css('background-color', '#555555');
+
+        $( "#3d-graph-div" ).show();
+        $( "#3d-graph-div" ).css('height', '55%');
+        $( "#scanLevelOne" ).hide();
+    });
+
 })

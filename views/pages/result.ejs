@@ -50,7 +50,7 @@
 	<!-- Result page JavaScript -->
 	<script src="resources/topview/common/distribution_calc/isotopes.js"></script>
 	<script src="resources/topview/common/distribution_calc/molecular_formulae.js"></script>
-
+	
 	<script src="js/result_page/inte_rt_graph.js"></script>
 	<script src="js/result_page/topview_2d.js"></script>
 	<script src="js/result_page/controller.js"></script>
@@ -62,13 +62,11 @@
 	<script src="js/result_page/upload.js"></script>
 
 </head>
-<body class="container">
-
+<body class="container-fluid" id="body-container">
 	<main>
 		<!-- Modal -->
 		<div id="msalignModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
-
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
@@ -160,7 +158,6 @@
 		<!-- Result Modal -->
 		<div id="seqModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
-
 				<!-- Modal content-->
 				<div class="modal-content">
 					<div class="modal-header">
@@ -258,282 +255,265 @@
 				</div>
 			</div>
 		</div>
-		<div class="jumbotron" id ="center-div">
-			<div>
-				<span class="projectsummary">
-					<div class="row">
-						<div class="projectName col-sm-7">
-						<strong>Project Name:</strong> <%= summary.ProjectName %>
+		<div class="row no-gutters container-fluid" id="menu-container">
+			<div class="projectName titleText scanleveltitle row col-sm-1 no-gutters">
+				<strong>Project Name:</strong> <%= summary.ProjectName %>
+				<strong>Download :</strong> <a href="/download?id=<%= projectCode %>" download><%= summary.ProjectName %></a>
+				<div class="ms1EnvFile col-sm-6" id="envFileInfo">
+					<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
+				</div>
+			</div>
+			<div class="scanleveltitle row col-sm-5">
+				<div class="view-switch-div col-sm-5">
+					<label id="ms1-graph-view-label" class="view-label">MS1 Graph View Mode</label>
+					<button id="2d-ms1-btn" class="btn" style="background-color:blue">2D</button>
+					<button id="3d-ms1-btn" class="btn">3D</button>
+				</div>
+				<div class="view-switch-div col-sm-5">
+					<label id="ms2-graph-view-label" class="view-label">MS2 Graph View Mode</label>
+					<button id="2d-ms2-btn" class="btn" style="background-color:blue">2D</button>
+					<button id="3d-ms2-btn" class="btn">3D</button>
+				</div>
+				<div class="view-switch-div col-sm-2"></div>
+			</div>
+			<div class="scanleveltitle row col-sm-6">
+				<div class="scanleveltitle row col-sm-7 no-gutters">
+					<div class="col-sm-5">
+						<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
+					</div>
+					<div class="col-sm-4 row no-gutters">
+						<div class="col-sm-7">
+							<label for="scanID" id="scanRange">Scan:</label>
 						</div>
 						<div class="col-sm-5">
-							<div class="row">
-								<div class="col-sm-3">
-								<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
-								</div>
-								<div class="col-sm-2">
-								<button id="topfdtask" class="btn" onclick="window.location.href='/topfd?projectCode=<%= projectCode%>'">TopFD</button>
-								</div>
-								<div class="col-sm-2">
-								<button id="toppicTask" class="btn" onclick="window.location.href='/toppic?projectCode=<%= projectCode%>'">Toppic</button>
-								</div>
-								<div class="col-sm-2">
-									<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#msalignModal">Upload</button>
-								</div>
-								<div class="col-sm-3">
-<!--									<button id="uploadSequence" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Result</button>-->
-									<button id="uploadSequence" type="button" class="btn">Sequence</button>
-								</div>
-							</div>
+							<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
 						</div>
-					</div>
-					<div class="row">
-						<div class="fileName col-sm-6">
-							<strong>Download :</strong> <a href="/download?id=<%= projectCode %>" download><%= summary.ProjectName %></a>
-						</div>
-						<div class="ms1EnvFile col-sm-6" id="envFileInfo">
-							<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
-						</div>
-					</div>
-				</span>
-			</div>
-
-			<hr>
-
-			<div id="rt-sum_panel">
-				<div id="input">
-					<div class="scanleveltitle row">
-						<div class="col-sm-9">
-							<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
-						</div>
-						<div class="col-sm-3">
-							<div class="row">
-								<div class="col-sm-4">
-									<label for="scanID" id="scanRange">Scan:</label>
-								</div>
-								<div class="col-sm-4">
-									<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
-								</div>
-								<div class="col-sm-4">
-									<button class="btn" type="submit" id="request">Request</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="scanleveltitle row">
-						<div class="col-sm-4">
-							<div class="row">
-								<div class="col-sm-3">
-									RT:<span id="rt-hover">0</span>
-								</div>
-								<div class="col-sm-6">
-									<div id="shiftRight">
-										Intensity:<span id="intensity-hover">0</span>
-									</div>
-								</div>
-								<div class="col-sm-3">
-									Scan:<span id="scan-hover">0</span>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
-					<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
-					<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
-					<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
-					<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
-					<input type="hidden" id="featureStatus" value=<%= summary.featureStatus %>>
-					<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
-					<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
-					<input type="hidden" id="fileName" value="<%= fileName %>">
-					<input type="hidden" id="userType" value="<%= userType%>"
-				</div>
-				<div class="row">
-					<div id="rt-sum" class="col-sm-12">
-					</div>
-				</div>
-				<hr>
-			</div>
-			<hr>
-			<div class="scanleveltitle row" id ="3d-graph-parameter">
-				<div class="col-sm-2">
-					<div><strong>Graph data:</strong></div>
-					<span id="graph-cursor-data"></span>
-				</div>
-				<div class="col-sm-3">
-					<div class="col-sm-4">
-						<strong>Retention Time:</strong>
-					</div>
-					<div class="col-sm-8" style="display:flex">
-						<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
-						<span class ="rangeMarker"> - </span>
-						<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
-					</div>
-				</div>
-				<div class="col-sm-3" style="display:flex">
-					<div class="col-sm-1">
-						<strong>m/z:</strong>
-					</div>
-					<div class="col-sm-11" style="display:flex">
-						<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
-						<span class ="rangeMarker"> - </span>
-						<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="col-sm-3">
-						<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
-					</div>
-					<div class="col-sm-4">
-						<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
-					</div>
-					<div class="col-sm-2" style="display:flex">
-						<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
-						<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
 					</div>
 					<div class="col-sm-3">
-						<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
+						<button class="btn" type="submit" id="prev1"><</button>
+						<button class="btn" type="submit" id="request">Request</button>
+						<button class="btn" type="submit" id="next1">></button>
 					</div>
 				</div>
-			</div>
-			<div id ="save-as-image-form">
-				<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
-				<button class="btn" type="submit" id="btn-save-file-name">OK</button>
-			</div>
-			<div>
-				<span id="graph-metadata"></span>
-			</div>			
-			<div id="tooltip">
-				<span id="tooltiptext"></span>
-			</div>
-			<div>
-				<div class="col-md-11 col2" id="graph-container"></div>
-			</div>
-			
-			<div class="hover-label-container">
-				<span id="graph-hover-label"></span>
-			</div>
-
-			<div id="scanLevelOne">
-				<div class="row scanleveltitle">
-					<div class="col-sm-7">
-						<div class="row">
-							<div class="col-sm-3">
-								<b>Scan Level 1</b>
-							</div>
-							<div class="col-sm-2" style="position: relative; right: 1%">
-								Scan: <span id="scanID1"></span>
-							</div>
-							<div class="col-sm-7">
-								Retention Time: <span id="scan1RT"></span>
-							</div>
-						</div>
+				<div class="scanleveltitle row col-sm-5 no-gutters">
+					<div class="col-sm-3">
+					<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
 					</div>
 					<div class="col-sm-2">
+					<button id="topfdtask" class="btn" onclick="window.location.href='/topfd?projectCode=<%= projectCode%>'">TopFD</button>
+					</div>
+					<div class="col-sm-2">
+					<button id="toppicTask" class="btn" onclick="window.location.href='/toppic?projectCode=<%= projectCode%>'">Toppic</button>
+					</div>
+					<div class="col-sm-2">
+						<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#msalignModal">Upload</button>
 					</div>
 					<div class="col-sm-3">
-						<div class="row">
+						<button id="uploadSequence" type="button" class="btn">Sequence</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid m-0 p-0 row" id="columns-container">
+			<div class="col-sm-1" id ="left-jumbotron">
+				<div id="rt-sum_panel">
+					<div id="input">
+						<div class="scanleveltitle row">
 							<div class="col-sm-4">
-
+								<div class="row">
+									<div class="col-sm-3">
+										RT:<span id="rt-hover">0</span>
+									</div>
+									<div class="col-sm-6">
+										<div id="shiftRight">
+											Intensity:<span id="intensity-hover">0</span>
+										</div>
+									</div>
+									<div class="col-sm-3">
+										Scan:<span id="scan-hover">0</span>
+									</div>
+								</div>
+							</div>
+						</div>
+	
+						<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+						<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
+						<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
+						<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
+						<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
+						<input type="hidden" id="featureStatus" value=<%= summary.featureStatus %>>
+						<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
+						<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
+						<input type="hidden" id="fileName" value="<%= fileName %>">
+					</div>
+					<div class="row" id ="rt-sum-innermost-div">
+						<div id="rt-sum"></div>
+					</div>
+					
+				</div>
+			</div>
+			<div class="col-sm-6" id ="middle-jumbotron">
+				<div id="3d-graph-div">
+					<div id ="graph-3d-menu-para-div">
+						<div class="scanleveltitle row" id ="graph-3d-parameter">
+							<div class="col-sm-3">
+								<span><b>Graph data:</b></span>
+								<span id="graph-cursor-data"></span>
+							</div>
+							<div class="row col-sm-4" >
+								<div class="col-sm-3" style="left:-10px"><strong>Retention Time:</strong></div>
+								<div class="col-sm-9" style="display:flex">
+									<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+									<span class ="rangeMarker">-</span>
+									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />	
+								</div>
+							</div>
+							<div class="row col-sm-5">
+								<div class="col-sm-2"><strong>m/z:</strong></div>
+								<div class="col-sm-7" style="display:flex">
+									<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+									<span class ="rangeMarker"> - </span>
+									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />	
+								</div>
+								<div class="col-sm-3">
+									<button type="submit" class="btn" id="request3dGraphRedraw">Go</button>
+								</div>
+							</div>
+						</div>
+						<div class="scanleveltitle row">
+							<div class="col-sm-4">
+								<span id="graph-metadata"></span>
 							</div>
 							<div class="col-sm-4">
-								<button class="btn" type="submit" id="prev1">Previous</button>
 							</div>
-							<div class="col-sm-4">
-								<button class="btn" type="submit" id="next1">Next</button>
+							<div class="col-sm-4" id ="3d-graph-menu-div">
+									<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+									<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+									<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
+									<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
 							</div>
 						</div>
 					</div>
+					
+					<div id ="save-as-image-form">
+						<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
+						<button class="btn" type="submit" id="btn-save-file-name">OK</button>
+					</div>
+					<!--<div class="hover-label-container">
+						<span id="graph-hover-label"></span>
+					</div>-->			
+					<div id="tooltip">
+						<span id="tooltiptext"></span>
+					</div>
+					<div id="graph-container"></div>
 				</div>
-				<svg id="spectrum1"></svg><br />
-				<hr>
-			</div>
-
-			<div id="scanLevelTwo">
-				<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
-					<div class="col-sm-2" style="padding-right: 5px">
-						<b>Scan Level 2</b>
-					</div>
-					<div class="col-sm-1" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
-						Scan:<span id="scanID2"></span>
-					</div>
-					<div class="col-sm-9">
-						<div class="row">
-							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px">
-								Precursor MZ:<span id="prec_mz"></span>
-							</div>
-							<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
-								Precursor Charge:<span id="prec_charge"></span>
-							</div>
-							<div class="col-sm-4" style="padding-left: 0px; padding-right: 0px; position: relative; left: 2%">
-								Precursor Intensity:<span id="prec_inte"></span>
-							</div>
-							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
-								Retention Time:<span id="rt"></span>
+				
+				<div id="scanLevelOne">
+					<div class="row scanleveltitle">
+						<div class="col-sm-8">
+							<div class="row">
+								<div class="col-sm-4">
+									<b>Scan Level 1</b>
+								</div>
+								<div class="col-sm-3" style="position: relative; right: 1%">
+									Scan: <span id="scanID1"></span>
+								</div>
+								<div class="col-sm-5">
+									Retention Time: <span id="scan1RT"></span>
+								</div>
 							</div>
 						</div>
 					</div>
+					<svg id="spectrum1"></svg><br/>
 				</div>
-				<div class="scanleveltitle row">
-					<div class="col-sm-12">
-						<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
+				<div id="scanLevelTwo">
+					<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
+						<div class="col-sm-2" style="padding-right: 15px">
+							<b>Scan Level 2</b>
+						</div>
+						<div class="col-sm-1" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+							Scan:<span id="scanID2"></span>
+						</div>
+						<div class="col-sm-9">
+							<div class="row">
+								<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px">
+									Precursor MZ:<span id="prec_mz"></span>
+								</div>
+								<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px; position: relative;">
+									Precursor Charge:<span id="prec_charge"></span>
+								</div>
+								<div class="col-sm-4" style="padding-left: 0px; padding-right: 0px; position: relative;">
+									Precursor Intensity:<span id="prec_inte"></span>
+								</div>
+								<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px; position: relative;">
+									Retention Time:<span id="rt"></span>
+								</div>
+							</div>
+						</div>
 					</div>
+					<div class="scanleveltitle row">
+						<div class="col-sm-12">
+							<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
+						</div>
+					</div>
+					<div id="tabs">
+						<ul id="tabList">
+						</ul>
+						<svg id="spectrum2"></svg>
+					</div>
+	
+					<br>
 				</div>
-				<div id="tabs">
-					<ul id="tabList">
-					</ul>
-					<svg id="spectrum2"></svg>
-				</div>
-
-				<br>
-				<hr>
 			</div>
-
-			<div id="envInfo">
-				<div class="scanleveltitle" id="scanLevelTwoInfo">
-					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
-					<span id="msType"></span> Scan: <span id="envScan"></span>
-					<!--<div>
-						Proteoform: <span id="proteoform"></span>
-					</div>-->
-				</div>
-				<div class="row">
-					<div class="col-sm-9">
-						Proteoform: <span id="proteoform"></span>
+			<div class="col-sm-5" id ="right-jumbotron">	
+				<div id="envInfo">
+					<div class="scanleveltitle" id="scanLevelTwoInfo">
+						<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
+						<span id="msType"></span> Scan: <span id="envScan"></span>
+						<!--<div>
+							Proteoform: <span id="proteoform"></span>
+						</div>-->
 					</div>
-					<div class="col-sm-1">
-						<button class="btn" id="inspect">Inspect</button>
+					<div class="row" id="env-table-first-row-div">
+						<div class="col-sm-8" id="env-table-label-div">
+							Proteoform: <span id="proteoform"></span>
+						</div>
+						<div class="col-sm-4">
+							<div class="col-sm-4">
+								<button class="btn" id="inspect">Inspect</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" id="switch">MS1</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" id="hide">Hide</button>
+							</div>
+						</div>
+						
 					</div>
-					<div class="col-sm-1">
-						<button class="btn" id="switch">MS1</button>
+	
+					<div id="datatable">
+					<table id="envTable" class="display" style="width:100%;">
+						<thead>
+						<tr>
+							<th>Envelope ID</th>
+							<th>Scan</th>
+							<th>Charge</th>
+							<th>Mono Mass</th>
+							<th>Intensity</th>
+							<th>Mono M/Z</th>
+						</tr>
+						</thead>
+						<!--<tfoot>
+						<tr>
+							<th>Scan</th>
+							<th>Charge</th>
+							<th>Theo Mono Mass</th>
+							<th>Mono M/Z</th>
+						</tr>
+						</tfoot>-->
+					</table>
 					</div>
-					<div class="col-sm-1">
-						<button class="btn" id="hide">Hide</button>
-					</div>
-				</div>
-
-				<div id="datatable">
-				<table id="envTable" class="display" style="width:100%">
-					<thead>
-					<tr>
-						<th>Envelope ID</th>
-						<th>Scan</th>
-						<th>Charge</th>
-						<th>Mono Mass</th>
-						<th>Intensity</th>
-						<th>Mono M/Z</th>
-					</tr>
-					</thead>
-					<!--<tfoot>
-					<tr>
-						<th>Scan</th>
-						<th>Charge</th>
-						<th>Theo Mono Mass</th>
-						<th>Mono M/Z</th>
-					</tr>
-					</tfoot>-->
-				</table>
 				</div>
 			</div>
 		</div>

@@ -1,18 +1,58 @@
+:root {
+    --default-font-size: x-small;
+    --default-btn-padding: 2px 5px;
+    -webkit-text-size-adjust: none;
+}
+/**{ border: 1px solid red; }*/
+
+a{
+    font-size:var(--default-font-size);
+}
 .projectsummary {
     font-size: 16px;
 }
 h2 {
     font-size: 18px;
 }
+html, main{
+    height:100%;
+    padding:0px;
+    margin:0px;
+    
+}
 body {
+    height:100%;
+    margin:0px;
+    padding:0px;
     padding-top:10px;
-    padding-bottom: 2px;
     font-family: Arial, serif;
 }
-body.container{
-    padding-bottom: 5px;
-    padding-right: 0px;
-    padding-left: 0px;
+#body-container{
+    margin:0px;
+    padding:0px;
+    min-width:100%;
+    min-height:100%;
+    height:100%;
+    width:100%;
+}
+#menu-container{
+    margin:0px;
+    padding:0px;
+    width:100%;
+    overflow:hidden;
+    height:4%;
+}
+#menu-container div{
+    margin:0px;
+    padding:0px;
+}
+#columns-container{
+    margin:0px;
+    padding:0px;
+    max-width:100%;
+    height:96%;
+    max-height:96%;
+    display:flex;
 }
 div.modal-header {
     padding-bottom: 10px;
@@ -20,18 +60,9 @@ div.modal-header {
 div#input {
     font-size: 100%;
 }
-
-.jumbotron p{
-    margin-bottom: 5px;
-}
-.jumbotron {
-    padding-top: 10px;
-    padding-bottom: 5px;
-
-}
 #scanID {
-    width: 120%;
-    position: relative;
+    width: 30px;
+    /*position: relative;*/
     /*left: 53%;*/
 }
 .rangeTextBox{
@@ -42,10 +73,28 @@ hr {
     margin-bottom: 7px;
     margin-top: 0px;
 }
+.btn{
+    font-size:var(--default-font-size);
+}
+th, td{
+    font-size:var(--default-font-size);
+}
 
+#env-table-label-div{
+    font-size:var(--default-font-size);
+}
+.env-table-text{
+    font-size:var(--default-font-size);
+}
+span.fileName{
+    
+}
 span.ms1EnvFile{
     position: relative;
     left: 20%;
+}
+.titleText{
+    font-size:var(--default-font-size);
 }
 #scanRange {
     position: relative;
@@ -53,11 +102,11 @@ span.ms1EnvFile{
 }
 .defaultBtn {
     position: relative;
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: 2px 5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -136,11 +185,11 @@ button#deleteSeq {
 button#topfdtask {
     position: relative;
     left: 40%;
-    font-size: 93%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -148,11 +197,11 @@ button#topfdtask {
 button#toppicTask {
     position: relative;
     left: 40%;
-    font-size: 93%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 10px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -160,11 +209,11 @@ button#toppicTask {
 button#home {
     position: relative;
     left: 61%;
-    /*font-size: 95%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 15px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -172,11 +221,11 @@ button#home {
 #request {
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
-    background-color: #555555;
+    font-size: var(--default-font-size);
+    background-color: #4e4e4e;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -184,11 +233,11 @@ button#home {
 button#request3dGraphRedraw{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -196,11 +245,11 @@ button#request3dGraphRedraw{
 button#save3dGraph{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -208,11 +257,11 @@ button#save3dGraph{
 button#next1 {
     position: relative;
     /*left: 84%;*/
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 20px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -220,11 +269,11 @@ button#next1 {
 button#prev1 {
     position: relative;
     /*left: 82%;*/
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: block;
@@ -233,11 +282,11 @@ button#prev1 {
 button#uploadMsalign {
     position: relative;
     left: 40%;
-    /*font-size: 95%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 12px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -245,11 +294,11 @@ button#uploadMsalign {
 button#uploadSequence {
     position: relative;
     left: 25%;
-    /*font-size: 95%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 5px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -257,11 +306,11 @@ button#uploadSequence {
 button#inspect {
     position: relative;
     /*left: 82%;*/
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 12px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -269,11 +318,11 @@ button#inspect {
 button#hide{
     position: relative;
     /*left: 84%;*/
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 20px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -281,11 +330,11 @@ button#hide{
 button#switch {
     position: relative;
     /*left: 83%;*/
-    font-size: 100%;
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 20px;
+    padding: 2px 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -319,7 +368,7 @@ button.dt-button{
     text-decoration: none;
 }
 button#close{
-    visibility: hidden !important;
+    visibility: hidden;!important;
 }
 span#scanid1{
     font-size: 100%;
@@ -334,7 +383,7 @@ p#scanid2 {
     font-size: 100%;
 }
 .scanleveltitle{
-    font-size: 14px;
+    font-size: var(--default-font-size);
 }
 div#shiftRight{
     position: relative;
@@ -347,7 +396,9 @@ svg#spectrum1{
 }
 svg#spectrum2{
     padding: 0 !important;
-    padding-top: 10px !important;
+    padding-top: 0px !important;
+    max-height:80%;
+    overflow:hidden;
 }
 .ui-widget-content {
     background: #eee !important;
@@ -389,9 +440,9 @@ button#minusBtn {
     position:fixed;
     border-bottom: 1px dotted black;
     z-index: 1;
-  }
+}
   
-  #tooltiptext {
+#tooltiptext {
     width: 120px;
     background-color: #555555;
     color: #fff;
@@ -399,12 +450,15 @@ button#minusBtn {
     border-radius: 6px;
     padding: 5px 5px;
     margin: 5px;
-    font-size:10px;
+    font-size: var(--default-font-size);
   
     /* Position the tooltip */
     position: absolute;
    
-  }
+}
+#graph-metadata{
+    font-size: var(--default-font-size);
+}
 /*save-as-image popup css*/
 #save-as-image-form{
     /*padding: 10px;
@@ -415,25 +469,27 @@ button#minusBtn {
 }
 #input-file-name{
     width:200px;
-    font-size:10px;
-
+    font-size: var(--default-font-size);
 }
 /*3d graph div size*/
 #graph-container{
-    min-width:100%;
-    line-height: 0px;
+    line-height:0;
     padding:0px;
     margin:0px;
+    height:75%;
+}
+#canvas3D{
+    max-height:100%;
 }
 /*default css for all buttons*/
 button#graph-expand{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -441,11 +497,11 @@ button#graph-expand{
 button#graph-shrink{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -453,11 +509,11 @@ button#graph-shrink{
 button#graph-full-screen{
     position: relative;
     /*left: 54.5%;*/
-    /*font-size: 100%;*/
+    font-size: var(--default-font-size);
     background-color: #555555;
     color: white;
     border: none;
-    padding: 2px 8px;
+    padding: var(--default-btn-padding);
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -500,8 +556,118 @@ button#graph-full-screen{
     width: 200px;
     height: 200px;
 }
-
+#graph-3d-parameter div{
+    margin: 0px;
+    padding-left:15px;
+    padding-right:0px;
+}
+.rangeTextBox{
+    width:50px;
+}
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+/*override default jumbotron style*/
+#left-jumbotron{
+    margin: 0px;
+    height:100%;
+    width:8%;
+    background-color: #EEEEEE;
+}
+#middle-jumbotron{
+    margin: 0px;
+    height:100%;
+    max-height:100%;
+    width:47%;
+    background-color: #EEEEEE;
+}
+#right-jumbotron{
+    margin: 0px;
+    height:100%;
+    width:45%;
+    background-color: #EEEEEE;
+}
+#envInfo{
+    height:96%;
+    max-height: 96%;
+    width:100%;
+    overflow:auto;
+    padding:0px;
+    margin:10px 0px 0px 0px;
+    position:relative;
+}
+
+#scanLevelOne{
+    height:40%;
+    max-height:40%;
+    position:relative;
+}
+#scanLevelTwo{
+    height:40%;
+    max-height:40%;
+    position:relative;
+}
+#tabs{
+    position:relative;
+    max-height:80%!important;
+    height:80%!important;
+    overflow:hidden!important;
+}
+#env-table-first-row-div{
+    max-width:100%;
+}
+
+.view-switch-div{
+    display: flex;
+    justify-content: flex-end;
+}
+.view-switch-div button{
+    position: relative;
+    /*left: 54.5%;*/
+    font-size: var(--default-font-size);
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+  
+    > .col,
+    > [class*="col-"] {
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+.view-label{
+    margin: 0px 5px 0px 0px; 
+}
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 2px 10px !important;
+}
+#envTable_info{
+    font-size:var(--default-font-size);
+}
+/*rt-sum graph*/
+#rt-sum_panel{
+    height:100%;
+}
+#rt-sum-innermost-div{
+    max-height:92%;
+    height:92%;
+}
+#rt-sum{
+    height:100%;
+    max-height:100%;
+}
+.ui-tabs-anchor{
+    padding: 3px!important;
+}
+.ui-widget-header{
+    padding: 0px!important;
+}

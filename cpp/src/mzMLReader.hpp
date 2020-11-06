@@ -74,9 +74,11 @@ public:
 	void endTransaction();
 	void beginTransactionInMemory();
 	void endTransactionInMemory();
+	void openSelectAll();
 	void openInsertStmt();
 	void openInsertStmtMs1Only();
 	void openInsertStmtInMemory();
+	void closeSelectAll();
 	void closeInsertStmt();
 	void closeInsertStmtMs1Only();
 	void closeInsertStmtInMemory();

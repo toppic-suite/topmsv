@@ -18,32 +18,47 @@ class GraphResize{
         GraphControl.resizeCameraUserControl(1/this.viewAdjust);
     }
     fullScreen = () => {
-        let graphDiv = document.getElementById("3d-graph-parameter"); 
-
+        let graphDiv = document.getElementById("graph-container"); 
         if (this.isFullScreen){//shrink back
-            document.body.style.width = this.oriWidth;
-            document.getElementById("center-div").style.paddingLeft = "60px";
-            document.getElementById("center-div").style.paddingRight = "60px";
+            let leftColumnDiv = document.getElementById("left-jumbotron"); 
+            let rightColumnDiv = document.getElementById("right-jumbotron"); 
+            let middleColumnDiv = document.getElementById("middle-jumbotron");
+            let graphDiv = document.getElementById("3d-graph-div");
+            let graphContainerDiv = document.getElementById("graph-container");
 
-            document.getElementById("graph-container").style.height = this.oriHeight;
+            rightColumnDiv.style.display = "inline-block";
+            leftColumnDiv.style.display = "inline-block";
+            middleColumnDiv.style.width = "47%";
+            graphDiv.style.height = "55%";
+            graphContainerDiv.style.height = "75%";
 
-            graphDiv.scrollIntoView();
-            graphDiv.scrollIntoView(false);
-            graphDiv.scrollIntoView({block: "end"});
+            //graphDiv.scrollIntoView();
+           // graphDiv.scrollIntoView(false);
+            //graphDiv.scrollIntoView({block: "start"});
 
-            Graph.renderer.setSize(Graph.graphEl.clientWidth, this.oriHeight, true);
+            Graph.renderer.setSize(this.oriWidth, this.oriHeight, true);
 
             this.isFullScreen = false;
         }else{//expand to full screen
-            this.oriWidth = document.getElementById("center-div").style.width;
+            let leftColumnDiv = document.getElementById("left-jumbotron"); 
+            let rightColumnDiv = document.getElementById("right-jumbotron"); 
+            let middleColumnDiv = document.getElementById("middle-jumbotron");
+            let graphMenuDiv = document.getElementById("graph-3d-parameter");
+            let graphDiv = document.getElementById("3d-graph-div");
+            let graphContainerDiv = document.getElementById("graph-container");
+
             this.oriHeight = Graph.graphEl.clientHeight;
+            this.oriWidth = Graph.graphEl.clientWidth;
+
+            rightColumnDiv.style.display = "none";
+            leftColumnDiv.style.display = "none";
+            middleColumnDiv.style.width = "100%";
+            graphDiv.style.height = "120%";
+            graphContainerDiv.style.height = "80%";
             
-            document.getElementById("center-div").style.padding = "0px";
-            document.body.style.width = "100%";
-            
-            graphDiv.scrollIntoView();
-            graphDiv.scrollIntoView(false);
-            graphDiv.scrollIntoView({block: "start"});
+            graphMenuDiv.scrollIntoView();
+            graphMenuDiv.scrollIntoView(true);
+            graphMenuDiv.scrollIntoView({block: "nearest"});
 
             this.isFullScreen = true;
 

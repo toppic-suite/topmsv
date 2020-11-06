@@ -2,7 +2,7 @@ function redrawGrph(scanID){
     init2D(scanID);
     update3D(scanID);
 }
-function initGraph(){
+function init2DGraph(){
     if ($('#userType').val() === 'guest') {
         $('#topfdtask').prop('disabled',true);
         $('#toppicTask').prop('disabled',true);
@@ -21,7 +21,7 @@ function initGraph(){
     
     init2D(min);
     init3D(min);
-
+    
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
         .then((response) => {
@@ -80,5 +80,5 @@ function initGraph(){
     }
 }
 $( document ).ready(function() {
-    initGraph();
+    init2DGraph();
 });

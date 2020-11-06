@@ -27,7 +27,7 @@ class GraphInit{
                 alert("Invalid Value Found : Please make sure the range has valid values.");
             }
             else{
-                GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
+                GraphData.updateGraph(Graph.curRT, minMZ, maxMZ, minRT, maxRT);
             }
         }, false);
     }
