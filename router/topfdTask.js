@@ -5,14 +5,19 @@ const deleteEnvPeak = require("../library/deleteEnvPeak");
 const submitTask = require("../library/submitTask");
 const updateEnvStatusSync = require("../library/updateEnvStatusSync");
 const path = require("path");
-
+const os = require('os');
 /**
  * Express router for /topfdTask
  *
  * Handle request to create a topFD task, generate parameter for task and delete previous envelope peaks
  */
 const topfdTask = router.get('/topfdTask', function (req,res) {
-    const app = './proteomics_cpp/bin/topfd';
+    let app = './proteomics_cpp/bin/topfd';
+
+    if (os.platform() == "win32"){
+        app = '.\\proteomics_cpp\\bin\\topfd';
+    }
+
     let commandArr = '';
     let projectCode = req.query.projectCode;
 

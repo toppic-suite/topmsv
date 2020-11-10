@@ -6,6 +6,7 @@ const submitTask = require("../library/submitTask");
 const fs = require("fs");
 const deleteSeq = require("../library/deleteSeqSync");
 const updateSeqStatusSync = require("../library/updateSeqStatusSync");
+const os = require('os');
 
 /**
  * Express router for /toppicTask
@@ -14,7 +15,12 @@ const updateSeqStatusSync = require("../library/updateSeqStatusSync");
  */
 const toppicTask = router.post('/toppicTask', function (req, res) {
     console.log("Hello, toppicTask");
-    const app = './proteomics_cpp/bin/toppic';
+    let app = './proteomics_cpp/bin/toppic';
+
+    if (os.platform() == "win32"){
+        app = '.\\proteomics_cpp\\bin\\toppic';
+    }
+
     let commandArr = '';
     let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
