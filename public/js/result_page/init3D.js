@@ -111,6 +111,7 @@ function update3D(scanID){
     Promise.all([promiseMZ, promiseRT]).then((values)=>{
         let mzRange = values[0];
         let curRT = values[1];
+        GraphUtil.updateScanNumber(scanID);
         GraphData.updateGraph(curRT, mzRange.mzmin, mzRange.mzmax);
     })
 }
@@ -134,6 +135,7 @@ function init3D(scanID){
         }
     }).then((precMz)=>{
         let mzRange = calcInitRange(precMz);
+        GraphUtil.updateScanNumber(scanID);
         graph.main(mzRange.mzmin, mzRange.mzmax, scanID);
     }).catch((err) => {
         console.log(err);

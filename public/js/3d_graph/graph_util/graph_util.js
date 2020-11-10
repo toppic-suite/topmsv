@@ -36,6 +36,9 @@ class GraphUtil{
 
         return truncated.concat(eNotation);
     };
+    static updateScanNumber = (scanID) => {
+        document.getElementById('scanID').value = scanID;
+    }
     static updateTextBox = () => {
         //update data range in textboxes if getting range from each scan, not by users
         document.getElementById('rtRangeMin').value = (Graph.viewRange.rtmin/60).toFixed(4);
