@@ -88,7 +88,7 @@ public:
 	void updateSpSumStmt(int current_id, double peaks_int_sum);
 	void insertPeakStmt(int peak_index, int scan_index, double intensity, double mz, double retention_time);
 	void insertPeakStmtMs1(int peak_index, double intensity, double mz, double retention_time, std::string peak_color_);
-	void insertPeakStmtInMemory(int peak_index, int scan_index, double intensity, double mz, double retention_time, std::string peakColor_);
+	void insertPeakStmtInMemory(int peak_index, double intensity, double mz, double retention_time, std::string peakColor_);
 	void createIndex();
 	void createIndexOnIdOnly();
 	void createIndexOnIdOnlyInMemory();
