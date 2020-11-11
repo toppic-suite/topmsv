@@ -53,8 +53,9 @@ class MolecularFormulae{
 			}
 		}
 		totDistributionList = this.getMZwithHighInte(totDistributionList,charge,massError,modifiedPeakList);
-		let peakDataProcessed  = this.getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList,modifiedPeakList);
-		return peakDataProcessed;
+		this.getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList,modifiedPeakList);
+		
+		return totDistributionList;
 	}
 	/**
 	 * Logic to calculate distribution 
@@ -169,6 +170,7 @@ class MolecularFormulae{
 		}
 		return newtotDistributionList ;
 	}
+	
 	//modification of getNormalizedIntensity to add envelope y pos adjustment 
 	getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList,modifiedPeakList)
 	{
@@ -186,10 +188,10 @@ class MolecularFormulae{
 
 		let matchedPeakList = [];
 
-		for(let i=0;i<len;i++)
+		for(let i=0;i<len;i++)//iterating through actual peaks in this envelope
 		{
 			let maxMzDifference = 0;
-			for(let j=0;j<peakListLen;j++)
+			for(let j=0;j<peakListLen;j++)//iterating through theo peaks in the data
 			{
 				let mzDifference = Math.abs(totDistributionList[i].mz - modifiedPeakList[j].mz);
 				if(mzDifference <= this.toleraceMassDiff)
@@ -200,14 +202,15 @@ class MolecularFormulae{
 					if(minMz > totDistributionList[i].mz){
 						minMz = totDistributionList[i].mz;
 					}
-					if (mzDifference > maxMzDifference){
+					matchedPeakList.push([i,j]); //i is env index, j is peak index
+
+					/*if (mzDifference > maxMzDifference){
 						matchedPeakList.push([i,j]); //i is env index, j is peak index
 						maxMzDifference = mzDifference;
-					}
+					}*/
 					count = count + 1;
 				}
 			}
-
 		}
 		maxMz = maxMz + this.toleraceMassDiff;
 		minMz = minMz - this.toleraceMassDiff;
@@ -267,7 +270,11 @@ class MolecularFormulae{
 			distributionAvgInte = (maxinte+mininte)/2;
 			
 			for (let i = 0; i < totDistributionList.length; i++){
+				if (avg == 0){
+					avg = 1;
+				}
 				totDistributionList[i].intensity = (avg * totDistributionList[i].intensity)/distributionAvgInte ;
+
 				if (totDistributionList[i].intensity < 0 || distributionAvgInte <= 0) {
 					totDistributionList[i].intensity = 0;
 				};
@@ -291,10 +298,9 @@ class MolecularFormulae{
 				}
 			}
 		}
+		
 		//remove envelopes without matching peaks
-		totDistributionList = this.removeEnvelopes(totDistributionList, matchedPeakList);
-
-		return [totDistributionList, modifiedPeakList];
+		this.removeEnvelopes(totDistributionList, matchedPeakList);
 	}
 	/**
 	 * Code to normalize the Intensity. 
@@ -380,7 +386,7 @@ class MolecularFormulae{
 		return totDistributionList ;
 	}
 	removeEnvelopes(envList, matchedPeakList){
-		let threshold = 0.9; 
+		let threshold = 0.95; 
 		let totalInte = 0;
 		let remainInte = 0;
 		let keepRemove = true;
