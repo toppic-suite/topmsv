@@ -1,10 +1,12 @@
 let peakList1_g;
 let envList1_g;
 let graph1_g;
+let temp_peakList1_g;
 
 let peakList2_g;
 let envList2_g;
 let graph2_g;
+let temp_peakList2_g;
 
 let rtInteGraph;
 
@@ -54,12 +56,14 @@ function init2D(scan) {
                     topview_2d.getPeakList(scan)
                         .then(function(response) {
                             peakList1_g = response.data;
+                            temp_peakList1_g = JSON.parse(JSON.stringify(peakList1_g));
                             document.getElementById("scanID1").innerText = scan;
                             return topview_2d.getEnvTable(scan);
                         })
                         .then(function(response) {
                             let envtable = response.data;
-                            envList1_g = calcDistrubution.getEnvDistribution(envtable, peakList1_g);
+
+                            envList1_g = calcDistrubution.getEnvDistribution(envtable, temp_peakList1_g);
                             if (envList1_g !== 0 && envList1_g.length !== 0){
                                 graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
                                 graph1_g.redraw();
@@ -108,12 +112,14 @@ function loadPeakList1(scanID, prec_mz) {
             .then(function(response){
                 topview_2d.getRT(scanID, rtInteGraph);
                 peakList1_g = response.data;
+                temp_peakList1_g = JSON.parse(JSON.stringify(peakList1_g));
                 document.getElementById("scanID1").innerText = scanID;
                 return topview_2d.getEnvTable(scanID);
             })
             .then(function(response){
                 let envtable = response.data;
-                envList1_g = calcDistrubution.getEnvDistribution(envtable, peakList1_g);
+                            
+                envList1_g = calcDistrubution.getEnvDistribution(envtable, temp_peakList1_g);
                 if (envList1_g !== 0 && envList1_g.length !== 0){
                     graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
                     graph1_g.redraw(prec_mz);
@@ -143,10 +149,12 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             }
         }).then(function(response) {
             peakList2_g = response.data;
+            temp_peakList2_g = JSON.parse(JSON.stringify(peakList2_g));
             return topview_2d.getEnvTable(scanID);
         }).then(function(response) {
             let envtable = response.data;
-            envList2_g = calcDistrubution.getEnvDistribution(envtable, peakList2_g);
+
+            envList2_g = calcDistrubution.getEnvDistribution(envtable, temp_peakList2_g);
             if (envList2_g !== 0 && envList2_g.length !== 0){
                 graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
                 graph2_g.redraw();

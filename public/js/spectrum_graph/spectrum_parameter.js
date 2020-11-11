@@ -317,7 +317,11 @@ class SpectrumParameters {
    */
   addColorToEnvelopes = function(envList){
     if(!envList || envList.length === 0 || typeof envList[0].env_peaks === "undefined") return;
+    //console.log("envList", envList)
+    
     envList.sort(function(x,y){
+     // console.log(typeof(x))
+     // console.log(x["env_peaks"], y["env_peaks"])
       return (x.env_peaks[0].mz - y.env_peaks[0].mz);
     })
     let colorNum = this.envColorList.length; 
