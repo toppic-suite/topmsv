@@ -117,7 +117,7 @@ function showEnvTable(scan) {
             }
         ],
         onAddRow: function(datatable, rowdata, success, error) {
-            console.log(rowdata);
+            //console.log(rowdata);
             $.ajax({
                 // a tipycal url would be / with type='PUT'
                 url: "/addrow?projectDir=" + document.getElementById("projectDir").value,

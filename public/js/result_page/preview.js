@@ -67,8 +67,10 @@ function refresh() {
     topview_2d.getEnvTable(scanID)
         .then(response => {
             let envtable = response.data;
+            let temp_peakList1_g = JSON.parse(JSON.stringify(peakList1_g));
+
             if (scanLevelOneFlag) {
-                envList1_g = calcDistrubution.getEnvDistribution(envtable, peakList1_g);
+                envList1_g = calcDistrubution.getEnvDistribution(envtable, temp_peakList1_g);
                 if (envList1_g !== 0 && envList1_g.length !== 0){
                     graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
                     graph1_g.redraw(graphMz1);
@@ -77,7 +79,8 @@ function refresh() {
                     graph1_g.redraw(graphMz1);
                 }
             } else {
-                envList2_g = calcDistrubution.getEnvDistribution(envtable, peakList2_g);
+                let temp_peakList2_g = JSON.parse(JSON.stringify(peakList2_g));
+                envList2_g = calcDistrubution.getEnvDistribution(envtable, temp_peakList2_g);
                 if (envList2_g !== 0 && envList2_g.length !== 0){
                     graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
                     graph2_g.redraw(graphMz2);
