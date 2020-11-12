@@ -543,7 +543,7 @@ void mzMLReader::insertPeakStmtMs1(int peak_index, double intensity, double mz, 
     std::cout << sqlite3_errmsg(db_) << std::endl;
   }
 };
-void mzMLReader::insertPeakStmtInMemory(int peak_index, int scanIndex, double intensity, double mz, double retention_time, std::string color) {
+void mzMLReader::insertPeakStmtInMemory(int peak_index, double intensity, double mz, double retention_time, std::string color) {
   char *color_code = (char *)color.c_str();
   sqlite3_reset(stmt_peak_in_memory);
   sqlite3_bind_int(stmt_peak_in_memory,1,peak_index);

@@ -141,7 +141,7 @@ void msReader::createDtabase() { //stmt
         count++;
         peaks_int_sum = peaks_int_sum + pairs[j].intensity;
         if (scan_level == 1 && pairs[j].intensity > 0){//PEAKS0 contains level 1 peaks that have > 0 intensity only
-          databaseReader.insertPeakStmtInMemory(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
+          databaseReader.insertPeakStmtInMemory(count, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
           ms1_peak_count++ ;
           
           //compare with min max values to find overall min max value
@@ -154,7 +154,7 @@ void msReader::createDtabase() { //stmt
         if (retention_time > rt_max){rt_max = retention_time;}
 
       }
-        databaseReader.insertPeakStmt(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time);
+        databaseReader.insertPeakStmt(count, current_scan_id, pairs[j].intensity, pairs[j].mz, retention_time);
       }
       // cout << currentID <<endl;
       if (scan_level == 2) {
