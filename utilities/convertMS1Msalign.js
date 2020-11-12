@@ -5,15 +5,14 @@ const Database = require('better-sqlite3');
 const myArgs = process.argv.slice(2);
 // console.log(myArgs);
 const betterDB = new Database(myArgs[0]);
+
 const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope (\n' +
-    '    envelope_id INTEGER PRIMARY KEY,\n' +
-    '    scan_id INTEGER NOT NULL,\n' +
-    '    mono_mass REAL NULL,\n' +
-    '    intensity REAL NULL,\n' +
-    '    charge INTEGER NULL,\n' +
-    '    FOREIGN KEY (scan_id)\n' +
-    '       REFERENCES SPECTRA (ID)\n' +
-    ');');
+'    envelope_id INTEGER PRIMARY KEY,\n' +
+'    scan_id INTEGER NOT NULL,\n' +
+'    mono_mass REAL NULL,\n' +
+'    intensity REAL NULL,\n' +
+'    charge INTEGER NULL);');
+
 const stmtCreateEnvPeakTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS env_peak (\n' +
     '    env_peak_id INTEGER PRIMARY KEY,\n' +
     '    envelope_id INTEGER NOT NULL,\n' +
@@ -40,7 +39,7 @@ const insertMany = betterDB.transaction(importData);
 function importData(database,data) {
     const stmtEnv = database.prepare('INSERT INTO envelope(envelope_id,scan_id,mono_mass,intensity,charge) VALUES(?,?,?,?,?)');
     // const stmtEnvPeak = database.prepare('INSERT INTO env_peak(env_peak_id, envelope_id, mz, intensity) VALUES(?,?,?,?)');
-    const stmtFindScanID = database.prepare('SELECT ID AS id FROM SPECTRA WHERE SCAN = ?');
+    //const stmtFindScanID = database.prepare('SELECT SCAN AS id FROM SPECTRA WHERE SCAN = ?');
     const stmtMaxEnvID = database.prepare('SELECT MAX(envelope_id) AS maxEnvID FROM envelope');
     // const stmtMaxEnvPeakID = database.prepare('SELECT MAX(env_peak_id) AS maxEnvPeakID FROM env_peak');
     // const stmtGetPeakList = database.prepare('SELECT MZ AS mz, INTENSITY AS intensity FROM PEAKS WHERE SPECTRAID = ?');
@@ -50,13 +49,14 @@ function importData(database,data) {
 
     while(data.indexOf("END IONS")!== -1){
         let scan = findInfo("SCANS",data);
-        let scan_id = stmtFindScanID.get(scan).id;
+        //let scan_id = stmtFindScanID.get(scan).id;
+
         findEnv(data, function (lines) {
             lines.forEach(element => {
                 let mass = parseFloat(element.split("\t")[0]);
                 let inte = parseFloat(element.split("\t")[1]);
                 let charge = parseInt(element.split("\t")[2]);
-                stmtEnv.run(env_id,scan_id,mass,inte,charge);
+                stmtEnv.run(env_id,scan,mass,inte,charge);
 
                 // let peaks = stmtGetPeakList.all(scan_id);
                 // let distributionResult = calcDistrubution.emass(mass,charge,peaks);
@@ -91,5 +91,5 @@ function findEnv(data, callback) {
 function findInfo(info, data) {
     let indexBegin = data.indexOf(info) + info.length + 1;
     let indexEnd = indexBegin + data.substring(indexBegin).indexOf("\n");
-    return parseFloat(data.substring(indexBegin, indexEnd));
+    return parseInt(data.substring(indexBegin, indexEnd));
 }
