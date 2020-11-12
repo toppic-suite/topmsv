@@ -2,7 +2,7 @@ function redrawGrph(scanID){
     init2D(scanID);
     update3D(scanID);
 }
-function init2DGraph(){
+function initGraph(){
     if ($('#userType').val() === 'guest') {
         $('#topfdtask').prop('disabled',true);
         $('#toppicTask').prop('disabled',true);
@@ -80,5 +80,5 @@ function init2DGraph(){
     }
 }
 $( document ).ready(function() {
-    init2DGraph();
+    initGraph();
 });
