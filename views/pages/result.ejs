@@ -344,16 +344,28 @@
 			</div>
 			<div class="col-sm-6" id ="middle-jumbotron">
 				<div class="row scanleveltitle ms-graph-header" id="scanLevelOneInfo">
-					<div class="col-sm-8">
+					<div class="col-sm-2" >
+						<b>Scan Level 1</b>
+					</div>
+					<div class="col-sm-2" style="position: relative; right: 1%; padding-left:0px;padding-right:0px">
+						Scan: <span id="scanID1"></span>
+					</div>
+					<div class="col-sm-3" style="padding-left:0px;padding-right:0px;">
+						Retention Time: <span id="scan1RT"></span>
+					</div>
+					<div class="col-sm-5" style="padding-left:0px;padding-right:0px;">
 						<div class="row">
-							<div class="col-sm-4" >
-								<b>Scan Level 1</b>
+							<div class="col-sm-2" style="padding-right:0px;padding-left:0px;">
+								<strong>Scan:</strong>
 							</div>
-							<div class="col-sm-3" style="position: relative; right: 1%; padding-left:0px;padding-right:0px">
-								Scan: <span id="scanID1"></span>
+							<div class="col-sm-2" style="padding-right:0px;padding-left:0px;">
+								<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
 							</div>
-							<div class="col-sm-5" style="padding-left:0px;padding-right:0px;">
-								Retention Time: <span id="scan1RT"></span>
+							<div class="col-sm-8" style="padding-right:0px;padding-left:0px;">
+								<button class="btn" type="submit" id="prev1"><</button>
+								<button class="btn" type="submit" id="request">Request</button>
+								<button class="btn" type="submit" id="next1">></button>
+								<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
 							</div>
 						</div>
 					</div>
@@ -368,8 +380,8 @@
 							</div>
 							<div class="col-sm-4" >
 								<div class="row">
-									<div class="col-sm-4"><strong>Retention Time:</strong></div>
-									<div class="col-sm-8" style="display:flex">
+									<div class="col-sm-6"><strong>Retention Time:</strong></div>
+									<div class="col-sm-6" style="display:flex">
 										<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
 										<span class ="rangeMarker">-</span>
 										<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />	
@@ -377,17 +389,15 @@
 								</div>
 							</div>
 							<div class="col-sm-4">
+								<!--<div id ="3d-graph-menu-div" style="padding-right:0px;padding-left:0px;margin-top: -15px">
+								</div>-->
 								<div class="row">
-									<div class="col-sm-2" style="padding-right:0px;padding-left:0px;">
-										<strong>Scan:</strong>
-									</div>
-									<div class="col-sm-5" style="padding-right:0px;padding-left:0px;">
-										<button class="btn" type="submit" id="prev1"><</button>
-										<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
-										<button class="btn" type="submit" id="next1">></button>
-									</div>
-									<div class="col-sm-5" style="padding-right:0px;padding-left:0px;">
-										<button class="btn" type="submit" id="request">Request</button>
+									<div class="col-sm-5"></div>
+									<div class="col-sm-7">
+										<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+										<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
+										<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>	
+	
 									</div>
 								</div>
 							</div>
@@ -398,10 +408,10 @@
 							</div>
 							<div class="col-sm-4">
 								<div class="row">
-									<div class="col-sm-4" style="padding-right:0px;padding-left:0px;">
+									<div class="col-sm-6" style="padding-right:0px;padding-left:0px;">
 										<strong>m/z:</strong>
 									</div>
-									<div class="col-sm-8" style="display:flex;padding-right:0px;padding-left:0px;">
+									<div class="col-sm-6" style="display:flex;padding-right:0px;padding-left:0px;">
 										<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
 										<span class ="rangeMarker"> - </span>
 										<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />	
@@ -411,12 +421,9 @@
 									</div>	
 								</div>
 							</div>
-							<div class="col-sm-4" id ="3d-graph-menu-div" style="padding-right:0px;padding-left:0px;">
-								<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
-								<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
-								<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
-								<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
-							</div>
+						</div>
+						<div class="scanleveltitle row">
+							<div class="col-sm-4"></div>
 						</div>
 					</div>
 					
