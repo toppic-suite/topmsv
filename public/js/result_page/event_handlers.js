@@ -214,6 +214,7 @@ $( document ).ready(function() {
 
         $( "#3d-graph-div" ).hide();
         $( "#scanLevelOne" ).show();
+        $( "#save3dGraph" ).hide();
     });
     $( "#3d-ms1-btn" ).click(function() {
         $( "#3d-ms1-btn" ).css('background-color', 'blue');
@@ -222,6 +223,7 @@ $( document ).ready(function() {
         $( "#3d-graph-div" ).show();
         $( "#3d-graph-div" ).css('height', '55%');
         $( "#scanLevelOne" ).hide();
+        $( "#save3dGraph" ).show();
     });
 
 })
