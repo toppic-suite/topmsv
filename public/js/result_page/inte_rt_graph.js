@@ -60,7 +60,6 @@ class InteRtGraph {
     get height() {
         return this.svg_height;
     }
-
     drawGraph() {
         let inteRtArray = this.inteRtArray;
         let padding = this.padding;
@@ -186,7 +185,8 @@ class InteRtGraph {
             .on("click", mouseClick);
 
         let bisectRT = d3.bisector(function(d) { return d.rt; }).right;
-    
+        let prevDataPoint = {"rt":0, "inte":0, "scanNum":0};
+
         function mouseClick() {
             let mouse_x = d3.mouse(this)[0];
             let mouse_y = d3.mouse(this)[1];
@@ -202,12 +202,18 @@ class InteRtGraph {
                 fixedLine.attr("y1", mouse_y).attr("y2", mouse_y);
                 fixedLine.style("opacity", 1);
                 self.onClickFunc(d.scanNum);
+                prevDataPoint.rt = d.rt;
+                prevDataPoint.inte = d.inteSum;
+                prevDataPoint.scanNum = d.scanNum;
             } else if (i === inteRtArray.length && mouse_y -padding.left<= maxMouse+1 && mouse_x < height-padding.bottom && mouse_x > padding.top)
             {
                 let d = inteRtArray[i-1];
                 fixedLine.attr("y1", mouse_y).attr("y2", mouse_y);
                 fixedLine.style("opacity", 1);
                 self.onClickFunc(d.scanNum);
+                prevDataPoint.rt = d.rt;
+                prevDataPoint.inte = d.inteSum;
+                prevDataPoint.scanNum = d.scanNum;
             } else {
                 //fixedLine.style("opacity", 1e-6);
             }
@@ -254,20 +260,22 @@ class InteRtGraph {
                 }
                 hoverLine.style("opacity", 1);
             } else {
-                if(document.getElementById(rt_ID)) {
-                    document.getElementById(rt_ID).innerHTML = 0;
-                }
-                if (document.getElementById(inte_ID)) {
-                    document.getElementById(inte_ID).innerHTML = 0;
-                }
-                if (document.getElementById(inte_ID)) {
-                    document.getElementById(scanNum_ID).innerHTML = 0;
-                }
                 hoverLine.style("opacity", 0);
             }
+            
         }
         function hoverMouseOff() {
             hoverLine.style("opacity", 1e-6);
+
+            if(document.getElementById(rt_ID)) {
+                document.getElementById(rt_ID).innerHTML = Math.round(prevDataPoint.rt * 100)/100;
+            }
+            if (document.getElementById(inte_ID)) {
+                document.getElementById(inte_ID).innerHTML = prevDataPoint.inte.toExponential(2);
+            }
+            if (document.getElementById(inte_ID)) {
+                document.getElementById(scanNum_ID).innerHTML = prevDataPoint.scanNum;
+            }
         }
     }
 
