@@ -82,6 +82,9 @@ hr {
 .sorting_asc{
     font-size:var(--default-font-size); 
 }
+.sorting_desc{
+    font-size:var(--default-font-size); 
+}
 #envTable td{
     font-size:var(--default-font-size);
 }
