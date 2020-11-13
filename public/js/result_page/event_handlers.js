@@ -174,8 +174,8 @@ $( document ).ready(function() {
         if(seqFile.files[0] === undefined) {
             alert("Please choose a sequence file first!");
             return;
-        } else if (!seqFile.files[0].name.match(/.(csv)$/i)) {
-            alert('Please upload a csv file for sequence!');
+        } else if (!seqFile.files[0].name.match(/.(tsv)$/i)) {
+            alert('Please upload a tsv file for sequence!');
             return;
         }
         let formData = new FormData();
@@ -214,6 +214,7 @@ $( document ).ready(function() {
 
         $( "#3d-graph-div" ).hide();
         $( "#scanLevelOne" ).show();
+        $( "#save3dGraph" ).hide();
     });
     $( "#3d-ms1-btn" ).click(function() {
         $( "#3d-ms1-btn" ).css('background-color', 'blue');
@@ -222,6 +223,7 @@ $( document ).ready(function() {
         $( "#3d-graph-div" ).show();
         $( "#3d-graph-div" ).css('height', '55%');
         $( "#scanLevelOne" ).hide();
+        $( "#save3dGraph" ).show();
     });
 
 })

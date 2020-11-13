@@ -31,10 +31,8 @@ function getProjectSummary(id, callback) {
         if (err) {
             return callback(err);
         }
-        else {
-            //console.log(row);
-            return callback(null, row);
-        }
+        //console.log(row);
+        return callback(null, row);
     });
     db.close();
 }
