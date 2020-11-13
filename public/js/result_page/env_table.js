@@ -57,7 +57,7 @@ function showEnvTable(scan) {
                 className: 'btn defaultBtn',
                 filename: 'envelope_data'
             },
-            {
+            /*{
                 text: 'Add',
                 className: 'btn owner_btn defaultBtn',
                 name: 'add'        // do not change name
@@ -73,7 +73,7 @@ function showEnvTable(scan) {
                 text: 'Delete',
                 className: 'btn owner_btn defaultBtn',
                 name: 'delete'      // do not change name
-            },
+            },*/
             // refresh button for datatable
 /*             {
                 text: 'Refresh',
