@@ -256,63 +256,55 @@
 			</div>
 		</div>
 		<div class="row no-gutters container-fluid" id="menu-container">
-			<div class="projectName titleText scanleveltitle row col-sm-1 no-gutters">
-				<strong>Project Name:</strong> <%= summary.ProjectName %>
-				<strong>Download :</strong> <a href="/download?id=<%= projectCode %>" download><%= summary.ProjectName %></a>
-				<div class="ms1EnvFile col-sm-6" id="envFileInfo">
-					<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
-				</div>
-			</div>
-			<div class="scanleveltitle row col-sm-5">
-				<div class="view-switch-div col-sm-5">
-					<label id="ms1-graph-view-label" class="view-label">MS1 Graph View Mode</label>
-					<button id="2d-ms1-btn" class="btn" style="background-color:blue">2D</button>
-					<button id="3d-ms1-btn" class="btn">3D</button>
-				</div>
-				<div class="view-switch-div col-sm-5">
-					<label id="ms2-graph-view-label" class="view-label">MS2 Graph View Mode</label>
-					<button id="2d-ms2-btn" class="btn" style="background-color:blue">2D</button>
-					<button id="3d-ms2-btn" class="btn">3D</button>
-				</div>
-				<div class="view-switch-div col-sm-2"></div>
-			</div>
-			<div class="scanleveltitle row col-sm-6">
-				<div class="scanleveltitle row col-sm-7 no-gutters">
-					<div class="col-sm-5">
-						<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
+			<div class="row">
+				<div class="projectName titleText scanleveltitle col-sm-3 no-gutters">
+					<strong>Project Name:</strong> <%= summary.ProjectName %><br/>
+					<strong>Download :</strong> <a href="/download?id=<%= projectCode %>" download><%= summary.ProjectName %></a>
+					<div class="ms1EnvFile col-sm-6" id="envFileInfo">
+						<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
 					</div>
-					<div class="col-sm-4 row no-gutters">
-						<div class="col-sm-7">
-							<label for="scanID" id="scanRange">MS1</br>Scan:</label>
+				</div>
+				<div class="scanleveltitle col-sm-6">
+					<div class="row">
+						<div class="col-sm-3 view-switch-div titleText">
+							<strong>Scan Range:</strong><%= scanRange.MIN %> - <%= scanRange.MAX %>
 						</div>
-						<div class="col-sm-5">
-							<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+						<div class="view-switch-div col-sm-1"></div>
+						<div class="view-switch-div col-sm-4">
+							<label id="ms1-graph-view-label" class="view-label">MS1 Graph View Mode</label>
+							<button id="2d-ms1-btn" class="btn" style="background-color:blue">2D</button>
+							<button id="3d-ms1-btn" class="btn">3D</button>
+						</div>
+						<div class="view-switch-div col-sm-4">
+							<label id="ms2-graph-view-label" class="view-label">MS2 Graph View Mode</label>
+							<button id="2d-ms2-btn" class="btn" style="background-color:blue">2D</button>
+							<button id="3d-ms2-btn" class="btn">3D</button>
 						</div>
 					</div>
-					<div class="col-sm-3">
-						<button class="btn" type="submit" id="prev1"><</button>
-						<button class="btn" type="submit" id="request">Request</button>
-						<button class="btn" type="submit" id="next1">></button>
-					</div>
 				</div>
-				<div class="scanleveltitle row col-sm-5 no-gutters">
-					<div class="col-sm-3">
-					<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
-					</div>
-					<div class="col-sm-2">
-					<button id="topfdtask" class="btn" onclick="window.location.href='/topfd?projectCode=<%= projectCode%>'">TopFD</button>
-					</div>
-					<div class="col-sm-2">
-					<button id="toppicTask" class="btn" onclick="window.location.href='/toppic?projectCode=<%= projectCode%>'">Toppic</button>
-					</div>
-					<div class="col-sm-2">
-						<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#msalignModal">Upload</button>
-					</div>
-					<div class="col-sm-3">
-						<button id="uploadSequence" type="button" class="btn">Sequence</button>
+				<div class="scanleveltitle col-sm-3">
+					<div class="row">
+						<div class="scanleveltitle col-sm-12 no-gutters">
+							<div class="col-sm-3">
+							<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
+							</div>
+							<div class="col-sm-2">
+							<button id="topfdtask" class="btn" onclick="window.location.href='/topfd?projectCode=<%= projectCode%>'">TopFD</button>
+							</div>
+							<div class="col-sm-2">
+							<button id="toppicTask" class="btn" onclick="window.location.href='/toppic?projectCode=<%= projectCode%>'">Toppic</button>
+							</div>
+							<div class="col-sm-2">
+								<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#msalignModal">Upload</button>
+							</div>
+							<div class="col-sm-3">
+								<button id="uploadSequence" type="button" class="btn">Sequence</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
+			
 		</div>
 		<div class="container-fluid m-0 p-0 row" id="columns-container">
 			<div class="col-sm-1" id ="left-jumbotron">
@@ -353,30 +345,52 @@
 				</div>
 			</div>
 			<div class="col-sm-6" id ="middle-jumbotron">
+				<div class="row scanleveltitle ms-graph-header" id="scanLevelOneInfo">
+					<div class="col-sm-8">
+						<div class="row">
+							<div class="col-sm-4" >
+								<b>Scan Level 1</b>
+							</div>
+							<div class="col-sm-3" style="position: relative; right: 1%; padding-left:0px;padding-right:0px">
+								Scan: <span id="scanID1"></span>
+							</div>
+							<div class="col-sm-5" style="padding-left:0px;padding-right:0px;">
+								Retention Time: <span id="scan1RT"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<hr>
 				<div id="3d-graph-div">
 					<div id ="graph-3d-menu-para-div">
 						<div class="scanleveltitle row" id ="graph-3d-parameter">
-							<div class="col-sm-3">
+							<div class="col-sm-4" style="padding-left:15px;padding-right:15px">
 								<span><b>Graph data:</b></span>
 								<span id="graph-cursor-data"></span>
 							</div>
-							<div class="row col-sm-4" >
-								<div class="col-sm-3" style="left:-10px"><strong>Retention Time:</strong></div>
-								<div class="col-sm-9" style="display:flex">
-									<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
-									<span class ="rangeMarker">-</span>
-									<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />	
+							<div class="col-sm-4" >
+								<div class="row">
+									<div class="col-sm-4"><strong>Retention Time:</strong></div>
+									<div class="col-sm-8" style="display:flex">
+										<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+										<span class ="rangeMarker">-</span>
+										<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />	
+									</div>	
 								</div>
 							</div>
-							<div class="row col-sm-5">
-								<div class="col-sm-2"><strong>m/z:</strong></div>
-								<div class="col-sm-7" style="display:flex">
-									<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
-									<span class ="rangeMarker"> - </span>
-									<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />	
-								</div>
-								<div class="col-sm-3">
-									<button type="submit" class="btn" id="request3dGraphRedraw">Go</button>
+							<div class="col-sm-4">
+								<div class="row">
+									<div class="col-sm-2" style="padding-right:0px;padding-left:0px;">
+										<strong>Scan:</strong>
+									</div>
+									<div class="col-sm-5" style="padding-right:0px;padding-left:0px;">
+										<button class="btn" type="submit" id="prev1"><</button>
+										<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+										<button class="btn" type="submit" id="next1">></button>
+									</div>
+									<div class="col-sm-5" style="padding-right:0px;padding-left:0px;">
+										<button class="btn" type="submit" id="request">Request</button>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -385,12 +399,25 @@
 								<span id="graph-metadata"></span>
 							</div>
 							<div class="col-sm-4">
+								<div class="row">
+									<div class="col-sm-4" style="padding-right:0px;padding-left:0px;">
+										<strong>m/z:</strong>
+									</div>
+									<div class="col-sm-8" style="display:flex;padding-right:0px;padding-left:0px;">
+										<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+										<span class ="rangeMarker"> - </span>
+										<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />	
+									</div>
+									<div class="col-sm-3">
+										<button type="submit" class="btn" id="request3dGraphRedraw" style="display:none">Go</button>
+									</div>	
+								</div>
 							</div>
-							<div class="col-sm-4" id ="3d-graph-menu-div">
-									<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
-									<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
-									<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
-									<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
+							<div class="col-sm-4" id ="3d-graph-menu-div" style="padding-right:0px;padding-left:0px;">
+								<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+								<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+								<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
+								<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
 							</div>
 						</div>
 					</div>
@@ -409,25 +436,11 @@
 				</div>
 				
 				<div id="scanLevelOne">
-					<div class="row scanleveltitle">
-						<div class="col-sm-8">
-							<div class="row">
-								<div class="col-sm-4">
-									<b>Scan Level 1</b>
-								</div>
-								<div class="col-sm-3" style="position: relative; right: 1%">
-									Scan: <span id="scanID1"></span>
-								</div>
-								<div class="col-sm-5">
-									Retention Time: <span id="scan1RT"></span>
-								</div>
-							</div>
-						</div>
-					</div>
+					
 					<svg id="spectrum1"></svg><br/>
 				</div>
 				<div id="scanLevelTwo">
-					<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
+					<div class="scanleveltitle row ms-graph-header" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
 						<div class="col-sm-2" style="padding-right: 15px">
 							<b>Scan Level 2</b>
 						</div>

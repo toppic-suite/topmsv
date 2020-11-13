@@ -3,7 +3,7 @@
     --default-btn-padding: 2px 5px;
     -webkit-text-size-adjust: none;
 }
-/**{ border: 1px solid red; }*/
+/**{ border: 1px solid red;}*/
 
 a{
     font-size:var(--default-font-size);
@@ -586,8 +586,8 @@ button#graph-full-screen{
 }
 #graph-3d-parameter div{
     margin: 0px;
-    padding-left:15px;
     padding-right:0px;
+    padding-left:0px;
 }
 .rangeTextBox{
     width:50px;
