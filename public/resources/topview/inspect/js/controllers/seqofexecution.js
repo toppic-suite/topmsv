@@ -268,6 +268,7 @@ class SeqOfExecution
 			 * function to show the count of matched peaks, un matched peaks and All peaks
 			 */
 			jqueryElements.peakCount.show();
+			$("#spectrumdownload").show();
 			/**
 			 * Bootstrap syntax to keep the table box to 400px height 
 			 * and setting properties to the table.
@@ -537,6 +538,7 @@ class SeqOfExecution
 			
 			generateCorrespondingGraph(peakDataList,distributionList,null);
 			$("#"+Constants.SPECTRUMDOWNLOADID).show();
+			$("#spectrumdownload").show();
 			/**
 			 * Display All-peaks/matched/non-matched buttons on click of submit
 			 */
