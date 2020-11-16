@@ -146,7 +146,7 @@ button.close {
   background-color:hsla(120, 100%, 50%, 0.3);;
 }
 #helpModal{
-	margin-top: 10%;
+	margin-top: 0;
 }
 #errorAlertModal{
 	margin-top: 20%;
