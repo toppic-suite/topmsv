@@ -61,4 +61,6 @@ class Constants{
     static TABLEHEIGHT = "400px";
     static GRAPHDOWNLOADPNG = "graph_download_png";
     static GRAPHDOWNLOADSVG = "graph_download_svg";
+    static MONOGRAPHDOWNLOADPNG = "mono_graph_download_png";
+    static MONOGRAPHDOWNLOADSVG = "mono_graph_download_svg";
 }
