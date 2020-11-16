@@ -345,6 +345,8 @@ class SeqOfExecution
 		
 
 		$("#monoMasstitle").show();
+		$("#mono_graph_download").show();
+		
 		let ions = getIons(matchedPeakList);
 
 		// console.log("prsm graph input", ions);
@@ -531,6 +533,8 @@ class SeqOfExecution
 			 * Call generateCorrespondingGraph which calls addSpectrum function in invokeSpectrum file to draw graph 
 			 */
 			document.getElementById("monoMasstitle").style.display = "block";
+			document.getElementById("mono_graph_download").style.display = "block";
+			
 			generateCorrespondingGraph(peakDataList,distributionList,null);
 			$("#"+Constants.SPECTRUMDOWNLOADID).show();
 			/**
@@ -624,6 +628,22 @@ class SeqOfExecution
 			y = d3.event.pageY + 80;
 			//function in prsmtohtml
 			popupnamewindow("png","graph", Constants.SPECTRUMGRAPHID,x,y)
+		})
+		/**
+		 * On click action to download mono mass svg in .svg format
+		 */
+		d3.select("#"+Constants.MONOGRAPHDOWNLOADSVG).on("click",function(){
+			x = d3.event.pageX;
+			y = d3.event.pageY + 40;
+			//function in prsmtohtml
+			popupnamewindow("svg","graph", Constants.MONOMASSGRAPHID,x,y)
+		})
+
+		d3.select("#"+Constants.MONOGRAPHDOWNLOADPNG).on("click",function(){
+			x = d3.event.pageX;
+			y = d3.event.pageY + 80;
+			//function in prsmtohtml
+			popupnamewindow("png","graph", Constants.MONOMASSGRAPHID,x,y)
 		})
 	}	
 }
