@@ -477,9 +477,11 @@ class MolecularFormulae{
 				end--;
 			}
 			else if (startEnvInte <= endEnvInte && removeStartEnv){
-				envList[start].mz = -100000;
+				envList.splice(start, 1);
+				end--;
+				/*envList[start].mz = -100000;
 				envList[start].intensity = -100000;
-				start++;
+				start++;*/
 			}
 		}
 		return envList;
