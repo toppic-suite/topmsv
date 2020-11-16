@@ -6,30 +6,25 @@ class GraphInit{
     static createSaveGraphEvent = () => {//add an event listener for when a user clicks on graph download button
         document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
     }
-    static createRedrawEvent = () => {
-        //listener for rt range and mz range change in 3d graph
-        let redrawRequestButton = document.getElementById('request3dGraphRedraw');
+    static redrawGraph = () => {
+        let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
+        let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
+        let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
+        let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
 
-        redrawRequestButton.addEventListener('click', function(){
-            let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
-            let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
-            let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
-            let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
-
-            //error handing
-            if (minRT > maxRT){
-                alert("Invalid Range : Minimum retention time is bigger than maximum.");
-            } 
-            else if (minMZ > maxMZ){
-                alert("Invalid Range : Minimum m/z is bigger than maximum");
-            }
-            else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
-                alert("Invalid Value Found : Please make sure the range has valid values.");
-            }
-            else{
-                GraphData.updateGraph(Graph.curRT, minMZ, maxMZ, minRT, maxRT);
-            }
-        }, false);
+        //error handing
+        if (minRT > maxRT){
+            alert("Invalid Range : Minimum retention time is bigger than maximum.");
+        } 
+        else if (minMZ > maxMZ){
+            alert("Invalid Range : Minimum m/z is bigger than maximum");
+        }
+        else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
+            alert("Invalid Value Found : Please make sure the range has valid values.");
+        }
+        else{
+            GraphData.updateGraph(Graph.curRT, minMZ, maxMZ, minRT, maxRT);
+        }
     }
     /******** CREATE GRAPH ELEMENTS ******/
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
@@ -140,7 +135,6 @@ class GraphInit{
 
         GraphInit.createPlane();
         GraphInit.createAxis();
-        GraphInit.createRedrawEvent();
         GraphInit.createSaveGraphEvent();
         
         UploadMzrt.main();

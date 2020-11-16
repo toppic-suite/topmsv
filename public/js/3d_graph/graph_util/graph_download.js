@@ -42,7 +42,7 @@ class GraphDownload{
 		let formDiv = document.getElementById("save-as-image-form");
 
 		formDiv.style.display = "flex";
-		formDiv.style.left = (x - 90) + "px"
+		formDiv.style.left = (x - 200) + "px"
 		formDiv.style.top = (y + 20) + "px";
 
 		document.getElementById("btn-save-file-name").onclick = () => {

@@ -2,18 +2,25 @@ $( document ).ready(function() {
     let requestButton = document.getElementById('request');
     requestButton.addEventListener('click', function () {
         // $( "#spectrum2" ).empty();
+
+        /*if it is triggered after scan ID change, call update3D to reload data.
+        if it is triggered after changing mz or rt range, only reposition the view range*/
+        let curScanID = document.getElementById("scanID1").innerHTML;
         let requestID = document.getElementById("scanID").value;
         let min = document.getElementById("rangeMin").value;
         let max = document.getElementById("rangeMax").value;
-        if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
-            //console.log("Yes");
-            init2D(parseInt(requestID));
-            update3D(parseInt(requestID));
-            showEnvTable(parseInt(requestID));
-            $("#scanID").val("");
-        }else {
-            //console.log("No");
-            alert("Please type in one scanID within range!")
+
+        if (requestID == curScanID){//if it is still the same scan
+            GraphInit.redrawGraph();
+        }else{
+            if(parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
+                init2D(parseInt(requestID));
+                update3D(parseInt(requestID));
+                showEnvTable(parseInt(requestID));
+                $("#scanID").val("");
+            }else {
+                alert("Please type in one scanID within range!")
+            }
         }
     },false)
 
