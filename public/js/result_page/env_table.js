@@ -163,6 +163,9 @@ function jumpTo(mono_mz) {
         // relocSpet2(mono_mz);
     } else {
         graph1_g.redraw(mono_mz);
+        //update 3d graph as well
+        GraphUtil.updateMz(mono_mz);
+        GraphInit.redrawGraph();
         // relocSpet1(mono_mz);
     }
 }
