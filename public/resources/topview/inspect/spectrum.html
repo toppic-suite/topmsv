@@ -196,11 +196,9 @@
 					<!--<h5>Fixed PTMs <img src="images/info.png" id="fixedptminfo"
               alt="info"></h5>-->
           <h5>Fixed PTMs</h5>
-				<div class="fixedptmslist">
-					<select class="browser-default custom-select" id="dropdownMenuLink">
-					</select>	
-				<button type="button" class="btn btn-default btn-sm addnewrow">
-						<i class="fa fa-plus" ></i>
+		  	<div class="fixedptmslist">
+				<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#fixedPTMModal">
+						Add a PTM
 				</button>
 					<form class="form-inline mr-auto">
 						<div id = "fixedptmslist" > 
@@ -278,10 +276,43 @@
 				<svg id = "seqsvg" style="background-color:white;display:none"></svg>
 			</div>	
 		</div>
+	<div class="row" id ="spectrumdownload" style="display:none">
+		<div class="col-9"></div>
+		<div class="dropup col-3">
+			<button type="button" class="btn btn-primary btn-sm dropdown-toggle float-right" data-toggle="dropdown" id="graph_download">
+				Download
+			</button>
+			<div class="dropdown-menu">
+				<a class="dropdown-item" href="#!" id="graph_download_png">
+					<i class="fas fa-download"></i><span>&nbsp;&nbsp;PNG</span>
+				</a>
+				<a class="dropdown-item" href="#!" id="graph_download_svg">
+					<i class="fas fa-download"></i><span>&nbsp;&nbsp;SVG</span>
+				</a>
+			</div>
+		</div>
+	</div>	
 	<div class="row">
 		<svg id = "spectrum" height="250" width = "1000" style="background-color:white;display:none"></svg>
 	</div>
-	
+	<div class="row">
+		<div class="col-9"></div>
+		<div class="col-3 monographdownload">
+			<div class="dropup dropdown">
+				<button type="button" class="btn btn-primary btn-sm dropdown-toggle float-right" data-toggle="dropdown" id="mono_graph_download" style="display:none">
+					Download
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" href="#!" id="mono_graph_download_png">
+						<i class="fas fa-download"></i><span>&nbsp;&nbsp;PNG</span>
+					</a>
+					<a class="dropdown-item" href="#!" id="mono_graph_download_svg">
+						<i class="fas fa-download"></i><span>&nbsp;&nbsp;SVG</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="row">
 		<h5 id="monoMasstitle" style="display:none">MonoMass Spectrum</h5>
 		<svg id = "monoMassGraph" height="250" width = "1000" style="background-color:white;display:none"></svg>
@@ -297,19 +328,6 @@
 			<a id="unmatched_peak_count" href="#!" onclick="showNonMatchedPeaks();">Non Matched Peaks</a>
 		</div>
 		<div class="col-5 prsmgraphdownload" >
-			<div class="dropup">
-				<button type="button" class="btn btn-primary btn-sm dropdown-toggle float-right" data-toggle="dropdown" id="graph_download">
-					Download
-				</button>
-				<div class="dropdown-menu">
-					<a class="dropdown-item" href="#!" id="graph_download_png">
-						<i class="fas fa-download"></i><span>&nbsp;&nbsp;PNG</span>
-					</a>
-					<a class="dropdown-item" href="#!" id="graph_download_svg">
-						<i class="fas fa-download"></i><span>&nbsp;&nbsp;SVG</span>
-					</a>
-				</div>
-			</div>
 			<button type="button" class="btn btn-primary btn-sm float-right" id="hide_table">Hide Table</button>
 		</div>
 	</div>
@@ -335,7 +353,27 @@
 		<a href="https://www.iu.edu/" target="#">Indiana University</a>
 	</div>
 </footer>
-
+<div class="modal" id="fixedPtmModal" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+	  <div class="modal-content" id ="help-window">
+		<div class="modal-header ">
+		  <h4>Add a fixed PTM
+		  </h4>
+		  <button type="button" class="close" data-dismiss="modal">&times;</button>
+		</div>
+		<div class="modal-body" >
+		  <p>To add a fixed PTM, select "C:57.0271464" or "C:58.005479" and click the
+		  "+" button.
+		  </p>
+		  <select class="browser-default custom-select" id="dropdownMenuLink">
+		</select>	
+		<button type="button" class="btn btn-default btn-sm addnewrow" data-dismiss="modal">
+			<i class="fa fa-plus" ></i>
+		</button>
+		</div> 
+	  </div>
+	</div>
+  </div>
 <div class="modal" id="helpModal" role="dialog">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content" id ="help-window">

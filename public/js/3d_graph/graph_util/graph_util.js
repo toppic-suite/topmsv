@@ -39,6 +39,13 @@ class GraphUtil{
     static updateScanNumber = (scanID) => {
         document.getElementById('scanID').value = scanID;
     }
+    static updateMz = (mono_mz) => {
+        let mzMin = parseFloat(mono_mz) - 3;
+        let mzMax = parseFloat(mono_mz) + 3; 
+        console.log(mzMin, mzMax)
+        document.getElementById('mzRangeMin').value = mzMin.toFixed(4);
+        document.getElementById('mzRangeMax').value = mzMax.toFixed(4);
+    }
     static updateTextBox = () => {
         //update data range in textboxes if getting range from each scan, not by users
         document.getElementById('rtRangeMin').value = (Graph.viewRange.rtmin/60).toFixed(4);
