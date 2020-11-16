@@ -492,11 +492,14 @@ button#minusBtn {
 }
 /*save-as-image popup css*/
 #save-as-image-form{
-    /*padding: 10px;
-    background-color: #555555;*/
+    padding: 10px;
+    background-color: #ffffff;
     display:none;
     position: absolute;
     border-radius: 5px;
+    border-style: solid;
+    border-width:1px;
+    z-index: 99;
 }
 #input-file-name{
     width:200px;
