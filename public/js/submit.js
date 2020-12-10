@@ -27,8 +27,8 @@
 
     upload.addEventListener('click', uploadFile, false);
     file.addEventListener('change', chooseFile, false);
-    txtfile.addEventListener('change', chooseTxtFile, false);
-    envfile1.addEventListener('change', chooseEnvFile1, false);
+    //txtfile.addEventListener('change', chooseTxtFile, false);
+    //envfile1.addEventListener('change', chooseEnvFile1, false);
     // envfile2.addEventListener('change', chooseEnvFile2, false);
 
     function chooseFile(event) {
