@@ -104,7 +104,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     } else {
                         avaiResourse = avaiResourse - threadNum;
                         updateProjectStatusSync(0, projectCode);
-                        exec(app+' '+parameter, {maxBuffer: 1024 * 50000}, (err, stdout, stderr) => {
+                        exec(app+' '+parameter, {maxBuffer: 1024 * 5000000}, (err, stdout, stderr) => {
                             // console.log(stdout);
                             console.log(stderr);
                             if(err) {
