@@ -66,8 +66,8 @@
             alert("Please fill in all information above!");
         /*}else if(!file.files[0].name.match(/.(mzML)$/i) && file.files !== undefined){
             alert('Please upload a mzML file!');*/
-        }else if(envfile1.files[0] !== undefined && !envfile1.files[0].name.match(/.(env)$/i)){
-            alert('Please upload an env file for envelopes!');
+        /*}else if(envfile1.files[0] !== undefined && !envfile1.files[0].name.match(/.(env)$/i)){
+            alert('Please upload an env file for envelopes!');*/
         /*}else if(envfile2.files[0] !== undefined && !envfile2.files[0].name.match(/.(env)$/i)){
             alert('Please upload an env file for ms2!');*/
         /*}else if (!ValidateEmail(email.value)){
