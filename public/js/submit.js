@@ -76,7 +76,7 @@
             let formData = new FormData();
             formData.append('dbfile', file.files[0]);
             formData.append('txtfile', txtfile.files[0]);
-            formData.append('envfile1', envfile1.files[0]);
+            //formData.append('envfile1', envfile1.files[0]);
             // formData.append('envfile2', envfile2.files[0]);
             formData.append('projectname', project.value);
             // formData.append('emailaddress', email.value);
