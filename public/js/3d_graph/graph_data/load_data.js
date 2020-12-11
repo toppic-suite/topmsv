@@ -2,7 +2,23 @@
 
 class LoadData{
     constructor(){}
-    static calculateTableNum = () => {
+    static getExpectedPeakNum = () => {
+        /*get expected peak number from init.ini file*/
+        return new Promise((resolve, reject) => {
+            let xhttp = new XMLHttpRequest();
+ 
+            xhttp.open("GET","getExpectedPeakNum?", true);
+
+            xhttp.onload = () => {
+                if (xhttp.status == 200 && xhttp.readyState == 4) {
+                    let peakNum = xhttp.response;
+                    resolve(peakNum);
+                }     
+            }
+            xhttp.send();
+        });
+    }
+    static calculateTableNum = async () => {
         /*decide which table to query based on what is the ratio is between current range and whole graph
         if the ratio is small (1:100), the detail level is high, and the peaks in that range are more*/
         let tableNum = -1;
@@ -13,7 +29,16 @@ class LoadData{
         let xRatio = (Graph.viewRange.mzmax - Graph.viewRange.mzmin) / totalMzRange;
         let yRatio = (Graph.viewRange.rtmax - Graph.viewRange.rtmin) / totalRtRange;
         
-        let peakCnt = 3000 / (xRatio * yRatio);
+        //get expected peak count from the text file
+        let expectedPeakNum;
+
+        await this.getExpectedPeakNum().then((peakNum) => {
+            expectedPeakNum = parseInt(peakNum);
+        })
+
+        console.log("expectedPeakNum", expectedPeakNum)
+
+        let peakCnt = expectedPeakNum / (xRatio * yRatio);
 
         let diff = Number.MAX_VALUE;
         
