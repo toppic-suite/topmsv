@@ -439,6 +439,7 @@ app.use('/', require("./router/load3dDataByParaRange"));
 app.use('/', require("./router/loadMzrtData"));
 app.use('/', require("./router/mzrt"));
 app.use('/', require("./router/deleteMzrt"));
+app.use('/', require("./router/getExpectedPeakNum"));
 
 app.use('/', require("./router/auth_google"));
 
