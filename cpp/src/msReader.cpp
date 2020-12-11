@@ -216,6 +216,63 @@ void msReader::createDtabase() { //stmt
   Range.scan_count = ms1_scan_count;
   Range.rt_size = int((Range.rt_max - Range.rt_min) / ms1_scan_count);//set rt bin size 
 
+  //if user has provided custom values for rt_size and mz_size, overwrite the default values
+  std::string line;
+  double custom_rt_size = -1;
+  double custom_mz_size = -1;
+
+  ifstream initFile("init.ini");
+
+  if (initFile.is_open()){
+    std::getline(initFile, line);
+    //std::cout << "line: " << line << std::endl;
+
+    string::size_type pos = line.find(',');
+    if (line.npos != pos){
+      std::string mz = line.substr(0, pos);
+      std::string rt = line.substr(pos + 1);
+
+      //std::cout << "mz: " << mz << "  rt: " << rt << std::endl;
+
+      try{
+        custom_mz_size = std::stod(mz);
+      }catch(const std::exception& e){
+        std::cout << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
+      }
+      try{
+        custom_rt_size = std::stod(rt);
+      }catch(const std::exception& e){
+        std::cout << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+      }
+    }
+    else{
+      //check if only m/z value was given
+      try{
+        custom_mz_size = std::stod(line);
+      }catch(const std::exception& e){
+        std::cout << "No m/z or rt value given by the user. Setting them to default value." << std::endl;
+      }
+    }
+  }
+  initFile.close();
+
+  if (custom_rt_size > 0){
+    if (custom_rt_size < rt_max - rt_min){
+      Range.rt_size = custom_rt_size;
+    }
+    else{//override the user given range if it is larger than the data range
+      Range.rt_size = rt_max - rt_min;
+    }
+  }
+  if (custom_mz_size > 0){
+    if (custom_mz_size < mz_max - mz_min){
+      Range.mz_size = custom_mz_size;
+    }
+    else{//override the user given range if it is larger than the data range
+      Range.mz_size = mz_max - mz_min;
+    }
+  }
+
   t1 = clock();
   std::cout << "mzmin:" << Range.mz_min << "\tmzmax:" << Range.mz_max << "\trtmin:" << Range.rt_min ;
   std::cout << "\trtmax:" << Range.rt_max  << "\tcount:" << Range.count << "\tmzsize:" << Range.mz_size << "\trtsize:" << Range.rt_size << std::endl;
@@ -246,12 +303,13 @@ void msReader::createDtabase() { //stmt
   databaseReader.createIndexLayerTable();
   databaseReader.createIndex();
   std::cout <<"Creat Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  
+
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   
   std::cout <<"total elapsed time: "<< (clock() - t0) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  
 }
 // get range of scan from database
 void msReader::getScanRangeDB() {
