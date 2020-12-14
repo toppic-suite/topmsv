@@ -36,8 +36,6 @@ class LoadData{
             expectedPeakNum = parseInt(peakNum);
         })
 
-        console.log("expectedPeakNum", expectedPeakNum)
-
         let peakCnt = expectedPeakNum / (xRatio * yRatio);
 
         let diff = Number.MAX_VALUE;
@@ -101,9 +99,9 @@ class LoadData{
     }
     static load3dData = (curViewRange) => {
         /*load data from database based on current graph range*/
-        return new Promise((resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
             let xhttp = new XMLHttpRequest();
-            let tableNum = LoadData.calculateTableNum();
+            let tableNum = await LoadData.calculateTableNum();
             let fullDir = Graph.projectDir;
             let dotIndex = fullDir.lastIndexOf(".");
             let dir = (fullDir.substr(0, dotIndex)).concat(".db");
