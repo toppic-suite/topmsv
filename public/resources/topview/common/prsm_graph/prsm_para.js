@@ -7,7 +7,7 @@ class PrsmPara {
   rowHeight = 40;
   topMargin = 36;
   bottomMargin = 10 ;
-  rightMargin = 30;
+  rightMargin = 50;
   leftMargin = 30;
   numericalWidth = 20;
   showNum = true ;
