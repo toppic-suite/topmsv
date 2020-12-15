@@ -104,7 +104,14 @@ int callbackConvertData(void *not_used, int argc, char **argv, char **az_col_nam
 
   int x_index = floor(((std::stod(argv[1]) - Range.mz_min) * (grid_width - 1))/ mz_range);
   int y_index = floor(((std::stod(argv[3]) - Range.rt_min) * (grid_height - 1))/ rt_range);
-
+/*
+  ofstream output("GridLog.txt");
+  if(output.is_open()){
+    output << "grid_width:" << grid_width << " grid_height: " << grid_height << "\n" << std::endl;
+    output << "x_index:" << x_index << " y_index: " << y_index << "\n" << std::endl;
+  }
+  output.close();
+*/
   if (x_index < Grid.grid_blocks.size() && y_index < Grid.grid_blocks[0].size()){
     /*see if the grid block at [xIndex][yIndex] already has a peak.
     if it has a peak, the value at the index is FALSE. If it does not have a peak yet, the value is TRUE.
@@ -809,8 +816,10 @@ void mzMLReader::insertDataLayerTable(){
   double rt_range = Range.rt_max - Range.rt_min;//range of rt in mzmML
   int grid_height = floor(rt_range / Range.rt_size);
 
-  Grid.grid_blocks = std::vector<std::vector<std::vector<double> > > (grid_width, std::vector<std::vector<double> >(grid_height, std::vector<double>({-1, -1, -1, -1})));  
+  //try catch if grid too big
   
+  Grid.grid_blocks = std::vector<std::vector<std::vector<double> > > (grid_width, std::vector<std::vector<double> >(grid_height, std::vector<double>({-1, -1, -1, -1})));  
+
   clock_t t1 = clock();
   insertPeakDataToGridBlocks();//peaks assigned to GRID.GRIDBLOCKS
   closeDatabaseInMemory();//close in-memory database. local disk db is still open.
