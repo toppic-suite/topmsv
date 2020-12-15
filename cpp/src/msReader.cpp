@@ -265,9 +265,6 @@ void msReader::createDtabase() { //stmt
     if (custom_rt_size < rt_max - rt_min){
       Range.rt_size = custom_rt_size;
     }
-    else if(custom_rt_size < Range.rt_size){
-      //keep Range.rt_size as it is
-    }
     else{//override the user given range if it is larger than the data range
       Range.rt_size = rt_max - rt_min;
     }
@@ -291,12 +288,9 @@ void msReader::createDtabase() { //stmt
   databaseReader.setRange(Range);
   databaseReader.insertConfigOneTable();
 
-  databaseReader.createIndexOnIdOnlyInMemory();//create index on PEAKS0 table by ID
+  databaseReader.createIndexInMemory();//create index on PEAKS0 table by ID, then another index on rt
   //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
   databaseReader.setColor();
-
-  databaseReader.endTransaction();
-  databaseReader.endTransactionInMemory();
 
   //create index on peak id (for copying to each layer later)
   databaseReader.createIndexOnIdOnly();
@@ -310,6 +304,9 @@ void msReader::createDtabase() { //stmt
   databaseReader.createIndexLayerTable();
   databaseReader.createIndex();
   std::cout <<"Creat Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+
+  databaseReader.endTransaction();
+  databaseReader.endTransactionInMemory();
 
   t1 = clock();
   databaseReader.closeDatabase();
