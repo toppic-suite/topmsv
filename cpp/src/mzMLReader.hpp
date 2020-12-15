@@ -39,7 +39,10 @@ struct DataRange{
 };
 struct GridProperties{
 	vector<vector<int>> grid_sizes;
-	vector<vector<vector<double> > > grid_blocks;
+	//vector<vector<vector<double> > > grid_blocks;
+	vector<double> grid_blocks;
+	double cur_mz = 0;
+	double cur_max_inte = 0;
 };
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
@@ -55,6 +58,7 @@ public:
 	char *z_err_msg_ = 0;
 	int  rc_;
 	char *sql_;
+	char *sql_in_mem_;
 	char *data_;
 	bool is_new_;
 	std::vector<std::string> peak_color_{"#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000"};//7 colors totla
@@ -90,12 +94,14 @@ public:
 	void insertPeakStmtInMemory(int peak_index, int scan_index, double intensity, double mz, double retention_time, std::string peakColor_);
 	void createIndex();
 	void createIndexOnIdOnly();
-	void createIndexOnIdOnlyInMemory();
+	void createIndexInMemory();
+	void createLayerIndexInMemory(int table_cnt);
 
 	double normalizeInte(std::vector<double> *normalization_data);
 	void setColor();
 	void resetRange();
-	void insertPeakDataToGridBlocks();
+	void insertPeakToEachLayer(std::vector<double> *grid_ptr, int table_cnt);
+	void insertPeakDataToGridBlocks(int table_cnt);
 	void createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_id);
 	void assignDataToGrid(int table_cnt, std::vector<int> &selected_peak_id);
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
