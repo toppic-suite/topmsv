@@ -740,7 +740,7 @@ void mzMLReader::insertPeakDataToGridBlocks(int table_cnt){
   for (int i = 0; i <= Range.rt_max; i += Range.rt_size){
     std::vector<double> grid;//generate a temporary vector here each time
     std::vector<double> *grid_ptr = &grid;
-    std::string sqlstr = "SELECT * FROM PEAKS" + int2str(table_cnt - 1) + "WHERE RETENTIONTIME BETWEEN " + int2str(i) + " AND " + int2str(i + Range.rt_size) +" ORDER BY MZ ASC;";
+    std::string sqlstr = "SELECT * FROM PEAKS" + int2str(table_cnt - 1) + " WHERE RETENTIONTIME BETWEEN " + int2str(i) + " AND " + int2str(i + Range.rt_size) +" ORDER BY MZ ASC;";
     
     //reset m/z and intensity for each grid
     Grid.cur_mz = 0;
@@ -867,10 +867,11 @@ void mzMLReader::insertDataLayerTable(){
   
   clock_t t1 = clock();
   int table_cnt = 1;
+  insertPeakDataToGridBlocks(table_cnt);//peaks assigned to GRID.GRIDBLOCKS
   
   while(peak_in_grid > Range.min_peaks){
+	table_cnt++;
     insertPeakDataToGridBlocks(table_cnt);//peaks assigned to GRID.GRIDBLOCKS
-    table_cnt++;
   }
   std::cout <<"insertPeakDataToGridBlocks finished: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
