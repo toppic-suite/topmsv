@@ -221,8 +221,8 @@ void msReader::createDtabase() { //stmt
   double custom_rt_size = -1;
   double custom_mz_size = -1;
 
-  ifstream initFile("init.ini");
-
+  ifstream initFile("init.txt");
+  //ofstream output("output.txt");
   if (initFile.is_open()){
     std::getline(initFile, line);
     //std::cout << "line: " << line << std::endl;
@@ -232,17 +232,21 @@ void msReader::createDtabase() { //stmt
       std::string mz = line.substr(0, pos);
       std::string rt = line.substr(pos + 1);
 
-      //std::cout << "mz: " << mz << "  rt: " << rt << std::endl;
+      //std::cout << "mz: " << mz << "rt: " << rt << std::endl;
+      //output << "user mz:" << mz << "user rt:" << rt << "\n" << std::endl;
 
       try{
         custom_mz_size = std::stod(mz);
       }catch(const std::exception& e){
         std::cout << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
+        //output << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
+
       }
       try{
         custom_rt_size = std::stod(rt);
       }catch(const std::exception& e){
         std::cout << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+        //output << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
       }
     }
     else{
@@ -251,14 +255,18 @@ void msReader::createDtabase() { //stmt
         custom_mz_size = std::stod(line);
       }catch(const std::exception& e){
         std::cout << "No m/z or rt value given by the user. Setting them to default value." << std::endl;
+        //output << "No m/z or rt value given by the user. Setting them to default value." << std::endl;
       }
     }
+    initFile.close();
   }
-  initFile.close();
-
+    
   if (custom_rt_size > 0){
     if (custom_rt_size < rt_max - rt_min){
       Range.rt_size = custom_rt_size;
+    }
+    else if(custom_rt_size < Range.rt_size){
+      //keep Range.rt_size as it is
     }
     else{//override the user given range if it is larger than the data range
       Range.rt_size = rt_max - rt_min;
@@ -285,7 +293,6 @@ void msReader::createDtabase() { //stmt
 
   databaseReader.createIndexOnIdOnlyInMemory();//create index on PEAKS0 table by ID
   //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
-  //databaseReader.setColor(RANGE.COUNT);
   databaseReader.setColor();
 
   databaseReader.endTransaction();

@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <math.h> 
+#include <fstream>
 //#include <sqlite3.h> 
 //#include <libraries\SQLite\sqlite3.h>
 #include "sqlite/sqlite3.h"
@@ -34,7 +35,7 @@ struct DataRange{
 
   double rt_scale_factor = 2;
   double rt_scale = 2;
-  double rt_size = 1;
+  double rt_size;
 };
 struct GridProperties{
 	vector<vector<int>> grid_sizes;
