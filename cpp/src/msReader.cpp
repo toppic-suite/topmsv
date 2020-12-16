@@ -295,19 +295,21 @@ void msReader::createDtabase() { //stmt
   //create index on peak id (for copying to each layer later)
   databaseReader.createIndexOnIdOnly();
   
+  databaseReader.endTransaction();
+  databaseReader.endTransactionInMemory();
+
   t1 = clock();
   databaseReader.insertDataLayerTable();
   std::cout <<"End Insert to all layer tables: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   
   t1 = clock();
-  
+  databaseReader.beginTransaction();
+
   databaseReader.createIndexLayerTable();
   databaseReader.createIndex();
   std::cout <<"Creat Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
   databaseReader.endTransaction();
-  databaseReader.endTransactionInMemory();
-
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;

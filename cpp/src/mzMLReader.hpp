@@ -33,7 +33,6 @@ struct DataRange{
   double mz_scale = 2;//number to scale m/z range of a grid block
   double mz_size = 0.05;//initial mz size of a grid block
 
-  double rt_scale_factor = 2;
   double rt_scale = 2;
   double rt_size;
 };
@@ -102,7 +101,8 @@ public:
 	void resetRange();
 	void insertPeakToEachLayer(std::vector<double> *grid_ptr, int table_cnt);
 	void insertPeakDataToGridBlocks(int table_cnt);
-	void createSmallestTable(int &table_cnt, std::vector<int> &prev_peak_id);
+	void insertSmallestTable(int table_cnt, int prev_peak_cnt, int interval);
+	void createSmallestTable(int table_cnt);
 	void assignDataToGrid(int table_cnt, std::vector<int> &selected_peak_id);
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
 	void insertDataLayerTable();
