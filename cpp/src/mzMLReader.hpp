@@ -38,15 +38,22 @@ struct DataRange{
 };
 struct GridProperties{
 	vector<vector<int>> grid_sizes;
-	//vector<vector<vector<double> > > grid_blocks;
 	vector<double> grid_blocks;
 	double cur_mz = 0;
 	double cur_max_inte = 0;
 };
 
-int callback(void *NotUsed, int argc, char **argv, char **azColName);
 std::string num2str(double num);
 std::string int2str(int num);
+void updateRange(char **argv);
+
+int callback(void *NotUsed, int argc, char **argv, char **azColName);
+int callbackRange(void *not_used, int argc, char **argv, char **az_col_name);
+int callbackPeakFromScan(void *not_used, int argc, char **argv, char **az_col_name);
+int callbackInsertPeak(void *not_used, int argc, char **argv, char **az_col_name);
+int callbackUpdateData(void *ptr, int argc, char **argv, char **az_col_name);
+int callbackConvertData(void *ptr, int argc, char **argv, char **az_col_name);
+
 class mzMLReader
 {
 public:
@@ -98,15 +105,12 @@ public:
 
 	double normalizeInte(std::vector<double> *normalization_data);
 	void setColor();
-	void resetRange();
 	void insertPeakToEachLayer(std::vector<double> *grid_ptr, int table_cnt);
 	void insertPeakDataToGridBlocks(int table_cnt);
-	void insertSmallestTable(int table_cnt, int prev_peak_cnt, int interval);
-	void createSmallestTable(int table_cnt);
-	void assignDataToGrid(int table_cnt, std::vector<int> &selected_peak_id);
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
 	void insertDataLayerTable();
 	void setRange(DataRange Tmp_range);
+	void resetRange();
 	void insertConfigOneTable();
 	void createLayerTable(std::string num);
 	void createIndexLayerTable();
