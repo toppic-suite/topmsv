@@ -200,7 +200,6 @@ void msReader::createDtabase() { //stmt
     // }
   }
   databaseReader.closeInsertStmt();
-  
   databaseReader.closeInsertStmtInMemory();
   std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
@@ -295,27 +294,24 @@ void msReader::createDtabase() { //stmt
   //create index on peak id (for copying to each layer later)
   databaseReader.createIndexOnIdOnly();
   
-  databaseReader.endTransaction();
-  databaseReader.endTransactionInMemory();
-
   t1 = clock();
   databaseReader.insertDataLayerTable();
   std::cout <<"End Insert to all layer tables: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  
-  t1 = clock();
-  databaseReader.beginTransaction();
 
+  t1 = clock();
   databaseReader.createIndexLayerTable();
   databaseReader.createIndex();
   std::cout <<"Creat Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
   databaseReader.endTransaction();
+  databaseReader.endTransactionInMemory();
+
   t1 = clock();
   databaseReader.closeDatabase();
+  databaseReader.closeDatabaseInMemory();
+
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  
   std::cout <<"total elapsed time: "<< (clock() - t0) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  
 }
 // get range of scan from database
 void msReader::getScanRangeDB() {
