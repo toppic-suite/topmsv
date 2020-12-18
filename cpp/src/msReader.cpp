@@ -285,7 +285,7 @@ void msReader::createDtabase() { //stmt
   t1 = clock();
 
   databaseReader.setRange(Range);
-  databaseReader.insertConfigOneTable();
+  databaseReader.insertConfigOneTable(Range);
 
   databaseReader.createIndexInMemory();//create index on PEAKS0 table by ID, then another index on rt
   //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
