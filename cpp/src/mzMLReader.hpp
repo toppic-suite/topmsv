@@ -111,7 +111,7 @@ public:
 	void insertDataLayerTable();
 	void setRange(DataRange Tmp_range);
 	void resetRange();
-	void insertConfigOneTable();
+	void insertConfigOneTable(DataRange Range);
 	void createLayerTable(std::string num);
 	void createIndexLayerTable();
 };
