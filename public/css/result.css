@@ -373,7 +373,10 @@ svg#spectrum2{
 .table th {
     text-align: center;
 }
-
+/**displaying fdr info in env table*/
+#fdr {
+    display:hidden;
+}
 /*button#plusBtn {
     position: relative;
     right: 130%;
