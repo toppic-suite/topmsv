@@ -30,9 +30,13 @@ function showEnvTable(scan) {
                 let sequence = preprocessSeq(res);
                 $('#proteoform').text(sequence);
                 window.localStorage.setItem('proteoform', sequence);
+
+                $('#fdr').show();
+                
             } else {
                 $('#proteoform').text('N/A');
                 window.localStorage.setItem('proteoform', '');
+                $('#fdr').hide();
             }
         }
     });
