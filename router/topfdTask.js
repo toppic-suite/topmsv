@@ -4,6 +4,7 @@ const BetterDB = require("better-sqlite3");
 const deleteEnvPeak = require("../library/deleteEnvPeak");
 const submitTask = require("../library/submitTask");
 const updateEnvStatusSync = require("../library/updateEnvStatusSync");
+const updateFeatureStatusSync = require("../library/updateFeatureStatusSync");
 const path = require("path");
 
 /**
@@ -83,10 +84,14 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
         let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
         let des_ms1 = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_file/' + fileName + '_ms1.msalign';
         let des_ms2 = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_ms2.msalign';
+        let feature = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_file/' + fileName + '_frac.mzrt.csv';
 
         updateEnvStatusSync(1, projectCode);
+        updateFeatureStatusSync(1, projectCode);
+
         submitTask(projectCode, 'node','./utilities/convertMS1Msalign.js ' + dbDir + ' ' + des_ms1, 1);
         submitTask(projectCode, 'node','./utilities/convertMS2Msalign.js ' + dbDir + ' ' + des_ms2, 1);
+        submitTask(projectCode, 'node','./utilities/annotateFeature.js ' + dbDir + ' ' + feature, 1);
     } else {
         res.write("No such project exists!");
         res.end();
