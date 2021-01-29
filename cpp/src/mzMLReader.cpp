@@ -837,7 +837,7 @@ void mzMLReader::insertDataLayerTable(){
     resetRange();
     createLayerTable(int2str(table_cnt));
     insertPeakDataToGridBlocks(table_cnt);//peaks assigned to GRID.GRIDBLOCKS
-    insertConfigOneTable();
+    insertConfigOneTable(SingleTableRange);
     createLayerIndexInMemory(table_cnt);
 
     Range.mz_size = Range.mz_size * Range.mz_scale;
@@ -867,11 +867,11 @@ void mzMLReader::resetRange() {
   SingleTableRange.rt_max = 0;
   SingleTableRange.rt_min = 99999;
 }
-void mzMLReader::insertConfigOneTable() {
+void mzMLReader::insertConfigOneTable(DataRange Range) {
   /* Create SQL statement */
   std::string sqlstr = "INSERT INTO CONFIG (MZMIN,MZMAX,RTMIN,RTMAX,INTMIN,INTMAX,COUNT) VALUES (" +
-    num2str(SingleTableRange.mz_min) + ", " + num2str(SingleTableRange.mz_max) + ", " + num2str(SingleTableRange.rt_min) + ", " + num2str(SingleTableRange.rt_max) + ", " +
-    num2str(SingleTableRange.int_min) + ", " + num2str(SingleTableRange.int_max) + ", " + int2str(SingleTableRange.count)+ " ); ";
+    num2str(Range.mz_min) + ", " + num2str(Range.mz_max) + ", " + num2str(Range.rt_min) + ", " + num2str(Range.rt_max) + ", " +
+    num2str(Range.int_min) + ", " + num2str(Range.int_max) + ", " + int2str(Range.count)+ " ); ";
   sql_ = (char *)sqlstr.c_str();
   /* Execute SQL statement */
   rc_ = sqlite3_exec(db_, sql_, 0, 0, &z_err_msg_);
