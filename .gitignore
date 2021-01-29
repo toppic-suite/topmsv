@@ -85,3 +85,6 @@ proteomics_cpp/
 # ignore database file and txt file
 *.db
 *.txt
+
+#ignore test files
+test/
