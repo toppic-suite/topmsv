@@ -453,7 +453,7 @@ app.use('/*', function(req, res){
  * Create server database during server startup. Better-sqlite version. Sync mode.
  */
 const projectDB = new betterDB('./db/projectDB.db');
-const sqlToCreateTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'FeatureStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL ,PRIMARY KEY(`ProjectID`))");
+const sqlToCreateTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Projects\" ( `ProjectID` INTEGER NOT NULL, `ProjectCode` TEXT NOT NULL UNIQUE, `ProjectName` TEXT NOT NULL, `FileName` TEXT NOT NULL, `Description` TEXT NULL, `ProjectDir` TEXT NOT NULL, `ProjectStatus` INTEGER NOT NULL, `Email` TEXT NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, 'EnvelopeStatus' INTEGER NOT NULL, 'FeatureStatus' INTEGER NOT NULL, 'SequenceStatus' INTEGER NOT NULL, 'MS1_envelope_file' TEXT NULL, 'uid' TEXT NULL, 'public' INTEGER NOT NULL , 'doesExpire' TEXT NOT NULL, PRIMARY KEY(`ProjectID`))");
 sqlToCreateTable.run();
 const sqlToCreateIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `project_index` ON `Projects` ( `ProjectCode` )");
 sqlToCreateIndex.run();
