@@ -374,7 +374,7 @@ svg#spectrum2{
     text-align: center;
 }
 /**displaying fdr info in env table*/
-#fdr {
+.fdr {
     display:hidden;
 }
 /*button#plusBtn {
