@@ -27,16 +27,18 @@ function showEnvTable(scan) {
         success: function (res) {
             //console.log(res);
             if(res!== '0') {
-                let sequence = preprocessSeq(res);
+                let protData = JSON.parse(res);
+                let sequence = preprocessSeq(protData.seq);
                 $('#proteoform').text(sequence);
                 window.localStorage.setItem('proteoform', sequence);
 
-                $('#fdr').show();
-                
+                $('.fdr').show();
+                $('#spec-fdr-value').text(protData.specFDR);
+                $('#prot-fdr-value').text(protData.protFDR);    
             } else {
                 $('#proteoform').text('N/A');
                 window.localStorage.setItem('proteoform', '');
-                $('#fdr').hide();
+                $('.fdr').hide();
             }
         }
     });
