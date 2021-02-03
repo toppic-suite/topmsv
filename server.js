@@ -37,8 +37,6 @@ const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
     console.log('Check expired projects:', d);
     checkExpiredProj(function (err, rows) {
-        console.log("rows")
-        console.log(rows);
         rows.forEach(element => {
             deleteProject(element.pcode);
         });
