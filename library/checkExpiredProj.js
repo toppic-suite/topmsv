@@ -17,8 +17,8 @@ function checkExpiredProj(callback) {
             fileName AS fileName
             FROM Projects
             WHERE datetime(Date, 'localtime') <= datetime('now', '-30 day', 'localtime') 
-            AND ProjectStatus != 3
-            AND doesExpire != false`;
+            AND ProjectStatus <> 3
+            AND doesExpire = 'true'`;
 
     db.all(sql,(err, rows) => {
         if (err) {
