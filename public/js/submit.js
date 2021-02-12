@@ -90,7 +90,16 @@
 
             xhr.onload = uploadSuccess;
             xhr.upload.onprogress = setProgress;
-            xhr.open('post', '/upload', true);
+
+            let lastDot = file.files[0].name.lastIndexOf('.');
+            let ext = file.files[0].name.slice(lastDot + 1);
+            
+            if (ext == "zip"|| ext == "gz" || ext == "tar"){
+                xhr.open('post', '/uploadMultiple', true);
+            }
+            else{
+                xhr.open('post', '/upload', true);
+            }
             xhr.send(formData);
         }
     }

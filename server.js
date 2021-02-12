@@ -200,6 +200,7 @@ app.use('/', require('./router/logout'));
  * then submit task to task scheduler
  */
 app.use('/', require("./router/upload"));
+app.use('/', require("./router/uploadMultiple"));
 
 /**
  * Express router for /data
