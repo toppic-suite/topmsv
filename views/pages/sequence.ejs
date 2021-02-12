@@ -38,7 +38,7 @@
         <h2 style="color: #0099DD;"><strong>TopMSV</strong></h2>
     </div>-->
     <div>
-        <h2 style="color: #0099DD;"><strong>Sequence Result</strong></h2>
+        <h2 style="color: #0099DD;"><strong>Identification Result</strong></h2>
     </div>
     <!--<ul class="nav nav-tabs">
         <li role="presentation"><a href="/">Home</a></li>
@@ -59,6 +59,7 @@
                 <th scope="col">Scan</th>
                 <th scope="col">Protein Accession</th>
                 <th scope="col">Proteoform</th>
+                <th scope="col">FDR</th>
             </tr>
             </thead>
 
@@ -68,6 +69,7 @@
                     <td><a href="#!" onclick="jumpBack(<%= results[i].scan %>)"><%= results[i].scan %></a> </td>
                     <td><%= results[i].protein_accession %></td>
                     <td><a href="#!" onclick="inspect(<%= results[i].scanID %>,<%= results[i].scan %>)"><%= results[i].proteoform %></a></td>
+                    <td><%= results[i].spec_fdr %></td>
                 </tr>
             <% } %>
 

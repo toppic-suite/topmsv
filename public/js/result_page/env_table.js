@@ -31,11 +31,9 @@ function showEnvTable(scan) {
                 let sequence = preprocessSeq(protData.seq);
                 $('#proteoform').text(sequence);
                 window.localStorage.setItem('proteoform', sequence);
-                
-                if (protData.specFDR > -1 && protData.protFDR > -1){//show only when values are valid
+                if (protData.specFDR > -1){//show only when values are valid
                     $('.fdr').show();
                     $('#spec-fdr-value').text(protData.specFDR);
-                    $('#prot-fdr-value').text(protData.protFDR); 
                 } 
             } else {
                 $('#proteoform').text('N/A');
