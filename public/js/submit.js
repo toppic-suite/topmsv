@@ -94,11 +94,14 @@
             let lastDot = file.files[0].name.lastIndexOf('.');
             let ext = file.files[0].name.slice(lastDot + 1);
             
-            if (ext == "zip"|| ext == "gz" || ext == "tar"){
+            if (ext == "zip"){
                 xhr.open('post', '/uploadMultiple', true);
             }
-            else{
+            else if(ext == "mzML"){
                 xhr.open('post', '/upload', true);
+            }
+            else{
+                alert("please upload a zip file or a mzML file!")
             }
             xhr.send(formData);
         }
