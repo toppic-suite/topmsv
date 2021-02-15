@@ -35,6 +35,8 @@ function inspect(scanID,scanNum) {
                             //console.log(res);
                             if(res!== '0') {
                                 let sequence = preprocessSeq(res);
+                                //remove fdr information
+                                sequence = sequence.split(",")[0];
                                 window.localStorage.setItem('sequence', sequence);
                             } else {
                                 window.localStorage.setItem('sequence', '');

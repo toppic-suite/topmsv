@@ -490,18 +490,20 @@
 				<hr>
 			</div>
 
-			<div id="envInfo">
-				<div class="scanleveltitle" id="scanLevelTwoInfo">
-					<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
+			<div>
+				<div class="scanleveltitle">
 					<span id="msType"></span> Scan: <span id="envScan"></span>&nbsp;&nbsp;&nbsp;&nbsp;
 					<span class="fdr">Spectral level FDR: </span> <span id="spec-fdr-value"></span>&nbsp;&nbsp;&nbsp;&nbsp;
-					<!--<div>
-						Proteoform: <span id="proteoform"></span>
-					</div>-->
 				</div>
+				<div class="scanleveltitle">
+					Proteoform: <span id="proteoform"></span>
+				</div>
+			</div>
+			<hr>
+			<div id="envInfo">
 				<div class="row">
-					<div class="col-sm-9">
-						Proteoform: <span id="proteoform"></span>
+					<div class="col-sm-9" id="scanLevelTwoInfo">
+						<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
 					</div>
 					<div class="col-sm-1">
 						<button class="btn" id="inspect">Inspect</button>
