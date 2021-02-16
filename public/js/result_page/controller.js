@@ -17,6 +17,7 @@ function initGraph(){
         $('#envFileInfo').hide();
     }
     $('#envFileInfo').hide();
+    $("#ms2Info").hide();
 
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
