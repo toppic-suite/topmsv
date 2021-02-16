@@ -21,6 +21,7 @@ function showEnvTable(scan) {
     if($('#envStatus').val() === "0"){
         return;
     }
+    $("#ms2Info").show();
 
     $.ajax( {
         url:'seqQuery?projectDir=' + document.getElementById("projectDir").value + "&scanID=" + $('#envScan').text()
