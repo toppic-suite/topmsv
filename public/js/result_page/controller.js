@@ -17,7 +17,14 @@ function initGraph(){
         $('#envFileInfo').hide();
     }
     $('#envFileInfo').hide();
-    showEnvTable(min);
+
+    let scanRef = window.localStorage.getItem('scan');
+    if(scanRef) {
+        //init2D(scanRef);
+        min = scanRef;
+        localStorage.clear();
+    }
+    //showEnvTable(min);
     
     init2D(min);
     init3D(min);
@@ -31,13 +38,6 @@ function initGraph(){
         .catch((error) => {
             console.log(error);
         });
-
-    let scanRef = window.localStorage.getItem('scan');
-    if(scanRef) {
-        // console.log("scanRef:",scanRef);
-        init2D(scanRef);
-        localStorage.clear();
-    }
 
     let fileName = $('#fileName').val();
     let apix = fileName.substr(fileName.lastIndexOf('.'), fileName.length);

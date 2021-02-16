@@ -20,8 +20,10 @@ function init2D(scan) {
             return topview_2d.getScanLevel(scan); // current scan
         })
         .then(function(response) {
-            // console.log("scan level response:", response.data);
+            //document.getElementById("scanID1").innerText = scan;
+            //console.log("scan level response:", response.data);
             if (response.data === 1) { // scan level 1
+                $("#scanID1").text(scan);
                 if (nextScan - scan === 1) { // if there are scan level 2 for this scan
                     // console.log("Scan Level 1, nextScan - scan === 1");
                     $('#scanLevelTwoInfo').show();
@@ -46,7 +48,6 @@ function init2D(scan) {
                         });
                 } else { // if there is no scan level 2
                     // console.log("Scan Level 1, nextScan - scan !== 1")
-                    showEnvTable(scan); // update envtable even if there is no scan level 2
                     $("#noScanLevelTwo").show();
                     $("#tabs").hide();
                     $('#scanLevelTwoInfo').hide();
@@ -54,7 +55,7 @@ function init2D(scan) {
                     topview_2d.getPeakList(scan)
                         .then(function(response) {
                             peakList1_g = response.data;
-                            document.getElementById("scanID1").innerText = scan;
+                            showEnvTable(scan); // update envtable even if there is no scan level 2
                             return topview_2d.getEnvTable(scan);
                         })
                         .then(function(response) {
@@ -73,11 +74,14 @@ function init2D(scan) {
                         });
                 }
             } else { // scan level 2
-                // console.log("scan level 2");
                 let scanLevelOne;
+                $("#tabs").show();
+                $("#noScanLevelTwo").hide();
+                $("#scanLevelTwoInfo").show();
                 topview_2d.getRelatedScan1(scan)
                     .then(function(response) {
                         scanLevelOne = response.data;
+                        $("#scanID1").text(scanLevelOne);
                         return topview_2d.getScanLevelTwoList(scanLevelOne);
                     })
                     .then(function(response){
@@ -135,7 +139,6 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
         // show envelope table for MS2
         showEnvTable(scanID);
         $("#switch").text('MS1');
-
         axios.get('/peaklist',{
             params:{
                 projectDir: document.getElementById("projectDir").value,
