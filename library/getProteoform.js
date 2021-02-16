@@ -11,15 +11,14 @@ function getProteoform(dir, scanNum) {
     /*let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform
                 FROM SPECTRA INNER JOIN sequence ON SPECTRA.ID = sequence.scan_id
                 WHERE SPECTRA.SCAN = ?`);*/
-    let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform, sequence.spec_fdr AS spec_fdr, sequence.prot_fdr AS prot_fdr
+    let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform, sequence.spec_fdr AS spec_fdr
                 FROM SPECTRA INNER JOIN sequence ON SPECTRA.ID = sequence.scan_id
                 WHERE SPECTRA.SCAN = ?`);
     if(stmt.get(scanNum)) {
         let proteoform = stmt.get(scanNum).proteoform;
         let specFDR = stmt.get(scanNum).spec_fdr;
-        let protFDR = stmt.get(scanNum).prot_fdr;
         resultDb.close();
-        return {"seq":proteoform,"specFDR":specFDR, "protFDR":protFDR};
+        return {"seq":proteoform,"specFDR":specFDR};
         //return proteoform;
     } else {
         resultDb.close();

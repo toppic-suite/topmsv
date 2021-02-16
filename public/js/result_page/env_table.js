@@ -11,10 +11,12 @@ function cleanInfo() {
 
 function showEnvTable(scan) {
     $('#envScan').text(scan);
-    if(scan === $('#scanID1').text()) {
+    if(scan == $('#scanID1').text()) {
         $('#msType').text('MS1');
+        $('#switch').text('MS2');
     } else {
         $('#msType').text('MS2');
+        $('#switch').text('MS1');
     }
     if($('#envStatus').val() === "0"){
         return;
@@ -31,20 +33,18 @@ function showEnvTable(scan) {
                 let sequence = preprocessSeq(protData.seq);
                 $('#proteoform').text(sequence);
                 window.localStorage.setItem('proteoform', sequence);
-                
-                if (protData.specFDR > -1 && protData.protFDR > -1){//show only when values are valid
+                if (protData.specFDR > -1){//show only when values are valid
                     $('.fdr').show();
                     $('#spec-fdr-value').text(protData.specFDR);
-                    $('#prot-fdr-value').text(protData.protFDR); 
                 } 
             } else {
                 $('#proteoform').text('N/A');
                 window.localStorage.setItem('proteoform', '');
                 $('.fdr').hide();
+                $('#spec-fdr-value').text('');
             }
         }
     });
-
     let envTableObj = $('#envTable').DataTable( {
         destroy: true,
         paging: false,
