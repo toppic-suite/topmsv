@@ -11,10 +11,12 @@ function cleanInfo() {
 
 function showEnvTable(scan) {
     $('#envScan').text(scan);
-    if(scan === $('#scanID1').text()) {
+    if(scan == $('#scanID1').text()) {
         $('#msType').text('MS1');
+        $('#switch').text('MS2');
     } else {
         $('#msType').text('MS2');
+        $('#switch').text('MS1');
     }
     if($('#envStatus').val() === "0"){
         return;
@@ -39,10 +41,10 @@ function showEnvTable(scan) {
                 $('#proteoform').text('N/A');
                 window.localStorage.setItem('proteoform', '');
                 $('.fdr').hide();
+                $('#spec-fdr-value').text('');
             }
         }
     });
-
     let envTableObj = $('#envTable').DataTable( {
         destroy: true,
         paging: false,
