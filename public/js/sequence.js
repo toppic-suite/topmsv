@@ -35,8 +35,6 @@ function inspect(scanID,scanNum) {
                             //console.log(res);
                             if(res!== '0') {
                                 let sequence = preprocessSeq(res);
-                                //remove fdr information
-                                sequence = sequence.split(",")[0];
                                 window.localStorage.setItem('sequence', sequence);
                             } else {
                                 window.localStorage.setItem('sequence', '');
@@ -76,7 +74,8 @@ function preprocessSeq(seq) {
     return seq;
     //console.log(seq);
 }*/
-function preprocessSeq(seq) {
+function preprocessSeq(seqString) {
+    seq = JSON.parse(seqString).seq;
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
     seq = seq.replace(/\)/g, '');
@@ -105,5 +104,5 @@ function preprocessSeq(seq) {
         seq = seq.slice(firstDotIndex,lastDotIndex);
     }
     return seq;
-    //console.log(seq);
+    
 }
