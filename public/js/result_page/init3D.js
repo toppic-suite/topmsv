@@ -116,7 +116,7 @@ function init3D(scanID){
             let promise = getMs1Scan(projectDir, scanID);
             promise.then((ms1Scan) => {
                 scan = ms1Scan;
-                console.log("scan", scan)
+                //console.log("scan", scan)
                 return getPrecursorMz(projectDir,scan);
             })
         }else{

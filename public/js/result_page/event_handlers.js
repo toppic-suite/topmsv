@@ -9,7 +9,7 @@ $( document ).ready(function() {
             //console.log("Yes");
             init2D(parseInt(requestID));
             update3D(parseInt(requestID));
-            showEnvTable(parseInt(requestID));
+            //showEnvTable(parseInt(requestID));
             $("#scanID").val("");
         }else {
             //console.log("No");
