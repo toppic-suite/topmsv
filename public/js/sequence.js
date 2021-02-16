@@ -74,7 +74,8 @@ function preprocessSeq(seq) {
     return seq;
     //console.log(seq);
 }*/
-function preprocessSeq(seq) {
+function preprocessSeq(seqString) {
+    seq = JSON.parse(seqString).seq;
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
     seq = seq.replace(/\)/g, '');
@@ -103,5 +104,5 @@ function preprocessSeq(seq) {
         seq = seq.slice(firstDotIndex,lastDotIndex);
     }
     return seq;
-    //console.log(seq);
+    
 }
