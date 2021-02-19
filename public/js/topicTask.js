@@ -29,6 +29,7 @@
     var Combined_spectra = $('#Combined_spectra').val();
     var Miscore_threshold = $('#Miscore_threshold').val();
     var No_TopFD_feature = $('#No_TopFD_feature');
+    var Gene_mzid = $('#Gene_mzid');
 
     var threadNum = document.getElementById('threadNum');
     console.log(projectCode.value);
@@ -42,7 +43,8 @@
     function uploadFile(event) {
         console.log("uploadFile");
         //console.log(ValidateEmail(email.value));
-
+        let isMzidGenerated = false;
+        let isDecoyGenerated = false;
         let command = '';
         if (Activation !== '' && Activation !== 'FILE') {
             command = command + ' -a ' + Activation;
@@ -69,6 +71,7 @@
 
         if (Decoy_option.is(":checked")) {
             command = command + ' -d';
+            isDecoyGenerated = true;
         }
 
         if (Mass_error_tolerance !== '') {
@@ -125,6 +128,9 @@
             command = command + ' -x';
         }
 
+        if (Gene_mzid .is(":checked")) {
+            isMzidGenerated = true;
+        }
         console.log("command", command);
 
 
@@ -150,6 +156,8 @@
             formData.append('projectCode', projectCode.value);
             formData.append('threadNum', threadNum.value);
             formData.append('command', command);
+            formData.append('geneMzid', isMzidGenerated);
+            formData.append('decoyData', isDecoyGenerated)
             console.log(formData);
             xhr.onload = uploadSuccess;
             xhr.upload.onprogress = setProgress;
