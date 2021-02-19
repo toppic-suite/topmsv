@@ -30,6 +30,8 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
         let projectCode = fields.projectCode;
         let threadNum = fields.threadNum;
         let parameter = fields.command;
+        let geneMzid = fields.geneMzid;
+        let decoyData = fields.decoyData;
         console.log("parameter",parameter);
         console.log(projectCode);
         getProjectSummary(projectCode, function (err, row) {
@@ -39,6 +41,8 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
             let msalign_name = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2.msalign';
             let msalign_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + msalign_name;
             let des_fastaFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fastaFile.name;
+            let des_ptmShiftFile = 'None'; 
+            let des_fixedPTMFile = 'None';
             fs.rename(fastaFile.path, des_fastaFile, function (err) {
                 if (err) {
                     console.log(err);
@@ -52,18 +56,20 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 }
 
                 if(fixedPTMFile !== undefined) {
-                    let des_fixedPTMFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fixedPTMFile.name;
+                    des_fixedPTMFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fixedPTMFile.name;
                     fs.renameSync(fixedPTMFile.path, des_fixedPTMFile);
                     parameter = parameter + ' -f '+ des_fixedPTMFile;
                 }
 
                 if (ptmShiftFile !== undefined) {
-                    let des_ptmShiftFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + ptmShiftFile.name;
+                    des_ptmShiftFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + ptmShiftFile.name;
                     fs.renameSync(ptmShiftFile.path, des_ptmShiftFile);
                     parameter = parameter + ' -i '+ des_ptmShiftFile;
                 }
-
                 commandArr = parameter + ' -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
+                if (geneMzid){//if mzid file is generated, keep intermediate file
+                    commandArr = parameter + '-k -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
+                }
                 console.log("commandArr",commandArr);
                 console.log(threadNum);
                 submitTask(projectCode,app, commandArr, threadNum);
@@ -78,6 +84,19 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 console.log(seqParameter);
                 updateSeqStatusSync(1, projectCode);
                 submitTask(projectCode, seqApp, seqParameter, 1);
+
+                //run mzid generator if mzid file is to be generated
+                if (geneMzid){
+                    let app = "python";
+                    let decoyName = des_fastaFile + "_target_decoy";
+                    if (!decoyData){
+                        decoyName = des_fastaFile;
+                    }
+                    let param = './mzidGenerator/write_mzIdent.py ' + seqName + ' ' + decoyName + ' ' + des_fixedPTMFile + ' ' + des_ptmShiftFile;
+                    console.log("Hello! mzid file generator")
+                    console.log("param", param);
+                    //submitTask(projectCode, app, param, 1);
+                }
                 res.end();
             })
         })
