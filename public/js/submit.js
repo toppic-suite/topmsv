@@ -93,7 +93,7 @@
 
             let lastDot = file.files[0].name.lastIndexOf('.');
             let ext = file.files[0].name.slice(lastDot + 1);
-            
+
             if (ext == "zip"){
                 xhr.open('post', '/uploadMultiple', true);
             }
