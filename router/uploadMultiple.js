@@ -18,7 +18,7 @@ const fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
 const sqlite3 = require('sqlite3').verbose();
-const unzip = require('unzip');
+const unzipper = require('unzipper');
 const os = require('os');
 
 const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
@@ -54,9 +54,16 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
         let file = files.dbfile;
         let eid = fields.eid;
         let fname = file.name;
+
+        let write_contents = "file.path: " + file.path + " form.uploadDir: " + form.uploadDir
+                fs.writeFile("file_name.txt", write_contents, function (err) {
+                    if (err) return console.log(err);
+                });
+
         fs.createReadStream(file.path)
-            .pipe(unzip.Extract({ path: form.uploadDir }).on('close', function(){
+            .pipe(unzipper.Extract({ path: form.uploadDir }).on('close', function(){
                 fs.unlinkSync(file.path);
+                
                 //iterate over files, if mzML file, create a new project folder and move the file
                 //and process the file
                 let fileNames = fs.readdirSync(form.uploadDir);
