@@ -68,7 +68,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 }
                 commandArr = parameter + ' -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
                 if (geneMzid){//if mzid file is generated, keep intermediate file
-                    commandArr = parameter + '-k -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
+                    commandArr = parameter + ' -k -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
                 }
                 console.log("commandArr",commandArr);
                 console.log(threadNum);
@@ -86,16 +86,17 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 submitTask(projectCode, seqApp, seqParameter, 1);
 
                 //run mzid generator if mzid file is to be generated
-                if (geneMzid){
+                console.log(geneMzid, decoyData);
+                if (geneMzid == 'true' || geneMzid == true){
                     let app = "python";
                     let decoyName = des_fastaFile + "_target_decoy";
-                    if (!decoyData){
+                    if (decoyData == 'false' || decoyData == false){
                         decoyName = des_fastaFile;
                     }
-                    let param = './mzidGenerator/write_mzIdent.py ' + seqName + ' ' + decoyName + ' ' + des_fixedPTMFile + ' ' + des_ptmShiftFile;
+                    let param = './mzidGenerator/write_mzIdent.py ' + seq_dir + ' ' + decoyName + ' ' + des_fixedPTMFile + ' ' + des_ptmShiftFile;
                     console.log("Hello! mzid file generator")
                     console.log("param", param);
-                    //submitTask(projectCode, app, param, 1);
+                    submitTask(projectCode, app, param, 1);
                 }
                 res.end();
             })
