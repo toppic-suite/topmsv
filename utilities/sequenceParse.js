@@ -47,7 +47,7 @@ function importData(db, data) {
                 let proteoform = row[17];
                 let qValue = row[25];
 
-                if (qValue == ''){
+                if (isNaN(parseFloat(qValue))){
                     qValue = 'N/A';
                 } 
                 if (parseFloat(qValue) < 0){
