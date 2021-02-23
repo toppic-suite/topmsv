@@ -88,7 +88,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 //run mzid generator if mzid file is to be generated
                 console.log(geneMzid, decoyData);
                 if (geneMzid == 'true' || geneMzid == true){
-                    let app = "python";
+                    let app = "python3";
                     let decoyName = des_fastaFile + "_target_decoy";
                     if (decoyData == 'false' || decoyData == false){
                         decoyName = des_fastaFile;
