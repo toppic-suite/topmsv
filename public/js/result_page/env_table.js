@@ -34,10 +34,14 @@ function showEnvTable(scan) {
                 let sequence = preprocessSeq(protData.seq);
                 $('#proteoform').text(sequence);
                 window.localStorage.setItem('proteoform', sequence);
-                if (protData.specFDR > -1){//show only when values are valid
-                    $('.fdr').show();
-                    $('#spec-fdr-value').text(protData.specFDR);
-                } 
+                console.log("???", protData.q_value)
+                $('.fdr').show();
+                if (protData.q_value != "N/A"){
+                    $('#spec-fdr-value').text((protData.q_value).toExponential(2));
+                }
+                else{
+                    $('#spec-fdr-value').text(protData.q_value);
+                }
             } else {
                 $('#proteoform').text('N/A');
                 window.localStorage.setItem('proteoform', '');
