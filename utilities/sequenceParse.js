@@ -3,14 +3,14 @@ const Database = require('better-sqlite3');
 const fs = require('fs');
 const myArgs = process.argv.slice(2);
 const parameter = '********************** Parameters **********************';
-//const specFDR = 'Spectrum-level cutoff value';
 const betterDB = new Database(myArgs[0]);
 const stmtCreateSequenceTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS sequence (\n' +
     '    id INTEGER PRIMARY KEY,\n' +
     '    scan_id INTEGER NOT NULL,\n' +
     '    protein_accession TEXT NULL,\n' +
     '    proteoform TEXT NULL,\n' +
-    '    spec_fdr TEXT NULL,\n' +
+    '    q_value TEXT NULL,\n' +
+    '    e_value TEXT NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
     '       REFERENCES SPECTRA (ID)\n' +
     ');');
@@ -30,7 +30,7 @@ betterDB.close();
 
 function importData(db, data) {
     const stmtFindScanID = db.prepare('SELECT ID AS id FROM SPECTRA WHERE SCAN = ?');
-    const stmtInsert = db.prepare('INSERT INTO sequence(id,scan_id,protein_accession,proteoform,spec_fdr) VALUES(?,?,?,?,?)');
+    const stmtInsert = db.prepare('INSERT INTO sequence(id,scan_id,protein_accession,proteoform,q_value, e_value) VALUES(?,?,?,?,?,?)');
     const stmtMaxSeqID = db.prepare('SELECT MAX(id) AS maxID FROM sequence');
     let id = stmtMaxSeqID.get().maxID + 1;
     Papa.parse(data, {
@@ -46,6 +46,7 @@ function importData(db, data) {
                 let protein_accession = row[13];
                 let proteoform = row[17];
                 let qValue = row[24];//spectral q-value
+                let eValue = row[23];
 
                 if (isNaN(parseFloat(qValue))){
                     qValue = 'N/A';
@@ -53,10 +54,17 @@ function importData(db, data) {
                 if (parseFloat(qValue) < 0){
                     qValue = 'N/A';
                 }
+
+                if (isNaN(parseFloat(eValue))){
+                    eValue = 'N/A';
+                } 
+                if (parseFloat(eValue) < 0){
+                    eValue = 'N/A';
+                }
+
                 if(scan !== 'Scan(s)'){
                     let scan_id = stmtFindScanID.get(scan).id;
-                    stmtInsert.run(id, scan_id,protein_accession, proteoform, qValue);
-                    //stmtInsert.run(id, scan,protein_accession, proteoform, specFDRValue, protFDRValue);
+                    stmtInsert.run(id, scan_id,protein_accession, proteoform, qValue, eValue);
                     id++;
                 }
             })
@@ -68,15 +76,5 @@ function findCSV(data) {
     data = data.substring(parameter.length+1);
     let indexBegin = data.indexOf(parameter) + parameter.length + 1;
     data = data.trim();
-    
-    /*let paraData = data.substring(0, indexBegin);
-    let fdr = paraData.indexOf('FDR');
-
-    if (fdr > -1){
-        let specFDRIndex = paraData.indexOf(specFDR);
-        let specFDRVal = paraData.slice((specFDRIndex + specFDR.length + 1), paraData.indexOf('\n',specFDRIndex));
-
-        specFDRValue = parseFloat(specFDRVal);
-    }*/
     return data.slice(indexBegin);
 }

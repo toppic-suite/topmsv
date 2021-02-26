@@ -60,6 +60,7 @@
                 <th scope="col">Protein Accession</th>
                 <th scope="col">Proteoform</th>
                 <th scope="col">Q-value</th>
+                <th scope="col">E-value</th>
             </tr>
             </thead>
 
@@ -69,7 +70,8 @@
                     <td><a href="#!" onclick="jumpBack(<%= results[i].scan %>)"><%= results[i].scan %></a> </td>
                     <td><%= results[i].protein_accession %></td>
                     <td><a href="#!" onclick="inspect(<%= results[i].scanID %>,<%= results[i].scan %>)"><%= results[i].proteoform %></a></td>
-                    <td><%= results[i].spec_fdr %></td>
+                    <td><%= results[i].q_value %></td>
+                    <td><%= results[i].e_value %></td>
                 </tr>
             <% } %>
 
