@@ -11,14 +11,24 @@ function getProteoform(dir, scanNum) {
     /*let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform
                 FROM SPECTRA INNER JOIN sequence ON SPECTRA.ID = sequence.scan_id
                 WHERE SPECTRA.SCAN = ?`);*/
-    let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform, sequence.spec_fdr AS spec_fdr
+    let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform, sequence.e_value AS e_value, sequence.q_value AS q_value
                 FROM SPECTRA INNER JOIN sequence ON SPECTRA.ID = sequence.scan_id
                 WHERE SPECTRA.SCAN = ?`);
     if(stmt.get(scanNum)) {
         let proteoform = stmt.get(scanNum).proteoform;
-        let specFDR = stmt.get(scanNum).spec_fdr;
+        let qVal = stmt.get(scanNum).q_value;
+        let eVal = stmt.get(scanNum).e_value;
+
+        //format qVal and eVal
+        if (qVal != "N/A"){
+            qVal = (parseFloat(qVal).toExponential(2)).toString();
+        }
+        if (eVal != "N/A"){
+            eVal = (parseFloat(eVal).toExponential(2)).toString();
+        }   
         resultDb.close();
-        return {"seq":proteoform,"specFDR":specFDR};
+        console.log({"seq":proteoform,"q_value":qVal, "e_value":eVal});
+        return {"seq":proteoform,"q_value":qVal, "e_value":eVal};
         //return proteoform;
     } else {
         resultDb.close();
