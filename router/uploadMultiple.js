@@ -68,6 +68,11 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
                 //and process the file
                 let fileNames = fs.readdirSync(form.uploadDir);
                 fileNames.forEach(file => {
+                    //exclude .placeholder file
+                    let ext = file.lastIndexOf('.');
+                    if (file.substr(ext) == ".placeholder"){
+                        return;
+                    };
                     let mzmlFile = form.uploadDir + "/" + file;
 
                     let folderid = uuidv1();
