@@ -115,6 +115,7 @@ int callbackUpdateData(void *ptr, int argc, char **argv, char **az_col_name){//m
   }
   //insert to PEAKS0 table at disk
   reader.insertPeakStmtMs1(std::stoi(argv[0]), std::stod(argv[2]),std::stod(argv[1]), std::stod(argv[3]), color);
+  return 0;
 }
 int callbackConvertData(void *ptr, int argc, char **argv, char **az_col_name){
   //input data is each row
