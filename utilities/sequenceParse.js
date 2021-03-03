@@ -45,8 +45,8 @@ function importData(db, data) {
                 // console.log('Proteoform:', row[17]);
                 let protein_accession = row[13];
                 let proteoform = row[17];
-                let qValue = row[24];//spectral q-value
-                let eValue = row[23];
+                let qValue = row[25];//spectral q-value
+                let eValue = row[24];
 
                 if (isNaN(parseFloat(qValue))){
                     qValue = 'N/A';
