@@ -157,21 +157,51 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             return topview_2d.getEnvTable(scanID);
         }).then(function(response) {
             let envtable = response.data;
-
-            envList2_g = calcDistrubution.getEnvDistribution(envtable, temp_peakList2_g);
-            if (envList2_g !== 0 && envList2_g.length !== 0){
-                graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
-                graph2_g.redraw();
+            let peaks = [];
+            let envelopes = [];
+            if (envtable != 0){
+               /* graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
+                graph2_g.redraw();*/
+                for (let i = 0; i < peakList2_g.length; i++){
+                    let peakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
+                    peaks.push(peakObj);
+                }
+                for (let i = 0; i < envtable.length; i++){
+                    let env = envtable[i];
+                    let envObj = new Envelope(env.mono_mass, env.charge)
+                    for (let j = 0; j < env.env_peaks.length; j++){
+                    let peak = new Peak(j, env.env_peaks[j].mz, env.env_peaks[j].intensity);
+                    envObj.addTheoPeaks(peak);
+                    }
+                    envelopes.push(envObj);
+                }
+                let ions = [];
+                let spectrumDataPeaks = new SpectrumData();
+                let spectrumDataEnvs = new SpectrumData();
+                spectrumDataPeaks.assignLevelPeaks(peaks);
+                spectrumDataEnvs.assignLevelEnvs(envelopes);
+            
+                spGraph = new SpectrumGraph("spectrum2",peaks);
+                spGraph.addRawSpectrumAnno(envelopes, ions);
+                spGraph.para.updateMzRange(prec_mz);
+                spGraph.redraw();
             }else {
-                graph2_g = new SpectrumGraph("spectrum2", peakList2_g, [],[],null);
-                graph2_g.redraw();
+                for (let i = 0; i < peakList2_g.length; i++){
+                    let peakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
+                    peaks.push(peakObj);
+                }
+                spGraph = new SpectrumGraph("spectrum2",peaks);
+                spGraph.para.updateMzRange(prec_mz);
+                spGraph.redraw();
+                /*graph2_g = new SpectrumGraph("spectrum2", peakList2_g, [],[],null);
+                graph2_g.redraw();*/
             }
             document.getElementById("scanID2").innerHTML = scanID;
             document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
             document.getElementById("prec_charge").innerHTML = prec_charge;
             document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
             document.getElementById("rt").innerHTML = (rt/60).toFixed(4);
-            loadPeakList1(levelOneScan, prec_mz);
+            //loadPeakList1(levelOneScan, prec_mz);
         }).catch(function(error) {
             console.log(error);
         });
