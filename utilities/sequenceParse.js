@@ -1,8 +1,13 @@
 const Papa = require('papaparse');
 const Database = require('better-sqlite3');
 const fs = require('fs');
+
 const myArgs = process.argv.slice(2);
 const parameter = '********************** Parameters **********************';
+const fixedPtm = "********************** Fixed PTM **********************";
+const commonPtm = "********************** Common PTM **********************";
+const varPtm = "********************** Variable PTM **********************";
+const fixedMod = 'Fixed modifications:';
 const betterDB = new Database(myArgs[0]);
 const stmtCreateSequenceTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS sequence (\n' +
     '    id INTEGER PRIMARY KEY,\n' +
@@ -18,8 +23,9 @@ stmtCreateSequenceTable.run();
 const insertMany = betterDB.transaction(importData);
 
 //let specFDRValue = 'N/A';
-
+fs.writeFile('input.txt', myArgs[1], function(err, data){})
 let file = fs.readFileSync(myArgs[1], "utf-8");
+let projectCode = myArgs[2];
 file = findCSV(file);
 
 insertMany(betterDB, file);
@@ -71,10 +77,25 @@ function importData(db, data) {
         }
     });
 }
-
 function findCSV(data) {
-    data = data.substring(parameter.length+1);
-    let indexBegin = data.indexOf(parameter) + parameter.length + 1;
+    let indexBegin = 0;
+
+    if (data.indexOf(varPtm) >= 0) {
+        data = data.substring(varPtm.length+1);
+        indexBegin = data.indexOf(varPtm) + varPtm.length + 1;
+    }
+    else if (data.indexOf(commonPtm) >= 0) {
+        data = data.substring(data.indexOf(commonPtm) + commonPtm.length + 1);
+        indexBegin = data.indexOf(commonPtm) + commonPtm.length + 1;
+    }
+    else if (data.indexOf(fixedPtm) >= 0) {
+        data = data.substring(data.indexOf(fixedPtm) + fixedPtm.length + 1);
+        indexBegin = data.indexOf(fixedPtm) + fixedPtm.length + 1;
+    }
+    else{
+        data = data.substring(parameter.length+1);
+        indexBegin = data.indexOf(parameter) + parameter.length + 1;
+    }
     data = data.trim();
     return data.slice(indexBegin);
 }

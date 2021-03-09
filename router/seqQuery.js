@@ -18,7 +18,7 @@ const seqQuery = router.get('/seqQuery', function (req, res) {
         if(seqStatus === 1) {
             let proteoform = getProteoform(projectDir, scanNum);
             if (proteoform !== 0) {
-                console.log(proteoform)
+                //console.log(proteoform)
                 res.write(JSON.stringify(proteoform));
                 res.end();
             } else {

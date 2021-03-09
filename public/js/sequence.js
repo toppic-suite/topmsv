@@ -32,24 +32,48 @@ function inspect(scanID,scanNum) {
                         url:"seqQuery?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanNum + "&projectCode=" + document.getElementById('projectCode').value,
                         type: "get",
                         success: function (res) {
+                            let rawSeq = res;
                             //console.log(res);
-                            if(res!== '0') {
+                            /*if(res!== '0') {
                                 let sequence = preprocessSeq(res);
                                 window.localStorage.setItem('sequence', sequence);
                             } else {
                                 window.localStorage.setItem('sequence', '');
-                            }
-                            axios.get('/precMZ',{
-                                params:{
-                                    projectDir: document.getElementById("projectDir").value,
-                                    scanID: scanNum
+                            }*/
+
+                            //get fixed/variable ptm information from tsv file
+                            //convert variable ptm to unknown ptm
+                            $.ajax({
+                                url:"ptmQuery?projectCode=" + document.getElementById("projectCode").value,
+                                type: "get",
+                                success: function (res) {
+                                    let ptmData = JSON.parse(res);
+                                    let fixedPtmList = [];
+                                    let protVarPtmsList = [];
+                                    let variablePtmsList = [];
+                                    let unknownMassShiftList = [];
+
+                                    let sequence = preprocessSeq(rawSeq, ptmData, fixedPtmList, unknownMassShiftList);
+                                    window.localStorage.setItem('sequence', JSON.stringify(sequence));
+                                    window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
+                                    window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
+                                    window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmsList));
+                                    window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
+                                    axios.get('/precMZ',{
+                                        params:{
+                                            projectDir: document.getElementById("projectDir").value,
+                                            scanID: scanNum
+                                        }
+                                    }).then((response)=>{
+                                        window.localStorage.setItem('precursorMass', parseFloat(response.data));
+                                        window.open('/resources/topview/inspect/spectrum.html', '_self');
+                                    }).catch((error) => {
+                                        console.log(error);
+                                    })
                                 }
-                            }).then((response)=>{
-                                window.localStorage.setItem('precursorMass', parseFloat(response.data));
-                                window.open('/resources/topview/inspect/spectrum.html', '_self');
-                            }).catch((error) => {
-                                console.log(error);
                             })
+
+                            
                         }
                     })
                 }
@@ -74,7 +98,7 @@ function preprocessSeq(seq) {
     return seq;
     //console.log(seq);
 }*/
-function preprocessSeq(seqString) {
+/*function preprocessSeq(seqString) {
     seq = JSON.parse(seqString).seq;
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
@@ -105,4 +129,96 @@ function preprocessSeq(seqString) {
     }
     return seq;
     
+}*/
+function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
+    seq = JSON.parse(seqString).seq;
+    let firstIsDot = 1;
+    seq = seq.replace(/\(/g,'');
+    seq = seq.replace(/\)/g, '');
+    var firstDotIndex = seq.indexOf('.');
+    if(firstDotIndex === -1) {
+        firstDotIndex = 0;
+        firstIsDot = 0;
+    }
+    var lastDotIndex = seq.lastIndexOf('.');
+    if(lastDotIndex === -1) {
+        lastDotIndex = seq.length;
+    }
+    var firstIndex = seq.indexOf('[');
+    var lastIndex = seq.lastIndexOf(']');
+    if(firstDotIndex> firstIndex && firstIndex !== -1) {
+        firstDotIndex = 0;
+        firstIsDot = 0;
+    }
+    if(lastDotIndex < lastIndex){
+        lastDotIndex = seq.length;
+    }
+    if(firstIsDot){
+        seq = seq.slice(firstDotIndex + 1, lastDotIndex);
+    } else {
+        seq = seq.slice(firstDotIndex,lastDotIndex);
+    }
+    //if there is a fixed/variable ptm in the sequence 
+
+    let newSeq ='';
+
+    //keep reading each residue in the sequence
+    //if it is '[', read up to ']' and get the ptm inside []
+    //if ptm is number, copy the entire [ptm] to the new sequence
+    //if it is fixed ptm, skip the entire [ptm]
+    //if it is variable ptm, replace the letter inside to mass
+
+    let residuePos = 0; //points to current residue, skips annotation
+
+    while (residuePos < seq.length) {
+        if (seq[residuePos] == '[') {
+            let isPtmFound = false;
+            let start = residuePos;
+            let ptmName = '';
+
+            while (seq[residuePos] != ']') {
+                ptmName = ptmName + seq[residuePos];
+                residuePos++;
+            }            
+            ptmName = ptmName.replace('[','');
+            ptmName = ptmName.replace(']','');
+
+            if (isNaN(parseFloat(ptmName))) {
+                ptmData["fixedPtms"].forEach(fixedPtm => {
+                    if (fixedPtm.name == ptmName) {
+                        let newPtm = new Ptm(seq[start - 1], fixedPtm.mass, fixedPtm.name);
+                        fixedPtmList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));                  
+                        isPtmFound = true;
+                    }
+                })
+                if (!isPtmFound) {
+                    ptmData["varPtms"].forEach(varPtm => {
+                        if (varPtm.name == ptmName) {
+                            let newPtm = new Ptm(seq[start - 1], varPtm.mass, varPtm.name);
+                            unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "unexpected", newPtm.getShift(), newPtm));     
+                            isPtmFound = true;
+                        }
+                    })
+                }
+                if (!isPtmFound) {
+                    ptmData["commonPtms"].forEach(comPtm => {
+                        if (comPtm.name == ptmName) {
+                            let newPtm = new Ptm(seq[start - 1], comPtm.mass, comPtm.name);
+                            unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "unexpected", newPtm.getShift(), newPtm));    
+                            isPtmFound = true;
+                        }
+                    })
+                }
+            }else{
+                unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, ptmName, "unexpected", ptmName));    
+            }
+            residuePos++;//without this, ']' is written
+        }
+        newSeq = newSeq + seq[residuePos];
+        residuePos++;
+    }
+    console.log("newSeq", newSeq);
+    console.log("fixedPtm", fixedPtmList);
+    console.log("unknown", unknownMassShiftList);
+    return newSeq;
 }
