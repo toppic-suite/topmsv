@@ -27,7 +27,7 @@ function getProteoform(dir, scanNum) {
             eVal = (parseFloat(eVal).toExponential(2)).toString();
         }   
         resultDb.close();
-        console.log({"seq":proteoform,"q_value":qVal, "e_value":eVal});
+        //console.log({"seq":proteoform,"q_value":qVal, "e_value":eVal});
         return {"seq":proteoform,"q_value":qVal, "e_value":eVal};
         //return proteoform;
     } else {
