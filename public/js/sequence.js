@@ -34,12 +34,6 @@ function inspect(scanID,scanNum) {
                         success: function (res) {
                             let rawSeq = res;
                             //console.log(res);
-                            /*if(res!== '0') {
-                                let sequence = preprocessSeq(res);
-                                window.localStorage.setItem('sequence', sequence);
-                            } else {
-                                window.localStorage.setItem('sequence', '');
-                            }*/
 
                             //get fixed/variable ptm information from tsv file
                             //convert variable ptm to unknown ptm
@@ -54,6 +48,14 @@ function inspect(scanID,scanNum) {
                                     let unknownMassShiftList = [];
 
                                     let sequence = preprocessSeq(rawSeq, ptmData, fixedPtmList, unknownMassShiftList);
+
+                                    if (fixedPtmList.length < 1) {//display fixed ptm even when it was not found in the seq
+                                        ptmData["fixedPtms"].forEach(fixedPtm => {
+                                            let newPtm = new Ptm('', fixedPtm.mass, fixedPtm.name);
+                                            fixedPtmList.push(new MassShift('', '', newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));                  
+                                        })
+                                    }
+
                                     window.localStorage.setItem('sequence', JSON.stringify(sequence));
                                     window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
                                     window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
@@ -186,8 +188,6 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
             if (isNaN(parseFloat(ptmName))) {
                 ptmData["fixedPtms"].forEach(fixedPtm => {
                     if (fixedPtm.name == ptmName) {
-                        let newPtm = new Ptm(seq[start - 1], fixedPtm.mass, fixedPtm.name);
-                        fixedPtmList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));                  
                         isPtmFound = true;
                     }
                 })
@@ -225,8 +225,5 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
         newSeq = newSeq + seq[residuePos];
         residuePos++;
     }
-    console.log("newSeq", newSeq);
-    console.log("fixedPtm", fixedPtmList);
-    console.log("unknown", unknownMassShiftList);
     return newSeq;
 }
