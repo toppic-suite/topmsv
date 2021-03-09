@@ -208,6 +208,14 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
                             isPtmFound = true;
                         }
                     })
+                }if (!isPtmFound) {
+                    ptmAnnoData ["ptms"].forEach(annoPtm => {
+                        if (annoPtm.name == ptmName) {
+                            let newPtm = new Ptm(seq[start - 1], annoPtm.mono_mass, annoPtm.name);
+                            unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "unexpected", newPtm.getShift(), newPtm));    
+                            isPtmFound = true;
+                        }
+                    })
                 }
             }else{
                 unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, ptmName, "unexpected", ptmName));    
