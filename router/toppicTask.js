@@ -93,7 +93,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                     if (decoyData == 'false' || decoyData == false){
                         decoyName = des_fastaFile;
                     }
-                    let param = './mzidGenerator/write_mzIdent.py ' + seq_dir + ' ' + decoyName + ' ' + des_fixedPTMFile + ' ' + des_ptmShiftFile;
+                    let param = './mzidGenerator/write_mzIdent.py ' + seq_dir + ' ' + decoyName + ' ' + des_fixedPTMFile + ' ' + des_ptmShiftFile + ' None';
                     console.log("Hello! mzid file generator")
                     console.log("param", param);
                     submitTask(projectCode, app, param, 1);
