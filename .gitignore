@@ -1,6 +1,3 @@
-# authorization path
-auth.js
-
 # Logs
 logs
 *.log
@@ -82,12 +79,6 @@ Thumbs.db
 
 .vscode
 
-# ignore proteomics_cpp
-proteomics_cpp/
-
 # ignore database file and txt file
 *.db
 *.txt
-
-#ignore test files
-test/
