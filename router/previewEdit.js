@@ -1,21 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const getPeakListByScanID = require("../library/getPeakListByScanID");
+/*const getPeakListByScanID = require("../library/getPeakListByScanID");
 const getPeakListByMZRange = require("../library/getPeakListByMZRange");
 const getEnvPeakListSync = require("../library/getEnvPeakListSync");
 const getEnvInfoSync = require("../library/getEnvInfoSync");
 const getEnvIDListByMZRange = require("../library/getEnvIDListByMZRange");
 const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
-
+*/
 /**
+ * NEED TO UPDATE DIST CALC FUNCTION
  * Express.js router for /previewEdit
  * 
  * Return a json object for preview specific enevelope
  */
 
 const previewEdit = router.get("/previewEdit", function (req, res) {
-    console.log("Hello, previewEdit!");
+    /*console.log("Hello, previewEdit!");
     let projectDir = req.query.projectDir;
     let scan_id = req.query.scan_id;
     let envID = req.query.envelope_id;
@@ -88,7 +89,7 @@ const previewEdit = router.get("/previewEdit", function (req, res) {
             res.json(returnJSON);
             res.end();
         }
-    });
+    });*/
 })
 
 module.exports = previewEdit;
