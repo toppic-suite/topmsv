@@ -9,8 +9,6 @@ function onclickTopView(e){
   let fileName = folderName+"/ms2_json/spectrum"+specID+".js";
 
   let massAndIntensityList = [];
-  let protVarPtmList = [];
-  let variablePtmList = [];
 
   script.src = fileName;
   body.append(script);
@@ -22,10 +20,14 @@ function onclickTopView(e){
     //console.log(ionList);
     massAndIntensityList = getMassAndIntensityData(specID);
     //console.log(prsmGraph.data.proteoform);
-    let sequence = prsmGraph.data.proteoform.sequence; 
-    let fixedPtmList = prsmGraph.data.proteoform.getFixedPtmList(); 
+    let sequence = prsmGraph.data.proteoform.getSeq(); 
+    //remove skipped residue
+    sequence = sequence.slice(prsmGraph.data.proteoform.getFirstPos());
+    sequence = sequence.slice(0, prsmGraph.data.proteoform.getLastPos());
+    let fixedPtmList = prsmGraph.data.proteoform.getFixedPtm(); 
     //console.log(fixedPtmList);
-    let unknownMassShiftList = prsmGraph.data.proteoform.getUnknownMassList();
+    prsmGraph.data.proteoform.compMassShiftList();//recalculate mass shifts
+    let unknownMassShiftList = prsmGraph.data.proteoform.getMassShift();
     //console.log(unknownMassShiftList);
     let precursorMass = prsm_data.prsm.ms.ms_header.precursor_mono_mass;
     // Stores all the data in the variables respectively
@@ -34,14 +36,13 @@ function onclickTopView(e){
     window.localStorage.setItem('ionType', ionList);
     window.localStorage.setItem('sequence',  JSON.stringify(sequence));
     window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
-    window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmList));
-    window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmList));
+    window.localStorage.setItem('protVarPtmsList', JSON.stringify([]));
+    window.localStorage.setItem('variablePtmsList', JSON.stringify([]));
     window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
     window.localStorage.setItem('precursorMass', JSON.stringify(precursorMass));
     window.open("../inspect/spectrum.html"); 
   }    
 }
-
 /**
  * Get the peaklist from respective spectrum.js to set the data for inspect page
  * @param {object} ms2_data - json object with complete data spectrum for corresponding scan Id

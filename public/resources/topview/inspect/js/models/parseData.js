@@ -36,7 +36,6 @@ function parsePTM(dataName){
 	//it is relatively small to other lists so the performance should not deteriorate much
 	let data = JSON.parse(window.localStorage.getItem(dataName));
 	let massShiftList = [];
-
 	data.forEach(d =>{
 		let massShift = new MassShift(d.leftPos_, d.rightPos_, d.massShift_, d.type_, d.annotation_, d.ptmList_);
 		massShiftList.push(massShift);
@@ -50,7 +49,7 @@ function parsePTM(dataName){
 function parseUnknowmassList(dataName){
 	let data = JSON.parse(window.localStorage.getItem(dataName));
 	let massShiftList = [];
-
+	
 	data.forEach(d =>{
 		let massShift = new MassShift(d.leftPos_, d.rightPos_, d.massShift_, d.type_, d.annotation_);
 		massShiftList.push(massShift);
@@ -189,7 +188,31 @@ function parseSequenceMassShift(seq){
 	}
 	return [parsedseq,unknownMassShiftList, protVarPtmsList, variablePtmsList] ;
 }*/
-
+/** 
+  * Get fixed mass selected by user
+  */
+function parseCheckedFixedPtm(seq) {
+    let fixedPtmList = [];
+    let checkedFixedPtm = getFixedPtmCheckList();
+    checkedFixedPtm.forEach(ptm => {
+      let fixedPtm;
+      for(let j=0; j<COMMON_FIXED_PTM_LIST.length;j++) {
+        if(ptm.mass == COMMON_FIXED_PTM_LIST[j].mass) {
+        let name = COMMON_FIXED_PTM_LIST[j].name;
+          fixedPtm = new Ptm(ptm.acid, ptm.mass, name);
+          break;
+        }
+      }
+      for(let i = 0 ; i < seq.length; i++) {
+        if(seq[i] === ptm.acid) {
+          let massShift = new MassShift(i, i + 1, fixedPtm.getShift(), "Fixed", fixedPtm.getName(), fixedPtm);
+          fixedPtmList.push(massShift);
+        }
+      }
+	})
+	return fixedPtmList;
+}
+/*
 // form residues from sequence
 let formResidues = (sequence) => {
 	let residues = [];
@@ -201,7 +224,7 @@ let formResidues = (sequence) => {
 		residues.push(tempObj);
 	}
 	return residues;
-}
+}*/
 
 // form fixed ptms
 let formFixedPtms = (fixedMassShiftList, sequence) => {

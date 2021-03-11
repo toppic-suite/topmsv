@@ -214,7 +214,7 @@ class IdentiPyMzIdentMLWriter(object):
                 writer.providence(software={
                     "name": "TopPIC",
                     "uri": "http://proteomics.informatics.iupui.edu/software/toppic/",
-                    "version": '1.3.5',
+                    "version": self.param['Version'],
                 })
                 writer.register("SpectraData", 1)
                 writer.register("SearchDatabase", 1)
@@ -337,6 +337,7 @@ def parse_fasta(path):
 def parse_tsv(path):
     ident_file = path
     isParam = True
+    isSkip = False
     parameters = {}
     data =[]
     col_name = []
@@ -345,8 +346,24 @@ def parse_tsv(path):
         next(reader)
         for row in reader:
             if '*' in row[0]:
-                isParam = False#end of parameter 
-                column_row = next(reader)#read column names
+                isParam = False#end of parameter
+                #read column names. If there is ptm information, skip them
+                column_row = next(reader)
+                if '*' in column_row[0]:#if it is ptm information, skip
+                    new_row = next(reader)
+                    while '*' not in new_row[0]:
+                        new_row = next(reader)
+                        #then new row is the closing ********* for ptm information
+                        
+                    column_row = next(reader)#go to next line
+                
+                    if '*' in column_row[0]:#if it is ptm information, skip
+                        new_row = next(reader)
+                        while '*' not in new_row[0]:
+                            new_row = next(reader)
+
+                        column_row = next(reader)#go to next line and read column names
+
                 for col in column_row:
                     col_name.append(col)
             else:
@@ -362,11 +379,11 @@ def parse_tsv(path):
 
                         parameters[name] = file_path
                 else:
-                    tmp = {}
-                    for i in range(0, len(row)):
-                        tmp[col_name[i]] = row[i]
-                    data.append(tmp)
-
+                    if not isSkip:
+                        tmp = {}
+                        for i in range(0, len(row)):
+                            tmp[col_name[i]] = row[i]
+                        data.append(tmp)
     return parameters, data
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-class Proteoform {
+/*class CalcProteoformMass {
   sequence = [];
   residueMasses = [];
   fixedPtms=[];
@@ -95,11 +95,12 @@ class Proteoform {
 
   compPrefixMasses() {
     if (this.sequence) {
-      let mass = 0;
+      let mass = 0; 
       for (let i = 0; i < this.sequence.length - 1; i++) {
         mass = mass + this.residueMasses[i] + this.fixedPtmMasses[i]  
         + this.variablePtmPrefixMasses[i] + this.unexpectedPrefixMasses[i];
-        this.prefixMasses.push(mass);
+        let theoMass = new TheoMass(mass, i);
+        this.prefixMasses.push(theoMass);
       }
     } 
   }
@@ -110,7 +111,8 @@ class Proteoform {
       for (let i = this.sequence.length - 1; i > 0; i--) {
         mass = mass + this.residueMasses[i] + this.fixedPtmMasses[i]  
         + this.variablePtmSuffixMasses[i] + this.unexpectedSuffixMasses[i];
-        this.suffixMasses.push(mass);
+        let theoMass = new TheoMass(mass, i);
+        this.suffixMasses.push(theoMass);
       }
     }
   }
@@ -129,13 +131,16 @@ class Proteoform {
   getNMasses(nIonType) {
     let ionMassShift = getIonMassShift(nIonType);
     //console.log("N mass shift", ionMassShift);
-    let massList = []; 
-    massList.push(0.0);
-    for (let i = 0; i < this.prefixMasses.length; i++) {
-      massList.push(this.prefixMasses[i] + ionMassShift);
-    }
-    massList.push(this.proteoformMass);
-    //console.log("massList", massList);
+    let massList = [];
+    massList.push(new TheoMass(0, -1));
+    this.prefixMasses.forEach(theoMass => {
+      let newMass = theoMass.getMass() + ionMassShift;
+      let pos = theoMass.getPos();
+      let ionMassAdjusted = new TheoMass(newMass, pos);
+      
+      massList.push(ionMassAdjusted);
+    })
+    massList.push(new TheoMass(this.proteoformMass, this.prefixMasses.length));
     return massList;
   }
 
@@ -143,11 +148,15 @@ class Proteoform {
     let ionMassShift = getIonMassShift(cIonType);
     //console.log("C mass shift", ionMassShift);
     let massList = []; 
-    massList.push(0.0);
-    for (let i = 0; i < this.suffixMasses.length; i++) {
-      massList.push(this.suffixMasses[i] + ionMassShift);
-    }
-    massList.push(this.proteoformMass);
+    massList.push(new TheoMass(0, -1));
+    this.suffixMasses.forEach(theoMass => {
+      let newMass = theoMass.getMass() + ionMassShift;
+      let pos = theoMass.getPos();
+      let ionMassAdjusted = new TheoMass(newMass, pos);
+      
+      massList.push(ionMassAdjusted);
+    })
+    massList.push(new TheoMass(this.proteoformMass, this.suffixMasses.length));
     return massList;
   }
 
@@ -163,6 +172,7 @@ class Proteoform {
   /**
    * Get all the unknwon mass lists form the prsm
    */
+  /*
   getUnknownMassList() {
     let unknownMassShiftList = [];
     for (let i = 0; i < this.sequence.length; i++) {
@@ -177,3 +187,4 @@ class Proteoform {
   }
 
 }
+*/

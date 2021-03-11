@@ -93,8 +93,7 @@ class SavePrsm{
     $("body").append(prsmModal);
   }
   createPrsmModalGraph = () => {
-    this.prsmModalGraphObj = new PrsmGraph("prsm_popup_svg",null,this.prsmGraphObj.data);
-
+    this.prsmModalGraphObj = new PrsmGraph("prsm_popup_svg",null, this.prsmGraphObj.data);
   }
   initPrsmModalEventHandler = () => {
     // Save PrSM popup window

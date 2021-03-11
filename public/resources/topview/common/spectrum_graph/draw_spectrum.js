@@ -592,11 +592,11 @@ function drawSequence(svg, para, proteoform, nMasses, cMasses, ions){
 	// Draw | at 0 for prefix mass list
 	x = para.getPeakXPos(0);
 	y = 15;
-  let seq = proteoform.sequence;
+  let seq = proteoform.getSeq();
   let prevMass = -1.0;
   let residues = "";
   for (let i = 0; i < nMasses.length; i++) {
-    let curMass = nMasses[i];
+    let curMass = nMasses[i].getMass();
     if (i > 0) {
       residues = residues + seq[i-1];
     }
@@ -622,7 +622,7 @@ function drawSequence(svg, para, proteoform, nMasses, cMasses, ions){
   prevMass = -1.0;
   resiudes = "";
   for (let i = 0; i < cMasses.length; i++) {
-    let curMass = cMasses[i];
+    let curMass = cMasses[i].getMass();
     if (i > 0) {
       residues = residues + seq[seq.length - i];
     }
