@@ -4,8 +4,10 @@ const fixedPtmTitle = "********************** Fixed PTM **********************";
 const commonPtmTitle = "********************** Common PTM **********************";
 const varPtmTitle = "********************** Variable PTM **********************";
 /**
- * Parse tsv file and return ptm data
+ * Parse identification file and return ptm data
  * @param {string} tsvFile - tsv file path
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
  * @sync
  */
 function parsePtm(tsvFile, callback) {
