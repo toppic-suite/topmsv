@@ -1,7 +1,7 @@
 /**
  * Class to calculate Matched Peaks and distribution of the Amoino Acids
  */
-class MatchedPeaks {
+class CalcMatchedPeaks {
 	PREFIX = "PREFIX";
 	SUFFIX = "SUFFIX";
 	matchedUnMatchedList = [];
@@ -60,10 +60,9 @@ class MatchedPeaks {
 	 * @param {String} sequence - Protein sequence
 	 * @param {Float} massErrorthVal - Threshhold value entered by user to determine the mass error and matched peaks
 	 * @param {Float} ppmErrorthVal - Threshhold value entered by user to determine the mass error and matched peaks in ppm units
-	 * @param {String} ionType - Contains either y/b
-	 * @param {String} preOrSufInd - Contains information of either PREFIX/SUFFIX
+	 * @param {String} ionObj - Ion object containing name, terminal, mass information
 	 */
-	getMatchedPeakList(prefixOrSuffixMassList,monoMassList,sequence,massErrorthVal,ppmErrorthVal,ionType,preOrSufInd)
+	getMatchedPeakList(prefixOrSuffixMassList,monoMassList,sequence,massErrorthVal,ppmErrorthVal,ionObj, matchedPairList)
 	{
 		let matchedList = [];
 		let monoMassList_temp = monoMassList.slice();
@@ -76,43 +75,51 @@ class MatchedPeaks {
 			let peak = {};
 			for(let j = 0; j<preOrSufListln; j++)
 			{
-				let massDiff = monoMassList_temp[i].mass - prefixOrSuffixMassList[j];
+				let massDiff = monoMassList_temp[i].mass - prefixOrSuffixMassList[j].getMass();
 				if(massErrorthVal != null || isNaN(massErrorthVal))
 				{
 					if(Math.abs(massDiff) <= massErrorthVal)
 					{
 						//increment the position as the seq starts from 0 but the data in table starts from 1
-						let ion = ionType + j;
+						let ion = ionObj.getName() + j;
 						let position = j;
-						if(preOrSufInd == "suffix")
+						if(ionObj.getTerminal() == "C")
 						{
 							position = seqln - position;
 						}
-						let mass = prefixOrSuffixMassList[j];
+						let mass = prefixOrSuffixMassList[j].getMass();
+						prefixOrSuffixMassList[j].setIon(ionObj);
 						let matchedInd = "Y";
 						peak = this.matchedPeakAttributes(monoMassList_temp[i],peakId,ion,j,position,
 																massDiff,mass,matchedInd);
-						matchedList.push(peak);		
+						let matchedPeak = new MatchedPeakPair(mass)
+						//console.log(peak)		
+						matchedList.push(peak);								
+						matchedPairList.push(matchedPeak);		
 					}
 				}
 				else{
 					let prefDiff = Math.round(massDiff * 10000)/10000;
-					let prefMassRounded = Math.round(prefixOrSuffixMassList[j] * 10000)/10000;
+					let prefMassRounded = Math.round(prefixOrSuffixMassList[j].getMass() * 10000)/10000;
 					let prePPMerror = prefDiff/prefMassRounded * this.million ;
 					if(Math.abs(prePPMerror) <= ppmErrorthVal)
 					{
 						//increment the position as the seq starts from 0 but the data in table starts from 1
-						let ion = ionType + j;
+						let ion = ionObj.getName() + j;
 						let position = j;
-						if(preOrSufInd == "suffix")
+						if(ionObj.getTerminal() == "C")
 						{
 							position = seqln - position;
 						}
-						let mass = prefixOrSuffixMassList[j];
+						let mass = prefixOrSuffixMassList[j].getMass();
+						prefixOrSuffixMassList[j].setIon(ionObj);
 						let matchedInd = "Y";
 						peak = this.matchedPeakAttributes(monoMassList_temp[i],peakId,ion,j,position,
 																massDiff,mass,matchedInd);
-						matchedList.push(peak);
+						matchedList.push(peak);		
+
+						let matchedPeak = new MatchedPeakPair(mass);					
+						matchedPairList.push(matchedPeak);	
 					}
 				}
 			}
@@ -285,13 +292,13 @@ class MatchedPeaks {
 			{
 				position = preOrSufListln-position+1;
 			}
-			let mass = prefixOrSuffixMassList[j];
+			let mass = prefixOrSuffixMassList[j].getMass();
 			let matchedInd = "N";
 			for(let i=0; i < len; i++)
 			{
-				let massDiff = monoMassList_temp[i].mass - prefixOrSuffixMassList[j] ;
+				let massDiff = monoMassList_temp[i].mass - prefixOrSuffixMassList[j].getMass() ;
 				let prefDiff = Math.round(massDiff * 10000)/10000;
-				let prefMassRounded = Math.round(prefixOrSuffixMassList[j] * 10000)/10000;
+				let prefMassRounded = Math.round(prefixOrSuffixMassList[j].getMass() * 10000)/10000;
 				let prePPMerror = prefDiff/prefMassRounded * this.million ;
 				if((massErrorthVal != null || isNaN(massErrorthVal) )|| 
 								(ppmErrorthVal != null || isNaN(ppmErrorthVal) ))
@@ -304,7 +311,7 @@ class MatchedPeaks {
 						{
 							position = preOrSufListln- position +1;
 						}
-						mass = prefixOrSuffixMassList[j];
+						mass = prefixOrSuffixMassList[j].getMass();
 						charge = monoMassList_temp[i].charge;
 						matchedInd = "Y";
 						break;

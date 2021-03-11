@@ -47,6 +47,7 @@ function loadMsTwo(specIdList, fileList, proteoform, divId, navId){
   let specList = [];
   let graphList = [];
   let monoGraphList = [];
+  let matchedPairList = [];
   for (let i = 0; i < len; i++) {
     let filename = fileList[i];
     let script= document.createElement('script');
@@ -94,8 +95,8 @@ function loadMsTwo(specIdList, fileList, proteoform, divId, navId){
           }
 
           let deconvPeaks = prsm_data.prsm.ms.peaks.peak;
-          let [ions, monoIons] = getIons(specId, deconvPeaks, envelopes);
-
+          let [ions, monoIons, matchedPairs] = getIons(specId, deconvPeaks, envelopes);
+          matchedPairList = matchedPairs;
           specList[j].ions = ions;
 
           let spGraph = new SpectrumGraph(svgId,peaks);
@@ -122,7 +123,7 @@ function loadMsTwo(specIdList, fileList, proteoform, divId, navId){
           //let monoSpGraph = new SpectrumGraph(monoSvgId,monoMasses); 
           let spectrumDataMonoPeaks = new SpectrumData();
           spectrumDataMonoPeaks.assignLevelPeaks(monoMasses);
-          let monoSpGraph = new SpectrumGraph(monoSvgId,monoMasses, proteoform.sequence.length);
+          let monoSpGraph = new SpectrumGraph(monoSvgId,monoMasses, proteoform.getSeq().length);
           monoSpGraph.addMonoMassSpectrumAnno(monoIons,proteoform, nIonType, cIonType);
           monoSpGraph.para.setMonoMassGraph(true);
           monoSpGraph.redraw();
@@ -174,8 +175,7 @@ function loadMsTwo(specIdList, fileList, proteoform, divId, navId){
   //graphList and monoGraphList are returned with valid values
   let saveSpectrumObj = new SaveSpectrum(graphList, monoGraphList);
   saveSpectrumObj.main();
-
-  return [specList, graphList, monoGraphList];
+  return [specList, graphList, monoGraphList, matchedPairList];
 }
 
 /**
@@ -221,7 +221,7 @@ function createMs2NavElement(i, divId, navId, specScan){
  */
 function createSvg(show, divId, svgId, className){
   let div = document.getElementById(divId); 
-  let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");;
+  let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("id",svgId);
   svg.setAttribute("class",className);
   svg.style.backgroundColor = "#F8F8F8"; 
@@ -252,9 +252,10 @@ function getMonoMasses(deconvPeaks) {
  * @param {object} json_data - contains complete data of spectrum
  */
 function getIons(specId, deconvPeaks, envelopes){
-  envelopes.sort(function(x,y) {
+  /*envelopes.sort(function(x,y) {
     return d3.ascending(x.id, y.id);
-  })
+  })*/
+  let matchedPairList = [];
   let ions = [];
   let monoIons = [];
   deconvPeaks.forEach(function(element) {
@@ -292,6 +293,11 @@ function getIons(specId, deconvPeaks, envelopes){
         envPeaks.forEach(element => monoY += element.getIntensity()); 
         monoIonData = {"mz": monoX, "intensity": monoY, "text": ionText, "pos":matchedIon.ion_display_position, "error": massError};
         addOneIon(monoIons, monoIonData);
+
+        //create matched pair
+        let matchedPair = new MatchedPeakPair(element.matched_ions.matched_ion.theoretical_mass);
+        matchedPair.addEnvelope(envPeaks);
+        matchedPairList.push(matchedPair);
       }
       else {
         for (let i = 0; i < parseInt(element.matched_ions_num); i++) {
@@ -314,11 +320,15 @@ function getIons(specId, deconvPeaks, envelopes){
           envPeaks.forEach(element => monoY += element.getIntensity()); 
           monoIonData = {"mz": monoX, "intensity": monoY, "text": ionText, "pos":matchedIon.ion_display_position, "error": massError};
           addOneIon(monoIons, monoIonData);
+          let matchedPair = new MatchedPeakPair(element.matched_ions.matched_ion[i].theoretical_mass);
+          matchedPair.addEnvelope(envPeaks);
+          matchedPairList.push(matchedPair);
         }
       }
+      
     }
   });
-  return [ions, monoIons];
+  return [ions, monoIons, matchedPairList];
 }
 
 function addOneIon(ionList, ion) {
