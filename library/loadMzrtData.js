@@ -2,7 +2,10 @@ const sqlite3 = require('sqlite3').verbose();
 /**
  * Get scan of next level one. Async mode.
  * @param {string} dir - Project directory
- * @param {number} rt - Retention time
+ * @param {number} minrt - minimum retention time
+ * @param {number} maxrt - maximum retention time
+ * @param {number} minmz - minimum m/z
+ * @param {number} maxmz - maximum m/z
  * @param {function} callback - Callback function that handles query results
  * @returns {function} Callback function
  * @async

@@ -1,7 +1,8 @@
 const fs = require('fs');
 
 /**
- * Read init.ini and return the number in the second row
+ * Read init.ini and return the value set as the expected peak number 
+ * @returns {function} Callback
  * @async
  */
 

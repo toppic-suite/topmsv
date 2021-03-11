@@ -1,8 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
 /**
  * Get scan of next level one. Async mode.
- * @param {string} dir
- * @param {number} scanNum
+ * @param {string} dir - Project directory
+ * @param {number} tableNum - database table number to get peaks from
+ * @param {number} minmz - minimum m/z
+ * @param {number} maxmz - maximum m/z
  * @param {function} callback
  * @async
  */

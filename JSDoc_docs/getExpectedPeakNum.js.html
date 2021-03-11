@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: getDataset.js</title>
+    <title>JSDoc: Source: getExpectedPeakNum.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: getDataset.js</h1>
+    <h1 class="page-title">Source: getExpectedPeakNum.js</h1>
 
     
 
@@ -26,24 +26,27 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const BetterDB = require("better-sqlite3");
+            <pre class="prettyprint source linenums"><code>const fs = require('fs');
 
 /**
- * Get all datasets under specific envelope.
- * @param {number} eid - Envelope ID
- * @returns {array} All datasets info under specific experiment
+ * Read init.ini and return the value set as the expected peak number 
+ * @returns {function} Callback
+ * @async
  */
-function getDataset(eid) {
-    let resultDb = new BetterDB("./db/projectDB.db");
-    let stmt = resultDb.prepare(`SELECT Dataset.datasetID as datasetID, Dataset.dname as dname
-                FROM Dataset INNER JOIN Experiment ON Dataset.eid = Experiment.eid
-                WHERE Experiment.eid = ?;`);
-    let queryResult = stmt.all(eid);
-    resultDb.close();
-    return queryResult;
-}
 
-module.exports = getDataset;</code></pre>
+function getExpectedPeakNum(callback) {
+    fs.readFile('init.ini', 'utf8' , (err, data) => {
+        if (err) {
+          console.error(err)
+          return;
+        }
+        let parameters = data.toString().split("\n");
+        console.log("parameters[1]", parameters[1])
+        return callback(null, parameters[1]);
+      })
+    
+}
+module.exports = getExpectedPeakNum;</code></pre>
         </article>
     </section>
 

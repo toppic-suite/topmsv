@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: getDataset.js</title>
+    <title>JSDoc: Class: EmailSender</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,35 +17,328 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: getDataset.js</h1>
+    <h1 class="page-title">Class: EmailSender</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>const BetterDB = require("better-sqlite3");
+        <h2><span class="attribs"><span class="type-signature"></span></span>EmailSender<span class="signature">(subject, text, emailAddress)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">Class representing a email sender</div>
+        
+    
+</header>
 
-/**
- * Get all datasets under specific envelope.
- * @param {number} eid - Envelope ID
- * @returns {array} All datasets info under specific experiment
- */
-function getDataset(eid) {
-    let resultDb = new BetterDB("./db/projectDB.db");
-    let stmt = resultDb.prepare(`SELECT Dataset.datasetID as datasetID, Dataset.dname as dname
-                FROM Dataset INNER JOIN Experiment ON Dataset.eid = Experiment.eid
-                WHERE Experiment.eid = ?;`);
-    let queryResult = stmt.all(eid);
-    resultDb.close();
-    return queryResult;
-}
+<article>
+    <div class="container-overview">
+    
+        
 
-module.exports = getDataset;</code></pre>
-        </article>
-    </section>
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="EmailSender"><span class="type-signature"></span>new EmailSender<span class="signature">(subject, text, emailAddress)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Create an email sender
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>subject</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>emailAddress</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="email_sender.js.html">email_sender.js</a>, <a href="email_sender.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sendEmail"><span class="type-signature"></span>sendEmail<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Send email to user
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="email_sender.js.html">email_sender.js</a>, <a href="email_sender.js.html#line43">line 43</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: getDataset.js</title>
+    <title>JSDoc: Source: parsePtm.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: getDataset.js</h1>
+    <h1 class="page-title">Source: parsePtm.js</h1>
 
     
 
@@ -26,24 +26,82 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const BetterDB = require("better-sqlite3");
-
+            <pre class="prettyprint source linenums"><code>const fs = require('fs');
+const readline = require('readline');
+const fixedPtmTitle = "********************** Fixed PTM **********************";
+const commonPtmTitle = "********************** Common PTM **********************";
+const varPtmTitle = "********************** Variable PTM **********************";
 /**
- * Get all datasets under specific envelope.
- * @param {number} eid - Envelope ID
- * @returns {array} All datasets info under specific experiment
+ * Parse identification file and return ptm data
+ * @param {string} tsvFile - tsv file path
+ * @param {function} callback - Callback function that handles query results
+ * @returns {function} Callback function
+ * @sync
  */
-function getDataset(eid) {
-    let resultDb = new BetterDB("./db/projectDB.db");
-    let stmt = resultDb.prepare(`SELECT Dataset.datasetID as datasetID, Dataset.dname as dname
-                FROM Dataset INNER JOIN Experiment ON Dataset.eid = Experiment.eid
-                WHERE Experiment.eid = ?;`);
-    let queryResult = stmt.all(eid);
-    resultDb.close();
-    return queryResult;
-}
+function parsePtm(tsvFile, callback) {
+    let fixedPtm = false;
+    let commonPtm = false;
+    let varPtm = false;
 
-module.exports = getDataset;</code></pre>
+    let fixedPtms = [];
+    let commonPtms = [];
+    let varPtms = [];
+
+    const readInterface = readline.createInterface({
+        input: fs.createReadStream(tsvFile)
+    });
+
+    readInterface.on('line', function(line) {
+        if (fixedPtm || commonPtm || varPtm) {
+            let idx = line.indexOf('\t');
+            if (idx > -1) {
+                let ptmName = (line.slice(0, idx)).trim();
+                let ptmMass = (line.slice(idx + 1)).trim(); 
+                if (fixedPtm) {
+                    fixedPtms.push({"name": ptmName, "mass": ptmMass});
+                }
+                else if (commonPtm) {
+                    commonPtms.push({"name": ptmName, "mass": ptmMass});
+                }
+                else{
+                    varPtms.push({"name": ptmName, "mass": ptmMass});
+                }
+            }
+        }
+        if (line == fixedPtmTitle) {
+            if (fixedPtm){
+                fixedPtm = false;
+            }
+            else{
+                fixedPtm = true;
+            }
+        }
+        else if (line == commonPtmTitle) {
+            if (commonPtm){
+                commonPtm = false;
+            }
+            else{
+                commonPtm = true;
+            }
+        }
+        else if (line == varPtmTitle) {
+            if (varPtm){
+                varPtm = false;
+            }
+            else{
+                varPtm = true;
+            }
+        }
+    });
+    readInterface.on('close', function() {
+        let ptm = {};
+        ptm["fixedPtms"] = fixedPtms;
+        ptm["varPtms"] = varPtms;
+        ptm["commonPtms"] = commonPtms;
+        callback(null, ptm);    
+    })
+}
+module.exports = parsePtm;</code></pre>
         </article>
     </section>
 
