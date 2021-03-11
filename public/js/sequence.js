@@ -68,7 +68,7 @@ function inspect(scanID,scanNum) {
                                         }
                                     }).then((response)=>{
                                         window.localStorage.setItem('precursorMass', parseFloat(response.data));
-                                        window.open('/resources/topview/inspect/spectrum.html', '_self');
+                                        window.open('/resources/topview/inspect/spectrum_no_nav.html', '_self');
                                     }).catch((error) => {
                                         console.log(error);
                                     })
