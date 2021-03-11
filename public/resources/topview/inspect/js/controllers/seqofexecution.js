@@ -149,7 +149,6 @@ class SeqOfExecution
       matchedPeakList = matchedPeakList.concat(temp_matchedPeaks);	
     })
     //console.log("matchedPeakList", matchedPeakList);
-    console.log("matchedPairList", matchedPairList);
     /* Get combined list of both matched and unmatched peaks to write to table*/
     matchedUnMatchedPeaks = calcMatchedPeaks.getMatchedAndUnMatchedList(monoMassList,matchedPeakList);
     // console.log("matchedUnmatchedpeaks:", matchedUnMatchedPeaks);
@@ -157,7 +156,6 @@ class SeqOfExecution
     /*Do the below function when Sequence entered is not empty*/
     if(seq.length !== 0) {	
 	  let breakPointsList = formBreakPoints(matchedPeakList);
-	  console.log("breakPointsList", breakPointsList)
 	  /*Draw SVG of Sequence*/
 	  let breakPoints = formBreakPoints(matchedPeakList); 
 	  let prsmObj = new Prsm("", proteoformObj, "", spectrum, breakPoints, matchedPeakList.length);

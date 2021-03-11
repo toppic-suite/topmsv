@@ -64,14 +64,46 @@ function init2D(scan) {
                         })
                         .then(function(response) {
                             let envtable = response.data;
-
-                            envList1_g = calcDistrubution.getEnvDistribution(envtable, temp_peakList1_g);
-                            if (envList1_g !== 0 && envList1_g.length !== 0){
-                                graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
-                                graph1_g.redraw();
+                            let peaks = [];
+                            let modfiablePeaks = [];
+                            let envelopes = [];
+                            if (envtable != 0){
+                                for (let i = 0; i < peakList1_g.length; i++){
+                                    let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+                                    let modPeakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+                                    peaks.push(peakObj);
+                                    modfiablePeaks.push(modPeakObj);
+                                }
+                                envtable.forEach( env => {
+                                    let envObj = new Envelope(env.mono_mass, env.charge)
+                                    let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
+                                    for (let j = 0; j < env_peaks.length; j++){
+                                        let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
+                                        envObj.addTheoPeaks(peak);
+                                    }
+                                    envelopes.push(envObj);
+                                })
+                                let ions = [];
+                                let spectrumDataPeaks = new SpectrumData();
+                                let spectrumDataEnvs = new SpectrumData();
+                                spectrumDataPeaks.assignLevelPeaks(peaks);
+                                spectrumDataEnvs.assignLevelEnvs(envelopes);
+                            
+                                spGraph = new SpectrumGraph("spectrum1",peaks);
+                                spGraph.addRawSpectrumAnno(envelopes, ions);
+                                //spGraph.para.updateMzRange(prec_mz);
+                                spGraph.redraw();
                             }else {
-                                graph1_g = new SpectrumGraph("spectrum1", peakList1_g, [],[],null);
-                                graph1_g.redraw();
+                                for (let i = 0; i < peakList1_g.length; i++){
+                                    let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+                                    peaks.push(peakObj);
+                                }
+                                
+                                let spectrumDataPeaks = new SpectrumData();
+                                spectrumDataPeaks.assignLevelPeaks(peaks);
+                                spGraph = new SpectrumGraph("spectrum1",peaks);
+                                //spGraph.para.updateMzRange(prec_mz);
+                                spGraph.redraw();
                             }
                         })
                         .catch(function(error) {

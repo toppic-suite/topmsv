@@ -84,7 +84,15 @@ function calcInitRange(precMz){
         mzRange["mzmax"] = specPara.winMaxMz;
     }
     else{
-        specPara.initParameters(peakList1_g);
+        let peaks = [];
+        for (let i = 0; i < peakList1_g.length; i++){
+            let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+            peaks.push(peakObj);
+        }
+        let spectrumDataPeaks = new SpectrumData();
+        spectrumDataPeaks.assignLevelPeaks(peaks);
+
+        specPara.initParameters(peaks);
         mzRange["mzmin"] = specPara.winMinMz;
         mzRange["mzmax"] = specPara.winMaxMz;
     }

@@ -2,19 +2,21 @@
  * Express router for /addrow
  *
  * Add one envelope and calculate its distribution then save it in existing database
+ * 
+ * NEED TO UPDATE WITH DIST CALC FUNCTION FROM RESOURCES FOLDER
  */
 const express = require("express");
 const router = express.Router();
-const getPeakListByScanID = require("../library/getPeakListByScanID");
+/*const getPeakListByScanID = require("../library/getPeakListByScanID");
 const getEnvMax = require("../library/getEnvMax");
 const addEnv = require("../library/addEnv");
 const addEnvPeak = require("../library/addEnvPeak");
 const getEnv = require("../library/getEnv");
 const molecularFormulae = require('../distribution_calc/molecular_formulae');
 const calcDistribution = new molecularFormulae();
-
+ */
 let addrow = router.get('/addrow', function (req,res) {
-    console.log("Hello, addrow!");
+    /*console.log("Hello, addrow!");
     let projectDir = req.query.projectDir;
     let scan_id = req.query.scan_id;
     let charge = req.query.charge;
@@ -51,7 +53,7 @@ let addrow = router.get('/addrow', function (req,res) {
                 });
             })
         }
-    });
+    });*/
 });
 
 module.exports = addrow;
