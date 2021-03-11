@@ -24,6 +24,7 @@ onLoadOfHTML = function()
     let variablePtmsList = parsePTM('variablePtmsList');
     let unknownMassShiftList = parseUnknowmassList('unknownMassShiftList');
     let precursorMass = parsePrecursorMass("precursorMass");
+
     if(peakAndIntensityList !== null && massAndIntensityList !== null){
         setDataToPeakAndIntensity(peakAndIntensityList);
 		setDataToMassAndIntensity(massAndIntensityList);
