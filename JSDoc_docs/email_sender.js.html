@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: getDataset.js</title>
+    <title>JSDoc: Source: email_sender.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: getDataset.js</h1>
+    <h1 class="page-title">Source: email_sender.js</h1>
 
     
 
@@ -26,24 +26,60 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const BetterDB = require("better-sqlite3");
+            <pre class="prettyprint source linenums"><code>const nodemailer = require('nodemailer');
 
 /**
- * Get all datasets under specific envelope.
- * @param {number} eid - Envelope ID
- * @returns {array} All datasets info under specific experiment
+ * Class representing a email sender
  */
-function getDataset(eid) {
-    let resultDb = new BetterDB("./db/projectDB.db");
-    let stmt = resultDb.prepare(`SELECT Dataset.datasetID as datasetID, Dataset.dname as dname
-                FROM Dataset INNER JOIN Experiment ON Dataset.eid = Experiment.eid
-                WHERE Experiment.eid = ?;`);
-    let queryResult = stmt.all(eid);
-    resultDb.close();
-    return queryResult;
+class EmailSender {
+    
+
+    /**
+     * Create an email sender
+     * @param {string} subject 
+     * @param {string} text 
+     * @param {string} emailAddress 
+     */
+    constructor(subject, text, emailAddress) {
+        this.transport = nodemailer.createTransport({
+            host: "smtp-mail.outlook.com", // hostname
+            secureConnection: false, // TLS requires secureConnection to be false
+            port: 587, // port for secure SMTP
+            tls: {
+                ciphers:'SSLv3'
+            },
+            auth: {
+                user: 'datalink_sender@outlook.com',
+                pass: 'iupuiSOICWK316'
+            }
+        });
+        
+        this.message = {
+            from: 'datalink_sender@outlook.com', // Sender address
+            to: 'default@gmail.com',         // List of recipients
+            subject: 'Default Subject', // Subject line
+            text: 'Default text' // Plain text body
+        };
+        this.message.subject = subject;
+        this.message.text = text;
+        this.message.to = emailAddress;
+    }
+
+    /**
+     * Send email to user
+     */
+    sendEmail() {
+        this.transport.sendMail(this.message, function(err, info) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(info);
+            }
+        });
+    }
 }
 
-module.exports = getDataset;</code></pre>
+module.exports = EmailSender;</code></pre>
         </article>
     </section>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: getDataset.js</title>
+    <title>JSDoc: Source: checkUser.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: getDataset.js</h1>
+    <h1 class="page-title">Source: checkUser.js</h1>
 
     
 
@@ -26,24 +26,22 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const BetterDB = require("better-sqlite3");
-
+            <pre class="prettyprint source linenums"><code>const BetterDB = require('better-sqlite3');
 /**
- * Get all datasets under specific envelope.
- * @param {number} eid - Envelope ID
- * @returns {array} All datasets info under specific experiment
+ * Get user's information by given uid. Sync mode.
+ * @param {string} uid - uid
+ * @returns {Object} Object contains user information
  */
-function getDataset(eid) {
-    let resultDb = new BetterDB("./db/projectDB.db");
-    let stmt = resultDb.prepare(`SELECT Dataset.datasetID as datasetID, Dataset.dname as dname
-                FROM Dataset INNER JOIN Experiment ON Dataset.eid = Experiment.eid
-                WHERE Experiment.eid = ?;`);
-    let queryResult = stmt.all(eid);
+function checkUser(uid) {
+    let resultDb = new BetterDB('./db/projectDB.db');
+    let stmt = resultDb.prepare(`SELECT *
+                                FROM Users
+                                WHERE uid = ?;`);
+    let queryResult = stmt.get(uid);
     resultDb.close();
     return queryResult;
 }
-
-module.exports = getDataset;</code></pre>
+module.exports = checkUser;</code></pre>
         </article>
     </section>
 

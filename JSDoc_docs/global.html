@@ -1327,7 +1327,7 @@
 
         
 <div class="param-desc">
-    0 if no remaining tast, 1 if exists remaining tasks
+    0 if no remaining task, 1 if exists remaining tasks
 </div>
 
 
@@ -1339,6 +1339,165 @@
     <dd>
         
 <span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="checkUser"><span class="type-signature"></span>checkUser<span class="signature">(uid)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get user's information by given uid. Sync mode.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>uid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">uid</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="checkUser.js.html">checkUser.js</a>, <a href="checkUser.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Object contains user information
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -5529,7 +5688,7 @@
     
 
     
-    <h4 class="name" id="getExperiment"><span class="type-signature"></span>getExperiment<span class="signature">(uid, pid)</span><span class="type-signature"> &rarr; {array}</span></h4>
+    <h4 class="name" id="getExpectedPeakNum"><span class="type-signature">(async) </span>getExpectedPeakNum<span class="signature">()</span><span class="type-signature"> &rarr; {function}</span></h4>
     
 
     
@@ -5537,7 +5696,7 @@
 
 
 <div class="description">
-    Get all experiments under one user's specific project.
+    Read init.ini and return the value set as the expected peak number
 </div>
 
 
@@ -5546,78 +5705,6 @@
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>uid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">User ID</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>pid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Project ID</td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -5653,7 +5740,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="getExperiment.js.html">getExperiment.js</a>, <a href="getExperiment.js.html#line9">line 9</a>
+        <a href="getExpectedPeakNum.js.html">getExpectedPeakNum.js</a>, <a href="getExpectedPeakNum.js.html#line9">line 9</a>
     </li></ul></dd>
     
 
@@ -5682,7 +5769,7 @@
 
         
 <div class="param-desc">
-    All experiments under one user's specific project
+    Callback
 </div>
 
 
@@ -5693,7 +5780,7 @@
     </dt>
     <dd>
         
-<span class="param-type">array</span>
+<span class="param-type">function</span>
 
 
     </dd>
@@ -5865,6 +5952,188 @@
         
 <div class="param-desc">
     All experiments of one user's project
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getExperiment"><span class="type-signature"></span>getExperiment<span class="signature">(uid, pid)</span><span class="type-signature"> &rarr; {array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get all experiments under one user's specific project.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>uid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">User ID</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Project ID</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="getExperiment.js.html">getExperiment.js</a>, <a href="getExperiment.js.html#line9">line 9</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    All experiments under one user's specific project
 </div>
 
 
@@ -12162,7 +12431,7 @@
     
 
     
-    <h4 class="name" id="insertRowSync"><span class="type-signature"></span>insertRowSync<span class="signature">(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile, uid, publicStatus)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="insertRowSync"><span class="type-signature"></span>insertRowSync<span class="signature">(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, SeqStatus, ms1EnvFile, uid, publicStatus, doesExpire)</span><span class="type-signature"></span></h4>
     
 
     
@@ -12479,6 +12748,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>doesExpire</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">if this project should be removed after 30 days</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -12516,7 +12808,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="insertRowSync.js.html">insertRowSync.js</a>, <a href="insertRowSync.js.html#line17">line 17</a>
+        <a href="insertRowSync.js.html">insertRowSync.js</a>, <a href="insertRowSync.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -13241,7 +13533,7 @@
     
 
     
-    <h4 class="name" id="load3dDataByParaRange"><span class="type-signature">(async) </span>load3dDataByParaRange<span class="signature">(dir, rt, callback)</span><span class="type-signature"> &rarr; {function}</span></h4>
+    <h4 class="name" id="load3dDataByParaRange"><span class="type-signature">(async) </span>load3dDataByParaRange<span class="signature">(dir, tableNum, minrt, maxrt, minmz, maxmz, maxPeaks, callback)</span><span class="type-signature"> &rarr; {function}</span></h4>
     
 
     
@@ -13308,7 +13600,7 @@
 
         <tr>
             
-                <td class="name"><code>rt</code></td>
+                <td class="name"><code>tableNum</code></td>
             
 
             <td class="type">
@@ -13324,7 +13616,122 @@
 
             
 
-            <td class="description last">Retention time</td>
+            <td class="description last">database table number to get peaks from</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minrt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum retention time</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxrt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum retention time</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minmz</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum m/z</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxmz</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum m/z</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxPeaks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum number of peaks to be returned</td>
         </tr>
 
     
@@ -13388,7 +13795,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="load3dDataByParaRange.js.html">load3dDataByParaRange.js</a>, <a href="load3dDataByParaRange.js.html#line10">line 10</a>
+        <a href="load3dDataByParaRange.js.html">load3dDataByParaRange.js</a>, <a href="load3dDataByParaRange.js.html#line15">line 15</a>
     </li></ul></dd>
     
 
@@ -13446,190 +13853,7 @@
     
 
     
-    <h4 class="name" id="load3dDataByRT"><span class="type-signature">(async) </span>load3dDataByRT<span class="signature">(dir, scanNum, callback)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Get scan of next level one. Async mode.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dir</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>scanNum</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="load3dDataByRT.js.html">load3dDataByRT.js</a>, <a href="load3dDataByRT.js.html#line9">line 9</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="loadMzrtData"><span class="type-signature">(async) </span>loadMzrtData<span class="signature">(dir, rt, callback)</span><span class="type-signature"> &rarr; {function}</span></h4>
+    <h4 class="name" id="load3dDataByRT"><span class="type-signature">(async) </span>load3dDataByRT<span class="signature">(dir, tableNum, minmz, maxmz, callback)</span><span class="type-signature"></span></h4>
     
 
     
@@ -13696,7 +13920,7 @@
 
         <tr>
             
-                <td class="name"><code>rt</code></td>
+                <td class="name"><code>tableNum</code></td>
             
 
             <td class="type">
@@ -13712,7 +13936,305 @@
 
             
 
-            <td class="description last">Retention time</td>
+            <td class="description last">database table number to get peaks from</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minmz</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum m/z</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxmz</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum m/z</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="load3dDataByRT.js.html">load3dDataByRT.js</a>, <a href="load3dDataByRT.js.html#line11">line 11</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="loadMzrtData"><span class="type-signature">(async) </span>loadMzrtData<span class="signature">(dir, minrt, maxrt, minmz, maxmz, callback)</span><span class="type-signature"> &rarr; {function}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get scan of next level one. Async mode.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dir</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Project directory</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minrt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum retention time</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxrt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum retention time</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minmz</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum m/z</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxmz</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum m/z</td>
         </tr>
 
     
@@ -13776,7 +14298,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="loadMzrtData.js.html">loadMzrtData.js</a>, <a href="loadMzrtData.js.html#line10">line 10</a>
+        <a href="loadMzrtData.js.html">loadMzrtData.js</a>, <a href="loadMzrtData.js.html#line13">line 13</a>
     </li></ul></dd>
     
 
@@ -13976,6 +14498,188 @@
     <dd>
         
 <span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="parsePtm"><span class="type-signature"></span>parsePtm<span class="signature">(tsvFile, callback)</span><span class="type-signature"> &rarr; {function}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Parse identification file and return ptm data
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tsvFile</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">tsv file path</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Callback function that handles query results</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="parsePtm.js.html">parsePtm.js</a>, <a href="parsePtm.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Callback function
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">function</span>
 
 
     </dd>
@@ -17225,13 +17929,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addEnv">addEnv</a></li><li><a href="global.html#buildProjectView">buildProjectView</a></li><li><a href="global.html#buildTreeview">buildTreeview</a></li><li><a href="global.html#checkExpiredProj">checkExpiredProj</a></li><li><a href="global.html#checkProjectStatusAsync">checkProjectStatusAsync</a></li><li><a href="global.html#checkProjectStatusSync">checkProjectStatusSync</a></li><li><a href="global.html#checkRemainingTask">checkRemainingTask</a></li><li><a href="global.html#checkWaitingTasks">checkWaitingTasks</a></li><li><a href="global.html#deleteDataset">deleteDataset</a></li><li><a href="global.html#deleteEnv">deleteEnv</a></li><li><a href="global.html#deleteEnvPeak">deleteEnvPeak</a></li><li><a href="global.html#deleteExperiment">deleteExperiment</a></li><li><a href="global.html#deleteFeature">deleteFeature</a></li><li><a href="global.html#deleteMultiEnvs">deleteMultiEnvs</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteSeqSync">deleteSeqSync</a></li><li><a href="global.html#deleteSingleEnv">deleteSingleEnv</a></li><li><a href="global.html#editEnv">editEnv</a></li><li><a href="global.html#getAllSeq">getAllSeq</a></li><li><a href="global.html#getDataset">getDataset</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#getEnvCharge">getEnvCharge</a></li><li><a href="global.html#getEnvIDListByMZRange">getEnvIDListByMZRange</a></li><li><a href="global.html#getEnvInfoSync">getEnvInfoSync</a></li><li><a href="global.html#getEnvMax">getEnvMax</a></li><li><a href="global.html#getEnvNum">getEnvNum</a></li><li><a href="global.html#getEnvPeakList">getEnvPeakList</a></li><li><a href="global.html#getEnvPeakListSync">getEnvPeakListSync</a></li><li><a href="global.html#getEnvTable">getEnvTable</a></li><li><a href="global.html#getExperiment">getExperiment</a></li><li><a href="global.html#getExperimentByPid">getExperimentByPid</a></li><li><a href="global.html#getFilePath">getFilePath</a></li><li><a href="global.html#getMax">getMax</a></li><li><a href="global.html#getNext">getNext</a></li><li><a href="global.html#getNextLevelOneScan">getNextLevelOneScan</a></li><li><a href="global.html#getPeakList">getPeakList</a></li><li><a href="global.html#getPeakListByMZRange">getPeakListByMZRange</a></li><li><a href="global.html#getPeaksPerTable">getPeaksPerTable</a></li><li><a href="global.html#getPrecMZ">getPrecMZ</a></li><li><a href="global.html#getPrev">getPrev</a></li><li><a href="global.html#getProjectNew">getProjectNew</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getProjectsGuest">getProjectsGuest</a></li><li><a href="global.html#getProjectSummary">getProjectSummary</a></li><li><a href="global.html#getProteoform">getProteoform</a></li><li><a href="global.html#getRelatedScan1">getRelatedScan1</a></li><li><a href="global.html#getRelatedScan2">getRelatedScan2</a></li><li><a href="global.html#getRTAsync">getRTAsync</a></li><li><a href="global.html#getScanID">getScanID</a></li><li><a href="global.html#getScanLevel">getScanLevel</a></li><li><a href="global.html#getScanLevelTwoList">getScanLevelTwoList</a></li><li><a href="global.html#getScanRange">getScanRange</a></li><li><a href="global.html#getSumList">getSumList</a></li><li><a href="global.html#getTaskListAsync">getTaskListAsync</a></li><li><a href="global.html#getTaskListSync">getTaskListSync</a></li><li><a href="global.html#ifEnvExists">ifEnvExists</a></li><li><a href="global.html#ifExists">ifExists</a></li><li><a href="global.html#insertDataset">insertDataset</a></li><li><a href="global.html#insertEnvPeak">insertEnvPeak</a></li><li><a href="global.html#insertExperiment">insertExperiment</a></li><li><a href="global.html#insertProjectNew">insertProjectNew</a></li><li><a href="global.html#insertRow">insertRow</a></li><li><a href="global.html#insertRowSync">insertRowSync</a></li><li><a href="global.html#insertTask">insertTask</a></li><li><a href="global.html#insertTaskSync">insertTaskSync</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#load3dDataByParaRange">load3dDataByParaRange</a></li><li><a href="global.html#load3dDataByRT">load3dDataByRT</a></li><li><a href="global.html#loadMzrtData">loadMzrtData</a></li><li><a href="global.html#makeid">makeid</a></li><li><a href="global.html#processFailure">processFailure</a></li><li><a href="global.html#sendFailureMess">sendFailureMess</a></li><li><a href="global.html#sendSuccessMess">sendSuccessMess</a></li><li><a href="global.html#showData">showData</a></li><li><a href="global.html#submitTask">submitTask</a></li><li><a href="global.html#updateDescriptionSync">updateDescriptionSync</a></li><li><a href="global.html#updateEnvStatus">updateEnvStatus</a></li><li><a href="global.html#updateEnvStatusSync">updateEnvStatusSync</a></li><li><a href="global.html#updateFeatureStatusSync">updateFeatureStatusSync</a></li><li><a href="global.html#updateProjectNameSync">updateProjectNameSync</a></li><li><a href="global.html#updateProjectStatus">updateProjectStatus</a></li><li><a href="global.html#updateProjectStatusSync">updateProjectStatusSync</a></li><li><a href="global.html#updatePublicStatusSync">updatePublicStatusSync</a></li><li><a href="global.html#updateSeqStatus">updateSeqStatus</a></li><li><a href="global.html#updateSeqStatusSync">updateSeqStatusSync</a></li><li><a href="global.html#updateSequence">updateSequence</a></li><li><a href="global.html#updateTaskStatusAsync">updateTaskStatusAsync</a></li><li><a href="global.html#updateTaskStatusSync">updateTaskStatusSync</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailSender.html">EmailSender</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addEnv">addEnv</a></li><li><a href="global.html#buildProjectView">buildProjectView</a></li><li><a href="global.html#buildTreeview">buildTreeview</a></li><li><a href="global.html#checkExpiredProj">checkExpiredProj</a></li><li><a href="global.html#checkProjectStatusAsync">checkProjectStatusAsync</a></li><li><a href="global.html#checkProjectStatusSync">checkProjectStatusSync</a></li><li><a href="global.html#checkRemainingTask">checkRemainingTask</a></li><li><a href="global.html#checkUser">checkUser</a></li><li><a href="global.html#checkWaitingTasks">checkWaitingTasks</a></li><li><a href="global.html#deleteDataset">deleteDataset</a></li><li><a href="global.html#deleteEnv">deleteEnv</a></li><li><a href="global.html#deleteEnvPeak">deleteEnvPeak</a></li><li><a href="global.html#deleteExperiment">deleteExperiment</a></li><li><a href="global.html#deleteFeature">deleteFeature</a></li><li><a href="global.html#deleteMultiEnvs">deleteMultiEnvs</a></li><li><a href="global.html#deleteProject">deleteProject</a></li><li><a href="global.html#deleteSeqSync">deleteSeqSync</a></li><li><a href="global.html#deleteSingleEnv">deleteSingleEnv</a></li><li><a href="global.html#editEnv">editEnv</a></li><li><a href="global.html#getAllSeq">getAllSeq</a></li><li><a href="global.html#getDataset">getDataset</a></li><li><a href="global.html#getEnv">getEnv</a></li><li><a href="global.html#getEnvCharge">getEnvCharge</a></li><li><a href="global.html#getEnvIDListByMZRange">getEnvIDListByMZRange</a></li><li><a href="global.html#getEnvInfoSync">getEnvInfoSync</a></li><li><a href="global.html#getEnvMax">getEnvMax</a></li><li><a href="global.html#getEnvNum">getEnvNum</a></li><li><a href="global.html#getEnvPeakList">getEnvPeakList</a></li><li><a href="global.html#getEnvPeakListSync">getEnvPeakListSync</a></li><li><a href="global.html#getEnvTable">getEnvTable</a></li><li><a href="global.html#getExpectedPeakNum">getExpectedPeakNum</a></li><li><a href="global.html#getExperiment">getExperiment</a></li><li><a href="global.html#getExperimentByPid">getExperimentByPid</a></li><li><a href="global.html#getFilePath">getFilePath</a></li><li><a href="global.html#getMax">getMax</a></li><li><a href="global.html#getNext">getNext</a></li><li><a href="global.html#getNextLevelOneScan">getNextLevelOneScan</a></li><li><a href="global.html#getPeakList">getPeakList</a></li><li><a href="global.html#getPeakListByMZRange">getPeakListByMZRange</a></li><li><a href="global.html#getPeaksPerTable">getPeaksPerTable</a></li><li><a href="global.html#getPrecMZ">getPrecMZ</a></li><li><a href="global.html#getPrev">getPrev</a></li><li><a href="global.html#getProjectNew">getProjectNew</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getProjectsGuest">getProjectsGuest</a></li><li><a href="global.html#getProjectSummary">getProjectSummary</a></li><li><a href="global.html#getProteoform">getProteoform</a></li><li><a href="global.html#getRelatedScan1">getRelatedScan1</a></li><li><a href="global.html#getRelatedScan2">getRelatedScan2</a></li><li><a href="global.html#getRTAsync">getRTAsync</a></li><li><a href="global.html#getScanID">getScanID</a></li><li><a href="global.html#getScanLevel">getScanLevel</a></li><li><a href="global.html#getScanLevelTwoList">getScanLevelTwoList</a></li><li><a href="global.html#getScanRange">getScanRange</a></li><li><a href="global.html#getSumList">getSumList</a></li><li><a href="global.html#getTaskListAsync">getTaskListAsync</a></li><li><a href="global.html#getTaskListSync">getTaskListSync</a></li><li><a href="global.html#ifEnvExists">ifEnvExists</a></li><li><a href="global.html#ifExists">ifExists</a></li><li><a href="global.html#insertDataset">insertDataset</a></li><li><a href="global.html#insertEnvPeak">insertEnvPeak</a></li><li><a href="global.html#insertExperiment">insertExperiment</a></li><li><a href="global.html#insertProjectNew">insertProjectNew</a></li><li><a href="global.html#insertRow">insertRow</a></li><li><a href="global.html#insertRowSync">insertRowSync</a></li><li><a href="global.html#insertTask">insertTask</a></li><li><a href="global.html#insertTaskSync">insertTaskSync</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#load3dDataByParaRange">load3dDataByParaRange</a></li><li><a href="global.html#load3dDataByRT">load3dDataByRT</a></li><li><a href="global.html#loadMzrtData">loadMzrtData</a></li><li><a href="global.html#makeid">makeid</a></li><li><a href="global.html#parsePtm">parsePtm</a></li><li><a href="global.html#processFailure">processFailure</a></li><li><a href="global.html#sendFailureMess">sendFailureMess</a></li><li><a href="global.html#sendSuccessMess">sendSuccessMess</a></li><li><a href="global.html#showData">showData</a></li><li><a href="global.html#submitTask">submitTask</a></li><li><a href="global.html#updateDescriptionSync">updateDescriptionSync</a></li><li><a href="global.html#updateEnvStatus">updateEnvStatus</a></li><li><a href="global.html#updateEnvStatusSync">updateEnvStatusSync</a></li><li><a href="global.html#updateFeatureStatusSync">updateFeatureStatusSync</a></li><li><a href="global.html#updateProjectNameSync">updateProjectNameSync</a></li><li><a href="global.html#updateProjectStatus">updateProjectStatus</a></li><li><a href="global.html#updateProjectStatusSync">updateProjectStatusSync</a></li><li><a href="global.html#updatePublicStatusSync">updatePublicStatusSync</a></li><li><a href="global.html#updateSeqStatus">updateSeqStatus</a></li><li><a href="global.html#updateSeqStatusSync">updateSeqStatusSync</a></li><li><a href="global.html#updateSequence">updateSequence</a></li><li><a href="global.html#updateTaskStatusAsync">updateTaskStatusAsync</a></li><li><a href="global.html#updateTaskStatusSync">updateTaskStatusSync</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Fri Oct 02 2020 18:43:45 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu Mar 11 2021 15:26:03 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

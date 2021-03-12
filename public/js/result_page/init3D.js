@@ -84,15 +84,6 @@ function calcInitRange(precMz){
         mzRange["mzmax"] = specPara.winMaxMz;
     }
     else{
-        let peaks = [];
-        for (let i = 0; i < peakList1_g.length; i++){
-            let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
-            peaks.push(peakObj);
-        }
-        let spectrumDataPeaks = new SpectrumData();
-        spectrumDataPeaks.assignLevelPeaks(peaks);
-
-        specPara.initParameters(peaks);
         mzRange["mzmin"] = specPara.winMinMz;
         mzRange["mzmax"] = specPara.winMaxMz;
     }
@@ -105,6 +96,9 @@ function update3D(scanID){
     promise.then((ms2Scan) => {
         return getPrecursorMz(projectDir, ms2Scan);
     }).then((precMz)=>{
+        if (!precMz) {
+            precMz = 0;
+        }
         let mzRange = calcInitRange(precMz);
         GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
     }).catch((err) => {
@@ -124,7 +118,6 @@ function init3D(scanID){
             let promise = getMs1Scan(projectDir, scanID);
             promise.then((ms1Scan) => {
                 scan = ms1Scan;
-                //console.log("scan", scan)
                 return getPrecursorMz(projectDir,scan);
             })
         }else{
