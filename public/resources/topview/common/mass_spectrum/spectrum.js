@@ -1,14 +1,14 @@
 class Spectrum {
-  envList_ = [];
   constructor(id, level, peakList, nIon, cIon, mass, charge = -1, mz = -1) {
     this.id_ = id; 
     this.level_ = level;
     this.peakList_ = peakList;
     this.nIon_ = nIon;
     this.cIon_ = cIon;
-    this.mass_ = parseFloat(mass);
-    this.charge_ = parseInt(charge);
-    this.mz_ = parseFloat(mz);
+    this.precMass_ = parseFloat(mass);
+    this.precCharge_ = parseInt(charge);
+    this.precMz_ = parseFloat(mz);
+    this.envList_ = [];
    }
    getSpectrumId() {
     return this.id_;
@@ -29,13 +29,13 @@ class Spectrum {
     return this.cIon_;
    }
    getPrecMass() {
-    return this.mass_;
+    return this.precMass_;
    }
    getPrecCharge() {
-    return this.charge_;
+    return this.precCharge_;
    }
    getPrecMz() {
-    return this.mz_;
+    return this.precMz_;
    }
    setPeaks(peaks) {
     this.peakList_ = peaks;

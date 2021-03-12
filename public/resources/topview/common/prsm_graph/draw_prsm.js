@@ -282,6 +282,13 @@ function removeBpAnno() {
  * @param {Object} shifts - Contains the complete information of mass shifts. 
  */
 function addAnnos(svg, para, firstPos, annos, isStartSkipped) {
+  //truncate after 4th pos after decimal point
+  annos.forEach(anno => {
+    let decimal = (anno.annoText.toString()).indexOf(".");
+    if (decimal > -1) {
+      anno.annoText = parseFloat(anno.annoText).toFixed(4);
+    } 
+  })
   let annoGroup = svg.append("g")
     .attr("id", "mass_shift_anno")
     .attr("class","prsm_svg_group");

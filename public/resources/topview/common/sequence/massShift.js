@@ -4,7 +4,7 @@ class MassShift{
     constructor(leftPos, rightPos, massShift, type, annotation, ptm = null){
         this.leftPos_ = parseInt(leftPos);
         this.rightPos_ = parseInt(rightPos);
-        this.massShift_ = parseFloat(massShift).toFixed(4);
+        this.massShift_ = parseFloat(massShift);
         this.type_ = type;
         this.annotation_ = annotation;
 

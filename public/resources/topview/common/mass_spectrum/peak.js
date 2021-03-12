@@ -1,10 +1,9 @@
 class Peak{
-    level_ = -1
-    
     constructor(peakId, mz, intensity){
         this.peakId_ = parseInt(peakId);
         this.mz_ = parseFloat(mz);
         this.intensity_ = parseFloat(intensity);
+        this.level_ = -1
     }
     getId(){
         return this.peakId_;

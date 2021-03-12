@@ -52,7 +52,18 @@ function proteoformToHtml(compatible_proteoform,index,folderpath) {
 		{
 			if(prsm_id == compatible_proteoform.prsm[i].prsm_id)
 			{
-				BestPrSM = compatible_proteoform.prsm[i] ;
+				prsm = compatible_proteoform.prsm[i] ;
+				let prot = prsm.annotated_protein;
+				let [fixedPtms, protVarPtms, variablePtms] = json2Ptms(prsm);
+				let massShifts = json2MassShifts(prsm);
+				let sequence = getAminoAcidSequence(0,prot.annotation.residue.length - 1,prot.annotation.residue);
+				let breakPoints = json2BreakPoints(prsm, parseInt(prot.annotation.first_residue_position));
+				let proteoformObj = new Proteoform(prot.proteoform_id, prot.sequence_name, sequence, 
+					prot.annotation.first_residue_position, prot.annotation.last_residue_position, prot.proteoform_mass, massShifts, fixedPtms, protVarPtms, variablePtms)
+
+				BestPrSM = new Prsm(prsm.prsm_id, proteoformObj, "", "", breakPoints, prsm.matched_peak_number, 
+				prsm.matched_fragment_number, prsm.annotated_protein.unexpected_shift_number,
+				prsm.e_value, prsm.fdr);
 				break;
 			}
 		}
@@ -74,7 +85,18 @@ function proteoformToHtml(compatible_proteoform,index,folderpath) {
 							compatible_proteoform.prsm.ms.ms_header.precursor_mono_mass +".";
 		p.appendChild(text2);
 		e_value = compatible_proteoform.prsm.e_value ;
-		BestPrSM = compatible_proteoform.prsm ;
+		let prsm = compatible_proteoform.prsm ;
+		let prot = prsm.annotated_protein;
+		let [fixedPtms, protVarPtms, variablePtms] = json2Ptms(prsm);
+		let massShifts = json2MassShifts(prsm);
+		let sequence = getAminoAcidSequence(0,prot.annotation.residue.length - 1,prot.annotation.residue);
+		let breakPoints = json2BreakPoints(prsm, parseInt(prot.annotation.first_residue_position));
+	
+		let proteoformObj = new Proteoform(prot.proteoform_id, prot.sequence_name, sequence, 
+			prot.annotation.first_residue_position, prot.annotation.last_residue_position, prot.proteoform_mass, massShifts, fixedPtms, protVarPtms, variablePtms)
+		BestPrSM = new Prsm(prsm.prsm_id, proteoformObj, "", "", breakPoints, prsm.matched_peak_number, 
+    	prsm.matched_fragment_number, prsm.annotated_protein.unexpected_shift_number,
+    	prsm.e_value, prsm.fdr);
 	}
 	div_container.appendChild(div);
 	div_container.appendChild(h2);

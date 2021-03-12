@@ -1,12 +1,11 @@
 class Envelope{
-    color_ = "";
-    level_ = -1;
-    theoPeaks_ = [];
-
     constructor(monoMass, charge, intensity = -1){
         this.monoMass_ = monoMass;
         this.charge_ = charge;
         this.intensity_ = intensity;
+        this.color_ = "";
+        this.level_ = -1;
+        this.peaks_ = [];
     }
     getMonoMass(){
         return this.monoMass_;
@@ -24,7 +23,7 @@ class Envelope{
         return this.level_;
     }
     getTheoPeaks(){
-        return this.theoPeaks_;
+        return this.peaks_;
     }
     setColor(color){
         this.color_ = color;
@@ -33,6 +32,6 @@ class Envelope{
         this.level_ = level;
     }
     addTheoPeaks(peak){
-        this.theoPeaks_.push(peak);
+        this.peaks_.push(peak);
     }
 }
