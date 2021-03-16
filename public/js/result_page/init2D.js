@@ -79,7 +79,7 @@ function init2D(scan) {
                                     let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
                                     for (let j = 0; j < env_peaks.length; j++){
                                         let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
-                                        envObj.addTheoPeaks(peak);
+                                        envObj.addPeaks(peak);
                                     }
                                     envelopes.push(envObj);
                                 })
@@ -170,7 +170,7 @@ function loadPeakList1(scanID, prec_mz) {
                         let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
                         for (let j = 0; j < env_peaks.length; j++){
                             let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
-                            envObj.addTheoPeaks(peak);
+                            envObj.addPeaks(peak);
                         }
                         envelopes.push(envObj);
                     })
@@ -232,11 +232,11 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 }
                 
                 envtable.forEach( env => {
-                    let envObj = new Envelope(env.mono_mass, env.charge)
+                    let envObj = new Envelope(env.mono_mass, env.charge);
                     let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modifiablePeaks);
                     for (let j = 0; j < env_peaks.length; j++){
                         let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
-                        envObj.addTheoPeaks(peak);
+                        envObj.addPeaks(peak);
                     }
                     envelopes.push(envObj);
                 })
