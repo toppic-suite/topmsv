@@ -77,7 +77,7 @@ function getPrecursorMz(projectDir, ms2Scan){
 }
 function calcInitRange(precMz){
     let mzRange = {};
-    let specPara = new SpectrumParameters();
+    let specPara = new SpectrumViewParameters();
     if (parseFloat(precMz) > 0){//if has ms2 scan, calculate m/z range}
         specPara.updateMzRange(precMz);
         mzRange["mzmin"] = specPara.winMinMz;
