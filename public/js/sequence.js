@@ -51,7 +51,7 @@ function inspect(scanID,scanNum) {
 
                                     if (fixedPtmList.length < 1) {//display fixed ptm even when it was not found in the seq
                                         ptmData["fixedPtms"].forEach(fixedPtm => {
-                                            let newPtm = new Ptm('', fixedPtm.mass, fixedPtm.name);
+                                            let newPtm = new Mod('', fixedPtm.mass, fixedPtm.name);
                                             fixedPtmList.push(new MassShift('', '', newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));                  
                                         })
                                     }
@@ -194,7 +194,7 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
                 if (!isPtmFound) {
                     ptmData["varPtms"].forEach(varPtm => {
                         if (varPtm.name == ptmName) {
-                            let newPtm = new Ptm(seq[start - 1], varPtm.mass, varPtm.name);
+                            let newPtm = new Mod(seq[start - 1], varPtm.mass, varPtm.name);
                             unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "unexpected", newPtm.getShift(), newPtm));     
                             isPtmFound = true;
                         }
@@ -203,7 +203,7 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
                 if (!isPtmFound) {
                     ptmData["commonPtms"].forEach(comPtm => {
                         if (comPtm.name == ptmName) {
-                            let newPtm = new Ptm(seq[start - 1], comPtm.mass, comPtm.name);
+                            let newPtm = new Mod(seq[start - 1], comPtm.mass, comPtm.name);
                             unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "unexpected", newPtm.getShift(), newPtm));    
                             isPtmFound = true;
                         }
@@ -211,7 +211,7 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
                 }if (!isPtmFound) {
                     ptmAnnoData ["ptms"].forEach(annoPtm => {
                         if (annoPtm.name == ptmName) {
-                            let newPtm = new Ptm(seq[start - 1], annoPtm.mono_mass, annoPtm.name);
+                            let newPtm = new Mod(seq[start - 1], annoPtm.mono_mass, annoPtm.name);
                             unknownMassShiftList.push(new MassShift(newSeq.length - 1, newSeq.length, newPtm.getShift(), "unexpected", newPtm.getShift(), newPtm));    
                             isPtmFound = true;
                         }
