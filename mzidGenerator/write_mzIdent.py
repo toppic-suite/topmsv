@@ -1,7 +1,6 @@
 import os
 from psims.mzid import MzIdentMLWriter
 import csv
-from identipy import utils
 import re
 
 PROTON = 1.007276466879
