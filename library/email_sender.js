@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-
+const nodemailerAuth = require('../nodemailer-auth');
 /**
  * Class representing a email sender
  */
@@ -11,28 +11,9 @@ class EmailSender {
      * @param {string} emailAddress 
      */
     constructor(subject, text, emailAddress) {
-        this.transport = nodemailer.createTransport("SMTP",{
-            host: "smtp.office365.com", // hostname
-            secureConnection: false, // TLS requires secureConnection to be false
-            port: 587, // port for secure SMTP
-            tls: {
-               ciphers:'SSLv3'
-         },
-            auth: {
-                //user: 'datalink_sender@outlook.com',
-                //pass: 'iupuiSOICWK316'
-                user: 'topmsv@outlook.com',
-                pass: 'iupuiSOIC'
-            }
-        });
-        
-        this.message = {
-            //from: 'datalink_sender@outlook.com', // Sender address
-            from: 'topmsv@outlook.com', // Sender address
-            to: 'default@gmail.com',         // List of recipients
-            subject: 'Default Subject', // Subject line
-            text: 'Default text' // Plain text body
-        };
+        this.transport = nodemailerAuth.transport;//nodemailer-auth.js    
+        this.message = nodemailerAuth.message;
+
         this.message.subject = subject;
         this.message.text = text;
         this.message.to = emailAddress;
