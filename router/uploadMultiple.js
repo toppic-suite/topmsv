@@ -14,6 +14,7 @@ const makeid = require("../library/makeid");
 const ifExists = require("../library/ifExists");
 const BetterDB = require('better-sqlite3');
 const nodemailer = require('nodemailer');
+const nodemailerAuth = require('../nodemailer-auth');
 const fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
@@ -114,10 +115,10 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
                         })
                     })
                 })    
-                message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
-                message.subject = "Your data has been uploaded, please wait for processing";
-                message.to = emailtosend;
-                transport.sendMail(message, function(err, info) {
+                nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
+                nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
+                nodemailerAuth.message.to = emailtosend;
+                nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
                     if (err) {
                         console.log(err)
                     } 
@@ -130,29 +131,5 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
         );
     })
 });
-
-const transport = nodemailer.createTransport({
-    //host: "smtp-mail.outlook.com", // hostname
-    host: "smtp.office365.com", // hostname
-    secureConnection: false, // TLS requires secureConnection to be false
-    port: 587, // port for secure SMTP
-    tls: {
-        ciphers:'SSLv3'
-    },
-    auth: {
-        //user: 'datalink_sender@outlook.com',
-        //pass: 'iupuiSOICWK316'
-        user: 'topmsv@outlook.com',
-        pass: 'iupuiSOIC'
-    }
-});
-
-const message = {
-    //from: 'datalink_sender@outlook.com', // Sender address
-    from: 'topmsv@outlook.com',
-    to: 'default@gmail.com',         // List of recipients
-    subject: 'Default Subject', // Subject line
-    text: 'Default text' // Plain text body
-};
 
 module.exports = uploadMultiple;
