@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Top View</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
+    <link href="css/home.css" type="text/css" rel="stylesheet" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-154408351-1');
+    </script>
+</head>
+<body class="container">
+
+<main>
+    <div class="row">
+        <div class="col-sm-11">
+            <h2 style="color: #0099DD;"><strong>Top View</strong></h2>
+        </div>
+        <div class="col-sm-1">
+            <a href="/auth/google" id="signIn">Sign In</a>
+        </div>
+    </div>
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#">Home</a></li>
+        <li role="presentation"><a href="/submit">Upload</a></li>
+        <li role="presentation"><a href="/projects">My projects</a></li>
+    </ul>
+    <br>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Project Name</th>
+                <th scope="col">File Name</th>
+                <th scope="col">Project Status</th>
+                <th scope="col">Envelope Status</th>
+				<th scope="col">Feature Status</th>
+                <th scope="col">Sequence Status</th>
+                <th scope="col">Description</th>
+                <th scope="col">Project Link</th>
+                <th scope="col">Upload Time</th>
+            </tr>
+            </thead>
+
+
+
+            <% for (var i = 0; i < projects.length; i++) { %>
+                <tr>
+                    <td scope="row"><%= i+1%></td>
+                    <td><%= projects[i].projectName %></td>
+                    <td><%= projects[i].fileName %></td>
+                    <td><%= projects[i].projectStatus %></td>
+                    <td><%= projects[i].envStatus %></td>
+					<td><%= projects[i].featureStatus %></td>
+                    <td><%= projects[i].seqStatus %></td>
+                    <td><%= projects[i].description %></td>
+                    <td><a href="<%= projects[i].projectLink %>">Link</a> </td>
+                    <td><%= projects[i].uploadTime %></td>
+                </tr>
+            <% } %>
+
+        </table>
+    </div>
+</main>
+<script type="text/javascript" src="js/home.js"></script>
+</body>
+</html>
