@@ -41,13 +41,14 @@ function loadMsOne(filename, ms1SvgId){
   }
 }
 
-function loadMsTwo(specIdList, fileList, proteoform, divId, navId){
+function loadMsTwo(specIdList, fileList, proteoform, prsm, divId, navId){
   let len = fileList.length;
   let cnt = 0;
   let specList = [];
   let graphList = [];
   let monoGraphList = [];
   let matchedPairList = [];
+  let matchedIonList = [];
   for (let i = 0; i < len; i++) {
     let filename = fileList[i];
     let script= document.createElement('script');
@@ -96,7 +97,9 @@ function loadMsTwo(specIdList, fileList, proteoform, divId, navId){
 
           let deconvPeaks = prsm_data.prsm.ms.peaks.peak;
           let [ions, monoIons, matchedPairs] = getIons(specId, deconvPeaks, envelopes);
+
           matchedPairList = matchedPairs;
+          prsm.setMatchedPeakEnvelopePairs(matchedPairList);
           specList[j].ions = ions;
 
           let spGraph = new SpectrumGraph(svgId,peaks);
@@ -175,7 +178,7 @@ function loadMsTwo(specIdList, fileList, proteoform, divId, navId){
   //graphList and monoGraphList are returned with valid values
   let saveSpectrumObj = new SaveSpectrum(graphList, monoGraphList);
   saveSpectrumObj.main();
-  return [specList, graphList, monoGraphList, matchedPairList];
+  return [specList, graphList, monoGraphList];
 }
 
 /**
@@ -258,10 +261,11 @@ function getIons(specId, deconvPeaks, envelopes){
   let matchedPairList = [];
   let ions = [];
   let monoIons = [];
-  let ionId = 0;
+  //let ionId = 0;
   deconvPeaks.forEach(function(element) {
     if(element.hasOwnProperty('matched_ions_num') && 
       element.spec_id == specId) {
+
       let ionData;
       let monoIonData;
       let ionText = "";
@@ -305,11 +309,10 @@ function getIons(specId, deconvPeaks, envelopes){
         element.matched_ions.matched_ion.ion_type[0] == "C") {
           ionTerm = "N";
         }
-        let matchedIonObj = new Ion(ionId, ionType, ionTerm, element.matched_ions.matched_ion.match_shift);
+        let matchedIonObj = new Ion(ionText, ionType, ionTerm, element.matched_ions.matched_ion.match_shift);
         let matchedPair = new MatchedPeakEnvelopePair(element.matched_ions.matched_ion.theoretical_mass, matchedPeakObj, matchedIonObj);
         matchedPair.addEnvelope(envPeaks);
         matchedPairList.push(matchedPair);
-        ionId++;
       }
       else {
         for (let i = 0; i < parseInt(element.matched_ions_num); i++) {
@@ -342,11 +345,10 @@ function getIons(specId, deconvPeaks, envelopes){
           element.matched_ions.matched_ion[i].ion_type[0] == "C") {
             ionTerm = "N";
           }
-          let matchedIonObj = new Ion(ionId, ionType, ionTerm, element.matched_ions.matched_ion[i].match_shift);
+          let matchedIonObj = new Ion(ionText, ionType, ionTerm, element.matched_ions.matched_ion[i].match_shift);
           let matchedPair = new MatchedPeakEnvelopePair(element.matched_ions.matched_ion[i].theoretical_mass, matchedPeakObj, matchedIonObj);
           matchedPair.addEnvelope(envPeaks);
           matchedPairList.push(matchedPair);
-          ionId++;
         }
       }
       

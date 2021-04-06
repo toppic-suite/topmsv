@@ -1,12 +1,13 @@
 class Prsm {
-  constructor(id, proteoform, ms1Spec, ms2Spec, breakPoints, matchedPeaks = -1, matchedIons = -1, eValue = -1, qValue = -1) {
+  matchedPeaks_ = [];
+  matchedIons_ = [];
+
+  constructor(id, proteoform, ms1Spec, ms2Spec, breakPoints, eValue = -1, qValue = -1) {
     this.id_ = id;
     this.proteoform_ = proteoform;
     this.ms1Spec_ = ms1Spec;
     this.ms2Spec_ = ms2Spec;
     this.breakPoints_ = breakPoints;
-    this.matchedPeaks_ = parseInt(matchedPeaks);
-    this.matchedIons_ = parseInt(matchedIons);
     //combine matched* into one matchedpeakpair
     this.eValue_ = parseFloat(eValue);
     this.qValue_ = parseFloat(qValue);
@@ -24,10 +25,10 @@ class Prsm {
     return this.ms2Spec_;
   }
   getMatchedPeakCount() {
-    return this.matchedPeaks_;
+    return this.matchedPeaks_.length;
   }
   getMatchedFragIonCount() {
-    return this.matchedIons_;
+    return this.matchedIons_.length;
   }
   getUnexpectedModCount() {
     let protObj = this.getProteoform();
@@ -49,5 +50,16 @@ class Prsm {
   }
   setProteoform(proteoform) {
     this.proteoform_ = proteoform;
+  }
+  setMatchedPeakEnvelopePairs(matchedPairs) {
+    let ionsNoDup = [];
+    matchedPairs.forEach(pair => {
+      this.matchedPeaks_.push(pair.getPeak());
+      let ion = pair.getIon().getId();
+      if (ionsNoDup.indexOf(ion) < 0) {
+        this.matchedIons_.push(pair.getIon());
+        ionsNoDup.push(ion);
+      } 
+    })
   }
 }
