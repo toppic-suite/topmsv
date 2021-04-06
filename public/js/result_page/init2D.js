@@ -248,7 +248,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
 
                 spGraph = new SpectrumGraph("spectrum2",peaks);
                 spGraph.addRawSpectrumAnno(envelopes, ions);
-                spGraph.para.updateMzRange(prec_mz);
+                //spGraph.para.updateMzRange(prec_mz);
                 spGraph.redraw();
             }else {
                 for (let i = 0; i < peakList2_g.length; i++){
@@ -259,7 +259,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 spectrumDataPeaks.assignLevelPeaks(peaks);
 
                 spGraph = new SpectrumGraph("spectrum2",peaks);
-                spGraph.para.updateMzRange(prec_mz);
+                //spGraph.para.updateMzRange(prec_mz);
                 spGraph.redraw();
             }
             document.getElementById("scanID2").innerHTML = scanID;
