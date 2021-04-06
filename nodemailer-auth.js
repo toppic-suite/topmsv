@@ -1,20 +1,20 @@
 const nodemailer = require('nodemailer');
 
 const transport = nodemailer.createTransport({
-    host: "smtp.office365.com", // hostname
+    host: "HOSTNAME", // hostname
     secureConnection: false, // TLS requires secureConnection to be false
     port: 587, // port for secure SMTP
     tls: {
         ciphers:'SSLv3'
     },
     auth: {
-        user: 'topmsv01@outlook.com',
-        pass: 'iupuiSOIC'
+        user: 'USERNAME',
+        pass: 'PW'
     }
 });
 
 const message = {
-    from: 'topmsv01@outlook.com',
+    from: 'YOUR_EMAIL',
     to: 'default@gmail.com',         // List of recipients
     subject: 'Default Subject', // Subject line
     text: 'Default text' // Plain text body
