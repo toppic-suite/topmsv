@@ -28,21 +28,23 @@ class GraphZoom
 
         this.scrollTimer = setTimeout(() => {
             let axis = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
-
             if (axis == null){
-                if (e.ctrlKey){//if control key is pressed --> intensity zoom
-                    let scaleFactor = 0;
-                    if (e.deltaY > 0) {
-                        scaleFactor = 0.75;
-                        this.adjustPeakHeight(scaleFactor);
+                //check if cursor is inside the graph plane
+                if (GraphUtil.findObjectHover(e, Graph.gridGroup)) {
+                    if (e.ctrlKey){//if control key is pressed --> intensity zoom
+                        let scaleFactor = 0;
+                        if (e.deltaY > 0) {
+                            scaleFactor = 0.75;
+                            this.adjustPeakHeight(scaleFactor);
+                        }
+                        else if (e.deltaY < 0){
+                            scaleFactor = 1.5;
+                            this.adjustPeakHeight(scaleFactor);
+                        }
                     }
-                    else if (e.deltaY < 0){
-                        scaleFactor = 1.5;
-                        this.adjustPeakHeight(scaleFactor);
+                    else{
+                        this.onZoomFromEventListener(e, "both");
                     }
-                }
-                else{
-                    this.onZoomFromEventListener(e, "both");
                 }
             }
             else{

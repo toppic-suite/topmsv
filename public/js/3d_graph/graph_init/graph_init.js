@@ -36,22 +36,37 @@ class GraphInit{
     static createAxis = () => {
         let xAxisGeo = new THREE.Geometry();
         let yAxisGeo = new THREE.Geometry();
+        let xAxisSubGeo = new THREE.Geometry();//these two axes are not the main axes -- for zoom purpose only
+        let yAxisSubGeo = new THREE.Geometry();
+
         let axisMaterial = new THREE.LineBasicMaterial({ color:Graph.gridColor });
 
         yAxisGeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
         yAxisGeo.vertices.push(new THREE.Vector3(0, 0, 0));
 
+        yAxisSubGeo.vertices.push(new THREE.Vector3(Graph.gridRange, 0, Graph.gridRange));
+        yAxisSubGeo.vertices.push(new THREE.Vector3(Graph.gridRange, 0, 0));
+        
         xAxisGeo.vertices.push(new THREE.Vector3(Graph.gridRange,0, Graph.gridRange));
         xAxisGeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
 
+        xAxisSubGeo.vertices.push(new THREE.Vector3(Graph.gridRange,0, 0));
+        xAxisSubGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+
         let xAxis = new THREE.LineSegments(xAxisGeo, axisMaterial);
         let yAxis = new THREE.LineSegments(yAxisGeo, axisMaterial);
+        let xAxisSub = new THREE.LineSegments(xAxisSubGeo, axisMaterial);
+        let yAxisSub = new THREE.LineSegments(yAxisSubGeo, axisMaterial);
 
         xAxis.name = "xAxis";
         yAxis.name = "yAxis";
+        xAxisSub.name = "xAxis";
+        yAxisSub.name = "yAxis";
         
         Graph.axisGroup.add(xAxis);
         Graph.axisGroup.add(yAxis);
+        Graph.axisGroup.add(xAxisSub);
+        Graph.axisGroup.add(yAxisSub);
     }
     static createGrid = () => {
         let y = 0;
