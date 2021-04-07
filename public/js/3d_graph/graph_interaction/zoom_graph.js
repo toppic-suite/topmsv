@@ -27,7 +27,7 @@ class GraphZoom
             let axis = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
             if (axis == null){
                 //check if cursor is inside the graph plane
-                if (GraphUtil.findObjectHover(e, Graph.gridGroup)) {
+                /*if (GraphUtil.findObjectHover(e, Graph.gridGroup)) {
                     if (e.ctrlKey){//if control key is pressed --> intensity zoom
                         let scaleFactor = 0;
                         if (e.deltaY > 0) {
@@ -42,6 +42,20 @@ class GraphZoom
                     else{
                         this.onZoomFromEventListener(e, "both");
                     }
+                }*/
+                if (e.ctrlKey){//if control key is pressed --> intensity zoom
+                    let scaleFactor = 0;
+                    if (e.deltaY > 0) {
+                        scaleFactor = 0.75;
+                        this.adjustPeakHeight(scaleFactor);
+                    }
+                    else if (e.deltaY < 0){
+                        scaleFactor = 1.5;
+                        this.adjustPeakHeight(scaleFactor);
+                    }
+                }
+                else{
+                    this.onZoomFromEventListener(e, null);
                 }
             }
             else{
@@ -84,6 +98,24 @@ class GraphZoom
         }
         else{
             scaleFactor = 1.2;
+        }
+        if (axisName == null) {
+            if (curmz >= Graph.viewRange.mzmin && curmz <= Graph.viewRange.mzmax) {
+                if (currt >= Graph.viewRange.rtmin && currt <= Graph.viewRange.rtmax) {
+                    axisName = "both";
+                }
+                else{
+                    axisName = "mz";
+                }
+            }
+            else if (currt >= Graph.viewRange.rtmin && currt <= Graph.viewRange.rtmax) {
+                if (curmz <= Graph.viewRange.mzmin && curmz >= Graph.viewRange.mzmin) {
+                    axisName = "both";
+                }
+                else{
+                    axisName = "rt";
+                }
+            }
         }
         //figure out where the cursor is (near x axis, y axis)
         if (axisName == "rt"){         
