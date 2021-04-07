@@ -45,11 +45,24 @@ class GraphZoom
                 }
             }
             else{
-                if (axis.name == "xAxis"){
-                    this.onZoomFromEventListener(e, "mz");
+                if (e.ctrlKey){//if control key is pressed --> intensity zoom
+                    let scaleFactor = 0;
+                    if (e.deltaY > 0) {
+                        scaleFactor = 0.75;
+                        this.adjustPeakHeight(scaleFactor);
+                    }
+                    else if (e.deltaY < 0){
+                        scaleFactor = 1.5;
+                        this.adjustPeakHeight(scaleFactor);
+                    }
                 }
-                else if(axis.name == "yAxis"){
-                    this.onZoomFromEventListener(e, "rt");
+                else{
+                    if (axis.name == "xAxis"){
+                        this.onZoomFromEventListener(e, "mz");
+                    }
+                    else if(axis.name == "yAxis"){
+                        this.onZoomFromEventListener(e, "rt");
+                    }
                 }
             }
         }, 5); 
