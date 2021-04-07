@@ -16,17 +16,20 @@ class GraphControl{
     static adjustIntensity = (peaks, scale) => {
         //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
         //peak.height = adjusted y (current Y), peak.int = original intensity
+        let plotGroup = Graph.scene.getObjectByName("plotGroup");
         peaks.forEach((peak) => {
             if (peak.lowPeak){
-                let resultHeight = scale * peak.int;
+                let resultHeight = peak.height * plotGroup.scale.y;
                 if (resultHeight < Graph.minPeakHeight){
                     //peak y should be updated so that the resulting height is still 0.05
-                    let newY = Graph.minPeakHeight/ scale;
+                    let newY = Graph.minPeakHeight/plotGroup.scale.y;
+                    peak.height = newY;
                     peak.geometry.attributes.position.array[4] = newY;
                     peak.geometry.attributes.position.needsUpdate = true;
                 }else{
                     //when the scaled intensity would be > 0.05
-                    peak.geometry.attributes.position.array[4] = peak.int;
+                    peak.height = peak.height;
+                    peak.geometry.attributes.position.array[4] = peak.height;
                     peak.geometry.attributes.position.needsUpdate = true;
                 }
             }
@@ -46,6 +49,7 @@ class GraphControl{
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             int_squish = 0;
         }
+        int_squish = 1;
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");

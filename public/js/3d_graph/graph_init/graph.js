@@ -39,6 +39,7 @@ class Graph{
         
         /*metadata and data control*/
         Graph.minPeakHeight = 0.05;
+        Graph.maxPeakHeight = 50;
         Graph.maxPeaks = 2000;
         Graph.currentData = [];//current peak data on the 3d graph
 
@@ -122,13 +123,18 @@ class Graph{
             }) 
         })
     }
+    setInitScale = () => {
+        let plotGroup = Graph.scene.getObjectByName("plotGroup");
+        let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
+        plotGroup.scale.set(plotGroup.scale.x, scale, plotGroup.scale.z);
+    }
     main = (mzmin, mzmax, scanNum) => {
         this.setProperties();
         this.createGroups();
-
         let promise = this.initDataRange();
 
         promise.then(()=>{
+            this.setInitScale();
             GraphInit.main(mzmin, mzmax, scanNum);
         })
     }

@@ -10,15 +10,12 @@ class GraphZoom
     
     adjustPeakHeight = (scaleFactor) => {
         let peaks = Graph.scene.getObjectByName("plotGroup");
-        let dataGroup = Graph.scene.getObjectByName("dataGroup");
-        let oriScale = dataGroup.scale.y;
+        let oriScale = peaks.scale.y;
 
-        dataGroup.scale.set(dataGroup.scale.x, oriScale * scaleFactor, dataGroup.scale.z);
-
+        peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
         if (scaleFactor > 1){
             GraphControl.adjustIntensity(peaks.children, oriScale * scaleFactor);
         }
-        
         GraphRender.renderImmediate();
     }
     onZoom = (e) => {

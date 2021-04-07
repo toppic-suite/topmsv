@@ -135,7 +135,8 @@ class GraphData{
             else{
                 for (let i = 0; i < Graph.currentData.length; i++){   
                     GraphData.plotPoint(Graph.currentData[i]);
-                }  
+                }        
+                let plotGroup = Graph.scene.getObjectByName("plotGroup");
             }
             Graph.viewRange["intscale"] = 1;
 
@@ -238,7 +239,7 @@ class GraphData{
     /*plots a peak as a vertical line on the graph*/
     static plotPoint = (point) => {
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
-
+        
         let id = point.ID;
         let mz = point.MZ;
         let rt = point.RETENTIONTIME;
@@ -250,21 +251,21 @@ class GraphData{
         let currt = (Graph.curRT/60).toFixed(4);
         let y = inten;    
         let minHeight = Graph.minPeakHeight;
-        let scale = Graph.gridRangeVertical / Graph.viewRange.intmax;
+        //let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
         //if y is much smaller than the highest intensity peak in the view range
-        if (scale * y < minHeight){
+        if (y * plotGroup.scale.y < minHeight){
             //increase y so that later y is at least minHeight when scaled
-            y = y * (minHeight/(scale * y));
+            y = minHeight/plotGroup.scale.y;
             lowPeak = true;
         }
-
+  
         let linegeo = new THREE.BufferGeometry();
         
         linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
             0, 0, 0,
             0, y, 0,
         ]), 3));
-    
+        
         let linemat = new THREE.LineBasicMaterial({color: lineColor});
     
         if ((point.RETENTIONTIME/60).toFixed(4) == currt){
