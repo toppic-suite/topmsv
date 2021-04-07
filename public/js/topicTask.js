@@ -131,6 +131,12 @@
         }
         console.log("command", command);
 
+        if (!isDecoyGenerated && Spectrum_cutoff_type == "FDR") {
+            alert("Decoy database option should be checked if using FDR as spectum cutoff type!");
+        }if (!isDecoyGenerated && Proteoform_cutoff_type == "FDR") {
+            alert("Decoy database option should be checked if using FDR as proteoform cutoff type!");
+        }
+
         if (fastaFile.files[0] === undefined) {
             alert("Please choose a fasta database!");
         }else if(!fastaFile.files[0].name.match(/.(fasta)$/i)){
@@ -139,7 +145,7 @@
             alert('Please upload a txt file for fixed ptm file!');
         }else if (ptmShiftFile.files[0] !== undefined && !ptmShiftFile.files[0].name.match(/.(txt)$/i)){
             alert("Please upload a txt file for shift ptm file!")
-        } else {
+        }else {
             var formData = new FormData();
             formData.append('fastaFile', fastaFile.files[0]);
             // formData.append('lcmsFeatureFile', lcmsFeatureFile.files[0]);
