@@ -100,7 +100,7 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
                             }
                             while (true) {
                                 if(!result) {
-                                    insertRowSync(id, projectname, file,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus, "true");
+                                    insertRowSync(id, projectname, file,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus, "true", 0);
                                     //create path based on OS type    
                                     let app = './cpp/bin/mzMLReader';
 
