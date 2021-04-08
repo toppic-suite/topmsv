@@ -136,7 +136,7 @@ button#deleteSeq {
 button#topfdtask {
     position: relative;
     left: 40%;
-    font-size: 93%;
+    /*font-size: 93%;*/
     background-color: #555555;
     color: white;
     border: none;
@@ -148,7 +148,7 @@ button#topfdtask {
 button#toppicTask {
     position: relative;
     left: 40%;
-    font-size: 93%;
+    /*font-size: 93%;*/
     background-color: #555555;
     color: white;
     border: none;
@@ -249,7 +249,36 @@ button#uploadSequence {
     background-color: #555555;
     color: white;
     border: none;
+
     padding: 2px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#resetGraphs {
+    position: relative;
+    left: 25%;
+    /*font-size: 95%;*/
+    background-color: #555555;;
+    color: white;
+    border: 1px;
+    border-style:solid;
+    border-color:#555555;
+    padding: 2px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#helpBtn {
+    position: relative;
+    left: 115%;
+    /*font-size: 95%;*/;
+    background-color: #555555;;
+    color: white;
+    border: 1px;
+    border-style:solid;
+    border-color:#555555;
+    padding: 2px 7px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
