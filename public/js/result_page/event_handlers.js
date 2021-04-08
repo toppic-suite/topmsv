@@ -17,6 +17,14 @@ $( document ).ready(function() {
         }
     },false)
 
+    let resetButton = document.getElementById('resetGraphs');
+    resetButton.addEventListener('click', function() {
+        let min = document.getElementById("rangeMin").value;
+
+        init2D(parseInt(min));
+        update3D(parseInt(min));
+    })
+
     let prev1 = document.getElementById('prev1');
     prev1.addEventListener('click', function () {
         let scanID1 = document.getElementById("scanID1").innerHTML;
