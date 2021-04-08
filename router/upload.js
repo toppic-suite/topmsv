@@ -91,7 +91,7 @@ const upload = router.post('/upload', function (req, res) {
                     while (true) {
                         // console.log(result);
                         if(!result) {
-                            insertRowSync(id, projectname, txtFile.name, description, des_txtFile, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus, "true");
+                            insertRowSync(id, projectname, txtFile.name, description, des_txtFile, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus, "true", 0);
                             // insertDataset(eid, projectname, description, projectsID);
                             nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + txtFile.name + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
@@ -181,7 +181,7 @@ const upload = router.post('/upload', function (req, res) {
                             while (true) {
                                 // console.log(result);
                                 if(!result) {
-                                    insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,0, envFile1.name,uid,publicStatus, "true");
+                                    insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,0, envFile1.name,uid,publicStatus, "true", 0);
                                     // insertDataset(eid, projectname, description, projectsID);
                                     nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                     nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
@@ -236,7 +236,7 @@ const upload = router.post('/upload', function (req, res) {
                         while (true) {
                             // console.log(result);
                             if(!result) {
-                                insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus, "true");
+                                insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus, "true", 0);
                                 // insertDataset(eid, projectname, description, projectsID);
                                 nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";

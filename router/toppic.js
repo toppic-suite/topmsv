@@ -12,16 +12,14 @@ const toppic = router.get('/toppic', function (req, res) {
         res.end();
 
     } else {
-        // console.log(req.session.passport);
-        // console.log(req.query.projectCode);
+        //console.log(req.session.passport);
+        //console.log(req.query.projectCode);
         let projectCode = req.query.projectCode;
         if (!projectCode) {
             res.write("No project selected for this topic task.");
             return;
         } else {
-            res.render('pages/topicTask', {
-                projectCode
-            });
+            res.render('pages/topicTask', {projectCode});
         }
     }
 });
