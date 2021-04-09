@@ -269,6 +269,46 @@
 				</div>
 			</div>
 		</div>
+		<!--help modal-->
+		<div id="helpModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Key operations</h4>
+					</div>
+					<div class="modal-body">
+						<h4 style="margin-top: 0"></h4>
+						<ul>
+							<li>Mouse Interactions: 
+								<ul class="textList">
+								  <li>Pan: hold down a left button and move the mouse to change the data window.</li>
+								  <li>Zoom: scroll a mouse wheel to change the data window. Zoom affects the axis that is nearest to a mouse cursor. 
+									  For 3D view, when a cursor is inside the graph plane, it will zoom both m/z and retention time axes. 
+									<!--<ul>
+										<li>cursor inside the graph plane: zooms both m/z range and retention time range</li>
+										<li>cursor outside the graph plane, near the top or bottom edge of the graph plane: zooms m/z range</li>
+										<li>cursor outside the graph plane, near the left or right edge of the graph plane: zooms retention time range</li>
+									</ul>-->  
+								  </li>
+								  <li>Operations specific to 3D view
+									<ul>
+										<li>Rotate: hold down a right button and move the mouse to rotate the graph. When the direction of z-axis becomes negative to the viewer, the graph is switched to 2D view.</li>
+										<li>Change Peak Heights: hold down a Ctrl key in the keyboard and scroll a mouse wheel up or down</li>
+									</ul>
+								  </li>
+								  	
+								</ul>
+							  </li>
+						</ul>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="jumbotron" id ="center-div">
 			<div>
 				<span class="projectsummary">
