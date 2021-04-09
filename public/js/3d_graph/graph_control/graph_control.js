@@ -19,7 +19,7 @@ class GraphControl{
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
         peaks.forEach((peak) => {
             if (peak.lowPeak){
-                let resultHeight = peak.height * plotGroup.scale.y;
+                let resultHeight = peak.int * plotGroup.scale.y;
                 if (resultHeight < Graph.minPeakHeight){
                     //peak y should be updated so that the resulting height is still 0.05
                     let newY = Graph.minPeakHeight/plotGroup.scale.y;
@@ -28,7 +28,7 @@ class GraphControl{
                     peak.geometry.attributes.position.needsUpdate = true;
                 }else{
                     //when the scaled intensity would be > 0.05
-                    peak.height = peak.height;
+                    peak.height = peak.int;
                     peak.geometry.attributes.position.array[4] = peak.height;
                     peak.geometry.attributes.position.needsUpdate = true;
                 }

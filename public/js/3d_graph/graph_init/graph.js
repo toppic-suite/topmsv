@@ -76,7 +76,8 @@ class Graph{
         Graph.labelGroup = new THREE.Group();
         Graph.ticksGroup = new THREE.Group();
         Graph.ticklabelGroup = new THREE.Group();
-        Graph.plotGroup = new THREE.Group();
+        Graph.lineMeshGroup = new THREE.Group();//contains line * max peak number
+        Graph.plotGroup = new THREE.Group();// lines that are going to be plotted
         Graph.featureGroup = new THREE.Group();
         Graph.axisGroup = new THREE.Group();
         
@@ -86,6 +87,7 @@ class Graph{
         Graph.labelGroup.name = "labelGroup";
         Graph.ticksGroup.name = "ticksGroup";
         Graph.ticklabelGroup.name = "tickLabelGroup";
+        Graph.lineMeshGroup.name = "lineMeshGroup";
         Graph.plotGroup.name = "plotGroup";
         Graph.featureGroup.name = "featureGroup";
         Graph.axisGroup.name = "axisGroup";
@@ -100,6 +102,29 @@ class Graph{
         Graph.scene.add(Graph.markerGroup);
         Graph.scene.add(Graph.featureGroup);
         Graph.scene.add(Graph.axisGroup);
+    }
+    initPlotGroup = () => {
+        for (let i = 0; i < Graph.maxPeaks; i++) {
+            let linegeo = new THREE.BufferGeometry();
+            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+                0, 0, 0,
+                0, 0, 0,
+            ]), 3));
+            
+            let linemat = new THREE.LineBasicMaterial({color: "white"});
+            let line = new THREE.Line(linegeo, linemat);
+
+            line.position.set(0, 0, 0);
+            line.mz = 0;
+            line.rt = 0;
+            line.int = 0;
+            line.height = 0;
+            line.name = "peak";
+            line.scanID = 0;
+            line.visible = false;
+
+            Graph.plotGroup.add(line);
+        }
     }
     initDataRange = () => {
         return new Promise(function(resolve, reject){
@@ -131,6 +156,7 @@ class Graph{
     main = (mzmin, mzmax, scanNum) => {
         this.setProperties();
         this.createGroups();
+        this.initPlotGroup();
         let promise = this.initDataRange();
 
         promise.then(()=>{

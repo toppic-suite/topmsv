@@ -3,7 +3,7 @@ class GraphData{
     constructor(){}
     /******** GRAPH RESET ******/
     static clearGraph = () => {
-        GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
+        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
@@ -133,10 +133,10 @@ class GraphData{
                 GraphData.plotPoint2D();
             }
             else{
-                for (let i = 0; i < Graph.currentData.length; i++){   
+                /*for (let i = 0; i < Graph.currentData.length; i++){   
                     GraphData.plotPoint(Graph.currentData[i]);
-                }        
-                let plotGroup = Graph.scene.getObjectByName("plotGroup");
+                }    */
+                GraphData.updatePeaks(Graph.currentData);
             }
             Graph.viewRange["intscale"] = 1;
 
@@ -236,6 +236,61 @@ class GraphData{
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.add(peak2DGroup);
     }
+    static updatePeaks = (data) => {
+        //let lineMeshGroup = Graph.lineMeshGroup;
+        let plotGroup = Graph.scene.getObjectByName("plotGroup");
+
+        //iterate through peask in plot group while < data.length;
+        //for the rest of peaks, turn off visibility
+        plotGroup.children.forEach(function(line, index) {
+            if (index < data.length) {
+                let point = data[index];
+                let id = point.ID;
+                let mz = point.MZ;
+                let rt = point.RETENTIONTIME;
+                let inten = point.INTENSITY;
+                let lineColor = point.COLOR;
+
+                let lowPeak = false;
+
+                let currt = (Graph.curRT/60).toFixed(4);
+                let y = inten;    
+                let minHeight = Graph.minPeakHeight;
+                //if y is much smaller than the highest intensity peak in the view range
+                if (y * plotGroup.scale.y < minHeight){
+                    //increase y so that later y is at least minHeight when scaled
+                    y = minHeight/plotGroup.scale.y;
+                    lowPeak = true;
+                }
+                line.geometry.attributes.position.array[4] = y;
+                line.geometry.attributes.position.needsUpdate = true; 
+                line.material.color.setStyle(lineColor);
+                if ((point.RETENTIONTIME/60).toFixed(4) == currt){
+                    line.material.color.setStyle(Graph.currentScanColor);
+                }
+                line.position.set(mz, 0, rt);
+                line.pointid = id;
+                line.mz = mz;
+                line.rt = rt;
+                line.int = inten;
+                line.height = y;
+                line.name = "peak";
+                line.scanID = point.SPECTRAID;
+                line.visible = true;
+
+                if (lowPeak){
+                    line.lowPeak = true;
+                }else{
+                    line.lowPeak = false;
+                }
+            }
+            else{
+                line.visible = false;
+                line.lowPeak = false;
+            }
+           // console.log(line.geometry.attributes.position.array)
+        })
+    }
     /*plots a peak as a vertical line on the graph*/
     static plotPoint = (point) => {
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
@@ -251,7 +306,6 @@ class GraphData{
         let currt = (Graph.curRT/60).toFixed(4);
         let y = inten;    
         let minHeight = Graph.minPeakHeight;
-        //let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
         //if y is much smaller than the highest intensity peak in the view range
         if (y * plotGroup.scale.y < minHeight){
             //increase y so that later y is at least minHeight when scaled
