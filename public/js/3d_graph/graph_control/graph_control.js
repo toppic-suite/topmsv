@@ -105,8 +105,7 @@ class GraphControl{
         // calculate tick frequency
         let mzSpacing = Math.pow(10, Math.floor(Math.log(r.mzrange)/Math.log(10) - 0.5));
         let rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5));
-        
-        GraphUtil.emptyGroup(ticksGroup);
+        GraphUtil.emptyGroup(ticksGroup);   
     
         // properly check if floating-point "value" is a multiple
         // of "divisor" within a tolerance
@@ -123,7 +122,7 @@ class GraphControl{
         for (mz = mzFirst + mzSpacing; mz < r.mzmax; mz += mzSpacing) {
             // This little gem makes it so that tick marks that are a multiple
             // of (10 * the spacing value) are longer than the others
-            long = isMultiple(mz, mzSpacing * 10);
+            long = isMultiple(mz, mzSpacing * 5);
             let rtlen = r.rtrange * (long ? 0.05 : 0.02);
             makeTickMark(mz, mz, rt, rt - rtlen);
     
@@ -136,7 +135,7 @@ class GraphControl{
         let rtFirst = r.rtmin - (r.rtmin % rtSpacing);
         mz = r.mzmin;
         for (rt = rtFirst + rtSpacing; rt < r.rtmax; rt += rtSpacing) {
-            long = isMultiple(rt, rtSpacing * 10);
+            long = isMultiple(rt, rtSpacing * 5);
             let mzlen = r.mzrange * (long ? 0.05 : 0.02);
             makeTickMark(mz, mz - mzlen, rt, rt);
     
