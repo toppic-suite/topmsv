@@ -44,12 +44,20 @@ class GraphControl{
         let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
         let rt_squish = - Graph.gridRange / (r.rtmax - r.rtmin);
         let int_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
-
+        
         if (Graph.viewRange.intmax < 1){
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             int_squish = 0;
         }
-        int_squish = 1;
+        if (heightScale * Graph.peakScale > Graph.maxPeakHeight && Graph.isZoom) {
+            int_squish = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
+        }
+        else{
+            //int_squish = 1;
+            int_squish = Graph.intSquish;
+        }
+        Graph.intSquish = int_squish;
+        //console.log("int_squish", int_squish)
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");

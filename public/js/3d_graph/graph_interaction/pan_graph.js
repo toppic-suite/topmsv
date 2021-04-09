@@ -14,6 +14,7 @@ class GraphPan{
     GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT);
 }
   onMouseDown = (e) => {
+    Graph.isZoom = false;
     if (e.button === 0) {
         let mousePoint = GraphUtil.getMousePosition(e);
         if (mousePoint === null) {

@@ -28,7 +28,9 @@ class Graph{
 
         /*on scaling and repositioning objects*/
         Graph.rangeTransform = new THREE.Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
-
+        Graph.peakScale = 0;
+        Graph.intSquish = 1;//store previous int_squish
+        
         /*initial data range -- to be replaced with incoming data*/
         Graph.dataRange = {};
         Graph.viewRange = {};
@@ -39,7 +41,7 @@ class Graph{
         
         /*metadata and data control*/
         Graph.minPeakHeight = 0.05;
-        Graph.maxPeakHeight = 50;
+        Graph.maxPeakHeight = 10;
         Graph.maxPeaks = 2000;
         Graph.currentData = [];//current peak data on the 3d graph
 
@@ -67,6 +69,9 @@ class Graph{
 
         /*whether to update values in the text box*/
         Graph.isUpdateTextBox = true;
+
+        /*whether redraw is triggered by pan or zoom - determines whether peak inte is adjusted or not*/
+        Graph.isZoom = false;
     }
     createGroups = () => {
         /*groups to hold different graph elements */
