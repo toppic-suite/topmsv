@@ -5,7 +5,7 @@ class GraphData{
     static clearGraph = () => {
         //GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
-        GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
+        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     static drawCurrentScanMarker = () => {
@@ -130,10 +130,10 @@ class GraphData{
         })
     }
      /******** PLOT PEAKS ******/
-    static draw = (curRT) => {          
+    /*static draw = (curRT) => {          
         const curViewRange = Graph.viewRange;
         Graph.curRT = curRT;
-        let promise = LoadData.load3dData(curViewRange);
+        let promise = await LoadData.load3dData(curViewRange);
 
         promise.then(peakData => {
             Graph.currentData = peakData;
@@ -153,17 +153,47 @@ class GraphData{
                 GraphData.drawCurrentScanMarker();
             }
             GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
+            console.log("1");
             return 0;
         }).then(result => {
+            console.log("2");
             let promise = GraphFeature.drawFeature(Graph.viewRange);
             promise.then(()=>{
-                GraphRender.renderImmediate();
+                console.log("6");
                 return 0;
             })  
         }).then(result => {
+            console.log("7");
+
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
         });
+    }*/
+    static draw = async(curRT) => {          
+        const curViewRange = Graph.viewRange;
+        Graph.curRT = curRT;
+        //Graph.currentData = await LoadData.load3dData(curViewRange);
+        GraphData.getInteRange(Graph.currentData);
+
+        //if camera angle is perpendicular to the graph plane
+        if (Graph.isPerpendicular){
+            //GraphData.plotPoint2D();
+        }
+        else{
+            //GraphData.updatePeaks(Graph.currentData);
+        }
+        Graph.viewRange["intscale"] = 1;
+
+        // make sure the groups are plotted and update the view
+        if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
+            //GraphData.drawCurrentScanMarker();
+        }
+        GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
+
+        await GraphFeature.drawFeature(Graph.viewRange);
+
+        GraphControl.updateViewRange(Graph.viewRange);
+        GraphRender.renderImmediate();
     }
     static drawNoNewData = (curRT) => {
         //if camera angle is perpendicular to the graph plane
@@ -267,7 +297,6 @@ class GraphData{
         dataGroup.add(peak2DGroup);
     }
     static updatePeaks = (data) => {
-        //let lineMeshGroup = Graph.lineMeshGroup;
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
 
         //iterate through peask in plot group while < data.length;
@@ -324,11 +353,10 @@ class GraphData{
                 line.visible = false;
                 line.lowPeak = false;
             }
-           // console.log(line.geometry.attributes.position.array)
         })
     }
     /*plots a peak as a vertical line on the graph*/
-    static plotPoint = (point) => {
+    /*static plotPoint = (point) => {
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
         
         let id = point.ID;
@@ -376,5 +404,5 @@ class GraphData{
             line.lowPeak = true;
         }
         plotGroup.add(line);
-    }
+    }*/
 }
