@@ -57,7 +57,6 @@ class GraphControl{
             int_squish = Graph.intSquish;
         }
         Graph.intSquish = int_squish;
-        //console.log("int_squish", int_squish)
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
