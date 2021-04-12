@@ -23,6 +23,11 @@ class GraphData{
         markerGroup.add(marker);
 
         marker.position.set(0, 0, Graph.curRT);
+       /* marker.visible = true;
+
+        if (Graph.curRT < Graph.viewRange.rtmin || Graph.curRT > Graph.viewRange.rtmax) {
+            marker.visible = false;
+        }*/
     }
     /******** CALCULATE AND SET DATA RANGE ******/
     static getInteRange = (points) => {
@@ -107,6 +112,13 @@ class GraphData{
             GraphUtil.updateTextBox();
         }
     }
+    static updateGraphNoNewData = (mzmin, mzmax,rtmin, rtmax, curRT) => {
+        GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
+        GraphData.drawNoNewData(curRT);
+        if (Graph.isUpdateTextBox){
+            GraphUtil.updateTextBox();
+        }
+    }
     static drawInitGraph = (mzmin, mzmax, scanID) => {
         let promise = LoadData.getRT(scanID);
         promise.then((curRT) =>{
@@ -124,7 +136,6 @@ class GraphData{
         let promise = LoadData.load3dData(curViewRange);
 
         promise.then(peakData => {
-            GraphData.clearGraph();    
             Graph.currentData = peakData;
             GraphData.getInteRange(Graph.currentData);
     
@@ -133,9 +144,6 @@ class GraphData{
                 GraphData.plotPoint2D();
             }
             else{
-                /*for (let i = 0; i < Graph.currentData.length; i++){   
-                    GraphData.plotPoint(Graph.currentData[i]);
-                }    */
                 GraphData.updatePeaks(Graph.currentData);
             }
             Graph.viewRange["intscale"] = 1;
@@ -156,6 +164,28 @@ class GraphData{
             GraphControl.updateViewRange(Graph.viewRange);
             GraphRender.renderImmediate();
         });
+    }
+    static drawNoNewData = (curRT) => {
+        //if camera angle is perpendicular to the graph plane
+        if (Graph.isPerpendicular){
+            GraphData.plotPoint2D();
+        }
+        else{
+            GraphData.updatePeaks(Graph.currentData);
+        }
+        Graph.viewRange["intscale"] = 1;
+
+        // make sure the groups are plotted and update the view
+        if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
+            GraphData.drawCurrentScanMarker();
+        }
+        else{
+            GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
+        }
+        GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
+
+        GraphControl.updateViewRange(Graph.viewRange);
+        GraphRender.renderImmediate();
     }
     /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
     static plotPoint2D = () => {
@@ -251,37 +281,43 @@ class GraphData{
                 let inten = point.INTENSITY;
                 let lineColor = point.COLOR;
 
-                let lowPeak = false;
+                if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
+                    rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
+                    let lowPeak = false;
 
-                let currt = (Graph.curRT/60).toFixed(4);
-                let y = inten;    
-                let minHeight = Graph.minPeakHeight;
-                //if y is much smaller than the highest intensity peak in the view range
-                if (y * plotGroup.scale.y < minHeight){
-                    //increase y so that later y is at least minHeight when scaled
-                    y = minHeight/plotGroup.scale.y;
-                    lowPeak = true;
+                    let currt = (Graph.curRT/60).toFixed(4);
+                    let y = inten;    
+                    let minHeight = Graph.minPeakHeight;
+                    //if y is much smaller than the highest intensity peak in the view range
+                    if (y * plotGroup.scale.y < minHeight){
+                        //increase y so that later y is at least minHeight when scaled
+                        y = minHeight/plotGroup.scale.y;
+                        lowPeak = true;
+                    }
+                    line.geometry.attributes.position.array[4] = y;
+                    line.geometry.attributes.position.needsUpdate = true; 
+                    line.material.color.setStyle(lineColor);
+                    if ((point.RETENTIONTIME/60).toFixed(4) == currt){
+                        line.material.color.setStyle(Graph.currentScanColor);
+                    }
+                    line.position.set(mz, 0, rt);
+                    line.pointid = id;
+                    line.mz = mz;
+                    line.rt = rt;
+                    line.int = inten;
+                    line.height = y;
+                    line.name = "peak";
+                    line.scanID = point.SPECTRAID;
+                    line.visible = true;
+    
+                    if (lowPeak){
+                        line.lowPeak = true;
+                    }else{
+                        line.lowPeak = false;
+                    }
                 }
-                line.geometry.attributes.position.array[4] = y;
-                line.geometry.attributes.position.needsUpdate = true; 
-                line.material.color.setStyle(lineColor);
-                if ((point.RETENTIONTIME/60).toFixed(4) == currt){
-                    line.material.color.setStyle(Graph.currentScanColor);
-                }
-                line.position.set(mz, 0, rt);
-                line.pointid = id;
-                line.mz = mz;
-                line.rt = rt;
-                line.int = inten;
-                line.height = y;
-                line.name = "peak";
-                line.scanID = point.SPECTRAID;
-                line.visible = true;
-
-                if (lowPeak){
-                    line.lowPeak = true;
-                }else{
-                    line.lowPeak = false;
+                else{
+                    line.visible = false;
                 }
             }
             else{
