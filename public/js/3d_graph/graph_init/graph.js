@@ -43,6 +43,7 @@ class Graph{
         Graph.minPeakHeight = 0.05;
         Graph.maxPeakHeight = 10;
         Graph.maxPeaks = 2000;
+        Graph.maxFeature = Graph.maxPeaks;
         Graph.currentData = [];//current peak data on the 3d graph
 
         Graph.intensitySum = 0;
@@ -98,6 +99,7 @@ class Graph{
         Graph.axisGroup.name = "axisGroup";
 
         Graph.dataGroup.add(Graph.plotGroup);
+        //Graph.dataGroup.add(Graph.featureGroup);
         Graph.dataGroup.add(Graph.ticksGroup);
 
         Graph.scene.add(Graph.gridGroup);
@@ -107,6 +109,29 @@ class Graph{
         Graph.scene.add(Graph.markerGroup);
         Graph.scene.add(Graph.featureGroup);
         Graph.scene.add(Graph.axisGroup);
+    }
+    initFeatureGroup = () => {
+        for (let i = 0; i < Graph.maxFeature; i++) {
+            let points = [];
+            let geometry = new THREE.BufferGeometry();
+
+            geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0,
+            ]), 3));
+
+            let linemat = new THREE.LineDashedMaterial( { color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
+            let feature = new THREE.Line( geometry, linemat );
+            
+            feature.position.set(0, 0, 0);
+            feature.name = "featureAnnotation";
+            feature.visible = false;
+
+            Graph.featureGroup.add(feature);
+        }
     }
     initPlotGroup = () => {
         for (let i = 0; i < Graph.maxPeaks; i++) {
@@ -162,6 +187,8 @@ class Graph{
         this.setProperties();
         this.createGroups();
         this.initPlotGroup();
+        this.initFeatureGroup();
+        
         let promise = this.initDataRange();
 
         promise.then(()=>{

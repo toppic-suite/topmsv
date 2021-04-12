@@ -25,6 +25,5 @@ class GraphRender{
     static renderImmediate = () => {     
         Graph.renderer.render( Graph.scene, Graph.camera );
         Graph.imageAddress = Graph.renderer.domElement.toDataURL();
-        //console.log(renderer.info);
     }
 }
