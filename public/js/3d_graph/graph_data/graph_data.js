@@ -172,21 +172,21 @@ class GraphData{
     static draw = async(curRT) => {          
         const curViewRange = Graph.viewRange;
         Graph.curRT = curRT;
-        //Graph.currentData = await LoadData.load3dData(curViewRange);
+        Graph.currentData = await LoadData.load3dData(curViewRange);
         GraphData.getInteRange(Graph.currentData);
 
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
-            //GraphData.plotPoint2D();
+            GraphData.plotPoint2D();
         }
         else{
-            //GraphData.updatePeaks(Graph.currentData);
+            //await GraphData.updatePeaks(Graph.currentData);
         }
         Graph.viewRange["intscale"] = 1;
 
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            //GraphData.drawCurrentScanMarker();
+            GraphData.drawCurrentScanMarker();
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
 
@@ -195,13 +195,13 @@ class GraphData{
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
     }
-    static drawNoNewData = (curRT) => {
+    static drawNoNewData = async(curRT) => {
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
             GraphData.plotPoint2D();
         }
         else{
-            GraphData.updatePeaks(Graph.currentData);
+            //await GraphData.updatePeaks(Graph.currentData);
         }
         Graph.viewRange["intscale"] = 1;
 
@@ -213,6 +213,8 @@ class GraphData{
             GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
+        
+        //await GraphFeature.drawFeature(Graph.viewRange);
 
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
@@ -298,7 +300,6 @@ class GraphData{
     }
     static updatePeaks = (data) => {
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
-
         //iterate through peask in plot group while < data.length;
         //for the rest of peaks, turn off visibility
         plotGroup.children.forEach(function(line, index) {
