@@ -59,16 +59,19 @@ class GraphControl{
         Graph.intSquish = int_squish;
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
+        let featureGroup = Graph.scene.getObjectByName("featureGroup");
         let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
         let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
 
         dataGroup.scale.set(mz_squish, int_squish, rt_squish);
+        featureGroup.scale.set(mz_squish, 1, rt_squish);
         markerGroup.scale.set(1,1,rt_squish);
         
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
-        
+        featureGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
+
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
 

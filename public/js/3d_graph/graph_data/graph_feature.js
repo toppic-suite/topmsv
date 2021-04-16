@@ -4,7 +4,6 @@ class GraphFeature{
     /******** ADD FEAUTRE ANNOTATION ******/
     static updateFeature = (data, minmz, maxmz, minrt, maxrt) => {
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
-        console.log("features in this area", data.length);
         featureGroup.children.forEach(function(featureRect, index) {
             if (index < data.length) {
                 let feature = data[index];
@@ -12,7 +11,6 @@ class GraphFeature{
                 let mz_high = feature.mz_high;
                 let rt_low = feature.rt_low;
                 let rt_high = feature.rt_high;
-                let points = [];
 
                 if (mz_low < minmz){
                     mz_low = minmz;
@@ -28,15 +26,19 @@ class GraphFeature{
                 }
                 rt_high = rt_high * 60;
                 rt_low = rt_low * 60;
-                //console.log(mz_low, mz_high, rt_low/60, rt_high/60)
-                //adjust point position when it goes outside of the graph range
-                points.push( new THREE.Vector3(mz_low, 0.1, rt_high) );
-                points.push( new THREE.Vector3(mz_high, 0.1, rt_high) );
-                points.push( new THREE.Vector3(mz_high, 0.1, rt_low) );
-                points.push( new THREE.Vector3(mz_low, 0.1, rt_low) );
-                points.push( new THREE.Vector3(mz_low, 0.1, rt_high) );
 
-                featureRect.geometry.setFromPoints( points );
+                featureRect.geometry.attributes.position.array[0] = 0;//vertex at bottom left (0,0)
+                featureRect.geometry.attributes.position.array[3] = mz_high - mz_low;
+                featureRect.geometry.attributes.position.array[5] = 0;//vertex at bottom right
+                featureRect.geometry.attributes.position.array[6] = mz_high - mz_low;
+                featureRect.geometry.attributes.position.array[8] = rt_high - rt_low;//vertex at top right
+                featureRect.geometry.attributes.position.array[9] = 0;
+                featureRect.geometry.attributes.position.array[11] = rt_high - rt_low;//vertex at top left
+                featureRect.geometry.attributes.position.array[12] = 0;
+                featureRect.geometry.attributes.position.array[14] = 0;//vertex ad bottom left (0,0)
+                    
+                featureRect.position.set(mz_low, 0, rt_low);
+
                 featureRect.geometry.attributes.position.needsUpdate = true; 
                 featureRect.computeLineDistances();
                 featureRect.mz_low = feature.mz_low;
@@ -47,22 +49,63 @@ class GraphFeature{
                 featureRect.mass = feature.mass;
                 featureRect.mono_mz = feature.mono_mz;
                 featureRect.charge = feature.charge;
-                featureRect.intensity = feature.intensity;
+                featureRect.intensity = 0;
                 featureRect.visible = true;
-
             }
             else{
                 featureRect.visible = false;
             }
         })
-        let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
-        let rt_squish = - Graph.gridRange / Graph.viewRange.rtrange;
-
-        featureGroup.scale.set(mz_squish, 1, rt_squish);
-        // Reposition the plot so that mzmin,rtmin is at the correct corner
-        featureGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
-        //GraphRender.renderImmediate();
     }
+    /*static updateFeature = (data, minmz, maxmz, minrt, maxrt) => {
+        let featureGroup = Graph.scene.getObjectByName("featureGroup");
+        let visible = 0;
+        let hidden = 0;
+        featureGroup.children.forEach(function(line, index) {
+            if (index < data.length) {
+                let point = data[index];
+                //let id = point.ID;
+                let mz = point.mz_low;
+                let rt = point.rt_high * 60;
+                //let inten = point.INTENSITY;
+                //let lineColor = point.COLOR;
+                let mz_low = point.mz_low;
+                let mz_high = point.mz_high;
+                let rt_low = point.rt_low * 60;
+                let rt_high = point.rt_high * 60;
+                let points = [];
+
+                if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
+                    rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
+                    let currt = (Graph.curRT/60).toFixed(4);
+                    let y = 1;    
+
+                    
+                   // line.geometry.setFromPoints( points );
+                    //line.geometry.computeBoundingBox();
+                   // line.geometry.computeBoundingSphere();
+                    line.geometry.attributes.position.needsUpdate = true; 
+                    line.material.color.setStyle("orange");
+
+                    
+                    //line.pointid = id;
+                    //line.mz = mz;
+                    //line.rt = rt;
+                    //line.int = inten;
+                    line.height = y;
+                    line.name = "feature";
+                    line.visible = true;
+    
+                }
+                else{
+                    line.visible = false;
+                }
+            }
+            else{
+                line.visible = false;
+            }
+        })
+    }*/
     static addFeatureToGraph = (featureData, minmz, maxmz, minrt, maxrt) => {
         //draw rectangle (4 separate lines) from each feature Data
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
@@ -115,7 +158,6 @@ class GraphFeature{
             feature.intensity = data.intensity;
     
             feature.name = "featureAnnotation";
-            //console.log(feature)
             featureGroup.add(feature);
         }
         let mz_squish = Graph.gridRange / Graph.viewRange.mzrange;
@@ -139,7 +181,7 @@ class GraphFeature{
                 xhttp.onload = () => {
                     if (xhttp.readyState == 4 && xhttp.status == 200) {
                         let featureData = JSON.parse(xhttp.responseText);
-                        ///GraphFeature.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
+                        //GraphFeature.addFeatureToGraph(featureData, minmz, maxmz, minrt, maxrt);            
                         GraphFeature.updateFeature(featureData, minmz, maxmz, minrt, maxrt);            
                         resolve();
                     } 
