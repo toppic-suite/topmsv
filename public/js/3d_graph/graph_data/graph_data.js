@@ -130,45 +130,6 @@ class GraphData{
         })
     }
      /******** PLOT PEAKS ******/
-    /*static draw = (curRT) => {          
-        const curViewRange = Graph.viewRange;
-        Graph.curRT = curRT;
-        let promise = await LoadData.load3dData(curViewRange);
-
-        promise.then(peakData => {
-            Graph.currentData = peakData;
-            GraphData.getInteRange(Graph.currentData);
-    
-            //if camera angle is perpendicular to the graph plane
-            if (Graph.isPerpendicular){
-                GraphData.plotPoint2D();
-            }
-            else{
-                GraphData.updatePeaks(Graph.currentData);
-            }
-            Graph.viewRange["intscale"] = 1;
-
-            // make sure the groups are plotted and update the view
-            if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-                GraphData.drawCurrentScanMarker();
-            }
-            GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
-            console.log("1");
-            return 0;
-        }).then(result => {
-            console.log("2");
-            let promise = GraphFeature.drawFeature(Graph.viewRange);
-            promise.then(()=>{
-                console.log("6");
-                return 0;
-            })  
-        }).then(result => {
-            console.log("7");
-
-            GraphControl.updateViewRange(Graph.viewRange);
-            GraphRender.renderImmediate();
-        });
-    }*/
     static draw = async(curRT) => {          
         const curViewRange = Graph.viewRange;
         Graph.curRT = curRT;
@@ -180,7 +141,7 @@ class GraphData{
             GraphData.plotPoint2D();
         }
         else{
-            //await GraphData.updatePeaks(Graph.currentData);
+            await GraphData.updatePeaks(Graph.currentData);
         }
         Graph.viewRange["intscale"] = 1;
 
@@ -195,13 +156,13 @@ class GraphData{
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
     }
-    static drawNoNewData = async(curRT) => {
+    static drawNoNewData = async() => {
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
             GraphData.plotPoint2D();
         }
         else{
-            //await GraphData.updatePeaks(Graph.currentData);
+            await GraphData.updatePeaks(Graph.currentData);
         }
         Graph.viewRange["intscale"] = 1;
 
@@ -214,7 +175,7 @@ class GraphData{
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         
-        //await GraphFeature.drawFeature(Graph.viewRange);
+        await GraphFeature.drawFeature(Graph.viewRange);
 
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
