@@ -4,6 +4,7 @@ class GraphFeature{
     /******** ADD FEAUTRE ANNOTATION ******/
     static updateFeature = (data, minmz, maxmz, minrt, maxrt) => {
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
+        
         featureGroup.children.forEach(function(featureRect, index) {
             if (index < data.length) {
                 let feature = data[index];
@@ -49,64 +50,20 @@ class GraphFeature{
                 featureRect.mass = feature.mass;
                 featureRect.mono_mz = feature.mono_mz;
                 featureRect.charge = feature.charge;
-                featureRect.intensity = 0;
+                featureRect.intensity = feature.intensity;
                 featureRect.visible = true;
+
+                if (mz_high < Graph.viewRange.mzmin || mz_low > Graph.viewRange.mzmax ||
+                    rt_high < Graph.viewRange.rtmin || rt_low > Graph.viewRange.rtmax) {
+                    featureRect.visible = false;
+                }
             }
             else{
                 featureRect.visible = false;
             }
         })
     }
-    /*static updateFeature = (data, minmz, maxmz, minrt, maxrt) => {
-        let featureGroup = Graph.scene.getObjectByName("featureGroup");
-        let visible = 0;
-        let hidden = 0;
-        featureGroup.children.forEach(function(line, index) {
-            if (index < data.length) {
-                let point = data[index];
-                //let id = point.ID;
-                let mz = point.mz_low;
-                let rt = point.rt_high * 60;
-                //let inten = point.INTENSITY;
-                //let lineColor = point.COLOR;
-                let mz_low = point.mz_low;
-                let mz_high = point.mz_high;
-                let rt_low = point.rt_low * 60;
-                let rt_high = point.rt_high * 60;
-                let points = [];
-
-                if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
-                    rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
-                    let currt = (Graph.curRT/60).toFixed(4);
-                    let y = 1;    
-
-                    
-                   // line.geometry.setFromPoints( points );
-                    //line.geometry.computeBoundingBox();
-                   // line.geometry.computeBoundingSphere();
-                    line.geometry.attributes.position.needsUpdate = true; 
-                    line.material.color.setStyle("orange");
-
-                    
-                    //line.pointid = id;
-                    //line.mz = mz;
-                    //line.rt = rt;
-                    //line.int = inten;
-                    line.height = y;
-                    line.name = "feature";
-                    line.visible = true;
-    
-                }
-                else{
-                    line.visible = false;
-                }
-            }
-            else{
-                line.visible = false;
-            }
-        })
-    }*/
-    static addFeatureToGraph = (featureData, minmz, maxmz, minrt, maxrt) => {
+    /*static addFeatureToGraph = (featureData, minmz, maxmz, minrt, maxrt) => {
         //draw rectangle (4 separate lines) from each feature Data
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
         for (let i = 0; i < featureData.length; i++){
@@ -166,7 +123,7 @@ class GraphFeature{
         featureGroup.scale.set(mz_squish, 1, rt_squish);
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         featureGroup.position.set(-Graph.viewRange.mzmin*mz_squish, 0, Graph.gridRange - Graph.viewRange.rtmin*rt_squish);
-    }
+    }*/
     static loadMzrtData = (minmz, maxmz, minrt, maxrt) => {
         return new Promise((resolve, reject) => {
             if($('#featureStatus').val() != "0"){
