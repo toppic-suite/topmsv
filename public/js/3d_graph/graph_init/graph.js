@@ -84,6 +84,7 @@ class Graph{
         Graph.ticklabelGroup = new THREE.Group();
         Graph.lineMeshGroup = new THREE.Group();//contains line * max peak number
         Graph.plotGroup = new THREE.Group();// lines that are going to be plotted
+        Graph.peak2DGroup = new THREE.Group(); 
         Graph.featureGroup = new THREE.Group();
         Graph.axisGroup = new THREE.Group();
         
@@ -95,6 +96,7 @@ class Graph{
         Graph.ticklabelGroup.name = "tickLabelGroup";
         Graph.lineMeshGroup.name = "lineMeshGroup";
         Graph.plotGroup.name = "plotGroup";
+        Graph.peak2DGroup.name = "peak2DGroup";
         Graph.featureGroup.name = "featureGroup";
         Graph.axisGroup.name = "axisGroup";
 
@@ -109,32 +111,6 @@ class Graph{
         Graph.scene.add(Graph.featureGroup);
         Graph.scene.add(Graph.axisGroup);
     }
-    /*initFeatureGroup = () => {
-        for (let i = 0; i < Graph.maxFeature; i++) {
-            let linegeo = new THREE.BufferGeometry();
-            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
-                0, 1, 0,
-                0, 1, 0,
-                0, 1, 0,
-                0, 1, 0,
-                0, 1, 0
-            ]), 3));
-            
-            let linemat = new THREE.LineBasicMaterial({color: "white"});
-            let line = new THREE.Line(linegeo, linemat);
-
-            line.position.set(0, 0, 0);
-            line.mz = 0;
-            line.rt = 0;
-            line.int = 0;
-            line.height = 0;
-            line.name = "feature";
-            line.scanID = 0;
-            line.visible = false;
-
-            Graph.featureGroup.add(line);
-        }
-    }*/
     initFeatureGroup = () => {
         for (let i = 0; i < Graph.maxFeature; i++) {
             let geometry = new THREE.BufferGeometry();
@@ -148,16 +124,36 @@ class Graph{
             ]), 3));
 
             let linemat = new THREE.LineDashedMaterial( { color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
-            //let linemat = new THREE.LineBasicMaterial({color: "white"});
-
             let feature = new THREE.Line( geometry, linemat );
-            feature.computeLineDistances();
 
             feature.position.set(0, 0, 0);
             feature.name = "featureAnnotation";
             feature.visible = false;
 
             Graph.featureGroup.add(feature);
+        }
+    }
+    init2DPlotGroup = () => {
+        for (let i = 0; i < Graph.maxPeaks; i++) {
+            let linegeo = new THREE.BufferGeometry();
+            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+                0, 0, 0,
+                0, 0, 0,
+            ]), 3));
+            
+            let linemat = new THREE.LineBasicMaterial({color: "white", linewidth:0.8});
+            let line = new THREE.Line(linegeo, linemat);
+
+            line.position.set(0, 0, 0);
+            line.mz = 0;
+            line.rt = 0;
+            line.int = 0;
+            line.height = 0;
+            line.name = "peak";
+            line.scanID = 0;
+            line.visible = false;
+
+            Graph.peak2DGroup.add(line);
         }
     }
     initPlotGroup = () => {
@@ -214,6 +210,7 @@ class Graph{
         this.setProperties();
         this.createGroups();
         this.initPlotGroup();
+        this.init2DPlotGroup();
         this.initFeatureGroup();
         
         let promise = this.initDataRange();
