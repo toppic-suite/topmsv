@@ -45,6 +45,7 @@ class Graph{
         Graph.maxPeaks = 2000;
         Graph.maxFeature = Graph.maxPeaks / 2;
         Graph.currentData = [];//current peak data on the 3d graph
+        Graph.currentFeatureData = [];
 
         Graph.intensitySum = 0;
 

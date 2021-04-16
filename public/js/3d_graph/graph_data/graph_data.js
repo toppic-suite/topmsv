@@ -175,90 +175,11 @@ class GraphData{
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         
-        await GraphFeature.drawFeature(Graph.viewRange);
+        await GraphFeature.drawFeatureNoDataLoad(Graph.viewRange);
 
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
     }
-    /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
-    /*static plotPoint2D = () => {
-        let prevSpecRT = 0; 
-        let prevPeakRT = 0;
-
-        let rt = (Graph.curRT/60).toFixed(4);
-        //let rt = document.getElementById("scan1RT").innerText;
-    
-        let dataGroup = Graph.scene.getObjectByName("dataGroup");
-        let peak2DGroup; 
-        
-        if (dataGroup.children.length > 2){
-            for (let i = 0; i < dataGroup.children.length; i++){
-                if (dataGroup.children[i].name == "peak2DGroup"){
-                    dataGroup.children[i].children = [];
-                    peak2DGroup = dataGroup.children[i];
-                };
-            }
-        }
-        else{
-            peak2DGroup = new THREE.Group(); 
-            peak2DGroup.name = "peak2DGroup";
-        }
-        //sort data by rt
-        Graph.currentData.sort(GraphUtil.sortByRT);
-        
-        if (Graph.currentData.length > 0){
-            prevPeakRT = Graph.currentData[Graph.currentData.length - 1].RETENTIONTIME;
-        }
-        for (let i = Graph.currentData.length - 1; i >= 0; i--){   
-            let point = Graph.currentData[i];
-            let linegeo = new THREE.BufferGeometry();
-
-            //ySize is current retention time - prevRT
-            //for the first spectra peaks, it is a set length;
-            //while current peak has same RT as the previous peak, keep iterating
-            //if current peak has different RT as the previous peak, update prevRT as the previous peak RT
-            
-            if (point.RETENTIONTIME != prevPeakRT){
-                prevSpecRT = prevPeakRT;
-            }
-
-            let ySize = prevSpecRT - point.RETENTIONTIME; //peak length
-            let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
-            let minSize = rtRange/3;
-
-            //for special cases when should not be using the calculated ysize value
-            if (ySize < minSize){//minimum length for the peak
-                ySize = minSize;
-            }
-            if (prevSpecRT == 0){//when it is the spectra peaks with the highets rt (no previous spectra)
-                ySize = rtRange / 2;
-            }
-            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
-                0, 0, 0,
-                0, 0, ySize,
-            ]), 3));
-            
-            let linemat = new THREE.LineBasicMaterial({color: point.COLOR, linewidth:0.8});
-        
-            if ((point.RETENTIONTIME/60).toFixed(4) == rt){
-                linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
-            }
-            let line = new THREE.Line(linegeo, linemat);
-
-            line.position.set(point.MZ, 0, point.RETENTIONTIME);
-            line.pointid = point.ID;
-            line.mz = point.MZ;
-            line.rt = point.RETENTIONTIME;
-            line.int = point.INTENSITY;
-            line.name = "peak";
-            line.scanID = point.SPECTRAID;
-            peak2DGroup.add(line);
-
-            prevPeakRT = point.RETENTIONTIME;
-        }
-        // Reposition the plot so that mzmin,rtmin is at the correct corner
-        dataGroup.add(peak2DGroup);
-    }*/
     static plotPoint2D = () => {
         let prevSpecRT = 0; 
         let prevPeakRT = 0;
@@ -269,17 +190,6 @@ class GraphData{
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let peak2DGroup = Graph.peak2DGroup;
         
-        /*if (dataGroup.children.length > 2){
-            /*for (let i = 0; i < dataGroup.children.length; i++){
-                if (dataGroup.children[i].name == "peak2DGroup"){
-                    dataGroup.children[i].children = [];
-                    peak2DGroup = dataGroup.children[i];
-                };
-            }*//*
-        }
-        else{
-            
-        }*/
         //sort data by rt
         Graph.currentData.sort(GraphUtil.sortByRT);
                     
