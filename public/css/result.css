@@ -135,7 +135,7 @@ button#deleteSeq {
 }
 button#topfdtask {
     position: relative;
-    left: 40%;
+    left: 0%;
     /*font-size: 93%;*/
     background-color: #555555;
     color: white;
@@ -147,7 +147,7 @@ button#topfdtask {
 }
 button#toppicTask {
     position: relative;
-    left: 40%;
+    left: 0%;
     /*font-size: 93%;*/
     background-color: #555555;
     color: white;
@@ -159,7 +159,7 @@ button#toppicTask {
 }
 button#home {
     position: relative;
-    left: 61%;
+    left: 40%;
     /*font-size: 95%;*/
     background-color: #555555;
     color: white;
@@ -171,7 +171,6 @@ button#home {
 }
 #request {
     position: relative;
-    /*left: 54.5%;*/
     /*font-size: 100%;*/
     background-color: #555555;
     color: white;
@@ -183,7 +182,7 @@ button#home {
 }
 button#request3dGraphRedraw{
     position: relative;
-    /*left: 54.5%;*/
+    left: -20px;
     /*font-size: 100%;*/
     background-color: #555555;
     color: white;
@@ -232,7 +231,7 @@ button#prev1 {
 }
 button#uploadMsalign {
     position: relative;
-    left: 40%;
+    left: 0%;
     /*font-size: 95%;*/
     background-color: #555555;
     color: white;
@@ -244,7 +243,7 @@ button#uploadMsalign {
 }
 button#uploadSequence {
     position: relative;
-    left: 25%;
+    left: 4%;
     /*font-size: 95%;*/
     background-color: #555555;
     color: white;
@@ -257,13 +256,10 @@ button#uploadSequence {
 }
 button#resetGraphs {
     position: relative;
-    left: 25%;
+    left: -10px;
     /*font-size: 95%;*/
     background-color: #555555;;
     color: white;
-    border: 1px;
-    border-style:solid;
-    border-color:#555555;
     padding: 2px 7px;
     text-align: center;
     text-decoration: none;
@@ -460,7 +456,7 @@ button#minusBtn {
 /*default css for all buttons*/
 button#graph-expand{
     position: relative;
-    /*left: 54.5%;*/
+    left: -10px;
     /*font-size: 100%;*/
     background-color: #555555;
     color: white;
@@ -472,7 +468,7 @@ button#graph-expand{
 }
 button#graph-shrink{
     position: relative;
-    /*left: 54.5%;*/
+    left: -8px;
     /*font-size: 100%;*/
     background-color: #555555;
     color: white;
@@ -484,7 +480,7 @@ button#graph-shrink{
 }
 button#graph-full-screen{
     position: relative;
-    /*left: 54.5%;*/
+    left: -10px;
     /*font-size: 100%;*/
     background-color: #555555;
     color: white;
