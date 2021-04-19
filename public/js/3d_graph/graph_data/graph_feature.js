@@ -72,10 +72,12 @@ class GraphFeature{
                 let fileName = (fullDir[fullDir.length -1].split("."))[0];
                 let dir = fullDir[0].concat("/");
                 dir = dir.concat(fullDir[1]);
-                
                 let xhttp = new XMLHttpRequest();
+                
                 xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+               
                 xhttp.onload = () => {
+                    console.log(xhttp.readyState == 4, xhttp.status == 200)
                     if (xhttp.readyState == 4 && xhttp.status == 200) {
                         let featureData = JSON.parse(xhttp.responseText);
                         Graph.currentFeatureData = featureData;
@@ -84,6 +86,9 @@ class GraphFeature{
                     } 
                 }
                 xhttp.send();
+            }
+            else{
+                resolve();
             }
         })
     } 
