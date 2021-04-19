@@ -149,6 +149,9 @@ class GraphData{
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
             GraphData.drawCurrentScanMarker();
         }
+        else{
+            GraphData.clearGraph();
+        }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
 
         await GraphFeature.drawFeature(Graph.viewRange);
@@ -171,7 +174,7 @@ class GraphData{
             GraphData.drawCurrentScanMarker();
         }
         else{
-            GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
+            GraphData.clearGraph();
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         
