@@ -16,17 +16,20 @@ class GraphControl{
     static adjustIntensity = (peaks, scale) => {
         //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
         //peak.height = adjusted y (current Y), peak.int = original intensity
+        let plotGroup = Graph.scene.getObjectByName("plotGroup");
         peaks.forEach((peak) => {
             if (peak.lowPeak){
-                let resultHeight = scale * peak.int;
+                let resultHeight = peak.int * plotGroup.scale.y;
                 if (resultHeight < Graph.minPeakHeight){
                     //peak y should be updated so that the resulting height is still 0.05
-                    let newY = Graph.minPeakHeight/ scale;
+                    let newY = Graph.minPeakHeight/plotGroup.scale.y;
+                    peak.height = newY;
                     peak.geometry.attributes.position.array[4] = newY;
                     peak.geometry.attributes.position.needsUpdate = true;
                 }else{
                     //when the scaled intensity would be > 0.05
-                    peak.geometry.attributes.position.array[4] = peak.int;
+                    peak.height = peak.int;
+                    peak.geometry.attributes.position.array[4] = peak.height;
                     peak.geometry.attributes.position.needsUpdate = true;
                 }
             }
@@ -41,23 +44,41 @@ class GraphControl{
         let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
         let rt_squish = - Graph.gridRange / (r.rtmax - r.rtmin);
         let int_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
-
+        
         if (Graph.viewRange.intmax < 1){
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             int_squish = 0;
         }
+        if (heightScale * Graph.peakScale > Graph.maxPeakHeight && Graph.isZoom) {
+            let newSquish = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
+            if (heightScale * newSquish < heightScale * Graph.intSquish) {
+                int_squish = newSquish;
+            }
+            else{
+                int_squish = Graph.intSquish;
+            }
+        }
+        else{
+            //int_squish = 1;
+            int_squish = Graph.intSquish;
+        }
+        
+        Graph.intSquish = int_squish;
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
+        let featureGroup = Graph.scene.getObjectByName("featureGroup");
         let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
         let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
 
         dataGroup.scale.set(mz_squish, int_squish, rt_squish);
+        featureGroup.scale.set(mz_squish, 1, rt_squish);
         markerGroup.scale.set(1,1,rt_squish);
         
         // Reposition the plot so that mzmin,rtmin is at the correct corner
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
-        
+        featureGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
+
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
 
@@ -93,8 +114,7 @@ class GraphControl{
         // calculate tick frequency
         let mzSpacing = Math.pow(10, Math.floor(Math.log(r.mzrange)/Math.log(10) - 0.5));
         let rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5));
-        
-        GraphUtil.emptyGroup(ticksGroup);
+        GraphUtil.emptyGroup(ticksGroup);   
     
         // properly check if floating-point "value" is a multiple
         // of "divisor" within a tolerance
@@ -111,7 +131,7 @@ class GraphControl{
         for (mz = mzFirst + mzSpacing; mz < r.mzmax; mz += mzSpacing) {
             // This little gem makes it so that tick marks that are a multiple
             // of (10 * the spacing value) are longer than the others
-            long = isMultiple(mz, mzSpacing * 10);
+            long = isMultiple(mz, mzSpacing * 5);
             let rtlen = r.rtrange * (long ? 0.05 : 0.02);
             makeTickMark(mz, mz, rt, rt - rtlen);
     
@@ -124,7 +144,7 @@ class GraphControl{
         let rtFirst = r.rtmin - (r.rtmin % rtSpacing);
         mz = r.mzmin;
         for (rt = rtFirst + rtSpacing; rt < r.rtmax; rt += rtSpacing) {
-            long = isMultiple(rt, rtSpacing * 10);
+            long = isMultiple(rt, rtSpacing * 5);
             let mzlen = r.mzrange * (long ? 0.05 : 0.02);
             makeTickMark(mz, mz - mzlen, rt, rt);
     

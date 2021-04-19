@@ -14,11 +14,12 @@ const BetterDB = require("better-sqlite3");
  * @param {number} uid - User ID
  * @param {number} publicStatus Public status code
  * @param {boolean} doesExpire - if this project should be removed after 30 days
- */
-function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus, SeqStatus, ms1EnvFile,uid,publicStatus, doesExpire) {
+* @param {number} allowToppic - if Toppic can be run (= TopFD has run)
+*/
+function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus, SeqStatus, ms1EnvFile,uid,publicStatus, doesExpire, allowToppic) {
     let resultDb = new BetterDB('./db/projectDB.db');
-    let stmt = resultDb.prepare('INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, FeatureStatus, SequenceStatus, MS1_envelope_file, uid, public, doesExpire) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
-    let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus,SeqStatus, ms1EnvFile,uid, publicStatus, doesExpire);
+    let stmt = resultDb.prepare('INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, FeatureStatus, SequenceStatus, MS1_envelope_file, uid, public, doesExpire, allowToppic) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+    let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus,SeqStatus, ms1EnvFile,uid, publicStatus, doesExpire, allowToppic);
     //console.log("insertRowSync info", info);
     resultDb.close();
 }

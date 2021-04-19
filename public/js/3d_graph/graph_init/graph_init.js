@@ -70,17 +70,19 @@ class GraphInit{
     }
     static createGrid = () => {
         let y = 0;
-        let gridgeo = new THREE.Geometry();
+        
         let gridmaterial = new THREE.LineBasicMaterial({ color:Graph.gridColor });
+        
+        for (let i = 0; i <= Graph.gridRange; i++) {           
+           let points = [];
+           points.push(new THREE.Vector3(i, y, 0));
+           points.push(new THREE.Vector3(i, y, Graph.gridRange));
+           points.push(new THREE.Vector3(0, y, i));
+           points.push(new THREE.Vector3(Graph.gridRange, y, i));
 
-        for (let i = 0; i <= Graph.gridRange; i++) {
-            gridgeo.vertices.push(new THREE.Vector3(i, y, 0));
-            gridgeo.vertices.push(new THREE.Vector3(i, y, Graph.gridRange));
-
-            gridgeo.vertices.push(new THREE.Vector3(0, y, i));
-            gridgeo.vertices.push(new THREE.Vector3(Graph.gridRange, y, i));
+           let gridgeo = new THREE.BufferGeometry().setFromPoints(points);
+           Graph.gridGroup.add(new THREE.LineSegments(gridgeo, gridmaterial));
         }
-        return new THREE.LineSegments(gridgeo, gridmaterial);
     }
     static createPlane = () => {
         let surfaceGeo = new THREE.PlaneGeometry(Graph.gridRange, Graph.gridRange);
@@ -91,7 +93,7 @@ class GraphInit{
         surface.position.set(Graph.gridRange / 2, -0.05, Graph.gridRange / 2);
 
         Graph.gridGroup.add(surface);
-        Graph.gridGroup.add(GraphInit.createGrid());
+        GraphInit.createGrid();
     }
     static initColorSet = () => {
         //pick peak color based on each peak intensity -- currently 5 levels gradient

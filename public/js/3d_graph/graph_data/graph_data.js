@@ -3,9 +3,9 @@ class GraphData{
     constructor(){}
     /******** GRAPH RESET ******/
     static clearGraph = () => {
-        GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
+        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
-        GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
+        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     static drawCurrentScanMarker = () => {
@@ -23,6 +23,11 @@ class GraphData{
         markerGroup.add(marker);
 
         marker.position.set(0, 0, Graph.curRT);
+       /* marker.visible = true;
+
+        if (Graph.curRT < Graph.viewRange.rtmin || Graph.curRT > Graph.viewRange.rtmax) {
+            marker.visible = false;
+        }*/
     }
     /******** CALCULATE AND SET DATA RANGE ******/
     static getInteRange = (points) => {
@@ -100,9 +105,16 @@ class GraphData{
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
      /******** PLOT PEAKS ******/
-    static updateGraph = (mzmin, mzmax,rtmin, rtmax, curRT) => {
+    static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
-        GraphData.draw(curRT);
+        await GraphData.draw(curRT);
+        if (Graph.isUpdateTextBox){
+            GraphUtil.updateTextBox();
+        }
+    }
+    static updateGraphNoNewData = (mzmin, mzmax,rtmin, rtmax, curRT) => {
+        GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
+        GraphData.drawNoNewData(curRT);
         if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
         }
@@ -118,45 +130,59 @@ class GraphData{
         })
     }
      /******** PLOT PEAKS ******/
-    static draw = (curRT) => {          
+    static draw = async(curRT) => {   
         const curViewRange = Graph.viewRange;
         Graph.curRT = curRT;
-        let promise = LoadData.load3dData(curViewRange);
+        Graph.currentData = await LoadData.load3dData(curViewRange);
+        GraphData.getInteRange(Graph.currentData);
 
-        promise.then(peakData => {
-            GraphData.clearGraph();    
-            Graph.currentData = peakData;
-            GraphData.getInteRange(Graph.currentData);
-    
-            //if camera angle is perpendicular to the graph plane
-            if (Graph.isPerpendicular){
-                GraphData.plotPoint2D();
-            }
-            else{
-                for (let i = 0; i < Graph.currentData.length; i++){   
-                    GraphData.plotPoint(Graph.currentData[i]);
-                }  
-            }
-            Graph.viewRange["intscale"] = 1;
+        //if camera angle is perpendicular to the graph plane
+        if (Graph.isPerpendicular){
+            await GraphData.plotPoint2D();
+        }
+        else{
+            await GraphData.updatePeaks(Graph.currentData);
+        }
+        Graph.viewRange["intscale"] = 1;
 
-            // make sure the groups are plotted and update the view
-            if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-                GraphData.drawCurrentScanMarker();
-            }
-            GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
-            return 0;
-        }).then(result => {
-            let promise = GraphFeature.drawFeature(Graph.viewRange);
-            promise.then(()=>{
-                GraphRender.renderImmediate();
-                return 0;
-            })  
-        }).then(result => {
-            GraphControl.updateViewRange(Graph.viewRange);
-            GraphRender.renderImmediate();
-        });
+        // make sure the groups are plotted and update the view
+        if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
+            GraphData.drawCurrentScanMarker();
+        }
+        else{
+            GraphData.clearGraph();
+        }
+        GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
+
+        await GraphFeature.drawFeature(Graph.viewRange);
+
+        GraphControl.updateViewRange(Graph.viewRange);
+        GraphRender.renderImmediate();
     }
-    /*when camera angle is perpendicular, draw circle instead of a vertical peak*/
+    static drawNoNewData = async() => {
+        //if camera angle is perpendicular to the graph plane
+        if (Graph.isPerpendicular){
+            GraphData.plotPoint2D();
+        }
+        else{
+            await GraphData.updatePeaks(Graph.currentData);
+        }
+        Graph.viewRange["intscale"] = 1;
+
+        // make sure the groups are plotted and update the view
+        if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
+            GraphData.drawCurrentScanMarker();
+        }
+        else{
+            GraphData.clearGraph();
+        }
+        GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
+        
+        await GraphFeature.drawFeatureNoDataLoad(Graph.viewRange);
+
+        GraphControl.updateViewRange(Graph.viewRange);
+        GraphRender.renderImmediate();
+    }
     static plotPoint2D = () => {
         let prevSpecRT = 0; 
         let prevPeakRT = 0;
@@ -165,125 +191,131 @@ class GraphData{
         //let rt = document.getElementById("scan1RT").innerText;
     
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
-        let peak2DGroup; 
+        let peak2DGroup = Graph.peak2DGroup;
         
-        if (dataGroup.children.length > 2){
-            for (let i = 0; i < dataGroup.children.length; i++){
-                if (dataGroup.children[i].name == "peak2DGroup"){
-                    dataGroup.children[i].children = [];
-                    peak2DGroup = dataGroup.children[i];
-                };
-            }
-        }
-        else{
-            peak2DGroup = new THREE.Group(); 
-            peak2DGroup.name = "peak2DGroup";
-        }
         //sort data by rt
         Graph.currentData.sort(GraphUtil.sortByRT);
-        
+                    
         if (Graph.currentData.length > 0){
             prevPeakRT = Graph.currentData[Graph.currentData.length - 1].RETENTIONTIME;
         }
-        for (let i = Graph.currentData.length - 1; i >= 0; i--){   
-            let point = Graph.currentData[i];
-            let linegeo = new THREE.BufferGeometry();
 
-            //ySize is current retention time - prevRT
-            //for the first spectra peaks, it is a set length;
-            //while current peak has same RT as the previous peak, keep iterating
-            //if current peak has different RT as the previous peak, update prevRT as the previous peak RT
-            
-            if (point.RETENTIONTIME != prevPeakRT){
-                prevSpecRT = prevPeakRT;
-            }
+        peak2DGroup.children.forEach(function(line, index) {
+            if (index < Graph.currentData.length) {
+                let point = Graph.currentData[Graph.currentData.length - 1 - index];
 
-            let ySize = prevSpecRT - point.RETENTIONTIME; //peak length
-            let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
-            let minSize = rtRange/3;
+                if (point.MZ >= Graph.viewRange.mzmin && point.MZ <= Graph.viewRange.mzmax &&
+                    point.RETENTIONTIME >= Graph.viewRange.rtmin && point.RETENTIONTIME <= Graph.viewRange.rtmax){
+                        let lineColor = point.COLOR;
 
-            //for special cases when should not be using the calculated ysize value
-            if (ySize < minSize){//minimum length for the peak
-                ySize = minSize;
-            }
-            if (prevSpecRT == 0){//when it is the spectra peaks with the highets rt (no previous spectra)
-                ySize = rtRange / 2;
-            }
-            linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
-                0, 0, 0,
-                0, 0, ySize,
-            ]), 3));
-            
-            let linemat = new THREE.LineBasicMaterial({color: point.COLOR, linewidth:0.8});
+                        //ySize is current retention time - prevRT
+                        //for the first spectra peaks, it is a set length;
+                        //while current peak has same RT as the previous peak, keep iterating
+                        //if current peak has different RT as the previous peak, update prevRT as the previous peak RT
+                        
+                        if (point.RETENTIONTIME != prevPeakRT){
+                            prevSpecRT = prevPeakRT;
+                        }
         
-            if ((point.RETENTIONTIME/60).toFixed(4) == rt){
-                linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
+                        let ySize = prevSpecRT - point.RETENTIONTIME; //peak length
+                        let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
+                        let minSize = rtRange/3;
+        
+                        //for special cases when should not be using the calculated ysize value
+                        if (ySize < minSize){//minimum length for the peak
+                            ySize = minSize;
+                        }
+                        if (prevSpecRT == 0){//when it is the spectra peaks with the highets rt (no previous spectra)
+                            ySize = rtRange / 2;
+                        }
+        
+                        line.geometry.attributes.position.array[5] = ySize;
+                        line.geometry.attributes.position.needsUpdate = true; 
+                        line.material.color.setStyle(lineColor);
+                        
+                        if ((point.RETENTIONTIME/60).toFixed(4) == rt){
+                            line.material.color.setStyle(Graph.currentScanColor);
+                        }
+        
+                        line.position.set(point.MZ, 0, point.RETENTIONTIME);
+                        line.pointid = point.ID;
+                        line.mz = point.MZ;
+                        line.rt = point.RETENTIONTIME;
+                        line.int = point.INTENSITY;
+                        line.name = "peak";
+                        line.scanID = point.SPECTRAID;
+                        line.visible = true;
+        
+                        prevPeakRT = point.RETENTIONTIME;
+                }
+                else{
+                    line.visible = false;
+                }
             }
-            let line = new THREE.Line(linegeo, linemat);
+            else{
+                line.visible = false;
+            }
+            // Reposition the plot so that mzmin,rtmin is at the correct corner
+            dataGroup.add(peak2DGroup);
+        })
 
-            line.position.set(point.MZ, 0, point.RETENTIONTIME);
-            line.pointid = point.ID;
-            line.mz = point.MZ;
-            line.rt = point.RETENTIONTIME;
-            line.int = point.INTENSITY;
-            line.name = "peak";
-            line.scanID = point.SPECTRAID;
-            peak2DGroup.add(line);
-
-            prevPeakRT = point.RETENTIONTIME;
-        }
-        // Reposition the plot so that mzmin,rtmin is at the correct corner
-        dataGroup.add(peak2DGroup);
     }
-    /*plots a peak as a vertical line on the graph*/
-    static plotPoint = (point) => {
+    static updatePeaks = (data) => {
         let plotGroup = Graph.scene.getObjectByName("plotGroup");
+        //iterate through peask in plot group while < data.length;
+        //for the rest of peaks, turn off visibility
+        plotGroup.children.forEach(function(line, index) {
+            if (index < data.length) {
+                let point = data[index];
+                let id = point.ID;
+                let mz = point.MZ;
+                let rt = point.RETENTIONTIME;
+                let inten = point.INTENSITY;
+                let lineColor = point.COLOR;
 
-        let id = point.ID;
-        let mz = point.MZ;
-        let rt = point.RETENTIONTIME;
-        let inten = point.INTENSITY;
-        let lineColor = point.COLOR;
+                if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
+                    rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
+                    let lowPeak = false;
 
-        let lowPeak = false;
-
-        let currt = (Graph.curRT/60).toFixed(4);
-        let y = inten;    
-        let minHeight = Graph.minPeakHeight;
-        let scale = Graph.gridRangeVertical / Graph.viewRange.intmax;
-        //if y is much smaller than the highest intensity peak in the view range
-        if (scale * y < minHeight){
-            //increase y so that later y is at least minHeight when scaled
-            y = y * (minHeight/(scale * y));
-            lowPeak = true;
-        }
-
-        let linegeo = new THREE.BufferGeometry();
-        
-        linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
-            0, 0, 0,
-            0, y, 0,
-        ]), 3));
+                    let currt = (Graph.curRT/60).toFixed(4);
+                    let y = inten;    
+                    let minHeight = Graph.minPeakHeight;
+                    //if y is much smaller than the highest intensity peak in the view range
+                    if (y * plotGroup.scale.y < minHeight){
+                        //increase y so that later y is at least minHeight when scaled
+                        y = minHeight/plotGroup.scale.y;
+                        lowPeak = true;
+                    }
+                    line.geometry.attributes.position.array[4] = y;
+                    line.geometry.attributes.position.needsUpdate = true; 
+                    line.material.color.setStyle(lineColor);
+                    if ((point.RETENTIONTIME/60).toFixed(4) == currt){
+                        line.material.color.setStyle(Graph.currentScanColor);
+                    }
+                    line.position.set(mz, 0, rt);
+                    line.pointid = id;
+                    line.mz = mz;
+                    line.rt = rt;
+                    line.int = inten;
+                    line.height = y;
+                    line.name = "peak";
+                    line.scanID = point.SPECTRAID;
+                    line.visible = true;
     
-        let linemat = new THREE.LineBasicMaterial({color: lineColor});
-    
-        if ((point.RETENTIONTIME/60).toFixed(4) == currt){
-            linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
-        }
-        let line = new THREE.Line(linegeo, linemat);
-        
-        line.position.set(mz, 0, rt);
-        line.pointid = id;
-        line.mz = mz;
-        line.rt = rt;
-        line.int = inten;
-        line.height = y;
-        line.name = "peak";
-        line.scanID = point.SPECTRAID;
-
-        if (lowPeak){
-            line.lowPeak = true;
-        }
-        plotGroup.add(line);
+                    if (lowPeak){
+                        line.lowPeak = true;
+                    }else{
+                        line.lowPeak = false;
+                    }
+                }
+                else{
+                    line.visible = false;
+                }
+            }
+            else{
+                line.visible = false;
+                line.lowPeak = false;
+            }
+        })
     }
 }
