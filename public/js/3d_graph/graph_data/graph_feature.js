@@ -97,10 +97,8 @@ class GraphFeature{
     }
     static drawFeatureNoDataLoad = (viewRange) => {
         return new Promise((resolve, reject) => {
-            let promise = GraphFeature.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
-            promise.then(() => {
-                resolve();
-            })
+            GraphFeature.updateFeature(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
+            resolve();
         })
     }
 }
