@@ -105,9 +105,9 @@ class GraphData{
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
      /******** PLOT PEAKS ******/
-    static updateGraph = (mzmin, mzmax,rtmin, rtmax, curRT) => {
+    static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
-        GraphData.draw(curRT);
+        await GraphData.draw(curRT);
         if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
         }
@@ -130,7 +130,7 @@ class GraphData{
         })
     }
      /******** PLOT PEAKS ******/
-    static draw = async(curRT) => {          
+    static draw = async(curRT) => {   
         const curViewRange = Graph.viewRange;
         Graph.curRT = curRT;
         Graph.currentData = await LoadData.load3dData(curViewRange);
@@ -138,7 +138,7 @@ class GraphData{
 
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
-            GraphData.plotPoint2D();
+            await GraphData.plotPoint2D();
         }
         else{
             await GraphData.updatePeaks(Graph.currentData);
@@ -315,54 +315,4 @@ class GraphData{
             }
         })
     }
-    /*plots a peak as a vertical line on the graph*/
-    /*static plotPoint = (point) => {
-        let plotGroup = Graph.scene.getObjectByName("plotGroup");
-        
-        let id = point.ID;
-        let mz = point.MZ;
-        let rt = point.RETENTIONTIME;
-        let inten = point.INTENSITY;
-        let lineColor = point.COLOR;
-
-        let lowPeak = false;
-
-        let currt = (Graph.curRT/60).toFixed(4);
-        let y = inten;    
-        let minHeight = Graph.minPeakHeight;
-        //if y is much smaller than the highest intensity peak in the view range
-        if (y * plotGroup.scale.y < minHeight){
-            //increase y so that later y is at least minHeight when scaled
-            y = minHeight/plotGroup.scale.y;
-            lowPeak = true;
-        }
-  
-        let linegeo = new THREE.BufferGeometry();
-        
-        linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
-            0, 0, 0,
-            0, y, 0,
-        ]), 3));
-        
-        let linemat = new THREE.LineBasicMaterial({color: lineColor});
-    
-        if ((point.RETENTIONTIME/60).toFixed(4) == currt){
-            linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
-        }
-        let line = new THREE.Line(linegeo, linemat);
-        
-        line.position.set(mz, 0, rt);
-        line.pointid = id;
-        line.mz = mz;
-        line.rt = rt;
-        line.int = inten;
-        line.height = y;
-        line.name = "peak";
-        line.scanID = point.SPECTRAID;
-
-        if (lowPeak){
-            line.lowPeak = true;
-        }
-        plotGroup.add(line);
-    }*/
 }
