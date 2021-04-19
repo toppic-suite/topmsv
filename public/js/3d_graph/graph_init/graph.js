@@ -41,7 +41,7 @@ class Graph{
         
         /*metadata and data control*/
         Graph.minPeakHeight = 0.05;
-        Graph.maxPeakHeight = 10;
+        Graph.maxPeakHeight = 8;
         Graph.maxPeaks = 2000;
         Graph.maxFeature = Graph.maxPeaks / 2;
         Graph.currentData = [];//current peak data on the 3d graph

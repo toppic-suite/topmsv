@@ -50,12 +50,19 @@ class GraphControl{
             int_squish = 0;
         }
         if (heightScale * Graph.peakScale > Graph.maxPeakHeight && Graph.isZoom) {
-            int_squish = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
+            let newSquish = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
+            if (heightScale * newSquish < heightScale * Graph.intSquish) {
+                int_squish = newSquish;
+            }
+            else{
+                int_squish = Graph.intSquish;
+            }
         }
         else{
             //int_squish = 1;
             int_squish = Graph.intSquish;
         }
+        
         Graph.intSquish = int_squish;
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
