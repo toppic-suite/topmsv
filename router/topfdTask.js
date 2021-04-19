@@ -5,6 +5,7 @@ const deleteEnvPeak = require("../library/deleteEnvPeak");
 const submitTask = require("../library/submitTask");
 const updateEnvStatusSync = require("../library/updateEnvStatusSync");
 const updateFeatureStatusSync = require("../library/updateFeatureStatusSync");
+const updateAllowToppicStatusSync = require("../library/updateAllowToppicStatusSync");
 const path = require("path");
 
 /**
@@ -87,7 +88,7 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
         let feature = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_file/' + fileName + '_frac.mzrt.csv';
 
         updateEnvStatusSync(1, projectCode);
-        //updateFeatureStatusSync(1, projectCode);
+        updateAllowToppicStatusSync(1, projectCode);
 
         submitTask(projectCode, 'node','./utilities/convertMS1Msalign.js ' + dbDir + ' ' + des_ms1, 1);
         submitTask(projectCode, 'node','./utilities/convertMS2Msalign.js ' + dbDir + ' ' + des_ms2, 1);

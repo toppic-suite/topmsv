@@ -33,7 +33,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
         let geneMzid = fields.geneMzid;
         let decoyData = fields.decoyData;
         console.log("parameter",parameter);
-        console.log(projectCode);
+        //console.log(projectCode);
         getProjectSummary(projectCode, function (err, row) {
             let envStatus = row.envelopeStatus;
             let projectDir = row.projectDir;
@@ -49,7 +49,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
                 console.log("Files are saved.");
-                console.log("msaling_dir", msalign_dir);
+                //console.log("msaling_dir", msalign_dir);
                 if (!fs.existsSync(msalign_dir)) {
                     console.log('The msalign file does not exist.');
                     return res.send({"error": 403, "message": "Error on finding msalign file! Please run TopFD first!"});
@@ -71,7 +71,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                     commandArr = parameter + ' -k -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
                 }
                 console.log("commandArr",commandArr);
-                console.log(threadNum);
+                //console.log(threadNum);
                 submitTask(projectCode,app, commandArr, threadNum);
 
                 deleteSeq(projectDir, projectCode);
@@ -86,7 +86,6 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 submitTask(projectCode, seqApp, seqParameter, 1);
 
                 //run mzid generator if mzid file is to be generated
-                console.log(geneMzid, decoyData);
                 if (geneMzid == 'true' || geneMzid == true){
                     let app = "python3";
                     let decoyName = des_fastaFile + "_target_decoy";
