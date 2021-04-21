@@ -141,7 +141,6 @@ class GraphControl{
                 
             //}
         }
-        console.log("rtSpacing", rtSpacing);
         // ...and rt marks
         let rtFirst = r.rtmin - (r.rtmin % rtSpacing);
         mz = r.mzmin;
