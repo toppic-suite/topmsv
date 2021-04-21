@@ -105,8 +105,8 @@ class LoadData{
             let fullDir = Graph.projectDir;
             let dotIndex = fullDir.lastIndexOf(".");
             let dir = (fullDir.substr(0, dotIndex)).concat(".db");
- 
-            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
+            let inteCutoff = document.getElementById("cutoff-threshold").value;
+            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks + "&cutoff=" + inteCutoff, true);
 
             xhttp.onload = () => {
                 if (xhttp.status == 200 && xhttp.readyState == 4) {
