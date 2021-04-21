@@ -104,7 +104,6 @@ class GraphControl{
             } else if (which == "rt") {
                 
                 text = GraphUtil.roundTo(rt/60, Graph.roundRt);
-                //console.log("rt", rt/60, "converted", text);
                 xoffset = -1.5;
                 zoffset = 0.2;
             }
@@ -117,7 +116,7 @@ class GraphControl{
     
         // calculate tick frequency
         let mzSpacing = Math.pow(10, Math.floor(Math.log(r.mzrange)/Math.log(10) - 0.5));
-        let rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5));
+        let rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5)) * 0.6;
         GraphUtil.emptyGroup(ticksGroup);   
     
         // properly check if floating-point "value" is a multiple
@@ -142,11 +141,12 @@ class GraphControl{
                 
             //}
         }
-        
+        console.log("rtSpacing", rtSpacing);
         // ...and rt marks
         let rtFirst = r.rtmin - (r.rtmin % rtSpacing);
         mz = r.mzmin;
         for (rt = rtFirst + rtSpacing; rt < r.rtmax; rt += rtSpacing) {
+            
             long = isMultiple(rt, rtSpacing * 5);
             let mzlen = r.mzrange * (long ? 0.05 : 0.02);
             makeTickMark(mz, mz - mzlen, rt, rt);
