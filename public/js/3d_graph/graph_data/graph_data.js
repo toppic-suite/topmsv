@@ -3,9 +3,7 @@ class GraphData{
     constructor(){}
     /******** GRAPH RESET ******/
     static clearGraph = () => {
-        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
         GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
-        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
     }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     static drawCurrentScanMarker = () => {
@@ -150,6 +148,8 @@ class GraphData{
     }
      /******** PLOT PEAKS ******/
     static draw = async(curRT) => {   
+        GraphData.clearGraph();
+        
         const curViewRange = Graph.viewRange;
         Graph.curRT = curRT;
         Graph.currentData = await LoadData.load3dData(curViewRange);
@@ -168,9 +168,6 @@ class GraphData{
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
             GraphData.drawCurrentScanMarker();
         }
-        else{
-            GraphData.clearGraph();
-        }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
 
         await GraphFeature.drawFeature(Graph.viewRange);
@@ -179,6 +176,7 @@ class GraphData{
         GraphRender.renderImmediate();
     }
     static drawNoNewData = async() => {
+        GraphData.clearGraph();
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
             GraphData.plotPoint2D();
@@ -187,13 +185,10 @@ class GraphData{
             await GraphData.updatePeaks(Graph.currentData);
         }
         Graph.viewRange["intscale"] = 1;
-
+        
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
             GraphData.drawCurrentScanMarker();
-        }
-        else{
-            GraphData.clearGraph();
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         
