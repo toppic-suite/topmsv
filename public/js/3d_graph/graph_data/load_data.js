@@ -106,6 +106,7 @@ class LoadData{
             let dotIndex = fullDir.lastIndexOf(".");
             let dir = (fullDir.substr(0, dotIndex)).concat(".db");
             let inteCutoff = document.getElementById("cutoff-threshold").value;
+
             xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks + "&cutoff=" + inteCutoff, true);
 
             xhttp.onload = () => {
