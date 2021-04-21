@@ -97,14 +97,18 @@ class GraphControl{
             let text;
             let xoffset = 0;
             let zoffset = 0;
+            
             if (which == "mz") {
                 text = GraphUtil.roundTo(mz, Graph.roundMz);
                 zoffset = 2.0;
             } else if (which == "rt") {
+                
                 text = GraphUtil.roundTo(rt/60, Graph.roundRt);
+                //console.log("rt", rt/60, "converted", text);
                 xoffset = -1.5;
                 zoffset = 0.2;
             }
+            
             let label = GraphLabel.makeTextSprite(text, {r:0, g:0, b:0}, 15);
             let gridsp = GraphControl.mzRtToGridSpace(mz, rt);
             label.position.set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
@@ -122,7 +126,6 @@ class GraphControl{
             let rem = Math.abs(value % divisor);
             return (rem < 1e-4) || (divisor-rem < 1e-4);
         };
-    
         // place mz marks...
         let mz, rt, long;
     
@@ -134,10 +137,10 @@ class GraphControl{
             long = isMultiple(mz, mzSpacing * 5);
             let rtlen = r.rtrange * (long ? 0.05 : 0.02);
             makeTickMark(mz, mz, rt, rt - rtlen);
-    
-            if (long) {
-                makeTickLabel("mz", mz, rt);
-            }
+            makeTickLabel("mz", mz, rt);
+            //if (long) {
+                
+            //}
         }
         
         // ...and rt marks
@@ -147,9 +150,9 @@ class GraphControl{
             long = isMultiple(rt, rtSpacing * 5);
             let mzlen = r.mzrange * (long ? 0.05 : 0.02);
             makeTickMark(mz, mz - mzlen, rt, rt);
-    
+            makeTickLabel("rt", mz, rt);
             if (long) {
-                makeTickLabel("rt", mz, rt);
+                
             }
         }
     };
