@@ -19,10 +19,9 @@ $( document ).ready(function() {
 
     let resetButton = document.getElementById('resetGraphs');
     resetButton.addEventListener('click', function() {
-        let min = document.getElementById("rangeMin").value;
-
-        init2D(parseInt(min));
-        update3D(parseInt(min));
+        //let min = document.getElementById("rangeMin").value;
+        //init2D(parseInt(min));
+        update3DShowFull();
     })
 
     let prev1 = document.getElementById('prev1');
