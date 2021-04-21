@@ -104,6 +104,15 @@ class GraphData{
         Graph.viewRange.rtmax = rtmax;
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
+    static setViewRangeToFull = () => {
+        Graph.viewRange.mzmin = 0;
+        Graph.viewRange.mzmax = Graph.dataRange.mzmax;
+        Graph.viewRange.mzrange = Graph.dataRange.mzmax - Graph.dataRange.mzmin;
+        
+        Graph.viewRange.rtmin = 0;
+        Graph.viewRange.rtmax = Graph.dataRange.rtmax;
+        Graph.viewRange.rtrange = Graph.dataRange.rtmax - Graph.dataRange.rtmin;
+    }
      /******** PLOT PEAKS ******/
     static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
@@ -118,6 +127,16 @@ class GraphData{
         if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
         }
+    }
+    static drawFullRangeGraph = () => {
+        let promise = LoadData.getRT(scanID);
+        promise.then(() =>{
+            GraphData.setViewRangeToFull();
+            GraphData.draw(Graph.curRT);
+            if (Graph.isUpdateTextBox){
+                GraphUtil.updateTextBox();
+            }
+        })
     }
     static drawInitGraph = (mzmin, mzmax, scanID) => {
         let promise = LoadData.getRT(scanID);
