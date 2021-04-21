@@ -15,16 +15,20 @@ class GraphInit{
             let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
             let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
             let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
+            let inteCutoff = parseFloat(document.getElementById("cutoff-threshold").value);
 
             //error handing
             if (minRT > maxRT){
                 alert("Invalid Range : Minimum retention time is bigger than maximum.");
             } 
-            else if (minMZ > maxMZ){
+            if (minMZ > maxMZ){
                 alert("Invalid Range : Minimum m/z is bigger than maximum");
             }
-            else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
+            if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
                 alert("Invalid Value Found : Please make sure the range has valid values.");
+            }
+            if (isNaN(inteCutoff)) {
+                alert("Invalid Value Found : Please enter a valid value for intensity cutoff threshold");
             }
             else{
                 GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
