@@ -214,4 +214,8 @@ $( document ).ready(function() {
             }
         }
     });
+    //redraw graph if intensity adjustment checkbox has changed
+    $("#inte-auto-adjust").click(function () {
+        GraphData.drawNoNewData();
+    })
 })

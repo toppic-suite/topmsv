@@ -413,6 +413,9 @@
 					<span id="graph-cursor-data">
 						m/z:    <br>  retention time:   <br>
 					</span>
+					<div class="projectName">
+						<span id="graph-metadata"></span>
+					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="col-sm-8">
@@ -443,6 +446,13 @@
 							<div class="col-sm-4" style="display:flex">
 								<input type="text" id="cutoff-threshold" class="rangeTextBox" value=0 name="cutoff-threshold" />
 							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-8">
+								<strong>intensity auto scaling:</strong>
+							</div>
+							<div class="col-sm-4" style="display:flex">
+								<input type="checkbox" id="inte-auto-adjust" name="inte-auto-adjust" value="auto-adjust">							</div>
 						</div>
 					</div>
 					<div class="col-sm-4">
@@ -477,25 +487,8 @@
 				<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
 				<button class="btn" type="submit" id="btn-save-file-name">OK</button>
 			</div>
-
-			<div class="row">
-				<div class="projectName col-sm-3">
-					<span id="graph-metadata"></span>
-				</div>
-				<div class="col-sm-9">
-					<div class="col-sm-6"></div>
-					<div class="row">
-						<div class="col-sm-9" style="display:flex">
-							<div class="col-sm-3"></div>
-							
-							<div class="col-sm-5"></div>
-						</div>	
-					</div>
-				</div>	
-			<div>
 			<div class="row">
 				<div class="projectName col-sm-3"></div>
-					
 			</div>
 			
 			<div id="tooltip">

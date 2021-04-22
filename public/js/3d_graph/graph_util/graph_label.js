@@ -58,9 +58,9 @@ class GraphLabel{
     /*display details about the current peaks on the graph*/
     static displayGraphData = (peaks) => {
         //display highest intensity, sum of intensity, total peak count in the current grph
-        let highestInte = "Highest Intensity: " + GraphUtil.formatScientificNotation(Graph.viewRange.intmax);
-        let sumInte = "Sum of Intensity: " + GraphUtil.formatScientificNotation(Graph.intensitySum);
-        let peakCount = "Total Peaks on Graph: " + peaks;
+        let highestInte = "Highest intensity: " + GraphUtil.formatScientificNotation(Graph.viewRange.intmax);
+        let sumInte = "Intensity sum: " + GraphUtil.formatScientificNotation(Graph.intensitySum);
+        let peakCount = "Total peaks: " + peaks;
         let sep = "\n";
 
         //if intensity was 0, it should be just 0
