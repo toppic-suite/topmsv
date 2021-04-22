@@ -35,10 +35,14 @@ class GraphUtil{
     };
     static updateTextBox = () => {
         //update data range in textboxes if getting range from each scan, not by users
-        document.getElementById('rtRangeMin').value = (Graph.viewRange.rtmin/60).toFixed(4);
-        document.getElementById('rtRangeMax').value = (Graph.viewRange.rtmax/60).toFixed(4);
-        document.getElementById('mzRangeMin').value = Graph.viewRange.mzmin.toFixed(4);
-        document.getElementById('mzRangeMax').value = Graph.viewRange.mzmax.toFixed(4);
+        let centerRT = (Graph.viewRange.rtmax/60 + Graph.viewRange.rtmin/60)/2;
+        let rangeRT = Graph.viewRange.rtmax/60 - centerRT;
+        let centerMZ = (Graph.viewRange.mzmax + Graph.viewRange.mzmin)/2;
+        let rangeMZ = Graph.viewRange.mzmax - centerMZ;
+        document.getElementById('rtRangeMin').value = centerRT.toFixed(3);
+        document.getElementById('rtRangeMax').value = rangeRT.toFixed(2);
+        document.getElementById('mzRangeMin').value = centerMZ.toFixed(3);
+        document.getElementById('mzRangeMax').value = rangeMZ.toFixed(2);
     }
     static roundTo = (number, places) => {
         let power = Math.pow(10, places);
