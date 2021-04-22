@@ -11,10 +11,16 @@ class GraphInit{
         let redrawRequestButton = document.getElementById('request3dGraphRedraw');
 
         redrawRequestButton.addEventListener('click', function(){
-            let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
-            let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
-            let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
-            let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
+            let centerRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
+            let rangeRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
+            let centerMZ = parseFloat(document.getElementById('mzRangeMin').value);
+            let rangeMZ = parseFloat(document.getElementById('mzRangeMax').value);
+
+            let minRT = centerRT - rangeRT;
+            let maxRT = centerRT + rangeRT;
+            let minMZ = centerMZ - rangeMZ;
+            let maxMZ = centerMZ + rangeMZ;
+
             let inteCutoff = parseFloat(document.getElementById("cutoff-threshold").value);
 
             //error handing
