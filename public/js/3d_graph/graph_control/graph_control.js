@@ -62,8 +62,13 @@ class GraphControl{
             //int_squish = 1;
             int_squish = Graph.intSquish;
         }
-        
-        Graph.intSquish = int_squish;
+        //if intensity scaling is off, don't adjust intensity;
+        if (!document.getElementById("inte-auto-adjust").checked) {
+            int_squish = 1;
+        }
+        else{
+            Graph.intSquish = int_squish;
+        }
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
