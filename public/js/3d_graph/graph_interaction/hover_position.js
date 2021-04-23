@@ -1,29 +1,30 @@
 /*hover_positon.js: display m/z and rt information of the point the mouse cursor is on */
 class HoverPosition{
     constructor(){};
-    onMouseOver = (event) => {
-        let mousePos = GraphUtil.getMousePosition(event);
+    showHighlight = (rt) => {        
+        //disdlay a line and a scan information in tooltip
+        let markerGroup = Graph.scene.getObjectByName("markerGroup");
+        let scanNum = GraphUtil.findNearestScan(rt);
 
-        let mz = mousePos.x * Graph.viewRange.mzrange + Graph.viewRange.mzmin;//current mz and rt that has a cursor pointed to
-        let rt = mousePos.z * Graph.viewRange.rtrange + Graph.viewRange.rtmin;
-        
-        if (mz < Graph.viewRange.mzmin){
-            mz = "";
-        }else if(mz > Graph.viewRange.mzmax){
-            mz = "";
-        }else{
-            mz = mz.toFixed(3);
+        if (scanNum >= 0) {
+            document.getElementById("tooltip-scanID").style.display = "inline-block";
+            document.getElementById("tooltip-scanID").style.top = (event.clientY - 20) + 'px';
+            document.getElementById("tooltip-scanID").style.left = (event.clientX + 20) + 'px';
+            document.getElementById("tooltiptext-scanID").innerHTML = "scan: " + scanNum;
         }
-        if(rt < Graph.viewRange.rtmin){
-            rt = "";
-        }else if(rt > Graph.viewRange.rtmax){
-            rt = "";
-        }else{
-            rt = (rt/60).toFixed(3);
+        else{
+            document.getElementById("tooltip-scanID").style.display = "none";
         }
+    }
+    onMouseOver = (event) => {
+        let [mz, rt] = GraphUtil.getMzRtCoordinate(event);
+
         if (mz == "" || rt == ""){
             mz = "";
             rt = "";
+        }
+        else{
+            this.showHighlight(parseFloat(rt));
         }
         document.getElementById("graph-cursor-data").innerText = "m/z: " + mz + "\n" + "retention time: " + rt;
     }

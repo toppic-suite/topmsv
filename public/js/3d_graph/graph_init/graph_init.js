@@ -6,13 +6,26 @@ class GraphInit{
     static createSaveGraphEvent = () => {//add an event listener for when a user clicks on graph download button
         document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
     }
+    static createSwitchCurrentScan = () => {
+        //change current scan when clicked on 3d graph
+        document.getElementById("canvas3D").addEventListener("click", function(e) {
+            let [mz, rt] = GraphUtil.getMzRtCoordinate(e);
+            let nearestRt = parseFloat(GraphUtil.findNearestRt(rt));
+            if (nearestRt >= 0) {
+                Graph.curRT = nearestRt;
+                //GraphData.drawNoNewData();
+                GraphData.drawCurrentScanMarker();
+                GraphRender.renderImmediate();
+            }
+        })
+    }
     static createRedrawEvent = () => {
         //listener for rt range and mz range change in 3d graph
         let redrawRequestButton = document.getElementById('request3dGraphRedraw');
 
         redrawRequestButton.addEventListener('click', function(){
-            let centerRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
-            let rangeRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
+            let centerRT = parseFloat(document.getElementById('rtRangeMin').value);//unit is different in DB
+            let rangeRT = parseFloat(document.getElementById('rtRangeMax').value);
             let centerMZ = parseFloat(document.getElementById('mzRangeMin').value);
             let rangeMZ = parseFloat(document.getElementById('mzRangeMax').value);
 
@@ -169,6 +182,7 @@ class GraphInit{
         GraphInit.createAxis();
         GraphInit.createRedrawEvent();
         GraphInit.createSaveGraphEvent();
+        GraphInit.createSwitchCurrentScan();
         
         UploadMzrt.main();
         

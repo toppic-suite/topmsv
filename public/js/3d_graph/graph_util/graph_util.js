@@ -35,8 +35,8 @@ class GraphUtil{
     };
     static updateTextBox = () => {
         //update data range in textboxes if getting range from each scan, not by users
-        let centerRT = (Graph.viewRange.rtmax/60 + Graph.viewRange.rtmin/60)/2;
-        let rangeRT = Graph.viewRange.rtmax/60 - centerRT;
+        let centerRT = (Graph.viewRange.rtmax + Graph.viewRange.rtmin)/2;
+        let rangeRT = Graph.viewRange.rtmax - centerRT;
         let centerMZ = (Graph.viewRange.mzmax + Graph.viewRange.mzmin)/2;
         let rangeMZ = Graph.viewRange.mzmax - centerMZ;
         document.getElementById('rtRangeMin').value = centerRT.toFixed(3);
@@ -102,5 +102,47 @@ class GraphUtil{
             pos.z = 1 - pos.z;
         }
         return pos;
+    }
+    static getMzRtCoordinate = (event) => {
+        let mousePos = GraphUtil.getMousePosition(event);
+        let mz = mousePos.x * Graph.viewRange.mzrange + Graph.viewRange.mzmin;//current mz and rt that has a cursor pointed to
+        let rt = mousePos.z * Graph.viewRange.rtrange + Graph.viewRange.rtmin;
+        if (mz < Graph.viewRange.mzmin){
+            mz = "";
+        }else if(mz > Graph.viewRange.mzmax){
+            mz = "";
+        }else{
+            mz = mz.toFixed(3);
+        }
+        if(rt < Graph.viewRange.rtmin){
+            rt = "";
+        }else if(rt > Graph.viewRange.rtmax){
+            rt = "";
+        }else{
+            rt = rt.toFixed(3);
+        }
+        return [mz, rt];
+    }
+    static findNearestRt = (rt) => {
+        let rtScanData = rtInteGraph.inteRtArray;
+        let threshold = Graph.viewRange.rtrange / 200;
+        for (let i = 0; i < rtScanData.length; i++) {
+            let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
+            if (diff < threshold) {
+                return parseFloat(rtScanData[i].rt);   
+            }
+        }     
+        return -1;   
+    }
+    static findNearestScan = (rt) => {
+        let rtScanData = rtInteGraph.inteRtArray;
+        let threshold = Graph.viewRange.rtrange / 200;
+        for (let i = 0; i < rtScanData.length; i++) {
+            let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
+            if (diff < threshold) {
+                return rtScanData[i].scanNum;   
+            }
+        }     
+        return -1;   
     }
 }

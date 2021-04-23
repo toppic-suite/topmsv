@@ -26,8 +26,8 @@ class GraphFeature{
                 if (rt_high > maxrt){
                     rt_high = maxrt;
                 }
-                rt_high = rt_high * 60;
-                rt_low = rt_low * 60;
+                rt_high = rt_high;
+                rt_low = rt_low;
 
                 featureRect.geometry.attributes.position.array[0] = 0;//vertex at bottom left (0,0)
                 featureRect.geometry.attributes.position.array[3] = mz_high - mz_low;
@@ -94,7 +94,7 @@ class GraphFeature{
     } 
     static drawFeature = (viewRange) => {
         return new Promise((resolve, reject) => {
-            let promise = GraphFeature.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
+            let promise = GraphFeature.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax);
             promise.then(() => {
                 resolve();
             })
@@ -102,7 +102,7 @@ class GraphFeature{
     }
     static drawFeatureNoDataLoad = (viewRange) => {
         return new Promise((resolve, reject) => {
-            GraphFeature.updateFeature(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin/60, viewRange.rtmax/60);
+            GraphFeature.updateFeature(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax);
             resolve();
         })
     }

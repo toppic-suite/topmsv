@@ -31,8 +31,8 @@ class GraphLabel{
         }
         let mzmintext = GraphUtil.roundTo(Graph.viewRange.mzmin, Graph.roundMz);
         let mzmaxtext = GraphUtil.roundTo(Graph.viewRange.mzmax, Graph.roundMz);
-        let rtmintext = GraphUtil.roundTo((Graph.viewRange.rtmin/60).toFixed(4), Graph.roundRt);
-        let rtmaxtext = GraphUtil.roundTo((Graph.viewRange.rtmax/60).toFixed(4), Graph.roundRt);
+        let rtmintext = GraphUtil.roundTo(Graph.viewRange.rtmin.toFixed(4), Graph.roundRt);
+        let rtmaxtext = GraphUtil.roundTo(Graph.viewRange.rtmax.toFixed(4), Graph.roundRt);
 
         let mztext = "m/z";
         let rttext = "retention time";

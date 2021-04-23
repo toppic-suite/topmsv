@@ -35,7 +35,7 @@ class Graph{
         Graph.dataRange = {};
         Graph.viewRange = {};
 
-        Graph.rtRange = 30;
+        Graph.rtRange = 30/60;
         Graph.curRT = -1;
         Graph.scanID = 1;
         
@@ -111,6 +111,25 @@ class Graph{
         Graph.scene.add(Graph.markerGroup);
         Graph.scene.add(Graph.featureGroup);
         Graph.scene.add(Graph.axisGroup);
+    }
+    initMarkerGroup = () => {
+        let linegeo = new THREE.BufferGeometry();
+        linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+            0, 0, 0,
+            Graph.gridRange, 0, 0,
+        ]), 3));
+
+        let linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
+        //linemat.polygonOffset = true;
+        //linemat.polygonOffsetFactor = -0.1;
+
+        let line = new THREE.Line(linegeo, linemat);
+
+        line.position.set(0, 0, 0);
+
+        line.name = "currentScanMarker";
+
+        Graph.markerGroup.add(line);
     }
     initFeatureGroup = () => {
         for (let i = 0; i < Graph.maxFeature; i++) {
@@ -213,6 +232,8 @@ class Graph{
         this.initPlotGroup();
         this.init2DPlotGroup();
         this.initFeatureGroup();
+        this.initMarkerGroup();
+       // this.initCurrentScanMarker();
         
         let promise = this.initDataRange();
 
