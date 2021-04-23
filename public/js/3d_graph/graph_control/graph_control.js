@@ -83,7 +83,7 @@ class GraphControl{
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
         featureGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
-
+       // console.log(markerGroup);
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
 
@@ -108,7 +108,7 @@ class GraphControl{
                 zoffset = 2.0;
             } else if (which == "rt") {
                 
-                text = GraphUtil.roundTo(rt/60, Graph.roundRt);
+                text = GraphUtil.roundTo(rt, Graph.roundRt);
                 xoffset = -1.5;
                 zoffset = 0.2;
             }
@@ -121,7 +121,7 @@ class GraphControl{
     
         // calculate tick frequency
         let mzSpacing = Math.pow(10, Math.floor(Math.log(r.mzrange)/Math.log(10) - 0.5));
-        let rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5)) * 0.6;
+        let rtSpacing = Math.pow(10, Math.floor(Math.log(r.rtrange)/Math.log(10) - 0.5));
         GraphUtil.emptyGroup(ticksGroup);   
     
         // properly check if floating-point "value" is a multiple

@@ -175,9 +175,9 @@ class GraphZoom
 
         let newRange = GraphControl.constrainBoundsZoom(newmzmin, newmzrange, newrtmin, newrtrange);
         
-        if (newRange.rtmax - newRange.rtmin < 0.35) {//prevent rt range becoming too small
+        /*if (newRange.rtmax - newRange.rtmin < 0.35) {//prevent rt range becoming too small
             newRange.rtmax = newRange.rtmin + 0.35;
-        }
+        }*/
         await GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT);
     }
     main(){
