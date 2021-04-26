@@ -73,7 +73,7 @@ class Graph{
         Graph.isUpdateTextBox = true;
 
         /*whether redraw is triggered by pan or zoom - determines whether peak inte is adjusted or not*/
-        Graph.isZoom = false;
+        Graph.isPan = false;
     }
     createGroups = () => {
         /*groups to hold different graph elements */

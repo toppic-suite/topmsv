@@ -7,6 +7,7 @@ class GraphPan{
     this.mdelta = new THREE.Vector3();
   }
   panView = (x,z) => {
+    Graph.isPan = true;
     let viewRange = Graph.viewRange;
     let mzmin = viewRange.mzmin + (x * viewRange.mzrange);
     let rtmin = viewRange.rtmin + (z * viewRange.rtrange);
@@ -15,6 +16,7 @@ class GraphPan{
     GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT);
   }
   panViewNoNewData = (x,z) => {
+    Graph.isPan = true;
     let viewRange = Graph.viewRange;
     let mzmin = viewRange.mzmin + (x * viewRange.mzrange);
     let rtmin = viewRange.rtmin + (z * viewRange.rtrange);

@@ -49,7 +49,7 @@ class GraphControl{
             //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
             int_squish = 0;
         }
-        if (heightScale * Graph.peakScale > Graph.maxPeakHeight && Graph.isZoom) {
+        if (heightScale * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {
             let newSquish = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
             if (heightScale * newSquish < heightScale * Graph.intSquish) {
                 int_squish = newSquish;
@@ -59,16 +59,15 @@ class GraphControl{
             }
         }
         else{
-            //int_squish = 1;
             int_squish = Graph.intSquish;
         }
         //if intensity scaling is off, don't adjust intensity;
         if (!document.getElementById("inte-auto-adjust").checked) {
-            int_squish = 1;
+            int_squish = Graph.intSquish;
         }
-        else{
-            Graph.intSquish = int_squish;
-        }
+        Graph.intSquish = int_squish;
+        Graph.isPan = false;//reset the boolean determining whether to apply automatic intensity scaling
+
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
@@ -83,7 +82,6 @@ class GraphControl{
         dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
         featureGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
-       // console.log(markerGroup);
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
 
