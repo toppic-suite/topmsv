@@ -33,13 +33,31 @@ const CronJob = require('cron').CronJob;
  * @type {CronJob}
  */
 const checkExpiredProj = require('./library/checkExpiredProj');
+const checkNearExpiredProj = require('./library/checkNearExpiredProj');
 const deleteProject = require('./library/deleteProject');
+
 const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
     console.log('Check expired projects:', d);
     checkExpiredProj(function (err, rows) {
         rows.forEach(element => {
             deleteProject(element.pcode);
+        });
+    });
+    
+    checkNearExpiredProj(function (err, rows) {
+        rows.forEach(element => {
+            nodemailerAuth.message.subject = "Your data is about to expire!";
+            nodemailerAuth.message.to = element.email;
+            nodemailerAuth.message.html = '<p>Project Name: ' + element.projectName + '<br/>File Name: ' + element.fileName + '<br/>To secure storage space, data is deleted 30 days after upload. Your project is going to be removed from our database in 1 day.</p><p>If you would like to keep your data for another 30 days, click <a href="https://toppic.soic.iupui.edu/updateDate?pcode=' + element.pcode + '">here</a>.</p>';
+
+            nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(info);
+                }
+            });
         });
     });
 });
@@ -438,6 +456,8 @@ app.use('/', require("./router/projectview"));
 app.use('/', require("./router/ptmQuery"));
 
 app.use('/', require('./router/getAllowToppicStatus'));
+
+app.use('/', require("./router/updateDate"));
 
 /**router for 3D graph */
 app.use('/', require("./router/getMax"));
