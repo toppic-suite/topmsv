@@ -425,7 +425,7 @@ button#minusBtn {
     z-index: 1;
   }
   #tooltiptext-scanID {
-    width: 60px;
+    width: 70px;
     background-color: #555555;
     color: #fff;
     text-align: left;
