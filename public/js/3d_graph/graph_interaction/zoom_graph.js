@@ -20,55 +20,6 @@ class GraphZoom
         Graph.peakScale = oriScale * scaleFactor;
         GraphRender.renderImmediate();
     }
-    /*onZoom = (e) => {
-        e.preventDefault();//disable scroll of browser
-
-        window.clearTimeout( this.scrollTimer );
-
-        if (!this.scrollLock) {
-            this.scrollTimer = setTimeout(() => {
-                let axis = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
-                if (axis == null){
-                    if (e.ctrlKey){//if control key is pressed --> intensity zoom
-                        let scaleFactor = 0;
-                        if (e.deltaY > 0) {
-                            scaleFactor = 0.75;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
-                        else if (e.deltaY < 0){
-                            scaleFactor = 1.5;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
-                    }
-                    else{
-                        this.onZoomFromEventListener(e, null);
-                    }
-                }
-                else{
-                    if (e.ctrlKey){//if control key is pressed --> intensity zoom
-                        let scaleFactor = 0;
-                        if (e.deltaY > 0) {
-                            scaleFactor = 0.75;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
-                        else if (e.deltaY < 0){
-                            scaleFactor = 1.5;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
-                    }
-                    else{
-                        if (axis.name == "xAxis"){
-                            this.onZoomFromEventListener(e, "mz");
-                        }
-                        else if(axis.name == "yAxis"){
-                            this.onZoomFromEventListener(e, "rt");
-                        }
-                    }
-                }
-            }, 5); 
-            this.scrollLock = false;
-        } 
-    }*/
     onZoom = async(e) => {
         e.preventDefault();//disable scroll of browser
 
@@ -115,9 +66,7 @@ class GraphZoom
             this.scrollLock = false;
         } 
     }
-    onZoomFromEventListener = async(e, axisName) => {
-        Graph.isZoom = true;
-        
+    onZoomFromEventListener = async(e, axisName) => {        
         //zoom action detected by event listener in each axis
         let scaleFactor = 0;
         let mousePos = GraphUtil.getMousePosition(e);

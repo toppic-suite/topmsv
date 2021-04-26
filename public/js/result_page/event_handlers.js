@@ -214,8 +214,10 @@ $( document ).ready(function() {
             }
         }
     });
-    //redraw graph if intensity adjustment checkbox has changed
+    //redraw graph if intensity adjustment checkbox gets checked
     $("#inte-auto-adjust").click(function () {
-        GraphData.drawNoNewData();
+        if (document.getElementById("inte-auto-adjust").checked) {
+            GraphData.drawNoNewData();
+        }
     })
 })
