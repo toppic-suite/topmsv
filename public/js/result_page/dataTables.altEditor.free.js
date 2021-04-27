@@ -240,7 +240,8 @@
                             return;
                         }
                         // console.log(adata.data()[0].mono_mz);
-                        jumpTo(adata.data()[0].mono_mz)
+                        //jumpTo(adata.data()[0].mono_mz)
+                        jumpTo(adata.data()[0])
                     });
                 }
 
