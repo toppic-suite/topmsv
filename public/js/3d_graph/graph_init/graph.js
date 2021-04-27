@@ -233,13 +233,16 @@ class Graph{
         this.init2DPlotGroup();
         this.initFeatureGroup();
         this.initMarkerGroup();
-       // this.initCurrentScanMarker();
         
         let promise = this.initDataRange();
 
         promise.then(()=>{
             this.setInitScale();
             GraphInit.main(mzmin, mzmax, scanNum);
+
+            if($('#featureStatus').val() !== "0"){
+                showFeatureTable();
+            }
         })
     }
 }

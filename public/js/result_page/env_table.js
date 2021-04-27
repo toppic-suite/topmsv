@@ -161,7 +161,8 @@ function showEnvTable(scan) {
     }
 }
 
-function jumpTo(mono_mz) {
+function jumpTo(data) {
+    let mono_mz = data.mono_mz;
     if($('#msType').text() === 'MS2'){
         graph2_g.redraw(mono_mz);
         // relocSpet2(mono_mz);

@@ -77,7 +77,6 @@ class GraphFeature{
                 xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
                
                 xhttp.onload = () => {
-                    console.log(xhttp.readyState == 4, xhttp.status == 200)
                     if (xhttp.readyState == 4 && xhttp.status == 200) {
                         let featureData = JSON.parse(xhttp.responseText);
                         Graph.currentFeatureData = featureData;
