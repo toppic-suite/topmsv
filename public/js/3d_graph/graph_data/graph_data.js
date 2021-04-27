@@ -6,6 +6,7 @@ class GraphData{
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
         markerGroup.children.forEach(function(line) {
             line.position.set(0, 0.01, Graph.curRT);
+            line.visible = true;
             //line.geometry.attributes.position.needsUpdate = true;     
         })
     }
@@ -130,11 +131,6 @@ class GraphData{
     }
      /******** PLOT PEAKS ******/
     static draw = async(curRT) => {   
-        let markerGroup = Graph.scene.getObjectByName("markerGroup");
-        markerGroup.children.forEach(function(line) {
-            line.position.set(0, 0, 0);
-        })
-
         const curViewRange = Graph.viewRange;
         Graph.curRT = parseFloat(curRT);
         Graph.currentData = await LoadData.load3dData(curViewRange);
@@ -153,6 +149,12 @@ class GraphData{
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
             await GraphData.drawCurrentScanMarker();
         }
+        else{
+            let markerGroup = Graph.scene.getObjectByName("markerGroup");
+            markerGroup.children.forEach(function(line) {
+                line.visible = false;
+            })
+        }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
 
         await GraphFeature.drawFeature(Graph.viewRange);
@@ -160,11 +162,6 @@ class GraphData{
         GraphRender.renderImmediate();
     }
     static drawNoNewData = async() => {
-        let markerGroup = Graph.scene.getObjectByName("markerGroup");
-        markerGroup.children.forEach(function(line) {
-            line.position.set(0, 0, 0);
-        })
-
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
             GraphData.plotPoint2D();
@@ -177,6 +174,12 @@ class GraphData{
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
             GraphData.drawCurrentScanMarker();
+        }
+        else{
+            let markerGroup = Graph.scene.getObjectByName("markerGroup");
+            markerGroup.children.forEach(function(line) {
+                line.visible = false;
+            })    
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         

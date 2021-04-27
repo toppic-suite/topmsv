@@ -19,7 +19,7 @@ class Graph{
         /*initialize graph components*/
         Graph.scene = new THREE.Scene();
         Graph.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
-        Graph.camera = new THREE.OrthographicCamera( 10, 10, 10, 10, 1, 500 );
+        Graph.camera = new THREE.OrthographicCamera( 10, 10, 10, 10, 1, 100 );
         Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
         
         /*rounding for grpah axis labels */
