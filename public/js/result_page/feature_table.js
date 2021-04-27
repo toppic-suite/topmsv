@@ -33,7 +33,7 @@ function showFeatureTable() {
                 extend: 'selected',
                 text: 'Jump to',
                 className: 'btn',
-                name: 'jumpto'
+                name: 'jumpto_feature'
             }
         ],
         "ajax": {
@@ -55,7 +55,7 @@ function showFeatureTable() {
     });
 }
 
-function jumpTo(data) {
+function jumpToFeature(data) {
     GraphData.updateGraph(data.mz_low, data.mz_high, data.rt_low, data.rt_high, Graph.curRT);
 }
 
