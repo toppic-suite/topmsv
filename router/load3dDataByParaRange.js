@@ -15,7 +15,6 @@ const load3dDataByParaRange = router.get('/load3dDataByParaRange', function (req
     const maxMZ = req.query.maxMZ;
     const maxPeaks = req.query.maxPeaks;
     const cutoff = req.query.cutoff;
-    console.log(projectDir, tableNum, minRT, maxRT, minMZ, maxMZ, maxPeaks, cutoff);
     load3dDataByParaRangeLib(projectDir, tableNum, minRT, maxRT, minMZ, maxMZ, maxPeaks, cutoff, function (err, rows) {
         res.write(JSON.stringify(rows));
         res.end();
