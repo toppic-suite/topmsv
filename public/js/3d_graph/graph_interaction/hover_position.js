@@ -17,7 +17,7 @@ class HoverPosition{
     }
     onMouseOver = (event) => {
         let [mz, rt] = GraphUtil.getMzRtCoordinate(event);
-
+        let scan =  GraphUtil.findNearestScan(rt);
         if (mz == "" || rt == ""){
             mz = "";
             rt = "";
@@ -30,7 +30,11 @@ class HoverPosition{
                 document.getElementById("tooltip-scanID").style.display = "none";
             }
         }
-        document.getElementById("graph-cursor-data").innerText = "m/z: " + mz + "\n" + "retention time: " + rt;
+        if (scan < 0) {
+            scan = "n/a";
+        }
+        document.getElementById("graph-cursor-data").innerText = "m/z: " + mz + "\n" + "retention time: " + rt 
+        + "\n" + "scan ID: " + scan;
     }
     main = () => {
         Graph.renderer.domElement.addEventListener('mousemove', this.onMouseOver, false);
