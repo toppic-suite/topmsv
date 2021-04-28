@@ -303,6 +303,18 @@ button#hide{
     text-decoration: none;
     display: inline-block;
 }
+button#hideFeatureTable{
+    position: relative;
+    /*left: 84%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
 button#switch {
     position: relative;
     /*left: 83%;*/
