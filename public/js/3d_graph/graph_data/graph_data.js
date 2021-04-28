@@ -98,25 +98,25 @@ class GraphData{
     static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         await GraphData.draw(curRT);
-        if (Graph.isUpdateTextBox){
+        /*if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
-        }
+        }*/
     }
     static updateGraphNoNewData = (mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         GraphData.drawNoNewData(curRT);
-        if (Graph.isUpdateTextBox){
+        /*if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
-        }
+        }*/
     }
     static drawFullRangeGraph = () => {
         let promise = LoadData.getRT(scanID);
         promise.then(() =>{
             GraphData.setViewRangeToFull();
             GraphData.draw(Graph.curRT);
-            if (Graph.isUpdateTextBox){
+            /*if (Graph.isUpdateTextBox){
                 GraphUtil.updateTextBox();
-            }
+            }*/
         })
     }
     static drawInitGraph = (mzmin, mzmax, scanID) => {
@@ -124,9 +124,9 @@ class GraphData{
         promise.then(async(curRT) =>{
             GraphData.setInitViewRange(mzmin, mzmax, curRT);
             await GraphData.draw(curRT);
-            if (Graph.isUpdateTextBox){
+            /*if (Graph.isUpdateTextBox){
                 GraphUtil.updateTextBox();
-            }
+            }*/
         })
     }
      /******** PLOT PEAKS ******/

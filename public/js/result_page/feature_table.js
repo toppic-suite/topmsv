@@ -49,8 +49,7 @@ function showFeatureTable() {
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "mono_mz", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
-            { "data": "promex_score",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+            { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'}
         ],
     });
 }
