@@ -2,6 +2,7 @@
 
 class GraphControl{
     constructor(){}
+
     /******** CONVERSION FUNCTIONS *****/
     /*Converts mz, rt coordinate to grid space (0 to GRID_RANGE)*/
     static mzRtToGridSpace = (mz, rt) => {
@@ -34,6 +35,125 @@ class GraphControl{
                 }
             }
         })
+    }
+    static getTickHeight = () => {
+        let tempDiff = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
+        let tickHeight = parseInt(Graph.tickHeightList[0]) ;
+        for(let i = 0; i < Graph.tickHeightList.length; i++)
+        {
+          if(tempDiff/Graph.yTickNum <= parseFloat(Graph.tickHeightList[i]) && 
+             tempDiff/Graph.yTickNum > parseFloat(Graph.tickHeightList[i+1]))
+          {
+            tickHeight = parseFloat(Graph.tickHeightList[i]);
+            break ;
+          }
+        }
+        return tickHeight;
+    }
+    static getTickWidth = () => {
+        let tempDiff = Graph.viewRange.mzmax - Graph.viewRange.mzmin;
+        let tickWidth = parseInt(Graph.tickWidthList[0]) ;
+        for(let i = 0; i < Graph.tickWidthList.length; i++)
+        {
+          if(tempDiff/Graph.xTickNum <= parseFloat(Graph.tickWidthList[i]) && 
+             tempDiff/Graph.xTickNum > parseFloat(Graph.tickWidthList[i+1]))
+          {
+            tickWidth = parseFloat(Graph.tickWidthList[i]);
+            break ;
+          }
+        }
+        return tickWidth;
+    }
+    static getXTickPosList = () => {
+        let posList = new Array(Graph.xTickNum + 1);
+        let tickWidth = GraphControl.getTickWidth();
+        for(let i=0; i <= Graph.xTickNum ; i++)
+        {
+          // calculate the actual tick position based on the current minMz value on the xaxis
+          let tickMz = 0;
+          if(tickWidth < 1 && tickWidth != 0)
+          {
+            tickMz = (i*tickWidth + Graph.viewRange.mzmin) - parseFloat((i*tickWidth + Graph.viewRange.mzmin)%tickWidth) ;
+          }
+          else if(tickWidth != 0)
+          {
+            tickMz = i*tickWidth + Graph.viewRange.mzmin - (i*tickWidth + Graph.viewRange.mzmin)%tickWidth ;
+          }
+          posList[i] = tickMz;
+        }
+        return posList;
+    }
+    static getYTickPosList = () => {
+        let posList = new Array(Graph.yTickNum + 1);
+        let tickWidth = GraphControl.getTickHeight();
+        for(let i=0; i <= Graph.yTickNum ; i++)
+        {
+          // calculate the actual tick position based on the current minMz value on the xaxis
+          let tickRt = 0;
+          if(tickWidth < 1 && tickWidth != 0)
+          {
+            tickRt = (i*tickWidth + Graph.viewRange.rtmin) - parseFloat((i*tickWidth + Graph.viewRange.rtmin)%tickWidth) ;
+          }
+          else if(tickWidth != 0)
+          {
+            tickRt = i*tickWidth + Graph.viewRange.rtmin - (i*tickWidth + Graph.viewRange.rtmin)%tickWidth ;
+          }
+          posList[i] = tickRt;
+        }
+        return posList;
+    }
+    static makeTick = (tickMz, tickRt) => {
+        let rtlen = Graph.viewRange.rtrange * 0.02;
+        let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
+        let markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
+        let markGeo = new THREE.Geometry();
+        markGeo.vertices.push(new THREE.Vector3(tickMz, 0, tickRt));
+        markGeo.vertices.push(new THREE.Vector3(tickMz, 0, tickRt - rtlen));
+        let markLine = new THREE.Line(markGeo, markMaterial);
+        ticksGroup.add(markLine);    
+    }
+    static makeTickLabel = (which, mz, rt) => {
+        let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
+        let text;
+        let xoffset = 0;
+        let zoffset = 0;
+        
+        if (which == "mz") {
+            text = GraphUtil.roundTo(mz, Graph.roundMz);
+            zoffset = 2.0;
+        } else if (which == "rt") {  
+            text = GraphUtil.roundTo(rt, Graph.roundRt);
+            xoffset = -1.5;
+            zoffset = 0.2;
+        }
+        let label = GraphLabel.makeTextSprite(text, {r:0, g:0, b:0}, 15);
+        let gridsp = GraphControl.mzRtToGridSpace(mz, rt);
+        label.position.set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
+        tickLabelGroup.add(label);
+    };
+    static drawTick = () => {
+        let xTickPosList = GraphControl.getXTickPosList();
+        let yTickPosList = GraphControl.getYTickPosList();
+        let tickMz = -1;
+        let tickRt = Graph.viewRange.rtmin;
+        for(let i=0; i < xTickPosList.length ; i++) {
+            tickMz = xTickPosList[i];
+            // get the x position of the tick 
+            //let peakX = (tickMz - Graph.viewRange.mzmin) * Graph.xScale;
+            if (tickMz >= Graph.viewRange.mzmin && tickMz <= Graph.viewRange.mzmax) {
+                GraphControl.makeTick(tickMz, tickRt)
+                GraphControl.makeTickLabel("mz", tickMz, tickRt);
+            }
+        }
+        tickMz = Graph.viewRange.mzmin;
+        for(let i=0; i < yTickPosList.length ; i++) {
+            tickRt = yTickPosList[i];
+            // get the y position of the tick 
+            if (tickRt >= Graph.viewRange.rtmin && tickRt <= Graph.viewRange.rtmax) {
+                GraphControl.makeTick(tickMz, tickRt)
+                GraphControl.makeTickLabel("rt", tickMz, tickRt);
+            }
+        }
     }
     /*resizes the renderer and camera, especially in response to a window resize*/
     static repositionPlot = (r) => {
@@ -84,7 +204,11 @@ class GraphControl{
         featureGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
         // update tick marks
         GraphUtil.emptyGroup(tickLabelGroup);
+        GraphUtil.emptyGroup(ticksGroup);   
 
+        GraphControl.drawTick();
+
+/*
         let markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
         // draws a tick mark at the given location
         let makeTickMark = (mzmin, mzmax, rtmin, rtmax) => {
@@ -93,8 +217,9 @@ class GraphControl{
             markGeo.vertices.push(new THREE.Vector3(mzmax, 0, rtmax));
             let markLine = new THREE.Line(markGeo, markMaterial);
             ticksGroup.add(markLine);
+            
         };
-    
+        
         // draws a tick label for the given location
         let makeTickLabel = (which, mz, rt) => {
             let text;
@@ -156,13 +281,13 @@ class GraphControl{
             if (long) {
                 
             }
-        }
+        }*/
     };
     /*update labels and legend to reflect a new view range*/
     static updateViewRange = (newViewRange) => {
         Graph.viewRange = newViewRange;
         GraphControl.repositionPlot(newViewRange);
-        GraphLabel.drawDataLabels();
+        //GraphLabel.drawDataLabels();
     }
     /*prevent user from going outside the data range or zooming in so far that math breaks down*/
     static constrainBoundsZoom = (newmzmin, newmzrange, newrtmin, newrtrange) => {

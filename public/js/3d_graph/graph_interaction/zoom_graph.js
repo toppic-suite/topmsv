@@ -127,6 +127,7 @@ class GraphZoom
         /*if (newRange.rtmax - newRange.rtmin < 0.35) {//prevent rt range becoming too small
             newRange.rtmax = newRange.rtmin + 0.35;
         }*/
+        GraphControl.xScale = scaleFactor;
         await GraphData.updateGraph(newRange.mzmin, newRange.mzmax, newRange.rtmin, newRange.rtmax, Graph.curRT);
     }
     main(){
