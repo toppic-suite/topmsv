@@ -55,6 +55,8 @@ function showFeatureTable() {
 }
 
 function jumpToFeature(data) {
-    GraphData.updateGraph(data.mz_low, data.mz_high, data.rt_low, data.rt_high, Graph.curRT);
+    let mzPadding = 1;
+    let rtPadding = 0.01;
+    GraphData.updateGraph(data.mz_low - mzPadding, data.mz_high + mzPadding, data.rt_low - rtPadding, data.rt_high + rtPadding, Graph.curRT);
 }
 

@@ -28,7 +28,11 @@ class LoadData{
     
         let xRatio = (Graph.viewRange.mzmax - Graph.viewRange.mzmin) / totalMzRange;
         let yRatio = (Graph.viewRange.rtmax - Graph.viewRange.rtmin) / totalRtRange;
-        
+
+        if (yRatio == 0 ) {
+            //yRatio can be zero when refocuing to a feature with same min max rt
+            yRatio = 1;
+        }
         //get expected peak count from the text file
         let expectedPeakNum;
 
