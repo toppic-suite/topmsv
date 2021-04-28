@@ -87,7 +87,15 @@ $( document ).ready(function() {
             $("#datatable").show();
         }
     });
-
+    $( "#hideFeatureTable" ).click(function() {
+        if($("#hideFeatureTable").text() === 'Hide') {
+            $("#hideFeatureTable").text('Show');
+            $("#featureDataTable").hide();
+        }else {
+            $("#hideFeatureTable").text('Hide');
+            $("#featureDataTable").show();
+        }
+    });
     $("#switch").click(function () {
         if($("#switch").text() === 'MS1') {
             showEnvTable($("#scanID1").text());
