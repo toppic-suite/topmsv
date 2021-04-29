@@ -4,7 +4,6 @@ class GraphFeature{
     /******** ADD FEAUTRE ANNOTATION ******/
     static updateFeature = (minmz, maxmz, minrt, maxrt) => {
         let featureGroup = Graph.scene.getObjectByName("featureGroup");
-        //console.log(minmz, maxmz, minrt, maxrt)
         let data = Graph.currentFeatureData;
         featureGroup.children.forEach(function(featureRect, index) {
             if (index < data.length) {
