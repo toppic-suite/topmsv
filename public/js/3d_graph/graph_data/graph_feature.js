@@ -16,15 +16,19 @@ class GraphFeature{
 
                 if (mz_low < minmz){
                     mz_low = minmz;
+                    feature.mz_low = minmz;
                 }
                 if (mz_high > maxmz){
                     mz_high = maxmz;
+                    feature.mz_high = maxmz;
                 }
                 if (rt_low < minrt){
                     rt_low = minrt;
+                    feature.rt_low = minrt;
                 }
                 if (rt_high > maxrt){
                     rt_high = maxrt;
+                    feature.rt_high = maxrt;
                 }
                 rt_high = rt_high;
                 rt_low = rt_low;

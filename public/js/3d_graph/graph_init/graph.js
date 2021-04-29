@@ -19,7 +19,7 @@ class Graph{
         /*initialize graph components*/
         Graph.scene = new THREE.Scene();
         Graph.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
-        Graph.camera = new THREE.OrthographicCamera( 10, 10, 10, 10, 1, 100 );
+        Graph.camera = new THREE.OrthographicCamera( -50, 50, -10, 10, 1, 100 );
         Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
         
         /*rounding for grpah axis labels */
@@ -151,7 +151,7 @@ class Graph{
                 0, 0, 0,
             ]), 3));
 
-            let linemat = new THREE.LineDashedMaterial( { color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
+            let linemat = new THREE.LineDashedMaterial( { side: THREE.DoubleSide, color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
             let feature = new THREE.Line( geometry, linemat );
 
             feature.position.set(0, 0, 0);
