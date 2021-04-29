@@ -39,12 +39,13 @@ function showFeatureTable() {
         "ajax": {
             url:'loadMzrtData?projectDir=' + dir + "/" + fileName + ".db" + 
             "&minRT=0" + "&maxRT=" + Graph.dataRange.rtmax +
-            "&minMZ=0" + "&maxMZ=" + Graph.dataRange.mzmax,
+            "&minMZ=0" + "&maxMZ=" + Graph.dataRange.mzmax + 
+            "&limit=" + "ALL",
             dataSrc: '',
             type: "GET"
         },
         "columns": [
-            { "data": "id", readonly: 'true'},
+            { "data": "id", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "envelope_num", "visible": true},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
