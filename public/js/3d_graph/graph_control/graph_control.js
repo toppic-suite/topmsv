@@ -102,13 +102,12 @@ class GraphControl{
         }
         return posList;
     }
-    static makeTick = (tickMz, tickRt) => {
-        let rtlen = Graph.viewRange.rtrange * 0.02;
+    static makeTick = (startMz, endMz, startRt, endRt) => {
         let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
         let markMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
         let markGeo = new THREE.Geometry();
-        markGeo.vertices.push(new THREE.Vector3(tickMz, 0, tickRt));
-        markGeo.vertices.push(new THREE.Vector3(tickMz, 0, tickRt - rtlen));
+        markGeo.vertices.push(new THREE.Vector3(startMz, 0, startRt));
+        markGeo.vertices.push(new THREE.Vector3(endMz, 0, endRt));
         let markLine = new THREE.Line(markGeo, markMaterial);
         ticksGroup.add(markLine);    
     }
@@ -136,12 +135,14 @@ class GraphControl{
         let yTickPosList = GraphControl.getYTickPosList();
         let tickMz = -1;
         let tickRt = Graph.viewRange.rtmin;
+        let rtlen = Graph.viewRange.rtrange * 0.02;
+        let mzlen = Graph.viewRange.mzrange * 0.02;
         for(let i=0; i < xTickPosList.length ; i++) {
             tickMz = xTickPosList[i];
             // get the x position of the tick 
             //let peakX = (tickMz - Graph.viewRange.mzmin) * Graph.xScale;
             if (tickMz >= Graph.viewRange.mzmin && tickMz <= Graph.viewRange.mzmax) {
-                GraphControl.makeTick(tickMz, tickRt)
+                GraphControl.makeTick(tickMz, tickMz, tickRt, tickRt- rtlen);
                 GraphControl.makeTickLabel("mz", tickMz, tickRt);
             }
         }
@@ -150,7 +151,7 @@ class GraphControl{
             tickRt = yTickPosList[i];
             // get the y position of the tick 
             if (tickRt >= Graph.viewRange.rtmin && tickRt <= Graph.viewRange.rtmax) {
-                GraphControl.makeTick(tickMz, tickRt)
+                GraphControl.makeTick(tickMz, tickMz - mzlen, tickRt, tickRt)
                 GraphControl.makeTickLabel("rt", tickMz, tickRt);
             }
         }
