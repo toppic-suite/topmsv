@@ -1,10 +1,29 @@
 /*hover_feature.js: on hover, highlught and display feature information (scan ID, intensity, rt, mz)*/
 class HoverFeature{
     constructor(){};
+    static findFeatureOnHover = (event, objGroup) => {
+        let [mz, rt] = GraphUtil.getMzRtCoordinate(event);
+        mz = parseFloat(mz);
+        rt = parseFloat(rt);
+   
+        let mzThreshold = Graph.viewRange.mzrange / 60;
+        let rtThreshold = Graph.viewRange.rtrange / 60;
+        
+        for (let i = 0; i < objGroup.children.length; i++) {
+            let feature = objGroup.children[i];
+            if (feature.visible) {
+                if (((mz >= feature.mz_low && mz <= feature.mz_high) && (Math.abs(rt - feature.rt_low) <= rtThreshold || Math.abs(rt - feature.rt_high) <= rtThreshold)) || 
+                    ((rt >= feature.rt_low && rt <= feature.rt_high) && (Math.abs(mz - feature.mz_low) <= mzThreshold || Math.abs(mz - feature.mz_high) <= mzThreshold))) {
+                    return feature;
+                } 
+            }
+        }
+        return null;
+    }
     onMouseOver = (event) => {
         if (event.ctrlKey) {
             let objGroup = Graph.scene.getObjectByName("featureGroup");
-            let obj = GraphUtil.findFeatureOnHover(event, objGroup);
+            let obj = HoverFeature.findFeatureOnHover(event, objGroup);
             if (obj != null){
                 let intensity = 0;
                 if (obj.intensity > 0){
