@@ -3,7 +3,7 @@ class HoverFeature{
     constructor(){};
     onMouseOver = (event) => {
         let objGroup = Graph.scene.getObjectByName("featureGroup");
-        let obj = GraphUtil.findObjectHover(event, objGroup);
+        let obj = GraphUtil.findFeatureOnHover(event, objGroup);
         if (obj != null){
             let intensity = 0;
 

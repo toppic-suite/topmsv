@@ -62,6 +62,21 @@ class GraphUtil{
         return comparison;
     }
     /*related to mouse interaction*/
+    static findFeatureOnHover = (event, objGroup) => {
+        let [mz, rt] = GraphUtil.getMzRtCoordinate(event);
+        mz = parseFloat(mz);
+        rt = parseFloat(rt);
+        for (let i = 0; i < objGroup.children.length; i++) {
+            let feature = objGroup.children[i];
+            if (feature.visible) {
+                if (((mz >= feature.mz_low && mz <= feature.mz_high) && (Math.abs(rt - feature.rt_low) <= 0.1 || Math.abs(rt - feature.rt_high) <= 0.1)) || 
+                    ((rt >= feature.rt_low && rt <= feature.rt_high) && (Math.abs(mz - feature.mz_low) <= 0.1 || Math.abs(mz - feature.mz_high) <= 0.1))) {
+                    return feature;
+                } 
+            }
+        }
+        return null;
+    }
     static findObjectHover = (event, objGroup) => {
         let el = Graph.renderer.domElement;
         let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
@@ -82,6 +97,29 @@ class GraphUtil{
             return null;
         }
     }
+    /*static test = (event) => {
+        let testObj = Graph.scene.getObjectByName("testCircle");
+
+        if (testObj) {
+            Graph.scene.remove(testObj);
+        }
+
+        let el = Graph.renderer.domElement;
+        let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
+        let coord = {
+            x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
+            y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
+        };
+        let mousePos = GraphUtil.getMousePosition(event);
+        let geometry = new THREE.SphereGeometry( 1.5, 32, 32 );
+        let material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+        let circle = new THREE.Mesh( geometry, material );
+
+        circle.name = "testCircle";
+        Graph.scene.add( circle );
+        circle.position.set(mousePos.x * Graph.gridRange, 0, Graph.gridRange - (mousePos.z * Graph.gridRange));
+        GraphRender.renderImmediate();
+    }*/
     static getMousePosition = (event) => {
         let el = Graph.renderer.domElement;
         let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
