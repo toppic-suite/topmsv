@@ -12,7 +12,8 @@ const loadMzrtData = router.get('/loadMzrtData', function (req, res) {
     const maxRT = req.query.maxRT;
     const minMZ = req.query.minMZ;
     const maxMZ = req.query.maxMZ;
-    loadMzrtDataLib(projectDir, minRT, maxRT, minMZ, maxMZ, function (err, rows) {
+    const limit = req.query.limit;
+    loadMzrtDataLib(projectDir, minRT, maxRT, minMZ, maxMZ, limit, function (err, rows) {
         res.write(JSON.stringify(rows));
         res.end();
    });

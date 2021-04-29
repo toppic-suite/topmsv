@@ -7,9 +7,10 @@ class HoverPosition{
         let sep = "</br>";
         if (scanNum >= 0) {
             document.getElementById("tooltip-scanID").style.display = "inline-block";
-            document.getElementById("tooltip-scanID").style.top = (event.clientY - 20) + 'px';
+            document.getElementById("tooltip-scanID").style.top = (event.clientY - 70) + 'px';
             document.getElementById("tooltip-scanID").style.left = (event.clientX + 20) + 'px';
             document.getElementById("tooltiptext-scanID").innerHTML = "scan: " + scanNum + sep + "mz: " + mz + sep + "rt: " + rt + sep;
+            
         }
         else{
             document.getElementById("tooltip-scanID").style.display = "none";

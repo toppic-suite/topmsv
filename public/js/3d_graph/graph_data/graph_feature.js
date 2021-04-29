@@ -51,7 +51,8 @@ class GraphFeature{
                 featureRect.mz_high = feature.mz_high;
                 featureRect.rt_low = feature.rt_low;
                 featureRect.rt_high = feature.rt_high;
-        
+                featureRect.featureId = feature.id;
+
                 featureRect.mass = feature.mass;
                 featureRect.mono_mz = feature.mono_mz;
                 featureRect.charge = feature.charge;
@@ -78,7 +79,7 @@ class GraphFeature{
                 dir = dir.concat(fullDir[1]);
                 let xhttp = new XMLHttpRequest();
                 
-                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz, true);
+                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&limit=" + 500, true);
                
                 xhttp.onload = () => {
                     if (xhttp.readyState == 4 && xhttp.status == 200) {
