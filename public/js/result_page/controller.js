@@ -26,7 +26,7 @@ function initGraph(){
         localStorage.clear();
     }
     //showEnvTable(min);
-    
+
     init2D(min);
     init3D(min);
 

@@ -19,7 +19,7 @@ class Graph{
         /*initialize graph components*/
         Graph.scene = new THREE.Scene();
         Graph.renderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
-        Graph.camera = new THREE.OrthographicCamera( 10, 10, 10, 10, 1, 500 );
+        Graph.camera = new THREE.OrthographicCamera( -50, 50, -10, 10, 1, 100 );
         Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
         
         /*rounding for grpah axis labels */
@@ -35,7 +35,7 @@ class Graph{
         Graph.dataRange = {};
         Graph.viewRange = {};
 
-        Graph.rtRange = 30;
+        Graph.rtRange = 30/60;
         Graph.curRT = -1;
         Graph.scanID = 1;
         
@@ -73,7 +73,18 @@ class Graph{
         Graph.isUpdateTextBox = true;
 
         /*whether redraw is triggered by pan or zoom - determines whether peak inte is adjusted or not*/
-        Graph.isZoom = false;
+        Graph.isPan = false;
+
+        /*related to tick drawing */
+        Graph.xTickNum = 10;
+        Graph.yTickNum = 10;
+        Graph.tickWidthList = [10000,8000,6000,5000,4000,3000,2000,1000,800,700,600,500,450,400,350,300,250,200,150,100,50,20,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
+        Graph.tickHeightList = [50,40,30,25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
+        Graph.xScale = 0.35;
+        Graph.yScale = 0.35;
+
+        /*control height of feature annotation*/
+        Graph.featurePadding = 0.001;
     }
     createGroups = () => {
         /*groups to hold different graph elements */
@@ -112,6 +123,25 @@ class Graph{
         Graph.scene.add(Graph.featureGroup);
         Graph.scene.add(Graph.axisGroup);
     }
+    initMarkerGroup = () => {
+        let linegeo = new THREE.BufferGeometry();
+        linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+            0, 0, 0,
+            Graph.gridRange, 0, 0,
+        ]), 3));
+
+        let linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
+        //linemat.polygonOffset = true;
+        //linemat.polygonOffsetFactor = -0.1;
+
+        let line = new THREE.Line(linegeo, linemat);
+
+        line.position.set(0, 0, 0);
+
+        line.name = "currentScanMarker";
+
+        Graph.markerGroup.add(line);
+    }
     initFeatureGroup = () => {
         for (let i = 0; i < Graph.maxFeature; i++) {
             let geometry = new THREE.BufferGeometry();
@@ -124,7 +154,7 @@ class Graph{
                 0, 0, 0,
             ]), 3));
 
-            let linemat = new THREE.LineDashedMaterial( { color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
+            let linemat = new THREE.LineDashedMaterial( { side: THREE.DoubleSide, color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
             let feature = new THREE.Line( geometry, linemat );
 
             feature.position.set(0, 0, 0);
@@ -213,12 +243,17 @@ class Graph{
         this.initPlotGroup();
         this.init2DPlotGroup();
         this.initFeatureGroup();
+        this.initMarkerGroup();
         
         let promise = this.initDataRange();
 
         promise.then(()=>{
             this.setInitScale();
             GraphInit.main(mzmin, mzmax, scanNum);
+
+            if($('#featureStatus').val() !== "0"){
+                showFeatureTable();
+            }
         })
     }
 }

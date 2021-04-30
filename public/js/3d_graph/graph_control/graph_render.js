@@ -12,9 +12,8 @@ class GraphRender{
                 let prevGroup = dataGroup.getObjectByName("peak2DGroup");
     
                 dataGroup.remove(prevGroup);
-
-                let curRT = document.getElementById("scan1RT").innerText;    
-                GraphData.draw(curRT);
+                //let curRT = document.getElementById("scan1RT").innerText;    
+                GraphData.draw(Graph.curRT);
             }
         }
         this.renderImmediate();

@@ -88,7 +88,7 @@ function showEnvTable(scan) {
                 extend: 'selected',
                 text: 'Jump to',
                 className: 'btn',
-                name: 'jumpto'
+                name: 'jumpto_env'
             }
         ],
         "ajax": {
@@ -161,13 +161,14 @@ function showEnvTable(scan) {
     }
 }
 
-function jumpTo(mono_mz) {
+function jumpToEnv(data) {
+    let mono_mz = data.mono_mz;
     if($('#msType').text() === 'MS2'){
-        graph2_g.redraw(mono_mz);
-        // relocSpet2(mono_mz);
+        graph2_g.para.updateMzRange(mono_mz);
+        graph2_g.redraw();
     } else {
-        graph1_g.redraw(mono_mz);
-        // relocSpet1(mono_mz);
+        graph1_g.para.updateMzRange(mono_mz);
+        graph1_g.redraw();
     }
 }
 

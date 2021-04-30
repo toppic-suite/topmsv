@@ -66,6 +66,7 @@
 	<script src="js/result_page/topview_2d.js"></script>
 	<script src="js/result_page/controller.js"></script>
 	<script src="js/result_page/env_table.js"></script>
+	<script src="js/result_page/feature_table.js"></script>
 	<script src="js/result_page/event_handlers.js"></script>
 	<script src="js/result_page/init2D.js"></script>
 	<script src="js/result_page/init3D.js"></script>
@@ -411,8 +412,11 @@
 				<div class="col-sm-2">
 					<div><strong>Graph data:</strong></div>
 					<span id="graph-cursor-data">
-						m/z:    <br>  retention time:   <br>
+						m/z:    <br>  retention time:   <br>  scan ID:   <br>
 					</span>
+					<div class="projectName">
+						<span id="graph-metadata"></span>
+					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="col-sm-8">
@@ -422,7 +426,7 @@
 							</div>
 							<div class="col-sm-7" style="display:flex">
 								<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
-								<span class ="rangeMarker"> - </span>
+								<span class ="rangeMarker">&nbsp;±&nbsp;</span>
 								<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
 							</div>
 						</div>
@@ -432,10 +436,25 @@
 							</div>
 							<div class="col-sm-7" style="display:flex">
 								<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
-								<span class ="rangeMarker"> - </span>
+								<span class ="rangeMarker">&nbsp;±&nbsp;</span>
 								<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
 							</div>
 						</div>	
+						<div class="row">
+							<div class="col-sm-8">
+								<strong>intensity cutoff threshold:</strong>
+							</div>
+							<div class="col-sm-4" style="display:flex">
+								<input type="text" id="cutoff-threshold" class="rangeTextBox" value=0 name="cutoff-threshold" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-8">
+								<strong>intensity auto scaling:</strong>
+							</div>
+							<div class="col-sm-4" style="display:flex">
+								<input type="checkbox" id="inte-auto-adjust" name="inte-auto-adjust" value="auto-adjust">							</div>
+						</div>
 					</div>
 					<div class="col-sm-4">
 						<div class="col-sm-6">
@@ -469,27 +488,12 @@
 				<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
 				<button class="btn" type="submit" id="btn-save-file-name">OK</button>
 			</div>
-
-			<div class="row">
-				<div class="projectName col-sm-3">
-					<span id="graph-metadata"></span>
-				</div>
-				<div class="col-sm-9">
-					<div class="col-sm-6"></div>
-					<div class="row">
-						<div class="col-sm-9" style="display:flex">
-							<div class="col-sm-3"></div>
-							
-							<div class="col-sm-5"></div>
-						</div>	
-					</div>
-				</div>	
-			<div>
 			<div class="row">
 				<div class="projectName col-sm-3"></div>
-					
 			</div>
-			
+			<div id="tooltip-scanID">
+				<span id="tooltiptext-scanID"></span>
+			</div>
 			<div id="tooltip">
 				<span id="tooltiptext"></span>
 			</div>
@@ -500,7 +504,35 @@
 			<div class="hover-label-container">
 				<span id="graph-hover-label"></span>
 			</div>
+			<hr>
+			<div id="featureInfo">
+				<div class="row">
+					<div class="col-sm-9" id="featureTableTitle">
+						<b>Feature Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
+					</div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1">
+						<button class="btn" id="hideFeatureTable">Hide</button>
+					</div>
+				</div>
 
+				<div id="featureDataTable">
+				<table id="featureTable" class="display" style="width:100%">
+					<thead>
+					<tr>
+						<th>Feature ID</th>
+						<th>Envelope ID</th>
+						<th>Charge</th>
+						<th>Mono Mass</th>
+						<th>Mono M/Z</th>
+						<th>Intensity</th>
+					</tr>
+					</thead>
+				</table>
+				</div>
+			</div>
+			<hr>
 			<div id="scanLevelOne">
 				<div class="row scanleveltitle">
 					<div class="col-sm-7">
