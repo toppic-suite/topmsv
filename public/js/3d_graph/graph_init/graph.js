@@ -82,6 +82,9 @@ class Graph{
         Graph.tickHeightList = [50,40,30,25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
         Graph.xScale = 0.35;
         Graph.yScale = 0.35;
+
+        /*control height of feature annotation*/
+        Graph.featurePadding = 0.001;
     }
     createGroups = () => {
         /*groups to hold different graph elements */

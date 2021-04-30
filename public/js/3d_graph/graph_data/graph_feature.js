@@ -10,9 +10,8 @@ class GraphFeature{
                 let feature = data[index];
                 let mz_low = feature.mz_low;
                 let mz_high = feature.mz_high;
-                let rt_low = feature.rt_low;
-                let rt_high = feature.rt_high;
-
+                let rt_low = feature.rt_low * (1 - Graph.featurePadding);
+                let rt_high = feature.rt_high * (1 + Graph.featurePadding);
                 if (mz_low < minmz){
                     mz_low = minmz;
                     feature.mz_low = minmz;
