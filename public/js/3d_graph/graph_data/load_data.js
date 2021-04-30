@@ -28,7 +28,11 @@ class LoadData{
     
         let xRatio = (Graph.viewRange.mzmax - Graph.viewRange.mzmin) / totalMzRange;
         let yRatio = (Graph.viewRange.rtmax - Graph.viewRange.rtmin) / totalRtRange;
-        
+
+        if (yRatio == 0 ) {
+            //yRatio can be zero when refocuing to a feature with same min max rt
+            yRatio = 1;
+        }
         //get expected peak count from the text file
         let expectedPeakNum;
 
@@ -39,10 +43,8 @@ class LoadData{
         let peakCnt = expectedPeakNum / (xRatio * yRatio);
 
         let diff = Number.MAX_VALUE;
-        
         //find which table has the closet number of peaks
         for (let i = 0; i < Graph.configData.length; i++){
-            
             if (Math.abs(Graph.configData[i].COUNT - peakCnt) < diff){
                 diff = Math.abs(Graph.configData[i].COUNT - peakCnt);
                 tableNum = i;
@@ -105,8 +107,9 @@ class LoadData{
             let fullDir = Graph.projectDir;
             let dotIndex = fullDir.lastIndexOf(".");
             let dir = (fullDir.substr(0, dotIndex)).concat(".db");
- 
-            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks, true);
+            let inteCutoff = document.getElementById("cutoff-threshold").value;
+
+            xhttp.open("GET","load3dDataByParaRange?projectDir=" + dir + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks + "&cutoff=" + inteCutoff, true);
 
             xhttp.onload = () => {
                 if (xhttp.status == 200 && xhttp.readyState == 4) {

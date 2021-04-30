@@ -1,33 +1,14 @@
 /*graph_data.js : draws and manages the peaks on the screen*/
 class GraphData{
     constructor(){}
-    /******** GRAPH RESET ******/
-    static clearGraph = () => {
-        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("plotGroup"));
-        GraphUtil.emptyGroup(Graph.scene.getObjectByName("markerGroup"));
-        //GraphUtil.emptyGroup(Graph.scene.getObjectByName("featureGroup"));
-    }
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     static drawCurrentScanMarker = () => {
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
-        //draw a red line horizontal to x axis where y = current scan retention time
-        let linegeo = new THREE.Geometry();
-            
-        linegeo.vertices.push(new THREE.Vector3(0, 0.1, 0));
-        linegeo.vertices.push(new THREE.Vector3(Graph.gridRange, 0.1, 0));
-    
-        let linemat = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
-    
-        let marker = new THREE.Line(linegeo, linemat);
-        marker.name = "currentScanMarker";
-        markerGroup.add(marker);
-
-        marker.position.set(0, 0, Graph.curRT);
-       /* marker.visible = true;
-
-        if (Graph.curRT < Graph.viewRange.rtmin || Graph.curRT > Graph.viewRange.rtmax) {
-            marker.visible = false;
-        }*/
+        markerGroup.children.forEach(function(line) {
+            line.position.set(0, 0.01, Graph.curRT);
+            line.visible = true;
+            //line.geometry.attributes.position.needsUpdate = true;     
+        })
     }
     /******** CALCULATE AND SET DATA RANGE ******/
     static getInteRange = (points) => {
@@ -104,35 +85,54 @@ class GraphData{
         Graph.viewRange.rtmax = rtmax;
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
+    static setViewRangeToFull = () => {
+        Graph.viewRange.mzmin = 0;
+        Graph.viewRange.mzmax = Graph.dataRange.mzmax;
+        Graph.viewRange.mzrange = Graph.dataRange.mzmax - Graph.dataRange.mzmin;
+        
+        Graph.viewRange.rtmin = 0;
+        Graph.viewRange.rtmax = Graph.dataRange.rtmax;
+        Graph.viewRange.rtrange = Graph.dataRange.rtmax - Graph.dataRange.rtmin;
+    }
      /******** PLOT PEAKS ******/
     static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         await GraphData.draw(curRT);
-        if (Graph.isUpdateTextBox){
+        /*if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
-        }
+        }*/
     }
     static updateGraphNoNewData = (mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         GraphData.drawNoNewData(curRT);
-        if (Graph.isUpdateTextBox){
+        /*if (Graph.isUpdateTextBox){
             GraphUtil.updateTextBox();
-        }
+        }*/
+    }
+    static drawFullRangeGraph = () => {
+        let promise = LoadData.getRT(scanID);
+        promise.then(() =>{
+            GraphData.setViewRangeToFull();
+            GraphData.draw(Graph.curRT);
+            /*if (Graph.isUpdateTextBox){
+                GraphUtil.updateTextBox();
+            }*/
+        })
     }
     static drawInitGraph = (mzmin, mzmax, scanID) => {
         let promise = LoadData.getRT(scanID);
-        promise.then((curRT) =>{
+        promise.then(async(curRT) =>{
             GraphData.setInitViewRange(mzmin, mzmax, curRT);
-            GraphData.draw(curRT);
-            if (Graph.isUpdateTextBox){
+            await GraphData.draw(curRT);
+            /*if (Graph.isUpdateTextBox){
                 GraphUtil.updateTextBox();
-            }
+            }*/
         })
     }
      /******** PLOT PEAKS ******/
     static draw = async(curRT) => {   
         const curViewRange = Graph.viewRange;
-        Graph.curRT = curRT;
+        Graph.curRT = parseFloat(curRT);
         Graph.currentData = await LoadData.load3dData(curViewRange);
         GraphData.getInteRange(Graph.currentData);
 
@@ -147,15 +147,17 @@ class GraphData{
 
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            GraphData.drawCurrentScanMarker();
+            await GraphData.drawCurrentScanMarker();
         }
         else{
-            GraphData.clearGraph();
+            let markerGroup = Graph.scene.getObjectByName("markerGroup");
+            markerGroup.children.forEach(function(line) {
+                line.visible = false;
+            })
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
 
         await GraphFeature.drawFeature(Graph.viewRange);
-
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
     }
@@ -168,13 +170,16 @@ class GraphData{
             await GraphData.updatePeaks(Graph.currentData);
         }
         Graph.viewRange["intscale"] = 1;
-
+        
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
             GraphData.drawCurrentScanMarker();
         }
         else{
-            GraphData.clearGraph();
+            let markerGroup = Graph.scene.getObjectByName("markerGroup");
+            markerGroup.children.forEach(function(line) {
+                line.visible = false;
+            })    
         }
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
         
@@ -187,7 +192,7 @@ class GraphData{
         let prevSpecRT = 0; 
         let prevPeakRT = 0;
 
-        let rt = (Graph.curRT/60).toFixed(4);
+        let rt = Graph.curRT.toFixed(4);
         //let rt = document.getElementById("scan1RT").innerText;
     
         let dataGroup = Graph.scene.getObjectByName("dataGroup");
@@ -218,22 +223,21 @@ class GraphData{
                         }
         
                         let ySize = prevSpecRT - point.RETENTIONTIME; //peak length
-                        let rtRange = (Graph.viewRange.rtmax - Graph.viewRange.rtmin)/60;
-                        let minSize = rtRange/3;
+                        let rtRange = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
+                        let minSize = rtRange/60;
         
                         //for special cases when should not be using the calculated ysize value
                         if (ySize < minSize){//minimum length for the peak
                             ySize = minSize;
                         }
                         if (prevSpecRT == 0){//when it is the spectra peaks with the highets rt (no previous spectra)
-                            ySize = rtRange / 2;
+                            ySize = rtRange / (2 * 60);
                         }
-        
                         line.geometry.attributes.position.array[5] = ySize;
                         line.geometry.attributes.position.needsUpdate = true; 
                         line.material.color.setStyle(lineColor);
                         
-                        if ((point.RETENTIONTIME/60).toFixed(4) == rt){
+                        if (point.RETENTIONTIME.toFixed(4) == rt){
                             line.material.color.setStyle(Graph.currentScanColor);
                         }
         
@@ -276,8 +280,7 @@ class GraphData{
                 if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
                     rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
                     let lowPeak = false;
-
-                    let currt = (Graph.curRT/60).toFixed(4);
+                    let currt = Graph.curRT.toFixed(4);
                     let y = inten;    
                     let minHeight = Graph.minPeakHeight;
                     //if y is much smaller than the highest intensity peak in the view range
@@ -289,7 +292,7 @@ class GraphData{
                     line.geometry.attributes.position.array[4] = y;
                     line.geometry.attributes.position.needsUpdate = true; 
                     line.material.color.setStyle(lineColor);
-                    if ((point.RETENTIONTIME/60).toFixed(4) == currt){
+                    if (point.RETENTIONTIME.toFixed(4) == currt){
                         line.material.color.setStyle(Graph.currentScanColor);
                     }
                     line.position.set(mz, 0, rt);

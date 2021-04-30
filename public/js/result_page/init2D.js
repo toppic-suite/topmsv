@@ -184,6 +184,8 @@ function loadPeakList1(scanID, prec_mz) {
                     spGraph.addRawSpectrumAnno(envelopes, ions);
                     spGraph.para.updateMzRange(prec_mz);
                     spGraph.redraw();
+
+                    graph1_g = spGraph;
                 }else {
                     for (let i = 0; i < peakList1_g.length; i++){
                         let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
@@ -194,6 +196,8 @@ function loadPeakList1(scanID, prec_mz) {
                     spGraph = new SpectrumGraph("spectrum1",peaks);
                     spGraph.para.updateMzRange(prec_mz);
                     spGraph.redraw();
+
+                    graph1_g = spGraph;
                 }
             })
             .catch(function(error) {
@@ -250,6 +254,8 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 spGraph.addRawSpectrumAnno(envelopes, ions);
                 //spGraph.para.updateMzRange(prec_mz);
                 spGraph.redraw();
+
+                graph2_g = spGraph;
             }else {
                 for (let i = 0; i < peakList2_g.length; i++){
                     let peakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
@@ -261,12 +267,14 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 spGraph = new SpectrumGraph("spectrum2",peaks);
                 //spGraph.para.updateMzRange(prec_mz);
                 spGraph.redraw();
+
+                graph2_g = spGraph;
             }
             document.getElementById("scanID2").innerHTML = scanID;
             document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
             document.getElementById("prec_charge").innerHTML = prec_charge;
             document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
-            document.getElementById("rt").innerHTML = (rt/60).toFixed(4);
+            document.getElementById("rt").innerHTML = rt.toFixed(4);
             loadPeakList1(levelOneScan, prec_mz);
         }).catch(function(error) {
             console.log(error);
