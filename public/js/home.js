@@ -13,10 +13,18 @@ function getCookie(cname) {
     }
     return "";
 }
-
 if(getCookie('token')===''){
-
+    
 } else {
     $('#signIn').text('Log out');
     $('#signIn').attr('href', '/logout');
+}
+function callAuthentication(e) {//when user clicks sign in button
+    e.preventDefault();
+    let shouldAuthenticate = document.getElementById("auth-value").textContent;
+    if (shouldAuthenticate == "true") {
+        window.location = window.location.href + "auth/google";
+    }else if (shouldAuthenticate == "false") {
+        window.location = window.location.href + "auth/skip";
+    }
 }
