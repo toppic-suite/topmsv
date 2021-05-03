@@ -29,6 +29,7 @@
     "papaparse": "^5.3.0",
     "passport": "^0.4.1",
     "passport-google-oauth": "^2.0.0",
+    "passport-custom": "^1.0.0",
     "rimraf": "^3.0.2",
     "serve-favicon": "^2.5.0",
     "sqlite3": "^4.2.0",
