@@ -14,7 +14,7 @@ const path = require("path");
  * Handle request to create a topFD task, generate parameter for task and delete previous envelope peaks
  */
 const topfdTask = router.get('/topfdTask', function (req,res) {
-    const app = './proteomics_cpp/bin/topfd';
+    const app = path.join('proteomics_cpp', 'bin', 'topfd');
     let commandArr = '';
     let projectCode = req.query.projectCode;
 
@@ -64,8 +64,8 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
         commandArr += ' -u ';
         commandArr += threadNumber;
     }
-
-    let resultDb = new BetterDB('./db/projectDB.db');
+    let dbPath = path.join('db', 'projectDB.db')
+    let resultDb = new BetterDB(dbPath);
     let stmt = resultDb.prepare(`SELECT ProjectDir AS projectDir, FileName AS fileName
                                 FROM Projects
                                 WHERE projectCode = ?;`);
@@ -83,15 +83,18 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
         submitTask(projectCode, app, commandArr, threadNumber);
         let fileName = result.fileName.substr(0, result.fileName.lastIndexOf("."));
         let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
-        let des_ms1 = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_file/' + fileName + '_ms1.msalign';
-        let des_ms2 = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_ms2.msalign';
-        let feature = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_file/' + fileName + '_frac.mzrt.csv';
-
+       // let ori_path = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/'+ fileName + '_file/' + fileName + '_ms1.msalign';
+        //console.log("ori_path", ori_path);
+        let des_ms1 = path.join(path.dirname(projectDir), fileName + '_file', fileName + '_ms1.msalign');
+        let des_ms2 = path.join(path.dirname(projectDir), fileName + '_ms2.msalign');
+        let feature = path.join(path.dirname(projectDir), fileName + '_file', fileName + '_frac.mzrt.csv');
+        let ms1CodePath = path.join('utilities', 'convertMS1Msalign.js');
+        let ms2CodePath = path.join('utilities', 'convertMS2Msalign.js');
         updateEnvStatusSync(1, projectCode);
         updateAllowToppicStatusSync(1, projectCode);
 
-        submitTask(projectCode, 'node','./utilities/convertMS1Msalign.js ' + dbDir + ' ' + des_ms1, 1);
-        submitTask(projectCode, 'node','./utilities/convertMS2Msalign.js ' + dbDir + ' ' + des_ms2, 1);
+        submitTask(projectCode, 'node', ms1CodePath + ' ' + dbDir + ' ' + des_ms1, 1);
+        submitTask(projectCode, 'node', ms2CodePath + ' ' + dbDir + ' ' + des_ms2, 1);
         //submitTask(projectCode, 'node','./utilities/annotateFeature.js ' + dbDir + ' ' + feature, 1);
     } else {
         res.write("No such project exists!");
