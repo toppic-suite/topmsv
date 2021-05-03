@@ -40,13 +40,13 @@ class GraphInit{
             if (minRT > maxRT){
                 alert("Invalid Range : Minimum retention time is bigger than maximum.");
             } 
-            if (minMZ > maxMZ){
+            else if (minMZ > maxMZ){
                 alert("Invalid Range : Minimum m/z is bigger than maximum");
             }
-            if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
-                alert("Invalid Value Found : Please make sure the range has valid values.");
+            else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
+                alert("Invalid Value Found : Please make sure both m/z range and retention range have valid values.");
             }
-            if (isNaN(inteCutoff)) {
+            else if (isNaN(inteCutoff)) {
                 alert("Invalid Value Found : Please enter a valid value for intensity cutoff threshold");
             }
             else{

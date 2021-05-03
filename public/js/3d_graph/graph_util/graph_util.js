@@ -82,29 +82,6 @@ class GraphUtil{
             return null;
         }
     }
-    /*static test = (event) => {
-        let testObj = Graph.scene.getObjectByName("testCircle");
-
-        if (testObj) {
-            Graph.scene.remove(testObj);
-        }
-
-        let el = Graph.renderer.domElement;
-        let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
-        let coord = {
-            x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
-            y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
-        };
-        let mousePos = GraphUtil.getMousePosition(event);
-        let geometry = new THREE.SphereGeometry( 1.5, 32, 32 );
-        let material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-        let circle = new THREE.Mesh( geometry, material );
-
-        circle.name = "testCircle";
-        Graph.scene.add( circle );
-        circle.position.set(mousePos.x * Graph.gridRange, 0, Graph.gridRange - (mousePos.z * Graph.gridRange));
-        GraphRender.renderImmediate();
-    }*/
     static getMousePosition = (event) => {
         let el = Graph.renderer.domElement;
         let canvasPosition = Graph.renderer.domElement.getBoundingClientRect();
