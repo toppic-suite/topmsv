@@ -11,9 +11,13 @@ const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const auth = require('./auth');
+const skipAuth = require('./skipAuth');
 const os = require('os');
 const cpuCount = os.cpus().length;
 const app = express();
+const fs = require('fs');
+let shouldAuthenticate = true;
+let shouldSendEmail = true;
 
 app.use(helmet());
 app.use(cookieSession({
@@ -21,9 +25,27 @@ app.use(cookieSession({
     keys:['4324']
 }));
 app.use(cookieParser());
-auth(passport);
-app.use(passport.initialize());
 
+//skip authentication based on config setting
+if (fs.existsSync('config.json')) {
+    let configData = fs.readFileSync('config.json');
+    configData = JSON.parse(configData);
+    if (!configData.authentication) {
+        shouldAuthenticate = false;
+    }
+    if (!configData.sendEmail) {
+        shouldSendEmail = false;
+    }
+}
+
+if (shouldAuthenticate) {
+    auth(passport);
+    app.use(passport.initialize());    
+}
+else{
+    skipAuth(passport);
+    app.use(passport.initialize());    
+}
 const CronJob = require('cron').CronJob;
 
 /**
@@ -44,22 +66,23 @@ const job = new CronJob('00 00 00 * * *', function() {
             deleteProject(element.pcode);
         });
     });
+    if (shouldSendEmail) {
+        checkNearExpiredProj(function (err, rows) {
+            rows.forEach(element => {
+                nodemailerAuth.message.subject = "Your data is about to expire!";
+                nodemailerAuth.message.to = element.email;
+                nodemailerAuth.message.html = '<p>Project Name: ' + element.projectName + '<br/>File Name: ' + element.fileName + '<br/>To secure storage space, data is deleted 30 days after upload. Your project is going to be removed from our database in 1 day.</p><p>If you would like to keep your data for another 30 days, click <a href="https://toppic.soic.iupui.edu/updateDate?pcode=' + element.pcode + '">here</a>.</p>';
     
-    checkNearExpiredProj(function (err, rows) {
-        rows.forEach(element => {
-            nodemailerAuth.message.subject = "Your data is about to expire!";
-            nodemailerAuth.message.to = element.email;
-            nodemailerAuth.message.html = '<p>Project Name: ' + element.projectName + '<br/>File Name: ' + element.fileName + '<br/>To secure storage space, data is deleted 30 days after upload. Your project is going to be removed from our database in 1 day.</p><p>If you would like to keep your data for another 30 days, click <a href="https://toppic.soic.iupui.edu/updateDate?pcode=' + element.pcode + '">here</a>.</p>';
-
-            nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log(info);
-                }
+                nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log(info);
+                    }
+                });
             });
         });
-    });
+    }
 });
 job.start();
 
@@ -84,6 +107,7 @@ const updateProjectStatusSync = require("./library/updateProjectStatusSync");
 const updateTaskStatusSync = require("./library/updateTaskStatusSync");
 const processFailure = require("./library/processFailure");
 const checkRemainingTask = require("./library/checkRemainingTask");
+const { config } = require('process');
 
 const checkWaitTasks = new CronJob("* * * * * *", function() {
     // console.log("Check waiting tasks in database");
@@ -119,7 +143,10 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                         let text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                         let emailAddress = emailtosend;
                         let email_sender = new EmailSender(subject, text, emailAddress);
-                        email_sender.sendEmail();
+
+                        if (shouldSendEmail) {
+                            email_sender.sendEmail();
+                        }
                     } else {
                         avaiResourse = avaiResourse - threadNum;
                         updateProjectStatusSync(0, projectCode);
@@ -136,13 +163,15 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                         nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
                                         nodemailerAuth.message.subject = "Your data processing failed";
                                         nodemailerAuth.message.to = emailtosend;
-                                        nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                                            if (err) {
-                                                console.log(err)
-                                            } else {
-                                                console.log(info);
-                                            }
-                                        });
+                                        if (shouldSendEmail) {
+                                            nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                                if (err) {
+                                                    console.log(err)
+                                                } else {
+                                                    console.log(info);
+                                                }
+                                            });
+                                        }
                                     });
                                 }, 60000);
                             }else{
@@ -156,13 +185,15 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                     nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                                     nodemailerAuth.message.subject = "Your task is done";
                                     nodemailerAuth.message.to = emailtosend;
-                                    nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            console.log(info);
-                                        }
-                                    });
+                                    if (shouldSendEmail) {
+                                        nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                            if (err) {
+                                                console.log(err)
+                                            } else {
+                                                console.log(info);
+                                            }
+                                        });    
+                                    }
                                 }
                             }
                         });    
@@ -468,6 +499,7 @@ app.use('/', require("./router/deleteMzrt"));
 app.use('/', require("./router/getExpectedPeakNum"));
 
 app.use('/', require("./router/auth_google"));
+app.use('/', require("./router/auth_skip"));
 
 // 404 router
 app.use('/*', function(req, res){
