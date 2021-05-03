@@ -39,7 +39,8 @@
             <a href="http://toppic.org/software/topmsv/tutorial.html" id="tutorial" class="home-menu">Tutorial</a>
         </div>
         <div class="col-sm-1">
-            <a href="/auth/google" id="signIn" class="home-menu">Sign In</a>
+            <!--<a href="/auth/google" id="signIn" class="home-menu">Sign In</a>-->
+            <a href="" onClick="callAuthentication(event)" id="signIn" class="home-menu">Sign In</a>
         </div>
     </div>
     <ul class="nav nav-tabs">
@@ -84,7 +85,10 @@
 
         </table>
     </div>
+    <p style="display:none" id="auth-value"><%= auth %></p>
+    <p style="display:none" id="isAuthorized">false</p>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="text/javascript" src="js/home.js"></script>
 </body>
 </html>

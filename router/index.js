@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const getProjectsGuest = require("../library/getProjectGuest");
+const fs = require('fs');
 
 /**
  * Express router for main webpage (/index)
@@ -44,8 +45,18 @@ const index = router.get('/', function (req, res) {
             }
             row.projectLink = '/data?id=' + row.projectCode;
         });
+        let shouldAuthenticate = true;
+
+        if (fs.existsSync('config.json')) {
+            let configData = fs.readFileSync('config.json');
+            configData = JSON.parse(configData);
+            if (!configData.authentication) {
+                shouldAuthenticate = false;
+            }
+        }
         res.render('pages/home', {
-            projects: rows
+            projects: rows,
+            auth: shouldAuthenticate
         });
     });
 });
