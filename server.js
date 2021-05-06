@@ -19,6 +19,8 @@ const fs = require('fs');
 let shouldAuthenticate = true;
 let shouldSendEmail = true;
 
+console.log("Loading.... please wait until server is ready\n")
+
 app.use(helmet());
 app.use(cookieSession({
     name:'session',
@@ -146,6 +148,8 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
 
                         if (shouldSendEmail) {
                             email_sender.sendEmail();
+                        }else{
+                            console.log("SUCCESS: task has completed");
                         }
                     } else {
                         avaiResourse = avaiResourse - threadNum;
@@ -193,6 +197,8 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                                 console.log(info);
                                             }
                                         });    
+                                    }else{
+                                        console.log("SUCCESS: task has completed");
                                     }
                                 }
                             }
