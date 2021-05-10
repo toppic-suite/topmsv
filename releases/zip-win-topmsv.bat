@@ -19,17 +19,7 @@ copy ..\data\.placeholder topmsv-%1\data
 copy ..\db\.placeholder topmsv-%1\db
 copy ..\tmp\.placeholder topmsv-%1\tmp
 
-copy ..\LICENSE topmsv-%1
-copy ..\auth.js topmsv-%1
-copy ..\config.json topmsv-%1
-copy ..\ecosystem.config.js topmsv-%1
-copy ..\init.ini topmsv-%1
-copy ..\nodemailer-auth.js topmsv-%1
-copy ..\package.json topmsv-%1
-copy ..\package-lock.json topmsv-%1
-copy ..\server.js topmsv-%1
-copy ..\skipAuth.js topmsv-%1
-copy ..\startServer.bat topmsv-%1
+copy ..\* topmsv-%1
 
 copy C:\msys64\mingw64\bin\libboost_chrono-mt.dll topmsv-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\libboost_filesystem-mt.dll topmsv-%1\cpp\bin\

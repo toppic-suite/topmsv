@@ -537,6 +537,7 @@ const server = app.listen(8443, function () {
     const port = server.address().port;
     console.log("Server started on PORT %s", port);
 });
+process.title = "TopMSV";
 
 process.on('SIGINT', () => {
     server.close(()=> {
