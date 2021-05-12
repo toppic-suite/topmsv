@@ -332,6 +332,14 @@ app.use('/', require("./router/seqResults"));
 app.use('/', require("./router/projects"));
 
 /**
+ * Express router for /tasks
+ *
+ * Authenticate user by uid then
+ * get a list which contains all tasks the user owns and render the list back to user
+ */
+ app.use('/', require("./router/tasks"));
+
+/**
  * Express router for /toppic
  *
  * Render a toppic task configure web page back to user

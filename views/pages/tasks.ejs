@@ -17,7 +17,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
     <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
-    <link href="css/home.css" type="text/css" rel="stylesheet" />
+    <link href="css/projects.css" type="text/css" rel="stylesheet" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
     <script>
@@ -39,15 +39,14 @@
             <a href="http://toppic.org/software/topmsv/tutorial.html" id="tutorial" class="home-menu">Tutorial</a>
         </div>
         <div class="col-sm-1">
-            <!--<a href="/auth/google" id="signIn" class="home-menu">Sign In</a>-->
-            <a href="" onClick="callAuthentication(event)" id="signIn" class="home-menu">Sign In</a>
+            <a href="/auth/google" id="signIn" class="home-menu">Sign In</a>
         </div>
     </div>
     <ul class="nav nav-tabs">
-        <li role="presentation" class="active"><a href="#">Home</a></li>
+        <li role="presentation"><a href="/">Home</a></li>
         <li role="presentation"><a href="/submit">Upload</a></li>
-        <li role="presentation"><a href="/projects">My projects</a></li>
-        <li role="presentation"><a href="/tasks">Tasks</a></li>
+        <li role="presentation" class="active"><a href="/projects">My projects</a></li>
+        <li role="presentation" class="active"><a href="/tasks">Tasks</a></li>
     </ul>
     <br>
     <div class="table-responsive">
@@ -57,17 +56,12 @@
                 <th scope="col">ID</th>
                 <th scope="col">Project Name</th>
                 <th scope="col">File Name</th>
-                <th scope="col">Project Status</th>
-                <th scope="col">Envelope Status</th>
-				<th scope="col">Feature Status</th>
-                <th scope="col">Sequence Status</th>
+                <th scope="col">Status</th>
                 <th scope="col">Description</th>
                 <th scope="col">Project Link</th>
                 <th scope="col">Upload Time</th>
             </tr>
             </thead>
-
-
 
             <% for (var i = 0; i < projects.length; i++) { %>
                 <tr>
@@ -75,9 +69,6 @@
                     <td><%= projects[i].projectName %></td>
                     <td><%= projects[i].fileName %></td>
                     <td><%= projects[i].projectStatus %></td>
-                    <td><%= projects[i].envStatus %></td>
-					<td><%= projects[i].featureStatus %></td>
-                    <td><%= projects[i].seqStatus %></td>
                     <td><%= projects[i].description %></td>
                     <td><a href="<%= projects[i].projectLink %>">Link</a> </td>
                     <td><%= projects[i].uploadTime %></td>
@@ -86,10 +77,7 @@
 
         </table>
     </div>
-    <p style="display:none" id="auth-value"><%= auth %></p>
-    <p style="display:none" id="isAuthorized">false</p>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script type="text/javascript" src="js/home.js"></script>
+<script type="text/javascript" src="js/tasks.js"></script>
 </body>
 </html>

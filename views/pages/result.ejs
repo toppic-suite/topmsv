@@ -409,17 +409,17 @@
 			</div>
 			<hr>
 			<div class="scanleveltitle row" id ="3d-graph-parameter">
-				<div class="col-sm-2">
+				<div class="col-sm-3">
 					<div><strong>Graph data:</strong></div>
 					<span id="graph-cursor-data">
-						m/z:    <br>  retention time:   <br>  scan ID:   <br>
+						m/z:    <br>  retention time (min):   <br>  ion injection time (ms):   <br>  scan ID:   <br>
 					</span>
 					<div class="projectName">
 						<span id="graph-metadata"></span>
 					</div>
 				</div>
-				<div class="col-sm-6">
-					<div class="col-sm-8">
+				<div class="col-sm-5">
+					<div class="col-sm-10">
 						<div class="row">
 							<div class="col-sm-7">
 								<strong>Retention Time (min):</strong>
@@ -456,15 +456,10 @@
 								<input type="checkbox" id="inte-auto-adjust" name="inte-auto-adjust" value="auto-adjust">							</div>
 						</div>
 					</div>
-					<div class="col-sm-4">
-						<div class="col-sm-6">
-							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
-						</div>
-						<div class="col-sm-6">
-							<button id="resetGraphs" type="button" class="btn">Reset</button>
-						</div>	
+					<div class="col-sm-2">
+						<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+						<button id="resetGraphs" type="button" class="btn">Reset</button>
 					</div>
-			
 				</div>
 				<div class="col-sm-4">
 					<div class="col-sm-1"></div>
