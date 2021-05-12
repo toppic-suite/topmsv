@@ -86,14 +86,16 @@ class GraphControl{
     static getYTickPosList = () => {
         let posList = new Array(Graph.yTickNum + 1);
         let tickWidth = GraphControl.getTickHeight();
+        let adjustment = (tickWidth + Graph.viewRange.rtmin)%tickWidth;//deduct by same number to keep the tick interval consistent
         for(let i=0; i <= Graph.yTickNum ; i++)
         {
           // calculate the actual tick position based on the current minMz value on the xaxis
           let tickRt = 0;
           if(tickWidth < 1 && tickWidth != 0)
           {
-            tickRt = (i*tickWidth + Graph.viewRange.rtmin) - parseFloat((i*tickWidth + Graph.viewRange.rtmin)%tickWidth) ;
-          }
+            //tickRt = (i*tickWidth + Graph.viewRange.rtmin) - parseFloat((i*tickWidth + Graph.viewRange.rtmin)%tickWidth) ;
+            tickRt = (i*tickWidth + Graph.viewRange.rtmin) - adjustment;
+        }
           else if(tickWidth != 0)
           {
             tickRt = i*tickWidth + Graph.viewRange.rtmin - (i*tickWidth + Graph.viewRange.rtmin)%tickWidth ;
