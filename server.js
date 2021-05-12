@@ -16,6 +16,8 @@ const os = require('os');
 const cpuCount = os.cpus().length;
 const app = express();
 const fs = require('fs');
+const ChromeLauncher = require('chrome-launcher');
+
 let shouldAuthenticate = true;
 let shouldSendEmail = true;
 
@@ -536,6 +538,14 @@ console.log("Server database is Ready!");
 const server = app.listen(8443, function () {
     const port = server.address().port;
     console.log("Server started on PORT %s", port);
+    /*(open('http://localhost:8443/', {
+    wait: true,
+	app: {
+		name: open.apps.chrome
+	}*/
+    ChromeLauncher.launch({
+        startingUrl: 'http://localhost:8443/'
+    })
 });
 process.title = "TopMSV";
 
@@ -545,3 +555,9 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+/*
+await open('https://google.com', {
+	app: {
+		name: open.apps.chrome
+	}
+});*/
