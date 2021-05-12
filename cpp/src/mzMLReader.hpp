@@ -91,7 +91,7 @@ public:
 	void closeInsertStmt();
 	void closeInsertStmtMs1Only();
 	void closeInsertStmtInMemory();
-	void insertSpStmt(int scan_index, std::string scan, double retention_time, int scan_level, double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev);
+	void insertSpStmt(int scan_index, std::string scan, double retention_time, double ion_time, int scan_level, double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev);
 	void insertScanLevelPairStmt(int scan_level_one, int scan_level_two);
 	void updateSpStmt(int current_id, int prev_id);
 	void updateSpSumStmt(int current_id, double peaks_int_sum);
