@@ -9,7 +9,7 @@ const path = require("path");
  * 
  * Render task list page for user by given user ID
  */
-const projects = router.get('/tasks', async (req,res) => {
+const tasks = router.get('/tasks', async (req,res) => {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
@@ -95,4 +95,4 @@ let loadTaskData = async (projectData) => {
     return totalTask;
 }
 
-module.exports = projects;
+module.exports = tasks;
