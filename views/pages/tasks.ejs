@@ -53,7 +53,7 @@
         <table class="table table-bordered table-hover">
             <thead class="thead-light">
             <tr>
-                <th scope="col">ID</th>
+                <th scope="col">Task ID</th>
                 <th scope="col">Project Name</th>
                 <th scope="col">File Name</th>
                 <th scope="col">Status</th>
@@ -63,15 +63,15 @@
             </tr>
             </thead>
 
-            <% for (var i = 0; i < projects.length; i++) { %>
+            <% for (var i = 0; i < taskData.length; i++) { %>
                 <tr>
-                    <td scope="row"><%= i+1%></td>
-                    <td><%= projects[i].projectName %></td>
-                    <td><%= projects[i].fileName %></td>
-                    <td><%= projects[i].projectStatus %></td>
-                    <td><%= projects[i].description %></td>
-                    <td><a href="<%= projects[i].projectLink %>">Link</a> </td>
-                    <td><%= projects[i].uploadTime %></td>
+                    <td><%= taskData[i].taskId %></td>
+                    <td><%= taskData[i].projectName %></td>
+                    <td><%= taskData[i].fileName %></td>
+                    <td><%= taskData[i].status %></td>
+                    <td><%= taskData[i].description %></td>
+                    <td><a href="<%= taskData[i].projectLink %>">Link</a> </td>
+                    <td><%= taskData[i].uploadTime %></td>
                 </tr>
             <% } %>
 
