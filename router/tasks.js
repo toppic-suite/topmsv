@@ -73,6 +73,7 @@ let readOneTask = (project) => {
                     } else if(task.status ===4) {
                         task.status = appName + ' waiting';
                     }
+                    task.projectCode = project.projectCode;
                     task.projectName = project.projectName;
                     task.fileName = project.fileName;
                     task.description = project.description;

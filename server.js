@@ -16,6 +16,7 @@ const os = require('os');
 const cpuCount = os.cpus().length;
 const app = express();
 const fs = require('fs');
+const path = require('path');
 const ChromeLauncher = require('chrome-launcher');
 
 let shouldAuthenticate = true;
@@ -134,7 +135,8 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     return;
                 }else {
                     console.log("Processing project...");
-                    fs.writeFileSync(task.taskID + "_log.txt", "Processing the task....\n");
+                    let fileName = projectCode + "_" + task.taskID + "_log.txt";
+                    fs.appendFileSync(path.join("log", fileName), "Processing task....\n");
 
                     let taskID = task.taskID;
                     let app = task.app;
@@ -162,7 +164,8 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             // console.log(stdout);
                             console.log(stderr);
                             if(err) {
-                                fs.writeFileSync(taskID + "_log.txt", "[Error] Task failed! Please try again.\n");
+                                let fileName = projectCode + "_" + task.taskID + "_log.txt";
+                                fs.appendFileSync(path.join("log", fileName), "[Error] Task failed! Please try again.\n");
                                 console.log(err);
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
@@ -188,10 +191,12 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                 avaiResourse = avaiResourse + threadNum;
                                 let remainingTask = checkRemainingTask(projectCode);
                                 if (remainingTask === 1) {
-                                    fs.writeFileSync(taskID + "_log.txt", "Task is waiting to run....\n");
+                                    let fileName = projectCode + "_" + task.taskID + "_log.txt";
+                                    fs.appendFileSync(path.join("log", fileName), "Task is waiting to run....\n");
                                     updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
                                 } else {
-                                    fs.writeFileSync(taskID + "_log.txt", "[Success] Task is finished. Click the project link to view results.\n");
+                                    let fileName = projectCode + "_" + task.taskID + "_log.txt";
+                                    fs.appendFileSync(path.join("log", fileName), "[Success] Task is finished. Click the project link to view results.\n");
                                     updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
                                     nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                                     nodemailerAuth.message.subject = "Your task is done";
@@ -510,6 +515,8 @@ app.use('/', require("./router/ptmQuery"));
 app.use('/', require('./router/getAllowToppicStatus'));
 
 app.use('/', require("./router/updateDate"));
+
+app.use('/', require("./router/getStatusLog"));
 
 /**router for 3D graph */
 app.use('/', require("./router/getMax"));

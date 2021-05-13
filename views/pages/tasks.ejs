@@ -31,6 +31,23 @@
 <body class="container">
 
 <main>
+    <div id="statusModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Task Status</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="white-space: pre-line" id="task-status-para"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm-10">
             <h2 style="color: #0099DD;"><strong>TopMSV</strong></h2>
@@ -68,7 +85,7 @@
                     <td><%= taskData[i].taskId %></td>
                     <td><%= taskData[i].projectName %></td>
                     <td><%= taskData[i].fileName %></td>
-                    <td><%= taskData[i].status %></td>
+                    <td onclick="showTaskStatus('<%= taskData[i].taskId %>', '<%= taskData[i].projectCode %>')"><a style="cursor:pointer"><%= taskData[i].status %></a></td>
                     <td><%= taskData[i].description %></td>
                     <td><a href="<%= taskData[i].projectLink %>">Link</a> </td>
                     <td><%= taskData[i].uploadTime %></td>
