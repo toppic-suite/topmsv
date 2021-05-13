@@ -134,6 +134,8 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     return;
                 }else {
                     console.log("Processing project...");
+                    fs.writeFileSync(task.taskID + "_log.txt", "Processing the task....\n");
+
                     let taskID = task.taskID;
                     let app = task.app;
                     let parameter = task.parameter;
@@ -160,6 +162,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             // console.log(stdout);
                             console.log(stderr);
                             if(err) {
+                                fs.writeFileSync(taskID + "_log.txt", "[Error] Task failed! Please try again.\n");
                                 console.log(err);
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
@@ -185,8 +188,10 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                 avaiResourse = avaiResourse + threadNum;
                                 let remainingTask = checkRemainingTask(projectCode);
                                 if (remainingTask === 1) {
+                                    fs.writeFileSync(taskID + "_log.txt", "Task is waiting to run....\n");
                                     updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
                                 } else {
+                                    fs.writeFileSync(taskID + "_log.txt", "[Success] Task is finished. Click the project link to view results.\n");
                                     updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
                                     nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                                     nodemailerAuth.message.subject = "Your task is done";
