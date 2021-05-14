@@ -565,7 +565,7 @@ const sqlToUserTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Users\" (
 sqlToUserTable.run();
 const sqlToUserIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )");
 sqlToUserIndex.run();
-const sqlToCreateTaskTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))");
+const sqlToCreateTaskTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))");
 sqlToCreateTaskTable.run();
 const sqlToTasksIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )");
 sqlToTasksIndex.run();

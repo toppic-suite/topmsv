@@ -13,7 +13,7 @@ function getTasksPerUser(pcode,callback) {
         }
         // console.log('Connected to the result database.');
     });
-    let sql = `SELECT id AS taskId, app AS app, finish AS status
+    let sql = `SELECT id AS taskId, app AS app, finish AS status, Date as startTime
                 FROM Tasks
                 WHERE projectCode = ?;`;
     db.all(sql,[pcode], (err, rows) => {
