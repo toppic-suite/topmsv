@@ -11,7 +11,7 @@ const getStatusLog = router.get('/getStatusLog', function(req, res) {
     const fileName = req.query.fileName;
     getStatusLogLib(fileName, function (err, log) {
         if (err) {
-            res.write(err);
+            res.write("ERROR: Failed to retrieve log");
         }
         else{
             res.write(log);

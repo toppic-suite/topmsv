@@ -4,17 +4,14 @@ const getProjects = require("../library/getProjects");
 const getTasksPerUser = require("../library/getTasksPerUser");
 const checkUser = require("../library/checkUser");
 const path = require("path");
+const fs = require("fs");
+
 /**
  * Express.js router for /tasks
  * 
  * Render task list page for user by given user ID
  */
 const tasks = router.get('/tasks', async (req,res) => {
-    //console.log('Cookies: ', req.cookies);
-    //console.log('Session:', req.session);
-    //console.log(req.session.passport.user.profile);
-    //console.log(req.session);
-    //let uid = req.session.passport.user.profile.uid;
     console.log("hello tasks");
     if (req.session.passport === undefined)
         res.render('pages/tasks', {
@@ -63,16 +60,17 @@ let readOneTask = (project) => {
                 if (task.app != "node") {
                     let appName = path.basename(task.app);
                     if(task.status === 0) {
-                        task.status = appName + ' processing';
+                        task.status = 'Processing';
                     } else if(task.status === 1) {
-                        task.status = appName + ' finished';
+                        task.status = 'Finished';
                     } else if(task.status === 2) {
-                        task.status = appName + ' failed';
+                        task.status = 'Failed';
                     } else if(task.status === 3) {
                         task.status = 'Project removed';
                     } else if(task.status ===4) {
-                        task.status = appName + ' waiting';
+                        task.status = 'Waiting';
                     }
+                    task.appName = appName;
                     task.projectCode = project.projectCode;
                     task.projectName = project.projectName;
                     task.fileName = project.fileName;

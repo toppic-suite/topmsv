@@ -123,10 +123,13 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
             let task = tasksList[i];
             let threadNum = task.threadNum;
             let projectCode = task.projectCode;
+            let logFileName = projectCode + "_" + task.taskID + "_log.txt"; //task log file name
+            let logPath = path.join("log", logFileName);
+
             if(threadNum <= avaiResourse) {
                 // console.log("Available resources");
                 let projectStatus = checkProjectStatusSync(projectCode).projectStatus;
-                console.log("projectStatus", projectStatus);
+                console.log("projectStatus", projectStatus, ", projectCode", projectCode);
                 if (projectStatus === 0) {
                     console.log("This project is processing, skip it");
                     return;
@@ -135,8 +138,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     return;
                 }else {
                     console.log("Processing project...");
-                    let fileName = projectCode + "_" + task.taskID + "_log.txt";
-                    fs.appendFileSync(path.join("log", fileName), "Processing task....\n");
+                    fs.appendFileSync(logPath, "Processing task....\n");
 
                     let taskID = task.taskID;
                     let app = task.app;
@@ -147,7 +149,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     let adr =  'https://toppic.soic.iupui.edu/data?id=';
 
                     if(app === 'email') {
-                        let subject = "Your Topview task is done";
+                        let subject = "Your TopMSV task is done";
                         let text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                         let emailAddress = emailtosend;
                         let email_sender = new EmailSender(subject, text, emailAddress);
@@ -157,6 +159,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                         }else{
                             console.log("SUCCESS: task has completed");
                         }
+                        //fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
                     } else {
                         avaiResourse = avaiResourse - threadNum;
                         updateProjectStatusSync(0, projectCode);
@@ -164,8 +167,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             // console.log(stdout);
                             console.log(stderr);
                             if(err) {
-                                let fileName = projectCode + "_" + task.taskID + "_log.txt";
-                                fs.appendFileSync(path.join("log", fileName), "[Error] Task failed! Please try again.\n");
+                                fs.appendFileSync(logPath, "[Error] Task failed! Please try again.\n");
                                 console.log(err);
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
@@ -189,14 +191,30 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             }else{
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
-                                let remainingTask = checkRemainingTask(projectCode);
+                                fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
+                                updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
+                                nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                nodemailerAuth.message.subject = "Your task is done";
+                                nodemailerAuth.message.to = emailtosend;
+                                if (shouldSendEmail) {
+                                    nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                        if (err) {
+                                            console.log(err)
+                                        } else {
+                                            console.log(info);
+                                        }
+                                    });    
+                                }else{
+                                    console.log("SUCCESS: task has completed");
+                                }
+                               
+                                /*let remainingTask = checkRemainingTask(projectCode);
                                 if (remainingTask === 1) {
-                                    let fileName = projectCode + "_" + task.taskID + "_log.txt";
-                                    fs.appendFileSync(path.join("log", fileName), "Task is waiting to run....\n");
+                                    fs.appendFileSync(logPath, "Task is waiting to run....\n");
+                                    fs.appendFileSync(logPath, "Project status is " + projectStatus + "\n");
                                     updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
                                 } else {
-                                    let fileName = projectCode + "_" + task.taskID + "_log.txt";
-                                    fs.appendFileSync(path.join("log", fileName), "[Success] Task is finished. Click the project link to view results.\n");
+                                    fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
                                     updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
                                     nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                                     nodemailerAuth.message.subject = "Your task is done";
@@ -212,7 +230,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                     }else{
                                         console.log("SUCCESS: task has completed");
                                     }
-                                }
+                                }*/
                             }
                         });    
                     }

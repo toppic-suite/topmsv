@@ -71,22 +71,24 @@
             <thead class="thead-light">
             <tr>
                 <th scope="col">Task ID</th>
+                <th style="display:none" scope="col">Project Code</th>
                 <th scope="col">Project Name</th>
                 <th scope="col">File Name</th>
+                <th scope="col">App</th>
                 <th scope="col">Status</th>
-                <th scope="col">Description</th>
                 <th scope="col">Project Link</th>
-                <th scope="col">Upload Time</th>
+                <th scope="col">Start Time</th>
             </tr>
             </thead>
 
             <% for (var i = 0; i < taskData.length; i++) { %>
                 <tr>
-                    <td><%= taskData[i].taskId %></td>
+                    <td class="taskId"><%= taskData[i].taskId %></td>
+                    <td style="display:none" class="projectCode"><%= taskData[i].projectCode %></td>
                     <td><%= taskData[i].projectName %></td>
                     <td><%= taskData[i].fileName %></td>
+                    <td><%= taskData[i].appName %></td>
                     <td onclick="showTaskStatus('<%= taskData[i].taskId %>', '<%= taskData[i].projectCode %>')"><a style="cursor:pointer"><%= taskData[i].status %></a></td>
-                    <td><%= taskData[i].description %></td>
                     <td><a href="<%= taskData[i].projectLink %>">Link</a> </td>
                     <td><%= taskData[i].uploadTime %></td>
                 </tr>
@@ -94,6 +96,8 @@
 
         </table>
     </div>
+    <h5 style="text-align:right">Click <a href="">here</a> to refresh the page.</h5>
+
 </main>
 <script type="text/javascript" src="js/tasks.js"></script>
 </body>
