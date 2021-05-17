@@ -8,7 +8,6 @@ mkdir topmsv-%1\tmp
 copy ..\cpp\bin\mzMLReader.exe topmsv-%1\cpp\bin
 
 Xcopy ..\library topmsv-%1\library\ /S
-Xcopy ..\node_modules topmsv-%1\node_modules\ /S
 Xcopy ..\proteomics_cpp topmsv-%1\proteomics_cpp\ /S
 Xcopy ..\public topmsv-%1\public\ /S
 Xcopy ..\router topmsv-%1\router\ /S
@@ -19,7 +18,15 @@ copy ..\data\.placeholder topmsv-%1\data
 copy ..\db\.placeholder topmsv-%1\db
 copy ..\tmp\.placeholder topmsv-%1\tmp
 
-copy ..\* topmsv-%1
+copy ..\*.js topmsv-%1
+copy ..\*.json topmsv-%1
+copy ..\*.html topmsv-%1
+copy ..\*.ini topmsv-%1
+copy ..\*.bat topmsv-%1
+copy ..\*.vbs topmsv-%1
+
+copy ..\LICENSE topmsv-%1
+copy ..\README.md topmsv-%1
 
 copy C:\msys64\mingw64\bin\libboost_chrono-mt.dll topmsv-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\libboost_filesystem-mt.dll topmsv-%1\cpp\bin\
