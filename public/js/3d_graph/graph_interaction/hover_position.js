@@ -19,6 +19,8 @@ class HoverPosition{
     onMouseOver = (event) => {
         let [mz, rt] = GraphUtil.getMzRtCoordinate(event);
         let scan =  GraphUtil.findNearestScan(rt);
+        //let ionTime = GraphUtil.formatScientificNotation(GraphUtil.findIonTime(rt) / 60000); //to minute
+        let ionTime = (GraphUtil.findIonTime(rt)).toFixed(3);
         if (mz == "" || rt == ""){
             mz = "";
             rt = "";
@@ -34,8 +36,11 @@ class HoverPosition{
         if (scan < 0) {
             scan = "n/a";
         }
-        document.getElementById("graph-cursor-data").innerText = "m/z: " + mz + "\n" + "retention time: " + rt 
-        + "\n" + "scan ID: " + scan;
+        if (ionTime < 0) {
+            ionTime = "n/a";
+        }
+        let cursorData = "m/z: " + mz + "\n" + "retention time (min): " + rt + "\n" + "ion injection time (ms): " + ionTime + "\n" + "scan ID: " + scan;
+        document.getElementById("graph-cursor-data").innerText = cursorData;
     }
     main = () => {
         Graph.renderer.domElement.addEventListener('mousemove', this.onMouseOver, false);

@@ -30,7 +30,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
         let projectCode = fields.projectCode;
         let threadNum = fields.threadNum;
         let parameter = fields.command;
-        let geneMzid = fields.geneMzid;
+        //let geneMzid = fields.geneMzid;
         let decoyData = fields.decoyData;
         console.log("parameter",parameter);
         //console.log(projectCode);
@@ -67,9 +67,9 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                     parameter = parameter + ' -i '+ des_ptmShiftFile;
                 }
                 commandArr = parameter + ' -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
-                if (geneMzid){//if mzid file is generated, keep intermediate file
+                /*if (geneMzid){//if mzid file is generated, keep intermediate file
                     commandArr = parameter + ' -k -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
-                }
+                }*/
                 console.log("commandArr",commandArr);
                 //console.log(threadNum);
                 submitTask(projectCode,app, commandArr, threadNum);
@@ -86,7 +86,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 submitTask(projectCode, seqApp, seqParameter, 1);
 
                 //run mzid generator if mzid file is to be generated
-                if (geneMzid == 'true' || geneMzid == true){
+               /* if (geneMzid == 'true' || geneMzid == true){
                     let app = "python3";
                     let decoyName = des_fastaFile + "_target_decoy";
                     if (decoyData == 'false' || decoyData == false){
@@ -96,7 +96,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                     console.log("Hello! mzid file generator")
                     console.log("param", param);
                     submitTask(projectCode, app, param, 1);
-                }
+                }*/
                 res.end();
             })
         })

@@ -53,4 +53,3 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   target_link_libraries(mzMLReader xalan-c xerces-c boost_program_options-mt
         boost_filesystem-mt boost_system-mt boost_thread-mt boost_iostreams-mt boost_chrono-mt pthread z)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows") 
-

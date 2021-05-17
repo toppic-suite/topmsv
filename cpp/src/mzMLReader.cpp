@@ -209,6 +209,7 @@ void mzMLReader::creatTable() {
          "ID INT PRIMARY KEY      NOT NULL," \
          "SCAN           INT      NOT NULL," \
          "RETENTIONTIME  REAL     NOT NULL," \
+         "IONTIME  REAL     NOT NULL," \
          "SCANLEVEL      INT      NOT NULL," \
          "PREC_MZ        REAL     NULL," \
          "PREC_CHARGE    INT      NULL," \
@@ -450,7 +451,7 @@ void mzMLReader::endTransactionInMemory() {
 
 };
 void mzMLReader::openInsertStmt() {
-  std::string sqlstr = "INSERT INTO SPECTRA (ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES (? ,? ,?, ?, ?, ?, ?, ?, ?, ?); ";
+  std::string sqlstr = "INSERT INTO SPECTRA (ID,SCAN,RETENTIONTIME,IONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES (? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?); ";
   sql_ = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db_, sql_, sqlstr.length(), &stmt_sp, 0);
 
@@ -492,18 +493,19 @@ void mzMLReader::closeInsertStmtMs1Only() {
 void mzMLReader::closeInsertStmtInMemory() {
   sqlite3_finalize(stmt_peak_in_memory);
 };
-void mzMLReader::insertSpStmt(int scan_index, std::string scan, double retention_time, int scan_level, double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev) {
+void mzMLReader::insertSpStmt(int scan_index, std::string scan, double retention_time, double ion_time, int scan_level, double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev) {
   sqlite3_reset(stmt_sp);
   sqlite3_bind_int(stmt_sp,1,scan_index);
   sqlite3_bind_int(stmt_sp,2,std::stoi(scan));
   sqlite3_bind_double(stmt_sp,3,retention_time);
-  sqlite3_bind_int(stmt_sp,4,scan_level);
-  sqlite3_bind_double(stmt_sp,5,prec_mz);
-  sqlite3_bind_int(stmt_sp,6,prec_charge);
-  sqlite3_bind_double(stmt_sp,7,prec_inte);
-  sqlite3_bind_double(stmt_sp,8,peaks_int_sum);
-  sqlite3_bind_int(stmt_sp,9,next);
-  sqlite3_bind_int(stmt_sp,10,prev);
+  sqlite3_bind_double(stmt_sp,4,ion_time);
+  sqlite3_bind_int(stmt_sp,5,scan_level);
+  sqlite3_bind_double(stmt_sp,6,prec_mz);
+  sqlite3_bind_int(stmt_sp,7,prec_charge);
+  sqlite3_bind_double(stmt_sp,8,prec_inte);
+  sqlite3_bind_double(stmt_sp,9,peaks_int_sum);
+  sqlite3_bind_int(stmt_sp,10,next);
+  sqlite3_bind_int(stmt_sp,11,prev);
   int r = sqlite3_step(stmt_sp);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db_) << std::endl;
