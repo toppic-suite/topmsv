@@ -409,62 +409,57 @@
 			</div>
 			<hr>
 			<div class="scanleveltitle row" id ="3d-graph-parameter">
-				<div class="col-sm-2">
+				<div class="col-sm-3">
 					<div><strong>Graph data:</strong></div>
 					<span id="graph-cursor-data">
-						m/z:    <br>  retention time:   <br>  scan ID:   <br>
+						m/z:    <br>  retention time (min):   <br>  ion injection time (ms):   <br>  scan ID:   <br>
 					</span>
 					<div class="projectName">
 						<span id="graph-metadata"></span>
 					</div>
 				</div>
-				<div class="col-sm-6">
-					<div class="col-sm-8">
+				<div class="col-sm-5">
+					<div class="col-sm-10">
 						<div class="row">
-							<div class="col-sm-5">
-								<strong>Retention Time:</strong>
+							<div class="col-sm-7">
+								<strong>Retention Time (min):</strong>
 							</div>
-							<div class="col-sm-7" style="display:flex">
+							<div class="col-sm-5" style="display:flex">
 								<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
 								<span class ="rangeMarker">&nbsp;±&nbsp;</span>
-								<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" />
+								<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" value=1 />
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-5">
+							<div class="col-sm-7">
 								<strong>m/z:</strong>
 							</div>
-							<div class="col-sm-7" style="display:flex">
+							<div class="col-sm-5" style="display:flex">
 								<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
 								<span class ="rangeMarker">&nbsp;±&nbsp;</span>
-								<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" />
+								<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" value=50 />
 							</div>
 						</div>	
 						<div class="row">
-							<div class="col-sm-8">
+							<div class="col-sm-7">
 								<strong>intensity cutoff threshold:</strong>
 							</div>
-							<div class="col-sm-4" style="display:flex">
+							<div class="col-sm-5" style="display:flex">
 								<input type="text" id="cutoff-threshold" class="rangeTextBox" value=0 name="cutoff-threshold" />
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-8">
+							<div class="col-sm-7">
 								<strong>intensity auto scaling:</strong>
 							</div>
-							<div class="col-sm-4" style="display:flex">
+							<div class="col-sm-5" style="display:flex">
 								<input type="checkbox" id="inte-auto-adjust" name="inte-auto-adjust" value="auto-adjust">							</div>
 						</div>
 					</div>
-					<div class="col-sm-4">
-						<div class="col-sm-6">
-							<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
-						</div>
-						<div class="col-sm-6">
-							<button id="resetGraphs" type="button" class="btn">Reset</button>
-						</div>	
+					<div class="col-sm-2">
+						<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+						<button id="resetGraphs" type="button" class="btn">Reset</button>
 					</div>
-			
 				</div>
 				<div class="col-sm-4">
 					<div class="col-sm-1"></div>

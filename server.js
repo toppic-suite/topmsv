@@ -16,6 +16,9 @@ const os = require('os');
 const cpuCount = os.cpus().length;
 const app = express();
 const fs = require('fs');
+const path = require('path');
+const ChromeLauncher = require('chrome-launcher');
+
 let shouldAuthenticate = true;
 let shouldSendEmail = true;
 
@@ -120,10 +123,13 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
             let task = tasksList[i];
             let threadNum = task.threadNum;
             let projectCode = task.projectCode;
+            let logFileName = projectCode + "_" + task.taskID + "_log.txt"; //task log file name
+            let logPath = path.join("log", logFileName);
+
             if(threadNum <= avaiResourse) {
                 // console.log("Available resources");
                 let projectStatus = checkProjectStatusSync(projectCode).projectStatus;
-                console.log("projectStatus", projectStatus);
+                console.log("projectStatus", projectStatus, ", projectCode", projectCode);
                 if (projectStatus === 0) {
                     console.log("This project is processing, skip it");
                     return;
@@ -132,6 +138,8 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     return;
                 }else {
                     console.log("Processing project...");
+                    fs.appendFileSync(logPath, "Processing task....\n");
+
                     let taskID = task.taskID;
                     let app = task.app;
                     let parameter = task.parameter;
@@ -141,7 +149,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     let adr =  'https://toppic.soic.iupui.edu/data?id=';
 
                     if(app === 'email') {
-                        let subject = "Your Topview task is done";
+                        let subject = "Your TopMSV task is done";
                         let text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                         let emailAddress = emailtosend;
                         let email_sender = new EmailSender(subject, text, emailAddress);
@@ -151,6 +159,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                         }else{
                             console.log("SUCCESS: task has completed");
                         }
+                        //fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
                     } else {
                         avaiResourse = avaiResourse - threadNum;
                         updateProjectStatusSync(0, projectCode);
@@ -158,6 +167,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             // console.log(stdout);
                             console.log(stderr);
                             if(err) {
+                                fs.appendFileSync(logPath, "[Error] Task failed! Please try again.\n");
                                 console.log(err);
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
@@ -181,10 +191,30 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             }else{
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
-                                let remainingTask = checkRemainingTask(projectCode);
+                                fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
+                                updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
+                                nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                nodemailerAuth.message.subject = "Your task is done";
+                                nodemailerAuth.message.to = emailtosend;
+                                if (shouldSendEmail) {
+                                    nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                        if (err) {
+                                            console.log(err)
+                                        } else {
+                                            console.log(info);
+                                        }
+                                    });    
+                                }else{
+                                    console.log("SUCCESS: task has completed");
+                                }
+                               
+                                /*let remainingTask = checkRemainingTask(projectCode);
                                 if (remainingTask === 1) {
+                                    fs.appendFileSync(logPath, "Task is waiting to run....\n");
+                                    fs.appendFileSync(logPath, "Project status is " + projectStatus + "\n");
                                     updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
                                 } else {
+                                    fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
                                     updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
                                     nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                                     nodemailerAuth.message.subject = "Your task is done";
@@ -200,7 +230,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                     }else{
                                         console.log("SUCCESS: task has completed");
                                     }
-                                }
+                                }*/
                             }
                         });    
                     }
@@ -328,6 +358,14 @@ app.use('/', require("./router/seqResults"));
  * get a list which contains all projects the user owns and render the list back to user
  */
 app.use('/', require("./router/projects"));
+
+/**
+ * Express router for /tasks
+ *
+ * Authenticate user by uid then
+ * get a list which contains all tasks the user owns and render the list back to user
+ */
+ app.use('/', require("./router/tasks"));
 
 /**
  * Express router for /toppic
@@ -496,6 +534,8 @@ app.use('/', require('./router/getAllowToppicStatus'));
 
 app.use('/', require("./router/updateDate"));
 
+app.use('/', require("./router/getStatusLog"));
+
 /**router for 3D graph */
 app.use('/', require("./router/getMax"));
 app.use('/', require("./router/load3dDataByParaRange"));
@@ -525,7 +565,7 @@ const sqlToUserTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Users\" (
 sqlToUserTable.run();
 const sqlToUserIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )");
 sqlToUserIndex.run();
-const sqlToCreateTaskTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))");
+const sqlToCreateTaskTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))");
 sqlToCreateTaskTable.run();
 const sqlToTasksIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )");
 sqlToTasksIndex.run();
@@ -536,7 +576,11 @@ console.log("Server database is Ready!");
 const server = app.listen(8443, function () {
     const port = server.address().port;
     console.log("Server started on PORT %s", port);
+    ChromeLauncher.launch({
+        startingUrl: 'http://localhost:8443/'
+    })
 });
+process.title = "TopMSV";
 
 process.on('SIGINT', () => {
     server.close(()=> {
