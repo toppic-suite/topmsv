@@ -29,13 +29,25 @@ class GraphInit{
             let centerMZ = parseFloat(document.getElementById('mzRangeMin').value);
             let rangeMZ = parseFloat(document.getElementById('mzRangeMax').value);
 
-            let minRT = centerRT - rangeRT;
-            let maxRT = centerRT + rangeRT;
-            let minMZ = centerMZ - rangeMZ;
-            let maxMZ = centerMZ + rangeMZ;
+            let minRT = Graph.viewRange.rtmin;
+            let maxRT = Graph.viewRange.rtmax;
+            let minMZ = Graph.viewRange.mzmin;
+            let maxMZ = Graph.viewRange.mzmax;
 
-            let inteCutoff = parseFloat(document.getElementById("cutoff-threshold").value);
-
+            if (isNaN(centerRT)) {
+                centerRT = (Graph.viewRange.rtmin + Graph.viewRange.rtmax) / 2;
+            }
+            if (isNaN(centerMZ)) {
+                centerMZ = (Graph.viewRange.mzmin + Graph.viewRange.mzmax) / 2;
+            }
+            if (!isNaN(rangeRT)) {
+                minRT = centerRT - rangeRT;
+                maxRT = centerRT + rangeRT;
+            }
+            if (!isNaN(rangeMZ)) {
+                minMZ = centerMZ - rangeMZ;
+                maxMZ = centerMZ + rangeMZ;
+            }
             //error handing
             if (minRT > maxRT){
                 alert("Invalid Range : Minimum retention time is bigger than maximum.");
@@ -43,14 +55,8 @@ class GraphInit{
             else if (minMZ > maxMZ){
                 alert("Invalid Range : Minimum m/z is bigger than maximum");
             }
-            else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
-                alert("Invalid Value Found : Please make sure both m/z range and retention range have valid values.");
-            }
-            else if (isNaN(inteCutoff)) {
-                alert("Invalid Value Found : Please enter a valid value for intensity cutoff threshold");
-            }
             else{
-                GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
+                GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT);
             }
         }, false);
     }
