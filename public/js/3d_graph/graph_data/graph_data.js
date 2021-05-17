@@ -88,11 +88,11 @@ class GraphData{
     static setViewRangeToFull = () => {
         Graph.viewRange.mzmin = 0;
         Graph.viewRange.mzmax = Graph.dataRange.mzmax;
-        Graph.viewRange.mzrange = Graph.dataRange.mzmax - Graph.dataRange.mzmin;
+        Graph.viewRange.mzrange = Graph.dataRange.mzmax;
         
         Graph.viewRange.rtmin = 0;
         Graph.viewRange.rtmax = Graph.dataRange.rtmax;
-        Graph.viewRange.rtrange = Graph.dataRange.rtmax - Graph.dataRange.rtmin;
+        Graph.viewRange.rtrange = Graph.dataRange.rtmax;
     }
      /******** PLOT PEAKS ******/
     static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
