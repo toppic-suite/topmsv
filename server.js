@@ -16,6 +16,7 @@ const os = require('os');
 const cpuCount = os.cpus().length;
 const app = express();
 const fs = require('fs');
+
 const path = require('path');
 const ChromeLauncher = require('chrome-launcher');
 
@@ -23,6 +24,7 @@ let shouldAuthenticate = true;
 let shouldSendEmail = true;
 
 console.log("Loading.... please wait until server is ready\n")
+
 
 app.use(helmet());
 app.use(cookieSession({
@@ -159,7 +161,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                         }else{
                             console.log("SUCCESS: task has completed");
                         }
-                        //fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
+
                     } else {
                         avaiResourse = avaiResourse - threadNum;
                         updateProjectStatusSync(0, projectCode);
@@ -191,6 +193,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             }else{
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
+
                                 fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
                                 updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
                                 nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
@@ -206,6 +209,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                     });    
                                 }else{
                                     console.log("SUCCESS: task has completed");
+
                                 }
                                
                                 /*let remainingTask = checkRemainingTask(projectCode);
