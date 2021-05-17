@@ -4,6 +4,7 @@ mkdir topmsv-%1\cpp\bin
 mkdir topmsv-%1\data
 mkdir topmsv-%1\db
 mkdir topmsv-%1\tmp
+mkdir topmsv-%1\log
 
 copy ..\cpp\bin\mzMLReader.exe topmsv-%1\cpp\bin
 
