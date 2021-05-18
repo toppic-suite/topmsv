@@ -14,10 +14,7 @@ Xcopy ..\public topmsv-%1\public\ /S
 Xcopy ..\router topmsv-%1\router\ /S
 Xcopy ..\utilities topmsv-%1\utilities\ /S
 Xcopy ..\views topmsv-%1\views\ /S
-
-copy ..\data\.placeholder topmsv-%1\data
-copy ..\db\.placeholder topmsv-%1\db
-copy ..\tmp\.placeholder topmsv-%1\tmp
+Xcopy ..\node_modules topmsv-%1\node_modules\ /S
 
 copy ..\*.js topmsv-%1
 copy ..\*.json topmsv-%1
