@@ -148,12 +148,17 @@ class GraphUtil{
     static findIonTime = (rt) => {
         let rtScanData = rtInteGraph.inteRtArray;
         let threshold = Graph.viewRange.rtrange / 200;
-        for (let i = 0; i < rtScanData.length; i++) {
-            let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
-            if (diff < threshold) {
-                return rtScanData[i].ionTime;   
-            }
-        }     
-        return -1;   
+        if ('ionTime' in rtScanData[0]) {
+            for (let i = 0; i < rtScanData.length; i++) {
+                let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
+                if (diff < threshold) {
+                    return rtScanData[i].ionTime;   
+                }
+            }     
+            return -1;   
+        }
+        else{
+            return null;
+        }
     }
 }

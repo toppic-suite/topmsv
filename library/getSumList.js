@@ -8,12 +8,14 @@ const sqlite3 = require('sqlite3').verbose();
  */
 
 function getSumList(dir, callback) {
-    let sql = `SELECT RETENTIONTIME AS rt,
+    /*let sql = `SELECT RETENTIONTIME AS rt,
                 PEAKSINTESUM AS inteSum,
                 SCAN AS scanNum,
                 IONTIME AS ionTime
                 FROM SPECTRA
-                WHERE SCANLEVEL = 1`;
+                WHERE SCANLEVEL = 1`;*/
+    let sql = `SELECT * FROM SPECTRA
+                WHERE SCANLEVEL = 1`;            
     //ORDER BY INTENSITY DESC`;
     //LIMIT 1000`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
