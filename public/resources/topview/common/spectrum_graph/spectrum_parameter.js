@@ -300,6 +300,13 @@ class SpectrumViewParameters {//rename class
     if (this.winMinMz < this.minPossibleMz){//prevent zooming out into negative mass
       this.winMinMz = this.minPossibleMz;
     }
+    //restrict zooming if the scale becomes too small or big
+    if (this.xScale > 50000000) {
+      this.xScale = 50000000;
+    }
+    else if (this.xScale < 0.007) {
+      this.xScale = 0.007;
+    }
   }
   /**
    * @function yZoom

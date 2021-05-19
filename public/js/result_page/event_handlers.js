@@ -19,10 +19,9 @@ $( document ).ready(function() {
 
     let resetButton = document.getElementById('resetGraphs');
     resetButton.addEventListener('click', function() {
-        let min = document.getElementById("rangeMin").value;
-
-        init2D(parseInt(min));
-        update3D(parseInt(min));
+        //let min = document.getElementById("rangeMin").value;
+        //init2D(parseInt(min));
+        update3DShowFull();
     })
 
     let prev1 = document.getElementById('prev1');
@@ -88,7 +87,15 @@ $( document ).ready(function() {
             $("#datatable").show();
         }
     });
-
+    $( "#hideFeatureTable" ).click(function() {
+        if($("#hideFeatureTable").text() === 'Hide') {
+            $("#hideFeatureTable").text('Show');
+            $("#featureDataTable").hide();
+        }else {
+            $("#hideFeatureTable").text('Hide');
+            $("#featureDataTable").show();
+        }
+    });
     $("#switch").click(function () {
         if($("#switch").text() === 'MS1') {
             showEnvTable($("#scanID1").text());
@@ -215,4 +222,10 @@ $( document ).ready(function() {
             }
         }
     });
+    //redraw graph if intensity adjustment checkbox gets checked
+    $("#inte-auto-adjust").click(function () {
+        if (document.getElementById("inte-auto-adjust").checked) {
+            GraphData.drawNoNewData();
+        }
+    })
 })

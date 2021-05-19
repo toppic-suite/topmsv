@@ -89,6 +89,9 @@ function calcInitRange(precMz){
     }
     return mzRange;
 }
+function update3DShowFull(){
+    GraphData.drawFullRangeGraph();
+}
 function update3D(scanID){
     let projectDir = document.getElementById("projectDir").value;
     let promise = checkRelatedScan(projectDir, scanID);
@@ -126,6 +129,7 @@ function init3D(scanID){
     }).then((precMz)=>{
         let mzRange = calcInitRange(precMz);
         graph.main(mzRange.mzmin, mzRange.mzmax, scanID);
+
     }).catch((err) => {
         console.log(err);
     })

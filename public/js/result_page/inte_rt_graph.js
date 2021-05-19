@@ -78,7 +78,7 @@ class InteRtGraph {
         let formatPercent = d3.format(".0%");
     
         this.inteRtArray.forEach(function (element) {
-            element.rt = element.rt/60;
+            element.rt = element.rt;
             element.intePercentage = element.inteSum/maxInte;
         });
         this.inteRtArray.sort((a,b) => {a.rt > b.rt ? 1:-1});

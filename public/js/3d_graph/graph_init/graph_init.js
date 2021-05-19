@@ -6,16 +6,48 @@ class GraphInit{
     static createSaveGraphEvent = () => {//add an event listener for when a user clicks on graph download button
         document.getElementById("save3dGraph").addEventListener("click", GraphDownload.save3dGraph, false);
     }
+    static createSwitchCurrentScan = () => {
+        //change current scan when clicked on 3d graph
+        document.getElementById("canvas3D").addEventListener("click", function(e) {
+            let [mz, rt] = GraphUtil.getMzRtCoordinate(e);
+            let nearestRt = parseFloat(GraphUtil.findNearestRt(rt));
+            if (nearestRt >= 0) {
+                Graph.curRT = nearestRt;
+                //GraphData.drawNoNewData();
+                GraphData.drawCurrentScanMarker();
+                GraphRender.renderImmediate();
+            }
+        })
+    }
     static createRedrawEvent = () => {
         //listener for rt range and mz range change in 3d graph
         let redrawRequestButton = document.getElementById('request3dGraphRedraw');
 
         redrawRequestButton.addEventListener('click', function(){
-            let minRT = parseFloat(document.getElementById('rtRangeMin').value) * 60;//unit is different in DB
-            let maxRT = parseFloat(document.getElementById('rtRangeMax').value) * 60;
-            let minMZ = parseFloat(document.getElementById('mzRangeMin').value);
-            let maxMZ = parseFloat(document.getElementById('mzRangeMax').value);
+            let centerRT = parseFloat(document.getElementById('rtRangeMin').value);//unit is different in DB
+            let rangeRT = parseFloat(document.getElementById('rtRangeMax').value);
+            let centerMZ = parseFloat(document.getElementById('mzRangeMin').value);
+            let rangeMZ = parseFloat(document.getElementById('mzRangeMax').value);
 
+            let minRT = Graph.viewRange.rtmin;
+            let maxRT = Graph.viewRange.rtmax;
+            let minMZ = Graph.viewRange.mzmin;
+            let maxMZ = Graph.viewRange.mzmax;
+
+            if (isNaN(centerRT)) {
+                centerRT = (Graph.viewRange.rtmin + Graph.viewRange.rtmax) / 2;
+            }
+            if (isNaN(centerMZ)) {
+                centerMZ = (Graph.viewRange.mzmin + Graph.viewRange.mzmax) / 2;
+            }
+            if (!isNaN(rangeRT)) {
+                minRT = centerRT - rangeRT;
+                maxRT = centerRT + rangeRT;
+            }
+            if (!isNaN(rangeMZ)) {
+                minMZ = centerMZ - rangeMZ;
+                maxMZ = centerMZ + rangeMZ;
+            }
             //error handing
             if (minRT > maxRT){
                 alert("Invalid Range : Minimum retention time is bigger than maximum.");
@@ -23,11 +55,8 @@ class GraphInit{
             else if (minMZ > maxMZ){
                 alert("Invalid Range : Minimum m/z is bigger than maximum");
             }
-            else if (isNaN(minRT) || isNaN(maxRT) || isNaN(minMZ) || isNaN(maxMZ)){
-                alert("Invalid Value Found : Please make sure the range has valid values.");
-            }
             else{
-                GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT, false);
+                GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT);
             }
         }, false);
     }
@@ -159,6 +188,7 @@ class GraphInit{
         GraphInit.createAxis();
         GraphInit.createRedrawEvent();
         GraphInit.createSaveGraphEvent();
+        GraphInit.createSwitchCurrentScan();
         
         UploadMzrt.main();
         

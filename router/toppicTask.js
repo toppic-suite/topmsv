@@ -6,7 +6,7 @@ const submitTask = require("../library/submitTask");
 const fs = require("fs");
 const deleteSeq = require("../library/deleteSeqSync");
 const updateSeqStatusSync = require("../library/updateSeqStatusSync");
-
+const path = require("path");
 /**
  * Express router for /toppicTask
  *
@@ -14,7 +14,7 @@ const updateSeqStatusSync = require("../library/updateSeqStatusSync");
  */
 const toppicTask = router.post('/toppicTask', function (req, res) {
     console.log("Hello, toppicTask");
-    const app = './proteomics_cpp/bin/toppic';
+    const app = path.join('proteomics_cpp', 'bin', 'toppic');
     let commandArr = '';
     let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
@@ -30,7 +30,7 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
         let projectCode = fields.projectCode;
         let threadNum = fields.threadNum;
         let parameter = fields.command;
-        let geneMzid = fields.geneMzid;
+        //let geneMzid = fields.geneMzid;
         let decoyData = fields.decoyData;
         console.log("parameter",parameter);
         //console.log(projectCode);
@@ -39,8 +39,8 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
             let projectDir = row.projectDir;
             let fileName = row.fileName;
             let msalign_name = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2.msalign';
-            let msalign_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + msalign_name;
-            let des_fastaFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fastaFile.name;
+            let msalign_dir = path.join(path.dirname(projectDir), msalign_name);
+            let des_fastaFile = path.join(path.dirname(projectDir), fastaFile.name);
             let des_ptmShiftFile = 'None'; 
             let des_fixedPTMFile = 'None';
             fs.rename(fastaFile.path, des_fastaFile, function (err) {
@@ -56,20 +56,20 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 }
 
                 if(fixedPTMFile !== undefined) {
-                    des_fixedPTMFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + fixedPTMFile.name;
+                    des_fixedPTMFile = path.join(path.dirname(projectDir), fixedPTMFile.name);
                     fs.renameSync(fixedPTMFile.path, des_fixedPTMFile);
                     parameter = parameter + ' -f '+ des_fixedPTMFile;
                 }
 
                 if (ptmShiftFile !== undefined) {
-                    des_ptmShiftFile = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + ptmShiftFile.name;
+                    des_ptmShiftFile = path.join(path.dirname(projectDir), ptmShiftFile.name);
                     fs.renameSync(ptmShiftFile.path, des_ptmShiftFile);
                     parameter = parameter + ' -i '+ des_ptmShiftFile;
                 }
                 commandArr = parameter + ' -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
-                if (geneMzid){//if mzid file is generated, keep intermediate file
+                /*if (geneMzid){//if mzid file is generated, keep intermediate file
                     commandArr = parameter + ' -k -u '+ threadNum + ' ' + des_fastaFile + ' ' + msalign_dir;
-                }
+                }*/
                 console.log("commandArr",commandArr);
                 //console.log(threadNum);
                 submitTask(projectCode,app, commandArr, threadNum);
@@ -79,24 +79,24 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
                 let seqApp = 'node';
                 let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
                 let seqName = fileName.substr(0, fileName.lastIndexOf(".")) + '_ms2_toppic_prsm.tsv';
-                let seq_dir = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqName;
-                let seqParameter = './utilities/sequenceParse.js ' + dbDir + ' ' + seq_dir + ' ' + projectCode;
+                let seq_dir = path.join(path.dirname(projectDir), seqName);
+                let seqParameter = path.join('utilities', 'sequenceParse.js') + ' ' + dbDir + ' ' + seq_dir + ' ' + projectCode;
                 console.log(seqParameter);
                 updateSeqStatusSync(1, projectCode);
                 submitTask(projectCode, seqApp, seqParameter, 1);
 
                 //run mzid generator if mzid file is to be generated
-                if (geneMzid == 'true' || geneMzid == true){
+               /* if (geneMzid == 'true' || geneMzid == true){
                     let app = "python3";
                     let decoyName = des_fastaFile + "_target_decoy";
                     if (decoyData == 'false' || decoyData == false){
                         decoyName = des_fastaFile;
                     }
-                    let param = './mzidGenerator/write_mzIdent.py ' + seq_dir + ' ' + decoyName + ' ' + des_fixedPTMFile + ' ' + des_ptmShiftFile + ' None';
+                    let param = path.join('mzidGenerator', 'write_mzIdent.py') + ' ' + seq_dir + ' ' + decoyName + ' ' + des_fixedPTMFile + ' ' + des_ptmShiftFile + ' None';
                     console.log("Hello! mzid file generator")
                     console.log("param", param);
                     submitTask(projectCode, app, param, 1);
-                }
+                }*/
                 res.end();
             })
         })

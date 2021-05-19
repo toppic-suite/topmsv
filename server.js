@@ -11,9 +11,20 @@ const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const auth = require('./auth');
+const skipAuth = require('./skipAuth');
 const os = require('os');
 const cpuCount = os.cpus().length;
 const app = express();
+const fs = require('fs');
+
+const path = require('path');
+const ChromeLauncher = require('chrome-launcher');
+
+let shouldAuthenticate = true;
+let shouldSendEmail = true;
+
+console.log("Loading.... please wait until server is ready\n")
+
 
 app.use(helmet());
 app.use(cookieSession({
@@ -21,9 +32,27 @@ app.use(cookieSession({
     keys:['4324']
 }));
 app.use(cookieParser());
-auth(passport);
-app.use(passport.initialize());
 
+//skip authentication based on config setting
+if (fs.existsSync('config.json')) {
+    let configData = fs.readFileSync('config.json');
+    configData = JSON.parse(configData);
+    if (!configData.authentication) {
+        shouldAuthenticate = false;
+    }
+    if (!configData.sendEmail) {
+        shouldSendEmail = false;
+    }
+}
+
+if (shouldAuthenticate) {
+    auth(passport);
+    app.use(passport.initialize());    
+}
+else{
+    skipAuth(passport);
+    app.use(passport.initialize());    
+}
 const CronJob = require('cron').CronJob;
 
 /**
@@ -33,7 +62,9 @@ const CronJob = require('cron').CronJob;
  * @type {CronJob}
  */
 const checkExpiredProj = require('./library/checkExpiredProj');
+const checkNearExpiredProj = require('./library/checkNearExpiredProj');
 const deleteProject = require('./library/deleteProject');
+
 const job = new CronJob('00 00 00 * * *', function() {
     const d = new Date();
     console.log('Check expired projects:', d);
@@ -42,6 +73,23 @@ const job = new CronJob('00 00 00 * * *', function() {
             deleteProject(element.pcode);
         });
     });
+    if (shouldSendEmail) {
+        checkNearExpiredProj(function (err, rows) {
+            rows.forEach(element => {
+                nodemailerAuth.message.subject = "Your data is about to expire!";
+                nodemailerAuth.message.to = element.email;
+                nodemailerAuth.message.html = '<p>Project Name: ' + element.projectName + '<br/>File Name: ' + element.fileName + '<br/>To secure storage space, data is deleted 30 days after upload. Your project is going to be removed from our database in 1 day.</p><p>If you would like to keep your data for another 30 days, click <a href="https://toppic.soic.iupui.edu/updateDate?pcode=' + element.pcode + '">here</a>.</p>';
+    
+                nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log(info);
+                    }
+                });
+            });
+        });
+    }
 });
 job.start();
 
@@ -66,6 +114,7 @@ const updateProjectStatusSync = require("./library/updateProjectStatusSync");
 const updateTaskStatusSync = require("./library/updateTaskStatusSync");
 const processFailure = require("./library/processFailure");
 const checkRemainingTask = require("./library/checkRemainingTask");
+const { config } = require('process');
 
 const checkWaitTasks = new CronJob("* * * * * *", function() {
     // console.log("Check waiting tasks in database");
@@ -76,10 +125,13 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
             let task = tasksList[i];
             let threadNum = task.threadNum;
             let projectCode = task.projectCode;
+            let logFileName = projectCode + "_" + task.taskID + "_log.txt"; //task log file name
+            let logPath = path.join("log", logFileName);
+
             if(threadNum <= avaiResourse) {
                 // console.log("Available resources");
                 let projectStatus = checkProjectStatusSync(projectCode).projectStatus;
-                console.log("projectStatus", projectStatus);
+                console.log("projectStatus", projectStatus, ", projectCode", projectCode);
                 if (projectStatus === 0) {
                     console.log("This project is processing, skip it");
                     return;
@@ -88,6 +140,8 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     return;
                 }else {
                     console.log("Processing project...");
+                    fs.appendFileSync(logPath, "Processing task....\n");
+
                     let taskID = task.taskID;
                     let app = task.app;
                     let parameter = task.parameter;
@@ -97,11 +151,17 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                     let adr =  'https://toppic.soic.iupui.edu/data?id=';
 
                     if(app === 'email') {
-                        let subject = "Your Topview task is done";
+                        let subject = "Your TopMSV task is done";
                         let text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
                         let emailAddress = emailtosend;
                         let email_sender = new EmailSender(subject, text, emailAddress);
-                        email_sender.sendEmail();
+
+                        if (shouldSendEmail) {
+                            email_sender.sendEmail();
+                        }else{
+                            console.log("SUCCESS: task has completed");
+                        }
+
                     } else {
                         avaiResourse = avaiResourse - threadNum;
                         updateProjectStatusSync(0, projectCode);
@@ -109,6 +169,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                             // console.log(stdout);
                             console.log(stderr);
                             if(err) {
+                                fs.appendFileSync(logPath, "[Error] Task failed! Please try again.\n");
                                 console.log(err);
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
@@ -118,34 +179,62 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                         nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
                                         nodemailerAuth.message.subject = "Your data processing failed";
                                         nodemailerAuth.message.to = emailtosend;
-                                        nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                                            if (err) {
-                                                console.log(err)
-                                            } else {
-                                                console.log(info);
-                                            }
-                                        });
+                                        if (shouldSendEmail) {
+                                            nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                                if (err) {
+                                                    console.log(err)
+                                                } else {
+                                                    console.log(info);
+                                                }
+                                            });
+                                        }
                                     });
                                 }, 60000);
                             }else{
                                 updateTaskStatusSync(1, taskID);
                                 avaiResourse = avaiResourse + threadNum;
-                                let remainingTask = checkRemainingTask(projectCode);
-                                if (remainingTask === 1) {
-                                    updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
-                                } else {
-                                    updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
-                                    nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
-                                    nodemailerAuth.message.subject = "Your task is done";
-                                    nodemailerAuth.message.to = emailtosend;
+
+                                fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
+                                updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
+                                nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                nodemailerAuth.message.subject = "Your task is done";
+                                nodemailerAuth.message.to = emailtosend;
+                                if (shouldSendEmail) {
                                     nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
                                         if (err) {
                                             console.log(err)
                                         } else {
                                             console.log(info);
                                         }
-                                    });
+                                    });    
+                                }else{
+                                    console.log("SUCCESS: task has completed");
+
                                 }
+                               
+                                /*let remainingTask = checkRemainingTask(projectCode);
+                                if (remainingTask === 1) {
+                                    fs.appendFileSync(logPath, "Task is waiting to run....\n");
+                                    fs.appendFileSync(logPath, "Project status is " + projectStatus + "\n");
+                                    updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
+                                } else {
+                                    fs.appendFileSync(logPath, "[Success] Task is finished. Click the project link to view results.\n");
+                                    updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
+                                    nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                    nodemailerAuth.message.subject = "Your task is done";
+                                    nodemailerAuth.message.to = emailtosend;
+                                    if (shouldSendEmail) {
+                                        nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                            if (err) {
+                                                console.log(err)
+                                            } else {
+                                                console.log(info);
+                                            }
+                                        });    
+                                    }else{
+                                        console.log("SUCCESS: task has completed");
+                                    }
+                                }*/
                             }
                         });    
                     }
@@ -273,6 +362,14 @@ app.use('/', require("./router/seqResults"));
  * get a list which contains all projects the user owns and render the list back to user
  */
 app.use('/', require("./router/projects"));
+
+/**
+ * Express router for /tasks
+ *
+ * Authenticate user by uid then
+ * get a list which contains all tasks the user owns and render the list back to user
+ */
+ app.use('/', require("./router/tasks"));
 
 /**
  * Express router for /toppic
@@ -439,6 +536,10 @@ app.use('/', require("./router/ptmQuery"));
 
 app.use('/', require('./router/getAllowToppicStatus'));
 
+app.use('/', require("./router/updateDate"));
+
+app.use('/', require("./router/getStatusLog"));
+
 /**router for 3D graph */
 app.use('/', require("./router/getMax"));
 app.use('/', require("./router/load3dDataByParaRange"));
@@ -448,6 +549,7 @@ app.use('/', require("./router/deleteMzrt"));
 app.use('/', require("./router/getExpectedPeakNum"));
 
 app.use('/', require("./router/auth_google"));
+app.use('/', require("./router/auth_skip"));
 
 // 404 router
 app.use('/*', function(req, res){
@@ -467,7 +569,7 @@ const sqlToUserTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Users\" (
 sqlToUserTable.run();
 const sqlToUserIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `users_index` ON `users` ( `email` )");
 sqlToUserIndex.run();
-const sqlToCreateTaskTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))");
+const sqlToCreateTaskTable = projectDB.prepare("CREATE TABLE IF NOT EXISTS \"Tasks\" ( `id` INTEGER NOT NULL, `projectCode` TEXT NOT NULL, `app` TEXT NULL, `parameter` TEXT NULL, `threadNum` INTEGER NOT NULL, `finish` INTEGER NOT NULL, `Date` TEXT DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(`id`), FOREIGN KEY (projectCode) REFERENCES Projects(ProjectCode))");
 sqlToCreateTaskTable.run();
 const sqlToTasksIndex = projectDB.prepare("CREATE INDEX IF NOT EXISTS `tasks_index` ON `Tasks` ( `projectCode` )");
 sqlToTasksIndex.run();
@@ -478,7 +580,11 @@ console.log("Server database is Ready!");
 const server = app.listen(8443, function () {
     const port = server.address().port;
     console.log("Server started on PORT %s", port);
+    ChromeLauncher.launch({
+        startingUrl: 'http://localhost:8443/'
+    })
 });
+process.title = "TopMSV";
 
 process.on('SIGINT', () => {
     server.close(()=> {

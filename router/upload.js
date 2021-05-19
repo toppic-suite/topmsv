@@ -19,11 +19,14 @@ const fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
 const sqlite3 = require('sqlite3').verbose();
+const os = require('os');
+const path = require('path')
 
 const upload = router.post('/upload', function (req, res) {
     console.log("hello,upload");
     let uid = req.session.passport.user.profile.id;
-    let resultDb = new BetterDB('./db/projectDB.db');
+    let dbPath = path.join("db", "projectDB.db");
+    let resultDb = new BetterDB(dbPath);
     let stmt = resultDb.prepare(`SELECT email AS email
                                 FROM Users
                                 WHERE uid = ?;`);
@@ -36,6 +39,16 @@ const upload = router.post('/upload', function (req, res) {
     } else {
         email = queryResult.email;
     }
+
+    //skip emailing based on config setting
+    if (fs.existsSync('config.json')) {
+        let configData = fs.readFileSync('config.json');
+        configData = JSON.parse(configData);
+        if (!configData.sendEmail) {
+            shouldSendEmail = false;
+        }
+    }
+
     let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
@@ -57,8 +70,11 @@ const upload = router.post('/upload', function (req, res) {
         // console.log(txtFile);
         // let envFile2 = files.envfile2;
         let folderid = uuidv1();
-        let des_path = "data/" + folderid + "/";
-        let des_file = "data/" + folderid + "/" + fname;
+        //let des_path = "data/" + folderid + "/";
+        //let des_file = "data/" + folderid + "/" + fname;
+        let des_path = path.join("data", folderid);
+        let des_file = path.join("data", folderid, fname);
+
         // let des_envFile1 = "data/" + folderid + "/" + "ms1.env";
         // let des_envFile2 = "data/" + folderid + "/" + "ms2.env";
         // Generate new path for file
@@ -68,7 +84,8 @@ const upload = router.post('/upload', function (req, res) {
             console.log('Path created: ',des_path);
         }
         if(txtFile !== undefined) {
-            let des_txtFile = "data/" + folderid + "/" + txtFile.name;
+            //let des_txtFile = "data/" + folderid + "/" + txtFile.name;
+            let des_txtFile = path.join("data", folderid, txtFile.name);
             let scan_level = fields.scan_level;
             let prec_mz = fields.prec_mz;
             let prec_charge = fields.prec_charge;
@@ -96,17 +113,19 @@ const upload = router.post('/upload', function (req, res) {
                             nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + txtFile.name + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                             nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
                             nodemailerAuth.message.to = emailtosend;
-                            nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                                if (err) {
-                                    console.log(err)
-                                } else {
-                                    console.log(info);
-                                }
-                            });
+                            if (shouldSendEmail) {
+                                nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log(info);
+                                    }
+                                });
+                            }
 
                             let dbpath = des_txtFile.substr(0,des_txtFile.lastIndexOf('.')) + '.db';
 
-                            let betterDB = new BetterDB('./' + dbpath);
+                            let betterDB = new BetterDB(dbpath);
                             const stmtCreateSpectraTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS `SPECTRA` (\n' +
                                 '\t`ID`\tINTEGER NOT NULL DEFAULT 1,\n' +
                                 '\t`SCAN`\tINTEGER NOT NULL DEFAULT 1,\n' +
@@ -136,7 +155,8 @@ const upload = router.post('/upload', function (req, res) {
                             stmtInsertSpectra.run(1,1,0,scan_level,prec_mz,prec_charge,prec_inte,0,0,0);
 
                             let app = 'node';
-                            let parameter = './utilities/convertTxt.js ' + dbpath + ' ' + des_txtFile;
+                            let codePath = path.join("utilities", "convertTxt.js");
+                            let parameter = codePath + ' ' + dbpath + ' ' + des_txtFile;
                             submitTask(id, app, parameter, 1);
 
                             res.end();
@@ -159,7 +179,8 @@ const upload = router.post('/upload', function (req, res) {
             })
         } else {
             if(envFile1 !== undefined) { // process mzML file and envelope file
-                let des_envFile1 = "data/" + folderid + "/" + envFile1.name;
+                //let des_envFile1 = "data/" + folderid + "/" + envFile1.name;
+                let des_envFile1 = path.join("data", folderid, envFile1.name);
                 fs.rename(envFile1.path, des_envFile1, function (err) {
                     if (err) {
                         console.log(err);
@@ -186,21 +207,25 @@ const upload = router.post('/upload', function (req, res) {
                                     nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                     nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
                                     nodemailerAuth.message.to = emailtosend;
-                                    nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            console.log(info);
-                                        }
-                                    });
+                                    if (shouldSendEmail) {
+                                        nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                            if (err) {
+                                                console.log(err)
+                                            } else {
+                                                console.log(info);
+                                            }
+                                        });    
+                                    }
 
-                                    let app = './cpp/bin/mzMLReader';
+                                    //let app = './cpp/bin/mzMLReader';
+                                    let app = path.join("cpp", "bin", "mzMLReader");
                                     let parameter = des_file + ' -f';
+
                                     submitTask(id, app, parameter,1);
 
                                     app = 'node';
                                     let dbDir = des_file.substr(0, des_file.lastIndexOf(".")) + ".db";
-                                    parameter = './utilities/convertEnv ' + dbDir + ' ' + des_envFile1;
+                                    parameter = path.join("utilities", "convertEnv") + ' ' + dbDir + ' ' + des_envFile1;
                                     submitTask(id, app, parameter, 1);
 
                                     res.end();
@@ -241,16 +266,18 @@ const upload = router.post('/upload', function (req, res) {
                                 nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
                                 nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
                                 nodemailerAuth.message.to = emailtosend;
-                                nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                                    if (err) {
-                                        console.log(err)
-                                    } else {
-                                        console.log(info);
-                                    }
-                                });
-
-                                let app = './cpp/bin/mzMLReader';
+                                if (shouldSendEmail) {
+                                    nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+                                        if (err) {
+                                            console.log(err)
+                                        } else {
+                                            console.log(info);
+                                        }
+                                    });
+                                }
+                                let app = path.join("cpp", "bin", "mzMLReader");
                                 let parameter = des_file + ' -f';
+
                                 submitTask(id, app, parameter, 1);
 
                                 res.end();

@@ -121,8 +121,9 @@ void msReader::createDtabase() { //stmt
       pwiz::msdata::SpectrumInfo spec_info(*s);
       Scan dummy;
       Scan scan = s->scanList.scans.empty() ? dummy : s->scanList.scans[0];
-      double retention_time = scan.cvParam(MS_scan_start_time).timeInSeconds();
+      double retention_time = (scan.cvParam(MS_scan_start_time).timeInSeconds()) / 60; //to minutes
       int scan_level = sl->spectrum(i)->cvParam(MS_ms_level).valueAs<int>(); // check scanLevel
+      double ion_time = scan.cvParam(MS_ion_injection_time).valueAs<double>();
       int current_scan_id = std::stoi(getScan(sl->spectrumIdentity(i).id));
       int current_id = i+1;
       // intert peaks and sum intensity
@@ -181,14 +182,14 @@ void msReader::createDtabase() { //stmt
           prec_inte = 0.0;
         }
 
-        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,scan_level,prec_mz,prec_charge,prec_inte,peaks_int_sum,NULL,level_two_id);
+        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,prec_mz,prec_charge,prec_inte,peaks_int_sum,NULL,level_two_id);
         // update prev's next
         databaseReader.updateSpStmt(current_id,level_two_id);
         level_two_id = current_id;
         level_two_scan_id = current_scan_id;
         databaseReader.insertScanLevelPairStmt(level_one_scan_id, level_two_scan_id);
       }else if(scan_level == 1){
-        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,scan_level,NULL,NULL,NULL,peaks_int_sum,NULL,level_one_id); 
+        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,NULL,NULL,NULL,peaks_int_sum,NULL,level_one_id); 
         // update prev's next
         databaseReader.updateSpStmt(current_id,level_one_id);
         level_one_id = current_id;
@@ -213,7 +214,7 @@ void msReader::createDtabase() { //stmt
   Range.rt_min = rt_min;
   Range.count = ms1_peak_count;//peakCount
   Range.scan_count = ms1_scan_count;
-  Range.rt_size = int((Range.rt_max - Range.rt_min) / ms1_scan_count);//set rt bin size 
+  Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count;//set rt bin size 
 
   //if user has provided custom values for rt_size and mz_size, overwrite the default values
   std::string line;
