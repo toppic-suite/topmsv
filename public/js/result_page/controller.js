@@ -33,7 +33,19 @@ function initGraph(){
     const topview_2d = new Topview2D();
     topview_2d.getInteSumList()
         .then((response) => {
-            rtInteGraph = new InteRtGraph("rt-sum", response.data, redrawGrph);
+            //rename some keys and remove unused keys
+            let rtInteData = [];
+            response.data.forEach((data) => {
+                let rtInte = {};
+                rtInte.rt = data.RETENTIONTIME;
+                rtInte.inteSum = data.PEAKSINTESUM;
+                rtInte.scanNum = data.SCAN;
+                if ('IONTIME' in data) {
+                    rtInte.ionTime = data.IONTIME;
+                }
+                rtInteData.push((rtInte));
+            })
+            rtInteGraph = new InteRtGraph("rt-sum", rtInteData, redrawGrph);
             rtInteGraph.drawGraph();
         })
         .catch((error) => {

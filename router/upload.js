@@ -33,6 +33,7 @@ const upload = router.post('/upload', function (req, res) {
     let queryResult = stmt.get(uid);
     resultDb.close();
     let email;
+    let shouldSendEmail = true;
     if (!queryResult) {
         console.log("Upload files failed, no corresponding email address!");
         return;
