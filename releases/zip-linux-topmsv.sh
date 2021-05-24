@@ -7,6 +7,10 @@ fi
 
 rm -rf topmsv-linux-${1}
 mkdir topmsv-linux-${1}
+mkdir topmsv-linux-${1}/log
+mkdir topmsv-linux-${1}/data
+mkdir topmsv-linux-${1}/db
+mkdir topmsv-linux-${1}/tmp
 mkdir topmsv-linux-${1}/cpp
 mkdir topmsv-linux-${1}/cpp/bin
 mkdir topmsv-linux-${1}/cpp/bin/mzMLReader_resources
