@@ -60,45 +60,53 @@ function init2D(scan) {
                             showEnvTable(scan); // update envtable even if there is no scan level 2
                             temp_peakList1_g = JSON.parse(JSON.stringify(peakList1_g));
                             document.getElementById("scanID1").innerText = scan;
-                            return topview_2d.getEnvTable(scan);
+                            if($('#envStatus').val() === "1") {
+                                return topview_2d.getEnvTable(scan);
+                            }
+                            else {
+                                return null;
+                            }
                         })
                         .then(function(response) {
-                            let envtable = response.data;
                             let peaks = [];
                             let modfiablePeaks = [];
                             let envelopes = [];
-                            if (envtable != 0){
-                                for (let i = 0; i < peakList1_g.length; i++){
-                                    let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
-                                    let modPeakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
-                                    peaks.push(peakObj);
-                                    modfiablePeaks.push(modPeakObj);
-                                }
-                                envtable.forEach( env => {
-                                    let envObj = new Envelope(env.mono_mass, env.charge)
-                                    let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
-                                    for (let j = 0; j < env_peaks.length; j++){
-                                        let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
-                                        envObj.addPeaks(peak);
+
+                            if (response) {
+                                let envtable = response.data;
+                                if (envtable != 0){
+                                    for (let i = 0; i < peakList1_g.length; i++){
+                                        let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+                                        let modPeakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+                                        peaks.push(peakObj);
+                                        modfiablePeaks.push(modPeakObj);
                                     }
-                                    envelopes.push(envObj);
-                                })
-                                let ions = [];
-                                let spectrumDataPeaks = new SpectrumFunction();
-                                let spectrumDataEnvs = new SpectrumFunction();
-                                spectrumDataPeaks.assignLevelPeaks(peaks);
-                                spectrumDataEnvs.assignLevelEnvs(envelopes);
-                            
-                                spGraph = new SpectrumGraph("spectrum1",peaks);
-                                spGraph.addRawSpectrumAnno(envelopes, ions);
-                                //spGraph.para.updateMzRange(prec_mz);
-                                spGraph.redraw();
-                            }else {
+                                    envtable.forEach( env => {
+                                        let envObj = new Envelope(env.mono_mass, env.charge)
+                                        let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
+                                        for (let j = 0; j < env_peaks.length; j++){
+                                            let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
+                                            envObj.addPeaks(peak);
+                                        }
+                                        envelopes.push(envObj);
+                                    })
+                                    let ions = [];
+                                    let spectrumDataPeaks = new SpectrumFunction();
+                                    let spectrumDataEnvs = new SpectrumFunction();
+                                    spectrumDataPeaks.assignLevelPeaks(peaks);
+                                    spectrumDataEnvs.assignLevelEnvs(envelopes);
+                                
+                                    spGraph = new SpectrumGraph("spectrum1",peaks);
+                                    spGraph.addRawSpectrumAnno(envelopes, ions);
+                                    //spGraph.para.updateMzRange(prec_mz);
+                                    spGraph.redraw();
+                                }
+                            }
+                            else {
                                 for (let i = 0; i < peakList1_g.length; i++){
                                     let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
                                     peaks.push(peakObj);
                                 }
-                                
                                 let spectrumDataPeaks = new SpectrumFunction();
                                 spectrumDataPeaks.assignLevelPeaks(peaks);
                                 spGraph = new SpectrumGraph("spectrum1",peaks);
@@ -151,42 +159,51 @@ function loadPeakList1(scanID, prec_mz) {
                 peakList1_g = response.data;
                 temp_peakList1_g = JSON.parse(JSON.stringify(peakList1_g));
                 document.getElementById("scanID1").innerText = scanID;
-                return topview_2d.getEnvTable(scanID);
+                if($('#envStatus').val() === "1") {
+                    return topview_2d.getEnvTable(scanID);
+                }
+                else {
+                    return null;
+                }
             })
             .then(function(response){
-                let envtable = response.data;
                 let peaks = [];
                 let modfiablePeaks = [];
                 let envelopes = [];
-                if (envtable != 0){
-                    for (let i = 0; i < peakList1_g.length; i++){
-                        let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
-                        let modPeakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
-                        peaks.push(peakObj);
-                        modfiablePeaks.push(modPeakObj);
-                    }
-                    envtable.forEach( env => {
-                        let envObj = new Envelope(env.mono_mass, env.charge)
-                        let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
-                        for (let j = 0; j < env_peaks.length; j++){
-                            let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
-                            envObj.addPeaks(peak);
-                        }
-                        envelopes.push(envObj);
-                    })
-                    let ions = [];
-                    let spectrumDataPeaks = new SpectrumFunction();
-                    let spectrumDataEnvs = new SpectrumFunction();
-                    spectrumDataPeaks.assignLevelPeaks(peaks);
-                    spectrumDataEnvs.assignLevelEnvs(envelopes);
-                
-                    spGraph = new SpectrumGraph("spectrum1",peaks);
-                    spGraph.addRawSpectrumAnno(envelopes, ions);
-                    spGraph.para.updateMzRange(prec_mz);
-                    spGraph.redraw();
 
-                    graph1_g = spGraph;
-                }else {
+                if (response) {
+                    let envtable = response.data;
+                    if (envtable != 0){
+                        for (let i = 0; i < peakList1_g.length; i++){
+                            let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+                            let modPeakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
+                            peaks.push(peakObj);
+                            modfiablePeaks.push(modPeakObj);
+                        }
+                        envtable.forEach( env => {
+                            let envObj = new Envelope(env.mono_mass, env.charge)
+                            let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
+                            for (let j = 0; j < env_peaks.length; j++){
+                                let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
+                                envObj.addPeaks(peak);
+                            }
+                            envelopes.push(envObj);
+                        })
+                        let ions = [];
+                        let spectrumDataPeaks = new SpectrumFunction();
+                        let spectrumDataEnvs = new SpectrumFunction();
+                        spectrumDataPeaks.assignLevelPeaks(peaks);
+                        spectrumDataEnvs.assignLevelEnvs(envelopes);
+                    
+                        spGraph = new SpectrumGraph("spectrum1",peaks);
+                        spGraph.addRawSpectrumAnno(envelopes, ions);
+                        spGraph.para.updateMzRange(prec_mz);
+                        spGraph.redraw();
+    
+                        graph1_g = spGraph;
+                    }
+                }
+                else {
                     for (let i = 0; i < peakList1_g.length; i++){
                         let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].intensity);
                         peaks.push(peakObj);
@@ -199,6 +216,7 @@ function loadPeakList1(scanID, prec_mz) {
 
                     graph1_g = spGraph;
                 }
+                
             })
             .catch(function(error) {
                 console.log(error);
@@ -221,42 +239,51 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
         }).then(function(response) {
             peakList2_g = response.data;
             temp_peakList2_g = JSON.parse(JSON.stringify(peakList2_g));
-            return topview_2d.getEnvTable(scanID);
+            if($('#envStatus').val() === "1") {
+                return topview_2d.getEnvTable(scanID);
+            }
+            else {
+                return null;
+            }
         }).then(function(response) {
-            let envtable = response.data;
             let peaks = [];
             let modifiablePeaks = [];
             let envelopes = [];
-            if (envtable != 0){
-                for (let i = 0; i < peakList2_g.length; i++){
-                    let peakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
-                    let modPeakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
-                    peaks.push(peakObj);
-                    modifiablePeaks.push(modPeakObj);
-                }
-                
-                envtable.forEach( env => {
-                    let envObj = new Envelope(env.mono_mass, env.charge);
-                    let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modifiablePeaks);
-                    for (let j = 0; j < env_peaks.length; j++){
-                        let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
-                        envObj.addPeaks(peak);
+
+            if (response) {
+                let envtable = response.data;
+                if (envtable != 0){
+                    for (let i = 0; i < peakList2_g.length; i++){
+                        let peakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
+                        let modPeakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
+                        peaks.push(peakObj);
+                        modifiablePeaks.push(modPeakObj);
                     }
-                    envelopes.push(envObj);
-                })
-                let ions = [];
-                let spectrumDataPeaks = new SpectrumFunction();
-                let spectrumDataEnvs = new SpectrumFunction();
-                spectrumDataPeaks.assignLevelPeaks(peaks);
-                spectrumDataEnvs.assignLevelEnvs(envelopes);
-
-                spGraph = new SpectrumGraph("spectrum2",peaks);
-                spGraph.addRawSpectrumAnno(envelopes, ions);
-                //spGraph.para.updateMzRange(prec_mz);
-                spGraph.redraw();
-
-                graph2_g = spGraph;
-            }else {
+                    
+                    envtable.forEach( env => {
+                        let envObj = new Envelope(env.mono_mass, env.charge);
+                        let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modifiablePeaks);
+                        for (let j = 0; j < env_peaks.length; j++){
+                            let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].intensity);
+                            envObj.addPeaks(peak);
+                        }
+                        envelopes.push(envObj);
+                    })
+                    let ions = [];
+                    let spectrumDataPeaks = new SpectrumFunction();
+                    let spectrumDataEnvs = new SpectrumFunction();
+                    spectrumDataPeaks.assignLevelPeaks(peaks);
+                    spectrumDataEnvs.assignLevelEnvs(envelopes);
+    
+                    spGraph = new SpectrumGraph("spectrum2",peaks);
+                    spGraph.addRawSpectrumAnno(envelopes, ions);
+                    //spGraph.para.updateMzRange(prec_mz);
+                    spGraph.redraw();
+    
+                    graph2_g = spGraph;
+                }
+            }
+            else {
                 for (let i = 0; i < peakList2_g.length; i++){
                     let peakObj = new Peak(i, peakList2_g[i].mz, peakList2_g[i].intensity);
                     peaks.push(peakObj);
