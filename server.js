@@ -176,10 +176,10 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                 setTimeout(function () {
                                     processFailure(projectCode, function (err) {
                                         console.log("Process failed!");
-                                        nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
-                                        nodemailerAuth.message.subject = "Your data processing failed";
-                                        nodemailerAuth.message.to = emailtosend;
                                         if (shouldSendEmail) {
+                                            nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + '\nProject Status: Cannot process your dataset, please check your data.';
+                                            nodemailerAuth.message.subject = "Your data processing failed";
+                                            nodemailerAuth.message.to = emailtosend;    
                                             nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
                                                 if (err) {
                                                     console.log(err)
@@ -203,10 +203,10 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                                     updateProjectStatusSync(4, projectCode); // Update project status to 4 (waiting)
                                 } else {
                                     updateProjectStatusSync(1,projectCode); // Update project status to 1 (Success)
-                                    nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
-                                    nodemailerAuth.message.subject = "Your task is done";
-                                    nodemailerAuth.message.to = emailtosend;
                                     if (shouldSendEmail) {
+                                        nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nLink: " + adr + projectCode + '\nStatus: Done';
+                                        nodemailerAuth.message.subject = "Your task is done";
+                                        nodemailerAuth.message.to = emailtosend;    
                                         nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
                                             if (err) {
                                                 console.log(err)

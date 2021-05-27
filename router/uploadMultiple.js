@@ -31,6 +31,7 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
                                 WHERE uid = ?;`);
     let queryResult = stmt.get(uid);
     resultDb.close();
+	let shouldSendEmail = true;
     let email;
     if (!queryResult) {
         console.log("Upload files failed, no corresponding email address!");
@@ -38,7 +39,14 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
     } else {
         email = queryResult.email;
     }
-
+	//skip emailing based on config setting
+    if (fs.existsSync('config.json')) {
+        let configData = fs.readFileSync('config.json');
+        configData = JSON.parse(configData);
+        if (!configData.sendEmail) {
+            shouldSendEmail = false;
+        }
+    }
     let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
     form.encoding = 'utf-8';
@@ -115,17 +123,19 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
                         })
                     })
                 })    
-                nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
-                nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
-                nodemailerAuth.message.to = emailtosend;
-                nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-                    if (err) {
-                        console.log(err)
-                    } 
-                    else {
-                        console.log(info);
-                    }
-                });
+				if (shouldSendEmail) {
+					nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
+					nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
+					nodemailerAuth.message.to = emailtosend;
+					nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
+						if (err) {
+							console.log(err)
+						} 
+						else {
+							console.log(info);
+						}
+					});
+				}
                 res.end();  
             })
         );

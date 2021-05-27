@@ -111,10 +111,10 @@ const upload = router.post('/upload', function (req, res) {
                         if(!result) {
                             insertRowSync(id, projectname, txtFile.name, description, des_txtFile, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus, "true", 0);
                             // insertDataset(eid, projectname, description, projectsID);
-                            nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + txtFile.name + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
-                            nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
-                            nodemailerAuth.message.to = emailtosend;
                             if (shouldSendEmail) {
+								nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + txtFile.name + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
+                                nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
+                                nodemailerAuth.message.to = emailtosend;
                                 nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
                                     if (err) {
                                         console.log(err)
@@ -165,17 +165,22 @@ const upload = router.post('/upload', function (req, res) {
                         }
                     }
                 });
-
-                let response = {
-                    message:'File uploaded successfully',
-                    // filename:fname,
-                    projectname:projectname,
-                    link:nodemailerAuth.message.text,
-                    email: emailtosend
-                };
-                //console.log(response);
-                res.write(JSON.stringify( response ));
-                res.end();
+                if (shouldSendEmail) {
+					let response = {
+                       message:'File uploaded successfully',
+                       // filename:fname,
+                       projectname:projectname,
+                       link:nodemailerAuth.message.text,
+                       email: emailtosend
+                    };
+                   //console.log(response);
+                   res.write(JSON.stringify( response ));
+                   res.end();
+				}
+				else {
+				   res.write("");
+                   res.end();
+				}
                 return;
             })
         } else {
@@ -205,10 +210,10 @@ const upload = router.post('/upload', function (req, res) {
                                 if(!result) {
                                     insertRowSync(id, projectname, fname, description,des_file,4, emailtosend,1,0,0, envFile1.name,uid,publicStatus, "true", 0);
                                     // insertDataset(eid, projectname, description, projectsID);
-                                    nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
-                                    nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
-                                    nodemailerAuth.message.to = emailtosend;
                                     if (shouldSendEmail) {
+										nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
+                                        nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
+                                        nodemailerAuth.message.to = emailtosend;
                                         nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
                                             if (err) {
                                                 console.log(err)
@@ -234,16 +239,20 @@ const upload = router.post('/upload', function (req, res) {
                                 }
                             }
                         });
-
-                        let response = {
-                            message:'File uploaded successfully',
-                            filename:fname,
-                            projectname:projectname,
-                            link:nodemailerAuth.message.text,
-                            email: emailtosend
-                        };
-                        //console.log(response);
-                        res.write(JSON.stringify( response ));
+                        if (shouldSendEmail) {
+							let response = {
+                               message:'File uploaded successfully',
+                               filename:fname,
+                               projectname:projectname,
+                               link:nodemailerAuth.message.text,
+                               email: emailtosend
+                            };
+                            //console.log(response);
+                            res.write(JSON.stringify( response ));
+						}
+						else {
+							res.write("");
+						}
                     });
                 })
             } else { // only process mzML file
@@ -264,10 +273,10 @@ const upload = router.post('/upload', function (req, res) {
                             if(!result) {
                                 insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus, "true", 0);
                                 // insertDataset(eid, projectname, description, projectsID);
-                                nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
-                                nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
-                                nodemailerAuth.message.to = emailtosend;
                                 if (shouldSendEmail) {
+									nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
+                                    nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
+                                    nodemailerAuth.message.to = emailtosend;
                                     nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
                                         if (err) {
                                             console.log(err)
@@ -286,16 +295,20 @@ const upload = router.post('/upload', function (req, res) {
                             }
                         }
                     });
-
-                    let response = {
-                        message:'File uploaded successfully',
-                        filename:fname,
-                        projectname:projectname,
-                        link:nodemailerAuth.message.text,
-                        email: emailtosend
-                    };
-                    //console.log(response);
-                    res.write(JSON.stringify( response ));
+					if (shouldSendEmail) {
+						let response = {
+							message:'File uploaded successfully',
+							filename:fname,
+							projectname:projectname,
+							link:nodemailerAuth.message.text,
+							email: emailtosend
+						};
+						//console.log(response);
+						res.write(JSON.stringify( response ));
+					}
+                    else {
+						res.write("");
+					}
                     return;
                 });
             }
