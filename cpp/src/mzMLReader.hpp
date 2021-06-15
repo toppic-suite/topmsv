@@ -42,6 +42,13 @@ struct GridProperties{
 	double cur_mz = 0;
 	double cur_max_inte = 0;
 };
+struct peakProperties {
+	int id;
+	double mz;
+	double inte;
+	double rt;
+	std::string color;
+};
 
 std::string num2str(double num);
 std::string int2str(int num);
@@ -86,7 +93,7 @@ public:
 	void beginTransactionInMemory();
 	void endTransactionInMemory();
 	void openInsertStmt();
-	void openInsertStmtMs1Only();
+	void openInsertStmtMs1Only(int table_cnt);
 	void openInsertStmtInMemory();
 	void closeInsertStmt();
 	void closeInsertStmtMs1Only();
@@ -102,10 +109,11 @@ public:
 	void createIndexOnIdOnly();
 	void createIndexInMemory();
 	void createLayerIndexInMemory(int table_cnt);
+	void createLayerIndex(int table_cnt);
 
 	double normalizeInte(std::vector<double> *normalization_data);
 	void setColor();
-	void insertPeakToEachLayer(std::vector<double> *grid_ptr, int table_cnt);
+	void insertPeakToEachLayer(std::vector<peakProperties> *grid_ptr, int table_cnt);
 	void insertPeakDataToGridBlocks(int table_cnt);
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
 	void insertDataLayerTable();
