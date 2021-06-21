@@ -4,6 +4,8 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
+#include <cmath>
 
 DataRange Range;//range value of entire mzML
 DataRange SingleTableRange;//range value of each table
@@ -156,7 +158,7 @@ int callbackConvertData(void *ptr, int argc, char **argv, char **az_col_name){
   peak.id = std::stoi(argv[0]);
   peak.mz = std::stod(argv[1]);
   peak.inte = std::stod(argv[2]);
-  peak.rt = std::stod(argv[3]);
+  peak.rt = std::stold(argv[3]);
   peak.color = argv[4];
 
   if (std::stod(argv[1]) <= Grid.cur_mz){
@@ -174,9 +176,7 @@ int callbackConvertData(void *ptr, int argc, char **argv, char **az_col_name){
   else{
     //update Range information
     updateRange(argv);
-
     grid_ptr->push_back(peak);
-
     Grid.cur_max_inte = std::stod(argv[2]);
 
     while (Grid.cur_mz < std::stod(argv[1])){//update Grid.cur_mz
@@ -803,14 +803,15 @@ void mzMLReader::insertPeakToEachLayer(std::vector<peakProperties> *grid_ptr, in
     double inte = (*grid_ptr)[i].inte;
     double rt = (*grid_ptr)[i].rt;
     std::string color = (*grid_ptr)[i].color;
-    
+
     openInsertStmtMs1Only(table_cnt);
-    insertPeakStmtMs1(peak_id, mz, inte, rt, color);
+    insertPeakStmtMs1(peak_id, inte, mz, rt, color);
     closeInsertStmtMs1Only();
   }
 }
 void mzMLReader::assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_ptr, int &table_cnt) {
   clock_t t1 = clock();
+
   if (peak_in_grid < Range.min_peaks) {
     return;//end of recursion
   }
@@ -821,6 +822,7 @@ void mzMLReader::assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_pt
 
   peak_in_grid = 0;
   int row_num = 1;
+  int replaceCnt = 0;
 
   t1 = clock();
   std::sort(grid_ptr->begin(), grid_ptr->end(), sortByRt);
@@ -829,8 +831,7 @@ void mzMLReader::assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_pt
   std::vector<peakProperties> new_grid;
   std::vector<peakProperties> *new_grid_ptr = &new_grid;
   std::vector<peakProperties> single_row;
-  double prev_rt = -1;
-  double prev_mz = -1;
+
   for (size_t t = 0; t < grid_ptr->size(); t++) {
     if ((*grid_ptr)[t].rt < Range.rt_min + (Range.rt_size * row_num)) {
       single_row.push_back((*grid_ptr)[t]);
@@ -845,13 +846,12 @@ void mzMLReader::assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_pt
 
       for (size_t u = 0; u < single_row.size(); u++) {
         //based on mz bin
-        if ((single_row)[u].mz <= Grid.cur_mz){
+        if (single_row[u].mz <= Grid.cur_mz){
           if (single_row[u].inte > Grid.cur_max_inte){
             if (new_grid_ptr->size() > 0 && Grid.is_new_row == false) {
               new_grid_ptr->pop_back();
             }
             new_grid_ptr->push_back(single_row[u]);
-
             updateRange(single_row[u]);
             //update highest intensity in this range
             Grid.cur_max_inte = single_row[u].inte;
@@ -866,14 +866,13 @@ void mzMLReader::assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_pt
           while (Grid.cur_mz < single_row[u].mz){
             Grid.cur_mz += Range.mz_size;
           }
-          peak_in_grid++;
         }
         Grid.is_new_row = false;
       }
       //move to next row
       row_num++;
       single_row.clear();//dont need to swap with empty vector since it will probably receive same number of elements each time
-      single_row.push_back((*grid_ptr)[t]);//add the current peak so that it will be considered in the next evaluation    }
+      single_row.push_back((*grid_ptr)[t]);//add the current peak so that it will be considered in the next evaluation    
     }
   }
   if (single_row.size() > 0) {
@@ -890,13 +889,13 @@ void mzMLReader::assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_pt
           if (single_row[u].inte > Grid.cur_max_inte){
             if (new_grid_ptr->size() > 0 && Grid.is_new_row == false) {
               new_grid_ptr->pop_back();
+              replaceCnt++;
             }
             new_grid_ptr->push_back(single_row[u]);
-
             updateRange(single_row[u]);
             //update highest intensity in this range
             Grid.cur_max_inte = single_row[u].inte;
-          }
+          }   
         }
         else {
           //update Range information
@@ -907,17 +906,17 @@ void mzMLReader::assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_pt
           while (Grid.cur_mz < single_row[u].mz){
             Grid.cur_mz += Range.mz_size;
           }
-          peak_in_grid++;
         }
         Grid.is_new_row = false;
       }
       std::vector<peakProperties>().swap(single_row);
   }
+  peak_in_grid = new_grid_ptr->size();
   table_cnt++;
   std::cout <<"assignment to PEAKS " << table_cnt << " finished: " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   createLayerTable(int2str(table_cnt));
-  insertPeakToEachLayer(new_grid_ptr, table_cnt);
+  //insertPeakToEachLayer(new_grid_ptr, table_cnt);
   std::cout << new_grid_ptr->size() << " peaks insertion to PEAKS " << table_cnt << " finished: " << (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   insertConfigOneTable(SingleTableRange);
