@@ -1,145 +1,193 @@
+"use strict";
 class PrsmPara {
-  rowLength = 30 ;
-  blockLength = 10 ;
-  letterWidth = 28;
-  letterSize = 12 ;
-  gapWidth = 20;
-  rowHeight = 40;
-  topMargin = 46;
-  bottomMargin = 10 ;
-  rightMargin = 50;
-  leftMargin = 50;
-  middleMargin = 40;//extra space is needed when the start of sequence is skipped 
-  extraPadding = 20;//increase svg width by this amount to prevent rightmost side of svg getting cutoff
-  numericalWidth = 20;
-  showNum = true ;
-  showSkippedLines = true ;
-  skipLineHeight = 40;
-  fontWidth = 12 ;//12px font width = 9pt
-  fontHeight = 18 ; 
-  svgBackgroundColor = "white" ;
-  massShiftColor = "#64E9EC";
-  modAnnoYShifts = [-15, -30];
-
-
-  setShowNum = function (isShowNum) {
-    if (isShowNum) {
-      this.showNum = true;
-      this.leftMargin = 30;
-      this.rightMargin = 30;
+    constructor() {
+        this.rowLength_ = 30;
+        this.blockLength_ = 10;
+        this.letterWidth_ = 28;
+        this.letterSize_ = 12;
+        this.gapWidth_ = 20;
+        this.rowHeight_ = 40;
+        this.topMargin_ = 46;
+        this.bottomMargin_ = 10;
+        this.rightMargin_ = 50;
+        this.leftMargin_ = 50;
+        this.middleMargin_ = 40; //extra space is needed when the start of sequence is skipped 
+        this.extraPadding_ = 20; //increase svg width by this amount to prevent rightmost side of svg getting cutoff
+        this.numericalWidth_ = 20;
+        this.showNum_ = true;
+        this.showSkippedLines_ = true;
+        this.skipLineHeight_ = 40;
+        this.fontWidth_ = 12; //12px font width = 9pt
+        this.fontHeight_ = 18;
+        this.svgBackgroundColor_ = "white";
+        this.massShiftColor_ = "#64E9EC";
+        this.modAnnoYShifts_ = [-15, -30];
     }
-    else {
-      this.showNum = false;
-      this.leftMargin = 10;
-      this.rightMargin = 10;
+    //getters
+    getShowNum() {
+        return this.showNum_;
     }
-  }
-
-  /**
-   * Function to get x coordinate based on the position of the acid
-   * @param {number} position - Contains position of the Acid
-   * @param {number} start_value - Contains position of the first Acid
-   */
-  getX = function (pos,startPos) {
-    let num = pos - startPos ;
-    let posInRow = num % this.rowLength ;
-    let gapNum = parseInt(posInRow/this.blockLength) ;
-    let x = (posInRow) * this.letterWidth + gapNum * this.gapWidth + this.leftMargin;
-    if (this.showNum) {
-      x = x + this.numericalWidth; 
+    getSvgBackgroundColor() {
+        return this.svgBackgroundColor_;
     }
-    return x;
-  }
-
-  /**
-   * Function provides the Y coordinate based on the position of the Acid
-   * @param {number} position - Contains position of the Acid
-   * @param {number} start_value - Contains position of the first Acid
-   */
-  getY = function (pos, startPos) {
-    let row = parseInt((pos - startPos) / this.rowLength);
-    let y  = row * this.rowHeight + this.topMargin; 
-    if(startPos != 0 && this.showSkippedLine) {
-      y = y + this.skipLineHeight; 
+    getMassShiftColor() {
+        return this.massShiftColor_;
     }
-    return y;
-  }
-
-  getAACoordinates = function (pos, startPos) {
-    let x = this.getX(pos, startPos);
-    let y = this.getY(pos, startPos);
-    return [x,y];
-  }
-
-  getBpCoordinates = function (pos, startPos) {
-    let x = this.getX(pos-1, startPos) + this.letterWidth/2;
-    let y = this.getY(pos-1, startPos);
-    return [x,y];
-  }
-
-  /**
-   * Function provides position of the Numbers on the left side of the Acid Sequence
-   * @param {Integer} position - Provides the position of the left side number
-   * @param {Integer} start_value - Provides starting number the sequnce after trimming the skipped scids
-   */
-  getLeftNumCoordinates = function (pos, startPos) {
-    let x = this.leftMargin;
-    let y = this.getY(pos, startPos);
-    return [x,y];
-  }
-
-  /**
-   * Function provides position of the Numbers on the right side of the Acid Sequence
-   * @param {Integer} position - Provides the position of the left side number
-   * @param {Integer} start_value - Provides starting number the sequnce after trimming the skipped scids
-   */
-  getRightNumCoordinates = function (pos,startPos) {
-    let x = this.leftMargin + this.numericalWidth + (this.rowLength - 1 ) * this.letterWidth;
-    //buffer width-anno_width to make left and right numbers symmetrical as left numbers are left aligned 
-    x = x + ((this.rowLength/ this.blockLength) - 1) * this.gapWidth + this.numericalWidth + this.fontWidth; 
-    let y = this.getY(pos, startPos);
-    return [x,y];
-  }
-
-  /**
-   * Function provides position to write information of skipped amino acids at the top of Sequence SVG
-   */
-  getSkipStartCoordinates = function () {
-    let x = this.leftMargin ;
-    let y = this.topMargin; 
-    return [x, y]
-  }
-
-  /**
-   * Function provides position to write information of skipped amino acids at th bottom of Sequence SVG
-   * @param {Integer} position - Provides the position of the left side number
-   * @param {Integer} start_value - Provides starting number the sequnce after trimming the skipped scids
-   */
-  getSkipEndCoordinates = function(pos, startPos) {
-    let x = this.leftMargin ;
-    let y = this.getY(pos, startPos) ; 
-    return [x, y]
-  }
-
-  addHeight = function() {
-    this.rowHeight = this.rowHeight * 1.2; 
-    this.topMargin = 40; 
-  }
-
-  getSvgSize = function(rowNum, skipBegin, skipEnd) {
-    let blockNum = this.rowLength/this.blockLength - 1 ;
-    let width = this.letterWidth * (this.rowLength - 1) + blockNum * this.gapWidth + this.rightMargin + this.leftMargin + this.extraPadding; 
-    if(this.showNum) {
-      width = width + this.numericalWidth * 2;
+    getMiddleMargin() {
+        return this.middleMargin_;
     }
-    let height = this.rowHeight * (rowNum -1) + this.letterSize + this.bottomMargin + this.topMargin; 
-    if (skipBegin) {
-      height = height + this.skipLineHeight;
+    getGapWidth() {
+        return this.gapWidth_;
     }
-    if (skipEnd) {
-      height = height + this.skipLineHeight;
+    getRowLength() {
+        return this.rowLength_;
     }
-    return [width,height];
-  }
-}	
-
+    getRowHeight() {
+        return this.rowHeight_;
+    }
+    getLetterWidth() {
+        return this.letterWidth_;
+    }
+    getNumericalWidth() {
+        return this.numericalWidth_;
+    }
+    getFontWidth() {
+        return this.fontWidth_;
+    }
+    getFontHeight() {
+        return this.fontHeight_;
+    }
+    getModAnnoYShifts() {
+        return this.modAnnoYShifts_;
+    }
+    getShowSkippedLines() {
+        return this.showSkippedLines_;
+    }
+    setRowLength(rowLength) {
+        this.rowLength_ = rowLength;
+    }
+    setRowHeight(rowHeight) {
+        this.rowHeight_ = rowHeight;
+    }
+    setLetterWidth(letterWidth) {
+        this.letterWidth_ = letterWidth;
+    }
+    setGapWidth(gapWidth) {
+        this.gapWidth_ = gapWidth;
+    }
+    setNumericalWidth(numWidth) {
+        this.numericalWidth_ = numWidth;
+    }
+    setShowSkippedLines(showSkippedLines) {
+        this.showSkippedLines_ = showSkippedLines;
+    }
+    setShowNum(isShowNum) {
+        if (isShowNum) {
+            this.showNum_ = true;
+            this.leftMargin_ = 30;
+            this.rightMargin_ = 30;
+        }
+        else {
+            this.showNum_ = false;
+            this.leftMargin_ = 10;
+            this.rightMargin_ = 10;
+        }
+    }
+    /**
+     * Function to get x coordinate based on the position of the acid
+     * @param {number} position - Contains position of the Acid
+     * @param {number} start_value - Contains position of the first Acid
+     */
+    getX(pos, startPos) {
+        let num = pos - startPos;
+        let posInRow = num % this.rowLength_;
+        let gapNum = Math.floor(posInRow / this.blockLength_);
+        let x = (posInRow) * this.letterWidth_ + gapNum * this.gapWidth_ + this.leftMargin_;
+        if (this.showNum_) {
+            x = x + this.numericalWidth_;
+        }
+        return x;
+    }
+    /**
+     * Function provides the Y coordinate based on the position of the Acid
+     * @param {number} position - Contains position of the Acid
+     * @param {number} start_value - Contains position of the first Acid
+     */
+    getY(pos, startPos) {
+        let row = Math.floor((pos - startPos) / this.rowLength_);
+        let y = row * this.rowHeight_ + this.topMargin_;
+        /*if(startPos != 0 && this.showSkippedLines_) {
+          y = y + this.skipLineHeight_;
+        }*/
+        return y;
+    }
+    getAACoordinates(pos, startPos) {
+        let x = this.getX(pos, startPos);
+        let y = this.getY(pos, startPos);
+        return [x, y];
+    }
+    getBpCoordinates(pos, startPos) {
+        let x = this.getX(pos - 1, startPos) + this.letterWidth_ / 2;
+        let y = this.getY(pos - 1, startPos);
+        return [x, y];
+    }
+    /**
+     * Function provides position of the Numbers on the left side of the Acid Sequence
+     * @param {Integer} position - Provides the position of the left side number
+     * @param {Integer} start_value - Provides starting number the sequnce after trimming the skipped scids
+     */
+    getLeftNumCoordinates(pos, startPos) {
+        let x = this.leftMargin_;
+        let y = this.getY(pos, startPos);
+        return [x, y];
+    }
+    /**
+     * Function provides position of the Numbers on the right side of the Acid Sequence
+     * @param {Integer} position - Provides the position of the left side number
+     * @param {Integer} start_value - Provides starting number the sequnce after trimming the skipped scids
+     */
+    getRightNumCoordinates(pos, startPos) {
+        let x = this.leftMargin_ + this.numericalWidth_ + (this.rowLength_ - 1) * this.letterWidth_;
+        //buffer width-anno_width to make left and right numbers symmetrical as left numbers are left aligned 
+        x = x + ((this.rowLength_ / this.blockLength_) - 1) * this.gapWidth_ + this.numericalWidth_ + this.fontWidth_;
+        let y = this.getY(pos, startPos);
+        return [x, y];
+    }
+    /**
+     * Function provides position to write information of skipped amino acids at the top of Sequence SVG
+     */
+    getSkipStartCoordinates() {
+        let x = this.leftMargin_;
+        let y = this.topMargin_;
+        return [x, y];
+    }
+    /**
+     * Function provides position to write information of skipped amino acids at th bottom of Sequence SVG
+     * @param {Integer} position - Provides the position of the left side number
+     * @param {Integer} start_value - Provides starting number the sequnce after trimming the skipped scids
+     */
+    getSkipEndCoordinates(pos, startPos) {
+        let x = this.leftMargin_;
+        let y = this.getY(pos, startPos);
+        return [x, y];
+    }
+    addHeight() {
+        this.rowHeight_ = this.rowHeight_ * 1.2;
+        this.topMargin_ = 40;
+    }
+    getSvgSize(rowNum, skipBegin, skipEnd) {
+        let blockNum = this.rowLength_ / this.blockLength_ - 1;
+        let width = this.letterWidth_ * (this.rowLength_ - 1) + blockNum * this.gapWidth_ + this.rightMargin_ + this.leftMargin_ + this.extraPadding_;
+        if (this.showNum_) {
+            width = width + this.numericalWidth_ * 2;
+        }
+        let height = this.rowHeight_ * (rowNum - 1) + this.letterSize_ + this.bottomMargin_ + this.topMargin_;
+        if (skipBegin) {
+            height = height + this.skipLineHeight_;
+        }
+        if (skipEnd) {
+            height = height + this.skipLineHeight_;
+        }
+        return [width, height];
+    }
+}
