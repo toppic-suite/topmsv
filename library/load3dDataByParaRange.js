@@ -21,7 +21,7 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, maxPea
                 AND MZ >= ?
                 ORDER BY INTENSITY DESC;`;*/
     let sql = `SELECT *
-                FROM PEAKS` + tableNum + 
+                FROM PEAKS` + tableNum +  
                 ` WHERE RETENTIONTIME <= ? 
                 AND RETENTIONTIME >= ?
                 AND MZ <= ?
