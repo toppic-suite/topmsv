@@ -1,4 +1,5 @@
 #include "msReader.hpp" 
+#include <chrono>
 
 bool cmpPoints(Point p1, Point p2) {
   return p1.inten > p2.inten;
@@ -222,31 +223,21 @@ void msReader::createDtabase() { //stmt
   double custom_mz_size = -1;
 
   ifstream initFile("init.txt");
-  //ofstream output("output.txt");
   if (initFile.is_open()){
     std::getline(initFile, line);
-    //std::cout << "line: " << line << std::endl;
-
     string::size_type pos = line.find(',');
     if (line.npos != pos){
       std::string mz = line.substr(0, pos);
       std::string rt = line.substr(pos + 1);
-
-      //std::cout << "mz: " << mz << "rt: " << rt << std::endl;
-      //output << "user mz:" << mz << "user rt:" << rt << "\n" << std::endl;
-
       try{
         custom_mz_size = std::stod(mz);
       }catch(const std::exception& e){
         std::cout << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
-        //output << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
-
       }
       try{
         custom_rt_size = std::stod(rt);
       }catch(const std::exception& e){
         std::cout << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
-        //output << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
       }
     }
     else{
@@ -255,7 +246,6 @@ void msReader::createDtabase() { //stmt
         custom_mz_size = std::stod(line);
       }catch(const std::exception& e){
         std::cout << "No m/z or rt value given by the user. Setting them to default value." << std::endl;
-        //output << "No m/z or rt value given by the user. Setting them to default value." << std::endl;
       }
     }
     initFile.close();
@@ -277,16 +267,15 @@ void msReader::createDtabase() { //stmt
       Range.mz_size = mz_max - mz_min;
     }
   }
-
+  std::cout <<"End getting range information: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   std::cout << "mzmin:" << Range.mz_min << "\tmzmax:" << Range.mz_max << "\trtmin:" << Range.rt_min ;
   std::cout << "\trtmax:" << Range.rt_max  << "\tcount:" << Range.count << "\tmzsize:" << Range.mz_size << "\trtsize:" << Range.rt_size << std::endl;
-  
-  std::cout <<"End Insert to PEAKS0: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  t1 = clock();
 
   databaseReader.setRange(Range);
   databaseReader.insertConfigOneTable(Range);
+  std::cout <<"End insert to config table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
 
   databaseReader.createIndexInMemory();//create index on PEAKS0 table by ID, then another index on rt
   //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
@@ -294,11 +283,10 @@ void msReader::createDtabase() { //stmt
 
   //create index on peak id (for copying to each layer later)
   databaseReader.createIndexOnIdOnly();
-  
+  std::cout <<"End assigning colors: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.insertDataLayerTable();
   std::cout <<"End Insert to all layer tables: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-
   t1 = clock();
   databaseReader.createIndexLayerTable();
   databaseReader.createIndex();
@@ -307,7 +295,6 @@ void msReader::createDtabase() { //stmt
   databaseReader.endTransaction();
   databaseReader.endTransactionInMemory();
 
-  t1 = clock();
   databaseReader.closeDatabase();
   databaseReader.closeDatabaseInMemory();
 
