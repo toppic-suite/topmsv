@@ -1,405 +1,433 @@
-/**	@function SpectrumViewParameters
- * @description Get data from global variable spectrum_data and utilities to manupulate
- * the data
- */
-class SpectrumViewParameters {//rename class
-  // Ratio between average and monoisopotic mass
-  avgToMonoRatio = 1.000684;
-
-  // SVG size
-  svgWidth = 910;
-  svgHeight = 270;
-	// SVG padding 
-	padding = {left:70, right:50, head:10, bottom:50};
-  // spectrum size
-	specWidth = this.svgWidth - this.padding.left - this.padding.right;
-  specHeight = this.svgHeight - this.padding.head - this.padding.bottom;
-
-  // M/z range of visuable window
-  winMinMz = 0 ;
-  winMaxMz = 2000;
-  winCenterMz = 1000;
-
-  //minimum possible m/z after zooming/dragging, to prevent dragging/zooming into negative m/z value
-  //if new m/z is less than this value, it is reset to this value
-  minPossibleMz = -100;
-
-  // M/z range of peaks
-  dataMinMz = 0;
-  dataMaxMz = 2000;
-
-  // M/z range, color of highlighted part.
-  showHighlight = false;
-  hlMinMz = 0;
-  hlMaxMz = 0;
-  hlColor = "gray";
-
-  // Max intensity of visuable window
-  winMaxInte = 30000;
-
-  // Intensity range of peaks
-  dataMaxInte = 30000;
-  dataMinInte = 0;
-  // add a margin so that the visuable intensity range is [0, dataMaxInte * inteMargin]
-  inteMargin = 1.2;
-
-  // scale m/z to x coordinate
-  xScale = 0.35;
-  // scale intensity to y coordinate
-  yScale = 0.005;
-
-  // Numbers of ticks
-  xTickNum = 10;
-  yTickNum = 5 ;
-  tickLength = 7 ;
-  // Tick width list used in the function getTickWidth
-  tickWidthList = [10000,8000,6000,5000,4000,3000,2000,1000,800,700,600,500,450,400,350,300,250,200,150,100,50,20,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
-  // Tick height list used in the function getTickHeight
-  tickHeightList = [50,40,30,25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001];
-
-  //Limiting the peaks and envelopes to 4000 using 20 bins
-  binNum = 20;
-  peakNumPerBin = 50;
-  //Padding for mouse over peak floatings.
-  mouseOverPadding = {head:20,middle:14};
-
-  // Envelope circle size: min and max radius	
-  showEnvelopes = true;
-  defaultRadius = 0.05;
-  minRadius = 2;
-  maxRadius = 5;
-  //	Colors for the envelope circles	
-  envColorList = ["red","darkorange","blue"];
-
-  // Parameters related to annoated ions
-  showIons = true;
-  ionXShift = -5;
-  ionYShift = -15;
-
-  // Mono mass graph
-  isMonoMassGraph = false;
-  errorPlotPadding = {left:70, right:50, head:10, bottom:10};
-  errorPlotHeight = 40;
-  errorThreshold = 0.2;
-  errorYTickNum = 2;
-  
-  //sequence length
-  //for determining max m/z window based on seq length in mass graph
-  seqLength = -1; 
-
-  constructor() {
-  }
-
-  /**
-   * @function getTickWidth
-   * @description Function Provides width between each tick when zoomed in and out or dragged
-   */
-  getTickWidth = function(){
-    let tempDiff = this.winMaxMz - this.winMinMz;
-    let tickWidth = parseInt(this.tickWidthList[0]) ;
-    for(let i = 0; i < this.tickWidthList.length; i++)
-    {
-      if(tempDiff/this.xTickNum <= parseFloat(this.tickWidthList[i]) && 
-         tempDiff/this.xTickNum > parseFloat(this.tickWidthList[i+1]))
-      {
-        tickWidth = parseFloat(this.tickWidthList[i]);
-        break ;
-      }
+"use strict";
+class SpectrumViewParameters {
+    constructor() {
+        // Ratio between average and monoisopotic mass
+        this.avgToMonoRatio_ = 1.000684;
+        // SVG size
+        this.svgWidth_ = 910;
+        this.svgHeight_ = 270;
+        // SVG padding 
+        this.padding_ = { left: 70, right: 50, head: 10, bottom: 50 };
+        // spectrum size
+        this.specWidth_ = this.svgWidth_ - this.padding_.left - this.padding_.right;
+        this.specHeight_ = this.svgHeight_ - this.padding_.head - this.padding_.bottom;
+        // M/z range of visuable window
+        this.winMinMz_ = 0;
+        this.winMaxMz_ = 2000;
+        this.winCenterMz_ = 1000;
+        //minimum possible m/z after zooming/dragging, to prevent dragging/zooming into negative m/z value
+        //if new m/z is less than this value, it is reset to this value
+        this.minPossibleMz_ = -100;
+        // M/z range of peaks
+        this.dataMinMz_ = 0;
+        this.dataMaxMz_ = 2000;
+        // M/z range, color of highlighted part.
+        this.showHighlight_ = false;
+        this.hlMinMz_ = 0;
+        this.hlMaxMz_ = 0;
+        this.hlColor_ = "gray";
+        // Max intensity of visuable window
+        this.winMaxInte_ = 30000;
+        // Intensity range of peaks
+        this.dataMaxInte_ = 30000;
+        this.dataMinInte_ = 0;
+        // add a margin so that the visuable intensity range is [0, dataMaxInte * inteMargin]
+        this.inteMargin_ = 1.2;
+        // scale m/z to x coordinate
+        this.xScale_ = 0.35;
+        // scale intensity to y coordinate
+        this.yScale_ = 0.005;
+        // Numbers of ticks
+        this.xTickNum_ = 10;
+        this.yTickNum_ = 5;
+        this.tickLength_ = 7;
+        // Tick width list used in the function getTickWidth
+        this.tickWidthList_ = [10000, 8000, 6000, 5000, 4000, 3000, 2000, 1000, 800, 700, 600, 500, 450, 400, 350, 300, 250, 200, 150, 100, 50, 20, 10, 5, 3, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001, 0.000005, 0.000001];
+        // Tick height list used in the function getTickHeight
+        this.tickHeightList_ = [50, 40, 30, 25, 20, 15, 10, 5, 3, 2, 1, 0.5, 0.2, 0.1, 0.05, 0.01, 0.005, 0.001];
+        //Limiting the peaks and envelopes to 4000 using 20 bins
+        this.binNum_ = 20;
+        this.peakNumPerBin_ = 50;
+        //Padding for mouse over peak floatings.
+        this.mouseOverPadding_ = { head: 20, middle: 14 };
+        // Envelope circle size: min and max radius	
+        this.showEnvelopes_ = true;
+        this.defaultRadius_ = 0.05;
+        this.minRadius_ = 2;
+        this.maxRadius_ = 5;
+        //	Colors for the envelope circles	
+        this.envColorList_ = ["red", "darkorange", "blue"];
+        // Parameters related to annoated ions
+        this.showIons_ = true;
+        this.ionXShift_ = -5;
+        this.ionYShift_ = -15;
+        // Mono mass graph
+        this.isMonoMassGraph_ = false;
+        this.errorPlotPadding_ = { left: 70, right: 50, head: 10, bottom: 10 };
+        this.errorPlotHeight_ = 40;
+        this.errorThreshold_ = 0.2;
+        this.errorYTickNum_ = 2;
+        //sequence length
+        //for determining max m/z window based on seq length in mass graph
+        this.seqLength_ = -1;
     }
-    return 	tickWidth ;
-  }
-
-  getXTickPosList = function() {
-    let posList = new Array(this.xTickNum + 1);
-    let tickWidth = this.getTickWidth();
-    for(let i=0; i <= this.xTickNum ; i++)
-    {
-      // calculate the actual tick position based on the current minMz value on the xaxis
-      let tickMz = 0;
-      if(tickWidth < 1 && tickWidth != 0)
-      {
-        tickMz = (i*tickWidth + this.winMinMz) - parseFloat((i*tickWidth + this.winMinMz)%tickWidth) ;
-      }
-      else if(tickWidth != 0)
-      {
-        tickMz = i*tickWidth + this.winMinMz - (i*tickWidth + this.winMinMz)%tickWidth ;
-      }
-      posList[i] = tickMz;
+    //getters and setters
+    getErrorYTickNum() {
+        return this.errorYTickNum_;
     }
-    return posList;
-  }
-
-  /**
-   * @function getTickHeight
-   * @description Function Provides height between each tick when zoomed in and out or dragged
-   */
-  getTickHeight = function(){
-    let tickheight = parseInt(this.tickHeightList[0]) ;
-    let maxIntPercent = this.winMaxInte/this.dataMaxInte * 100;
-		for(let i = 0; i < this.tickHeightList.length; i++)
-		{
-			if(maxIntPercent/this.yTickNum <= parseFloat(this.tickHeightList[i]) 
-        && maxIntPercent/this.yTickNum > parseFloat(this.tickHeightList[i+1]))
-			{
-				tickheight = parseFloat(this.tickHeightList[i]);
-				break ;
-			}
+    getErrorThreshold() {
+        return this.errorThreshold_;
     }
-	  return tickheight ;
-  }
-
-  /**
-   * @function getPeakXPos
-   * @description Function provides the x coordinate for the mass
-   */
-  getPeakXPos = function (mz) {
-    let peakX = (mz - this.winMinMz) * this.xScale + this.padding.left;
-    return peakX;
-  }
-  /**
-   * @function getPeakYPos
-   * @description Function provides the y coordinate for the intensity
-   */
-  getPeakYPos = function (intensity) {
-    let peakY = this.svgHeight - intensity * this.yScale - this.padding.bottom;
-    return peakY;
-  }
-
-  /**
-   * @function getErrorYPos
-   * @description Function provides the y coordinate for the error val on the error plot
-   */
-  getErrorYPos = function(errorVal) {
-    // Multiply with 2 as the coordinates has to be both positive and negative
-    let yErrorScale = this.errorPlotHeight/(this.errorThreshold*2);
-    let pos = this.svgHeight - (errorVal * yErrorScale) 
-      - this.errorPlotPadding.bottom - this.errorPlotHeight/2;
-    return pos;
-  }
-
-  /**
-   * @function getBinWidth
-   * @description Function to compute bin width
-   **/
-  getBinWidth = function() {
-    let width = (this.winMaxMz - this.winMinMz)/this.binNum;
-    return width;
-  }
-
-  /**
-   * @function getCircleSize
-   * @description Function provides the radius of the circles drawn on the graph as zoomed in and out
-   */
-  getCircleSize = function() {
-    let radius = this.defaultRadius * this.xScale;
-    if (radius < this.minRadius) {
-      radius = this.minRadius;
+    getErrorPlotPadding() {
+        return this.errorPlotPadding_;
     }
-    if (radius > this.maxRadius) {
-      radius = this.maxRadius;
+    getErrorPlotHeight() {
+        return this.errorPlotHeight_;
     }
-    return radius;
-  }
-
-  /**
-   * Function to set spectrum perameters based on the data
-   * @param {Array} peakList - contains the list of data with mz and intensity used to draw lines on the graph 
-   */
-  compDataRanges = function(peakList){
-    let minMz = 0;
-    let maxMz = 2000;
-    let maxInte = 100;
-    if (peakList != null && peakList.length > 0) {
-      // Sort by mz
-      peakList.sort(function(x,y){
-        return x.getPos() - y.getPos();
-      });
-      let listSize = peakList.length;
-      maxMz = parseFloat(peakList[listSize-1].getPos());
-
-      // Sort by intensity
-      peakList.sort(function(x,y){
-        return x.getIntensity() - y.getIntensity();
-      });
-      maxInte = parseFloat(peakList[listSize-1].getIntensity());
+    getIonXShift() {
+        return this.ionXShift_;
     }
-    return [minMz, maxMz, maxInte];
-  }
-
-  /**
-   * @function updateScale
-   * @description Initializing the spectrum Parameters with the data from the peak list and envilopelist.
-   * initializing xScale, yScale.
-   */
-  updateScale = function(winMinMz, winMaxMz, winMaxInte) {
-    this.winMinMz = winMinMz;
-    this.winMaxMz = winMaxMz;
-    if(winMinMz == this.dataMinMz && winMaxMz == this.dataMaxMz)
-    {
-      this.winMinMz = 0;
-      this.winMaxMz = 1.1 * this.winMaxMz;
+    getIonYShift() {
+        return this.ionYShift_;
     }
-    this.winCenterMz = (this.winMinMz + this.winMaxMz)/2.0;
-    this.xScale = this.specWidth/(this.winMaxMz - this.winMinMz);
-
-    this.winMaxInte = winMaxInte;
-    this.yScale = this.specHeight/this.winMaxInte;
-  }
-
-  /**
-   * @function initParameters
-   * @description Initializing the spectrum Parameters with the data from the peak list and envilopelist.
-   * initializing xScale, yScale.
-   */
-  initParameters = function(peakList) {
-    let [dataMinMz, dataMaxMz, dataMaxInte] = this.compDataRanges(peakList);
-    this.dataMinMz = dataMinMz;
-    this.dataMaxMz = dataMaxMz + (0.10 * dataMaxMz);
-    this.dataMaxInte = dataMaxInte;
-    // add 1/4th of max intensity to keep the max point at 3/4 of the y axis*
-    this.updateScale(this.dataMinMz, this.dataMaxMz, this.dataMaxInte * this.inteMargin);
-  }
-
-  /**
-   * @function drag
-   * @description 
-   * Function provides minMz and maxMz based on the amount of drag done
-   */
-  drag = function(distX) {
-    let mzDist = distX / this.xScale;
-    //allow drag up to -50 m/z (this.minPossibleMz) to give some padding 
-
-    if (this.winMinMz - mzDist < this.minPossibleMz){
-        let minMaxDiff = this.winMaxMz - this.winMinMz;
-        let centerDiff = this.winCenterMz - this.winMinMz;
-
-        this.winMinMz = this.minPossibleMz;
-        this.winMaxMz = this.winMinMz + minMaxDiff;
-        this.winCenterMz = this.winMinMz + centerDiff;
+    getDataMaxMz() {
+        return this.dataMaxMz_;
     }
-    else{
-      this.winMinMz = this.winMinMz - mzDist; 
-      this.winMaxMz = this.winMaxMz - mzDist;
-      this.winCenterMz = this.winCenterMz - mzDist;
+    getDataMinMz() {
+        return this.dataMinMz_;
     }
-  }
-
-  /**
-   * @function xZoom
-   * @description Function provides with current xScale, current minMz and MaxMz based on the zoom on x-axis.
-   * Function also calls setLimita which helps in drawing limited number of peaks and circles per eachbin/range of mz values.
-   */
-  xZoom = function (mouseSvgX, ratio) {
-    let mouseSpecX = mouseSvgX - this.padding.left;
-    this.winCenterMz =  mouseSpecX/this.xScale + this.winMinMz;
-    /*self is a global variable of datasource object containing all the data needed to use when zoomed*/
-    this.xScale = this.xScale * ratio ; 
-    this.winMinMz = this.winCenterMz - mouseSpecX / this.xScale; 
-    this.winMaxMz = this.winCenterMz + (this.specWidth - mouseSpecX) / this.xScale;
-    if (this.winMinMz < this.minPossibleMz){//prevent zooming out into negative mass
-      this.winMinMz = this.minPossibleMz;
+    getHlColor() {
+        return this.hlColor_;
     }
-    //restrict zooming if the scale becomes too small or big
-    if (this.xScale > 50000000) {
-      this.xScale = 50000000;
+    getHlMinMz() {
+        return this.hlMinMz_;
     }
-    else if (this.xScale < 0.007) {
-      this.xScale = 0.007;
+    getHlMaxMz() {
+        return this.hlMaxMz_;
     }
-  }
-  /**
-   * @function yZoom
-   * @description Function provides with current yScale, current max Intensity based on the zoom on y-axis
-   */
-  yZoom = function (ratio) {
-    //Reducing zoom factor to smoothenup and remove gliches
-    if(ratio > 1 ) ratio = 1.4;
-    else if(ratio < 1) ratio = 0.9;
-    if ((ratio > 1.0 && this.winMaxInte >= this.dataMinInte * this.inteMargin) 
-      || (ratio < 1.0 && this.winMaxInte <= this.dataMaxInte * this.inteMargin)) {
-      this.yScale = this.yScale * ratio;
-      this.winMaxInte = this.specHeight / this.yScale;
+    getDataMaxInte() {
+        return this.dataMaxInte_;
     }
-  }
-
-  /**
-   * @function zoom
-   * @description 
-   * Function to invoke respective zoom functionality(zoom on x or y) based on position of X, Y 
-   * It fixes amount of zoom based on zooming in or out 
-   */
-  zoom = function(mouseSvgX, mouseSvgY, ratio) {
-    if(ratio > 1 ) ratio = 1.4; // Zooming in and fixing ration to 1.4 (fixed values based on testing the smooting of zoom)
-    else if(ratio < 1) ratio = 0.9; // Zooming out and fixing ration to 0.9 (fixed values based on testing the smooting of zoom)
-    if (mouseSvgY > this.svgHeight - this.padding.bottom) {
-      this.xZoom(mouseSvgX, ratio);
+    getWinMaxMz() {
+        return this.winMaxMz_;
     }
-    else {
-      this.yZoom(ratio);
+    getWinMinMz() {
+        return this.winMinMz_;
     }
-  }
-
-  /**
-   * @function addColorToEnvelopes
-   * @description 
-   * Add color to envelopes.
-   */
-  addColorToEnvelopes = function(envList){
-    if(!envList || envList.length === 0 || typeof envList[0].getPeaks() === "undefined") return;
-    envList.sort(function(x,y){
-      return (x.getPeaks()[0].getPos() - y.getPeaks()[0].getPos());
-    })
-    let colorNum = this.envColorList.length; 
-    for (let i = 0; i < envList.length; i++) 
-    {
-      envList[i].setDisplayColor(this.envColorList[i%colorNum]);
+    getTickLength() {
+        return this.tickLength_;
     }
-  }
-
-  /**
-   * @function setHighlight
-   * @description 
-   * set highlight region for MS1 precursor envelope
-   */
-  setHighlight = function(precMonoMz, charge) {
-    this.showHighlight = true;
-    let monoMz = parseFloat(precMonoMz);
-    let centerMz = monoMz * this.avgToMonoRatio;
-    let dist = centerMz - monoMz + 0.02;
-    this.hlMinMz = centerMz - dist; 
-    this.hlMaxMz = centerMz + dist;
-    //console.log(precMonoMz, this.hlMinMz, this.hlMaxMz);
-  }
-
-  setMonoMassGraph(isMonoMass) {
-    this.isMonoMassGraph = isMonoMass;
-    if (isMonoMass) {
-      this.padding.head = 60;
-      this.padding.bottom = 75;
+    getYTickNum() {
+        return this.yTickNum_;
     }
-    else {
-      this.padding.head = 20;
-      this.padding.bottom = 50;
+    getSVGWidth() {
+        return this.svgWidth_;
     }
-    this.specHeight = this.svgHeight - this.padding.head - this.padding.bottom;
-    this.updateScale(this.winMinMz, this.winMaxMz, this.winMaxInte);
-  }
-
-  /**
-   * @function updataMzRange
-   * @description 
-   */
-  updateMzRange = function(monoMz) {
-    let centerMz = parseFloat(monoMz) * this.avgToMonoRatio;
-    this.winMinMz = centerMz - 3;
-    this.winMaxMz = centerMz + 3;
-    this.updateScale(this.winMinMz, this.winMaxMz, this.winMaxInte);
-  }
-
-  updateMassRange = function(mass) {
-    let centerMass = parseFloat(mass);
-    this.winMinMz = centerMass - 3;
-    this.winMaxMz = centerMass + 3;
-    this.updateScale(this.winMinMz, this.winMaxMz, this.winMaxInte);
-  }
+    getSVGHeight() {
+        return this.svgHeight_;
+    }
+    getIsMonoMassGraph() {
+        return this.isMonoMassGraph_;
+    }
+    getShowHighlight() {
+        return this.showHighlight_;
+    }
+    getShowEnvelopes() {
+        return this.showEnvelopes_;
+    }
+    getShowIons() {
+        return this.showIons_;
+    }
+    getPadding() {
+        return this.padding_;
+    }
+    setSeqLength(seqLength) {
+        this.seqLength_ = seqLength;
+    }
+    setShowEnvelopes_(showEnvelopes) {
+        this.showEnvelopes_ = showEnvelopes;
+    }
+    setShowIons(showIons) {
+        this.showIons_ = showIons;
+    }
+    /**
+     * @function getTickWidth
+     * @description Function Provides width between each tick when zoomed in and out or dragged
+     */
+    getTickWidth() {
+        let tempDiff = this.winMaxMz_ - this.winMinMz_;
+        let tickWidth = Math.floor(this.tickWidthList_[0]);
+        for (let i = 0; i < this.tickWidthList_.length; i++) {
+            if (tempDiff / this.xTickNum_ <= Math.floor(this.tickWidthList_[i]) &&
+                tempDiff / this.xTickNum_ > Math.floor(this.tickWidthList_[i + 1])) {
+                tickWidth = Math.floor(this.tickWidthList_[i]);
+                break;
+            }
+        }
+        return tickWidth;
+    }
+    getXTickPosList() {
+        let posList = new Array(this.xTickNum_ + 1);
+        let tickWidth = this.getTickWidth();
+        for (let i = 0; i <= this.xTickNum_; i++) {
+            // calculate the actual tick position based on the current minMz value on the xaxis
+            let tickMz = 0;
+            if (tickWidth < 1 && tickWidth != 0) {
+                tickMz = (i * tickWidth + this.winMinMz_) - Math.floor((i * tickWidth + this.winMinMz_) % tickWidth);
+            }
+            else if (tickWidth != 0) {
+                tickMz = i * tickWidth + this.winMinMz_ - (i * tickWidth + this.winMinMz_) % tickWidth;
+            }
+            posList[i] = tickMz;
+        }
+        return posList;
+    }
+    /**
+     * @function getTickHeight
+     * @description Function Provides height between each tick when zoomed in and out or dragged
+     */
+    getTickHeight() {
+        let tickheight = Math.floor(this.tickHeightList_[0]);
+        let maxIntPercent = this.winMaxInte_ / this.dataMaxInte_ * 100;
+        for (let i = 0; i < this.tickHeightList_.length; i++) {
+            if (maxIntPercent / this.yTickNum_ <= Math.floor(this.tickHeightList_[i])
+                && maxIntPercent / this.yTickNum_ > Math.floor(this.tickHeightList_[i + 1])) {
+                tickheight = Math.floor(this.tickHeightList_[i]);
+                break;
+            }
+        }
+        return tickheight;
+    }
+    /**
+     * @function getPeakXPos
+     * @description Function provides the x coordinate for the mass
+     */
+    getPeakXPos(mz) {
+        let peakX = (mz - this.winMinMz_) * this.xScale_ + this.padding_.left;
+        return peakX;
+    }
+    /**
+     * @function getPeakYPos
+     * @description Function provides the y coordinate for the intensity
+     */
+    getPeakYPos(intensity) {
+        let peakY = this.svgHeight_ - intensity * this.yScale_ - this.padding_.bottom;
+        return peakY;
+    }
+    /**
+     * @function getErrorYPos
+     * @description Function provides the y coordinate for the error val on the error plot
+     */
+    getErrorYPos(errorVal) {
+        // Multiply with 2 as the coordinates has to be both positive and negative
+        let yErrorScale = this.errorPlotHeight_ / (this.errorThreshold_ * 2);
+        let pos = this.svgHeight_ - (errorVal * yErrorScale)
+            - this.errorPlotPadding_.bottom - this.errorPlotHeight_ / 2;
+        return pos;
+    }
+    /**
+     * @function getBinWidth
+     * @description Function to compute bin width
+     **/
+    getBinWidth() {
+        let width = (this.winMaxMz_ - this.winMinMz_) / this.binNum_;
+        return width;
+    }
+    /**
+     * @function getCircleSize
+     * @description Function provides the radius of the circles drawn on the graph as zoomed in and out
+     */
+    getCircleSize() {
+        let radius = this.defaultRadius_ * this.xScale_;
+        if (radius < this.minRadius_) {
+            radius = this.minRadius_;
+        }
+        if (radius > this.maxRadius_) {
+            radius = this.maxRadius_;
+        }
+        return radius;
+    }
+    /**
+     * Function to set spectrum perameters based on the data
+     * @param {Array} peakList - contains the list of data with mz and intensity used to draw lines on the graph
+     */
+    compDataRanges(peakList) {
+        let minMz = 0;
+        let maxMz = 2000;
+        let maxInte = 100;
+        if (peakList != null && peakList.length > 0) {
+            // Sort by mz
+            peakList.sort(function (x, y) {
+                return x.getPos() - y.getPos();
+            });
+            let listSize = peakList.length;
+            maxMz = Math.floor(peakList[listSize - 1].getPos());
+            // Sort by intensity
+            peakList.sort(function (x, y) {
+                return x.getIntensity() - y.getIntensity();
+            });
+            maxInte = Math.floor(peakList[listSize - 1].getIntensity());
+        }
+        return [minMz, maxMz, maxInte];
+    }
+    /**
+     * @function updateScale
+     * @description Initializing the spectrum Parameters with the data from the peak list and envilopelist.
+     * initializing xScale, yScale.
+     */
+    updateScale(winMinMz, winMaxMz, winMaxInte) {
+        this.winMinMz_ = winMinMz;
+        this.winMaxMz_ = winMaxMz;
+        if (winMinMz == this.dataMinMz_ && winMaxMz == this.dataMaxMz_) {
+            this.winMinMz_ = 0;
+            this.winMaxMz_ = 1.1 * this.winMaxMz_;
+        }
+        this.winCenterMz_ = (this.winMinMz_ + this.winMaxMz_) / 2.0;
+        this.xScale_ = this.specWidth_ / (this.winMaxMz_ - this.winMinMz_);
+        this.winMaxInte_ = winMaxInte;
+        this.yScale_ = this.specHeight_ / this.winMaxInte_;
+    }
+    /**
+     * @function initParameters
+     * @description Initializing the spectrum Parameters with the data from the peak list and envilopelist.
+     * initializing xScale, yScale.
+     */
+    initParameters(peakList) {
+        let [dataMinMz, dataMaxMz, dataMaxInte] = this.compDataRanges(peakList);
+        this.dataMinMz_ = dataMinMz;
+        this.dataMaxMz_ = dataMaxMz + (0.10 * dataMaxMz);
+        this.dataMaxInte_ = dataMaxInte;
+        // add 1/4th of max intensity to keep the max point at 3/4 of the y axis*
+        this.updateScale(this.dataMinMz_, this.dataMaxMz_, this.dataMaxInte_ * this.inteMargin_);
+    }
+    /**
+     * @function drag
+     * @description
+     * Function provides minMz and maxMz based on the amount of drag done
+     */
+    drag(distX) {
+        let mzDist = distX / this.xScale_;
+        //allow drag up to -50 m/z (this.minPossibleMz) to give some padding 
+        if (this.winMinMz_ - mzDist < this.minPossibleMz_) {
+            let minMaxDiff = this.winMaxMz_ - this.winMinMz_;
+            let centerDiff = this.winCenterMz_ - this.winMinMz_;
+            this.winMinMz_ = this.minPossibleMz_;
+            this.winMaxMz_ = this.winMinMz_ + minMaxDiff;
+            this.winCenterMz_ = this.winMinMz_ + centerDiff;
+        }
+        else {
+            this.winMinMz_ = this.winMinMz_ - mzDist;
+            this.winMaxMz_ = this.winMaxMz_ - mzDist;
+            this.winCenterMz_ = this.winCenterMz_ - mzDist;
+        }
+    }
+    /**
+     * @function xZoom
+     * @description Function provides with current xScale, current minMz and MaxMz based on the zoom on x-axis.
+     * Function also calls setLimita which helps in drawing limited number of peaks and circles per eachbin/range of mz values.
+     */
+    xZoom(mouseSvgX, ratio) {
+        let mouseSpecX = mouseSvgX - this.padding_.left;
+        this.winCenterMz_ = mouseSpecX / this.xScale_ + this.winMinMz_;
+        /*self is a global variable of datasource object containing all the data needed to use when zoomed*/
+        this.xScale_ = this.xScale_ * ratio;
+        this.winMinMz_ = this.winCenterMz_ - mouseSpecX / this.xScale_;
+        this.winMaxMz_ = this.winCenterMz_ + (this.specWidth_ - mouseSpecX) / this.xScale_;
+        if (this.winMinMz_ < this.minPossibleMz_) { //prevent zooming out into negative mass
+            this.winMinMz_ = this.minPossibleMz_;
+        }
+    }
+    /**
+     * @function yZoom
+     * @description Function provides with current yScale, current max Intensity based on the zoom on y-axis
+     */
+    yZoom(ratio) {
+        //Reducing zoom factor to smoothenup and remove gliches
+        if (ratio > 1)
+            ratio = 1.4;
+        else if (ratio < 1)
+            ratio = 0.9;
+        if ((ratio > 1.0 && this.winMaxInte_ >= this.dataMinInte_ * this.inteMargin_)
+            || (ratio < 1.0 && this.winMaxInte_ <= this.dataMaxInte_ * this.inteMargin_)) {
+            this.yScale_ = this.yScale_ * ratio;
+            this.winMaxInte_ = this.specHeight_ / this.yScale_;
+        }
+    }
+    /**
+     * @function zoom
+     * @description
+     * Function to invoke respective zoom functionality(zoom on x or y) based on position of X, Y
+     * It fixes amount of zoom based on zooming in or out
+     */
+    zoom(mouseSvgX, mouseSvgY, ratio) {
+        if (ratio > 1)
+            ratio = 1.4; // Zooming in and fixing ration to 1.4 (fixed values based on testing the smooting of zoom)
+        else if (ratio < 1)
+            ratio = 0.9; // Zooming out and fixing ration to 0.9 (fixed values based on testing the smooting of zoom)
+        if (mouseSvgY > this.svgHeight_ - this.padding_.bottom) {
+            this.xZoom(mouseSvgX, ratio);
+        }
+        else {
+            this.yZoom(ratio);
+        }
+    }
+    /**
+     * @function addColorToEnvelopes
+     * @description
+     * Add color to envelopes.
+     */
+    addColorToEnvelopes(envList) {
+        if (!envList || envList.length === 0 || typeof envList[0].getPeaks() === "undefined")
+            return;
+        envList.sort(function (x, y) {
+            return (x.getPeaks()[0].getPos() - y.getPeaks()[0].getPos());
+        });
+        let colorNum = this.envColorList_.length;
+        for (let i = 0; i < envList.length; i++) {
+            envList[i].setDisplayColor(this.envColorList_[i % colorNum]);
+        }
+    }
+    /**
+     * @function setHighlight
+     * @description
+     * set highlight region for MS1 precursor envelope
+     */
+    setHighlight(precMonoMz) {
+        this.showHighlight_ = true;
+        let monoMz = precMonoMz;
+        let centerMz = monoMz * this.avgToMonoRatio_;
+        let dist = centerMz - monoMz + 0.02;
+        this.hlMinMz_ = centerMz - dist;
+        this.hlMaxMz_ = centerMz + dist;
+        //console.log(precMonoMz, this.hlMinMz, this.hlMaxMz);
+    }
+    setMonoMassGraph(isMonoMass) {
+        this.isMonoMassGraph_ = isMonoMass;
+        if (isMonoMass) {
+            this.padding_.head = 60;
+            this.padding_.bottom = 75;
+        }
+        else {
+            this.padding_.head = 20;
+            this.padding_.bottom = 50;
+        }
+        this.specHeight_ = this.svgHeight_ - this.padding_.head - this.padding_.bottom;
+        this.updateScale(this.winMinMz_, this.winMaxMz_, this.winMaxInte_);
+    }
+    /**
+     * @function updataMzRange
+     * @description
+     */
+    updateMzRange(monoMz) {
+        let centerMz = monoMz * this.avgToMonoRatio_;
+        this.winMinMz_ = centerMz - 3;
+        this.winMaxMz_ = centerMz + 3;
+        this.updateScale(this.winMinMz_, this.winMaxMz_, this.winMaxInte_);
+    }
+    updateMassRange(mass) {
+        let centerMass = mass;
+        this.winMinMz_ = centerMass - 3;
+        this.winMaxMz_ = centerMass + 3;
+        this.updateScale(this.winMinMz_, this.winMaxMz_, this.winMaxInte_);
+    }
 }

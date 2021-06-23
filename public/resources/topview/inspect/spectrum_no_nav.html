@@ -50,12 +50,14 @@
 <script src="../common/prsm_graph/prsm_graph.js"></script>
 <script src="../common/prsm_graph/prsm_para.js"></script>
 
+<!--<script src="../common/proteoform/proteoform.js"></script>-->
 <script src="../common/proteoform/protein_constant.js"></script>
+<script src="../common/proteoform/mass_shift_list.js"></script>
 
 <script src="../common/spectrum_graph/spectrum_graph.js"></script>
 <script src="../common/spectrum_graph/draw_spectrum.js"></script>
 <script src="../common/spectrum_graph/spectrum_parameter.js"></script>
-<script src="../common/mass_spectrum/spectrumFunction.js"></script>
+<script src="../common/spectrum_graph/spectrum_data.js"></script>
 
 <script src="../common/distribution_calc/amino_acid_distribution.js"></script>
 <script src="../common/distribution_calc/emass_and_distribution.js"></script>
@@ -75,16 +77,16 @@
 <script src="./example/setLocalStorage.js"></script>-->
 
 <!--data classes-->
-<script src="../common/sequence/mod.js"></script>
+<script src="../common/sequence/ptm.js"></script>
 <script src="../common/sequence/massShift.js"></script>
 <script src="../common/mass_spectrum/peak.js"></script>
 <script src="../common/mass_spectrum/envelope.js"></script>
-<script src="../common/prsm/matchedPeakEnvelopePair.js"></script>
+<script src="../common/mass_spectrum/matchedPeakPair.js"></script>
 <script src="../common/mass_spectrum/ion.js"></script>
 <script src="../common/sequence/theoMass.js"></script>
 <script src="../common/sequence/proteoform.js"></script>
 <script src="../common/mass_spectrum/spectrum.js"></script>
-<script src="../common/prsm/prsm.js"></script>
+<script src="../common/sequence/prsm.js"></script>
 
 </head>
 <body>
@@ -298,8 +300,8 @@
 	</div>
 	<div class="row" id="ms2_svg_div">
 		<ul class="nav nav-tabs graph_nav" id="ms2_graph_nav"></ul>
-		<svg id = "spectrum" height="250" width = "1000" style="background-color:white;display:none"></svg>
-		<svg id = "monoMassGraph" height="250" width = "1000" style="background-color:white;display:none"></svg>
+		<svg id = "ms2_svg_div_graph_0" height="250" width = "1000" style="background-color:white;display:none"></svg>
+		<svg id = "ms2_svg_div_mono_graph_0" height="250" width = "1000" style="background-color:white;display:none"></svg>
 	</div>
 	<div class="row" id="peakCount" style="display:none">
 		<div class="col-2 pull-left" >
