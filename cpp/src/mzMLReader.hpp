@@ -41,6 +41,14 @@ struct GridProperties{
 	vector<double> grid_blocks;
 	double cur_mz = 0;
 	double cur_max_inte = 0;
+	bool is_new_row = true;
+};
+struct peakProperties {
+	int id;
+	double mz;
+	double inte;
+	double rt;
+	std::string color;
 };
 
 std::string num2str(double num);
@@ -86,10 +94,12 @@ public:
 	void beginTransactionInMemory();
 	void endTransactionInMemory();
 	void openInsertStmt();
-	void openInsertStmtMs1Only();
+	void openInsertStmtMs1Only(int table_cnt);
+	void openInsertStmtMs1OnlyInMemory(int table_cnt);
 	void openInsertStmtInMemory();
 	void closeInsertStmt();
 	void closeInsertStmtMs1Only();
+	void closeInsertStmtMs1OnlyInMemory();
 	void closeInsertStmtInMemory();
 	void insertSpStmt(int scan_index, std::string scan, double retention_time, double ion_time, int scan_level, double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev);
 	void insertScanLevelPairStmt(int scan_level_one, int scan_level_two);
@@ -97,15 +107,18 @@ public:
 	void updateSpSumStmt(int current_id, double peaks_int_sum);
 	void insertPeakStmt(int peak_index, int scan_index, double intensity, double mz, double retention_time);
 	void insertPeakStmtMs1(int peak_index, double intensity, double mz, double retention_time, std::string peak_color_);
+	void insertPeakStmtMs1InMemory(int peak_index, double intensity, double mz, double retention_time, std::string peak_color_);
 	void insertPeakStmtInMemory(int peak_index, int scan_index, double intensity, double mz, double retention_time, std::string peakColor_);
 	void createIndex();
 	void createIndexOnIdOnly();
 	void createIndexInMemory();
 	void createLayerIndexInMemory(int table_cnt);
+	void createLayerIndex(int table_cnt);
 
 	double normalizeInte(std::vector<double> *normalization_data);
 	void setColor();
-	void insertPeakToEachLayer(std::vector<double> *grid_ptr, int table_cnt);
+	void insertPeakToEachLayer(std::vector<peakProperties> *grid_ptr, int table_cnt);
+	void assignPeakDataToGridBlocks(std::vector<peakProperties> *grid_ptr, int & table_cnt);
 	void insertPeakDataToGridBlocks(int table_cnt);
 	void insertPeaksToEachLayer(int table_cnt, int scan_id);
 	void insertDataLayerTable();
