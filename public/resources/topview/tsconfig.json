@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": "./../typescript_build",
+    "allowJs": true,
+    "checkJs": false,
+	"alwaysStrict": true,
+	"strictNullChecks": true,
+	"strictFunctionTypes": true,
+	"strictPropertyInitialization": true,
+	"noImplicitAny": true,
+	"noImplicitThis": true,	
+	"target": "es2015",
+	"lib": [ "es6", "dom" ]
+  },
+  "include": ["./common/**/*", "./visual/js/prsm/*", "./inspect/js/"],
+  "exclude": ["./common/distribution_calc/emass_and_distribution.js", "./common/prsm_graph/example/*"]
+}
