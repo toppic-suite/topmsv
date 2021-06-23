@@ -1,34 +1,59 @@
+"use strict";
+var ModType;
+(function (ModType) {
+    ModType[ModType["Fixed"] = 0] = "Fixed";
+    ModType[ModType["Unexpected"] = 1] = "Unexpected";
+    ModType[ModType["ProteinVariable"] = 2] = "ProteinVariable";
+    ModType[ModType["Variable"] = 3] = "Variable";
+})(ModType || (ModType = {}));
+;
 class MassShift {
-  constructor(leftPos, rightPos, massShift, type, annotation, ptm = null) {
-    this.leftPos_ = parseInt(leftPos);
-    this.rightPos_ = parseInt(rightPos);
-    this.massShift_ = parseFloat(massShift);
-    this.type_ = type;
-    this.annotation_ = annotation;
-    this.ptmList_ = [];
-    if (ptm) {
-      this.ptmList_.push(ptm);
+    constructor(leftPos, rightPos, massShift, type, annotation, ptm = null) {
+        this.leftPos_ = leftPos;
+        this.rightPos_ = rightPos;
+        this.massShift_ = massShift;
+        this.type_ = this.setModType(type);
+        this.annotation_ = annotation;
+        this.ptmList_ = [];
+        if (ptm) {
+            this.ptmList_.push(ptm); //ignore the possibility of ptm being null
+        }
     }
-  }
-  addNewPtm(ptm) {
+    addNewPtm(ptm) {
         this.ptmList_.push(ptm);
-  }
-  getLeftPos() {
-    return this.leftPos_;
-  }
-  getRightPos() {
-    return this.rightPos_;
-  }
-  getShift() {
-    return this.massShift_;
-  }
-  getType() {
-    return this.type_;
-  }
-  getAnnotation() {
-    return this.annotation_;
-  }
-  getPtmList() {
-    return this.ptmList_;
-  }
+    }
+    getLeftPos() {
+        return this.leftPos_;
+    }
+    getRightPos() {
+        return this.rightPos_;
+    }
+    getShift() {
+        return this.massShift_;
+    }
+    getType() {
+        return this.type_;
+    }
+    getAnnotation() {
+        return this.annotation_;
+    }
+    getPtmList() {
+        return this.ptmList_;
+    }
+    setModType(type) {
+        let modType;
+        if (type == "Fixed") {
+            modType = ModType.Fixed;
+        }
+        else if (type == "Protein variable") {
+            modType = ModType.ProteinVariable;
+        }
+        else if (type == "Variable") {
+            modType = ModType.Variable;
+        }
+        else {
+            modType = ModType.Unexpected;
+        }
+        return modType;
+    }
 }

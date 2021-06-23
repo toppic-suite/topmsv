@@ -1,13 +1,8 @@
-class SavePrsm{
-  prsmGraphObj;
-  prsmModalGraphObj;
-
-  constructor(prsmGraphObj){
-    this.prsmGraphObj = prsmGraphObj;
-  }
-
-  addPrsmModal = () => {
-    let prsmModal = `<div class="modal" id="save_prsm_popup_window" role="dialog">
+"use strict";
+class SavePrsm {
+    constructor(prsmGraphObj) {
+        this.addPrsmModal = () => {
+            let prsmModal = `<div class="modal" id="save_prsm_popup_window" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id ="save-image-modal">
           <div class="modal-header ">
@@ -87,96 +82,121 @@ class SavePrsm{
       </div>
     </div>
   </div>
-  `
-  
-    //append to body
-    $("body").append(prsmModal);
-  }
-  createPrsmModalGraph = () => {
-    this.prsmModalGraphObj = new PrsmGraph("prsm_popup_svg",null, this.prsmGraphObj.data);
-  }
-  initPrsmModalEventHandler = () => {
-    // Save PrSM popup window
-    d3.select('#save_prsm_btn').on("click", () => {
-      this.prsmModalGraphObj.redraw();
-      //	set the dimensions of popup svg to be same as prsm in the html page
-      let para = this.prsmGraphObj.para;
-      document.getElementById("row-size").value = para.rowLength ;
-      document.getElementById("letter-width").value = para.letterWidth ;
-      document.getElementById("row-height").value = para.rowHeight ;
-      document.getElementById("block-width").value = para.gapWidth ;
-      document.getElementById("num-width").value = para.numericalWidth ;
-      document.getElementsByName("show-num")[0].checked = para.showNum ;
-      document.getElementsByName("show-skipped-lines")[0].checked = para.showSkippedLines ;
-
-      // Allows to drag the pop up windows
-      $("#save_prsm_popup_window").draggable({
-        appendTo: "body"
-      });
-    });
-
-    d3.select('#prsm_graph_redraw_btn').on("click", () => {
-      let para = this.prsmModalGraphObj.para;
-      para.rowLength = parseInt(document.getElementById("row-size").value);
-      para.letterWidth = parseInt(document.getElementById("letter-width").value) ;
-      para.rowHeight = parseInt(document.getElementById("row-height").value) ;
-      para.gapWidth = parseInt(document.getElementById("block-width").value) ;
-      para.numericalWidth = parseInt(document.getElementById("num-width").value) ;
-
-      //	Check whether show numbers is checked
-      if(document.getElementsByName("show-num")[0].checked) {
-        para.setShowNum(true);
-      }
-      else {
-        para.setShowNum(false);
-      }
-      //	Check to show skipped lines 
-      if(document.getElementsByName("show-skipped-lines")[0].checked) {
-        para.showSkippedLines = true ;
-      }
-      else {
-        para.showSkippedLines = false ;
-      }
-      this.prsmModalGraphObj.redraw();
-    });	
-
-    $("#prsm_popup_help_btn").on("click",() => {
-      $("#prsm_help_popup_window").draggable({
-        appendTo: "body"
-      });
-      //grey out other parts of screen
-      $(".modal-backdrop").css('z-index',3000);      
-      $("#prsm_help_popup_window").css('z-index',3001);     
-    });
-
-    $("#prsm-help-window-close-btn").on("click",() => {
-      $(".modal-backdrop").css('z-index',1040);  
-    })
-      //	Download the svg as ".svg" image
-    d3.select('#prsm_popup_svg_btn').on("click",() => {
-      let svgId = "prsm_popup_svg" ;
-      let x = d3.event.pageX;
-      let y = d3.event.pageY;
-      popupNameWindow("svg",svgId,x,y);
-    });
-    //	Download svg as PNG Image
-    d3.select('#prsm_popup_png_btn').on("click", () => {
-      let svgId = "prsm_popup_svg" ;
-      let x = d3.event.pageX;
-      let y = d3.event.pageY;
-      popupNameWindow("png",svgId,x,y);
-    });
-  }
-  drawPrsmModalGraph = () => {
-		this.prsmModalGraphObj.para.rowLength = this.prsmGraphObj.para.rowLength;
-    this.prsmModalGraphObj.para.letterWidth = this.prsmGraphObj.para.letterWidth;
-		this.prsmModalGraphObj.redraw();
-  }
-  main = () => {
-    this.addPrsmModal();
-    this.createPrsmModalGraph();
-    this.initPrsmModalEventHandler();
-    this.drawPrsmModalGraph();
-  }
+  `;
+            //append to body
+            $("body").append(prsmModal);
+        };
+        this.createPrsmModalGraph = () => {
+            this.prsmModalGraphObj_ = new PrsmGraph("prsm_popup_svg", null, this.prsmGraphObj_.getData());
+        };
+        this.initPrsmModalEventHandler = () => {
+            // Save PrSM popup window
+            d3.select('#save_prsm_btn').on("click", () => {
+                if (!this.prsmModalGraphObj_) {
+                    console.error("ERROR: prsmGraph is not initialized");
+                    return;
+                }
+                this.prsmModalGraphObj_.redraw();
+                //	set the dimensions of popup svg to be same as prsm in the html page
+                let para = this.prsmGraphObj_.getPara();
+                if (!para) {
+                    console.error("ERROR: prsmGraph parameter is empty!");
+                    return;
+                }
+                ;
+                document.getElementById("row-size").value = para.getRowLength().toString();
+                document.getElementById("letter-width").value = para.getLetterWidth().toString();
+                document.getElementById("row-height").value = para.getRowHeight().toString();
+                document.getElementById("block-width").value = para.getGapWidth().toString();
+                document.getElementById("num-width").value = para.getNumericalWidth().toString();
+                document.getElementsByName("show-num")[0].checked = para.getShowNum();
+                document.getElementsByName("show-skipped-lines")[0].checked = para.getShowSkippedLines();
+                // Allows to drag the pop up windows
+                //@ts-ignore
+                $("#save_prsm_popup_window").draggable({
+                    appendTo: "body"
+                });
+            });
+            d3.select('#prsm_graph_redraw_btn').on("click", () => {
+                if (!this.prsmModalGraphObj_) {
+                    console.error("ERROR: prsmGraph is not initialized");
+                    return;
+                }
+                let para = this.prsmModalGraphObj_.getPara();
+                if (!para) {
+                    console.error("ERROR: prsmGraph parameter is empty!");
+                    return;
+                }
+                ;
+                para.setRowLength(parseInt(document.getElementById("row-size").value));
+                para.setLetterWidth(parseInt(document.getElementById("letter-width").value));
+                para.setRowHeight(parseInt(document.getElementById("row-height").value));
+                para.setGapWidth(parseInt(document.getElementById("block-width").value));
+                para.setNumericalWidth(parseInt(document.getElementById("num-width").value));
+                //	Check whether show numbers is checked
+                if (document.getElementsByName("show-num")[0].checked) {
+                    para.setShowNum(true);
+                }
+                else {
+                    para.setShowNum(false);
+                }
+                //	Check to show skipped lines 
+                if (document.getElementsByName("show-skipped-lines")[0].checked) {
+                    para.setShowSkippedLines(true);
+                }
+                else {
+                    para.setShowSkippedLines(false);
+                }
+                this.prsmModalGraphObj_.redraw();
+            });
+            $("#prsm_popup_help_btn").on("click", () => {
+                //@ts-ignore
+                $("#prsm_help_popup_window").draggable({
+                    appendTo: "body"
+                });
+                //grey out other parts of screen
+                $(".modal-backdrop").css('z-index', 3000);
+                $("#prsm_help_popup_window").css('z-index', 3001);
+            });
+            $("#prsm-help-window-close-btn").on("click", () => {
+                $(".modal-backdrop").css('z-index', 1040);
+            });
+            //	Download the svg as ".svg" image
+            d3.select('#prsm_popup_svg_btn').on("click", () => {
+                let svgId = "prsm_popup_svg";
+                let x = d3.event.pageX;
+                let y = d3.event.pageY;
+                popupNameWindow("svg", svgId, x, y);
+            });
+            //	Download svg as PNG Image
+            d3.select('#prsm_popup_png_btn').on("click", () => {
+                let svgId = "prsm_popup_svg";
+                let x = d3.event.pageX;
+                let y = d3.event.pageY;
+                popupNameWindow("png", svgId, x, y);
+            });
+        };
+        this.drawPrsmModalGraph = () => {
+            if (!this.prsmModalGraphObj_) {
+                console.error("ERROR: prsmGraph is not initialized");
+                return;
+            }
+            let para = this.prsmModalGraphObj_.getPara();
+            if (!para) {
+                console.error("ERROR: prsmGraph parameter is empty!");
+                return;
+            }
+            ;
+            para.setRowLength(this.prsmGraphObj_.getPara().getRowLength());
+            para.setLetterWidth(this.prsmGraphObj_.getPara().getLetterWidth());
+            this.prsmModalGraphObj_.redraw();
+        };
+        this.main = () => {
+            this.addPrsmModal();
+            this.createPrsmModalGraph();
+            this.initPrsmModalEventHandler();
+            this.drawPrsmModalGraph();
+        };
+        this.prsmGraphObj_ = prsmGraphObj;
+    }
 }
-
