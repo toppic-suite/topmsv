@@ -85,7 +85,7 @@ function init2D(scan) {
                                         let envObj = new Envelope(env.mono_mass, env.charge)
                                         let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
                                         for (let j = 0; j < env_peaks.length; j++){
-                                            let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].mz, env_peaks[j].intensity);
+                                            let peak = new Peak(j, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
                                             envObj.addPeaks(peak);
                                         }
                                         envelopes.push(envObj);
@@ -96,7 +96,7 @@ function init2D(scan) {
                                     spectrumDataPeaks.assignLevelPeaks(peaks);
                                     spectrumDataEnvs.assignLevelEnvs(envelopes);
                                 
-                                    spGraph = new SpectrumGraph("spectrum1",peaks);
+                                    spGraph = new SpectrumView("spectrum1",peaks);
                                     spGraph.addRawSpectrumAnno(envelopes, ions);
                                     //spGraph.para.updateMzRange(prec_mz);
                                     spGraph.redraw();
@@ -184,7 +184,7 @@ function loadPeakList1(scanID, prec_mz) {
                             let envObj = new Envelope(env.mono_mass, env.charge)
                             let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
                             for (let j = 0; j < env_peaks.length; j++){
-                                let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].mz, env_peaks[j].intensity);
+                                let peak = new Peak(j, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
                                 envObj.addPeaks(peak);
                             }
                             envelopes.push(envObj);
@@ -197,7 +197,7 @@ function loadPeakList1(scanID, prec_mz) {
                     
                         spGraph = new SpectrumView("spectrum1",peaks);
                         spGraph.addRawSpectrumAnno(envelopes, ions);
-                        spGraph.para.updateMzRange(prec_mz);
+                        spGraph.getPara().updateMzRange(prec_mz);
                         spGraph.redraw();
     
                         graph1_g = spGraph;
@@ -264,7 +264,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                         let envObj = new Envelope(env.mono_mass, env.charge);
                         let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modifiablePeaks);
                         for (let j = 0; j < env_peaks.length; j++){
-                            let peak = new Peak(j, env_peaks[j].mz, env_peaks[j].mz, env_peaks[j].intensity);
+                            let peak = new Peak(j, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
                             envObj.addPeaks(peak);
                         }
                         envelopes.push(envObj);
