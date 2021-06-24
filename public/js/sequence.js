@@ -55,23 +55,13 @@ function inspect(scanID,scanNum) {
                                             fixedPtmList.push(new MassShift('', '', newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));                  
                                         })
                                     }
-
                                     window.localStorage.setItem('sequence', JSON.stringify(sequence));
                                     window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
                                     window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
                                     window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmsList));
                                     window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
-                                    axios.get('/precMZ',{
-                                        params:{
-                                            projectDir: document.getElementById("projectDir").value,
-                                            scanID: scanNum
-                                        }
-                                    }).then((response)=>{
-                                        window.localStorage.setItem('precursorMass', parseFloat(response.data));
-                                        window.open('/resources/topview/inspect/spectrum_no_nav.html', '_self');
-                                    }).catch((error) => {
-                                        console.log(error);
-                                    })
+                                    window.localStorage.setItem('precursorMass', (JSON.parse(rawSeq)).prec_mass);
+                                    window.open('/resources/topview/inspect/spectrum_no_nav.html', '_self');
                                 }
                             })
 
