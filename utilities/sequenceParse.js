@@ -12,8 +12,9 @@ const betterDB = new Database(myArgs[0]);
 const stmtCreateSequenceTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS sequence (\n' +
     '    id INTEGER PRIMARY KEY,\n' +
     '    scan_id INTEGER NOT NULL,\n' +
-    '    protein_accession TEXT NULL,\n' +
-    '    proteoform TEXT NULL,\n' +
+    '    protein_accession TEXT NOT NULL,\n' +
+    '    prec_mass REAL NOT NULL,\n' +
+    '    proteoform TEXT NOT NULL,\n' +
     '    q_value TEXT NULL,\n' +
     '    e_value TEXT NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
@@ -36,7 +37,7 @@ betterDB.close();
 
 function importData(db, data) {
     const stmtFindScanID = db.prepare('SELECT ID AS id FROM SPECTRA WHERE SCAN = ?');
-    const stmtInsert = db.prepare('INSERT INTO sequence(id,scan_id,protein_accession,proteoform,q_value, e_value) VALUES(?,?,?,?,?,?)');
+    const stmtInsert = db.prepare('INSERT INTO sequence(id,scan_id,protein_accession,prec_mass,proteoform,q_value, e_value) VALUES(?,?,?,?,?,?,?)');
     const stmtMaxSeqID = db.prepare('SELECT MAX(id) AS maxID FROM sequence');
     let id = stmtMaxSeqID.get().maxID + 1;
     Papa.parse(data, {
@@ -49,6 +50,7 @@ function importData(db, data) {
                 // console.log('Scans:', row[4]);
                 let scan = row[4];
                 // console.log('Proteoform:', row[17]);
+                let prec_mass = row[8];
                 let protein_accession = row[13];
                 let proteoform = row[17];
                 let qValue = row[24];//spectral q-value
@@ -70,7 +72,7 @@ function importData(db, data) {
 
                 if(scan !== 'Scan(s)'){
                     let scan_id = stmtFindScanID.get(scan).id;
-                    stmtInsert.run(id, scan_id,protein_accession, proteoform, qValue, eValue);
+                    stmtInsert.run(id, scan_id,protein_accession, prec_mass, proteoform, qValue, eValue);
                     id++;
                 }
             })
