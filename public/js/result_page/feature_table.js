@@ -15,8 +15,6 @@ function showFeatureTable() {
     }
     let fullDir = (document.getElementById("projectDir").value).split("/");
     let fileName = (fullDir[fullDir.length -1].split("."))[0];
-    let dir = fullDir[0].concat("/");
-    dir = dir.concat(fullDir[1]);
 
     $('#featureTable').DataTable( {
         destroy: true,
@@ -37,7 +35,7 @@ function showFeatureTable() {
             }
         ],
         "ajax": {
-            url:'loadMzrtData?projectDir=' + dir + "/" + fileName + ".db" + 
+            url:'loadMzrtData?projectDir=' + fileName + ".db" + 
             "&minRT=0" + "&maxRT=" + Graph.dataRange.rtmax +
             "&minMZ=0" + "&maxMZ=" + Graph.dataRange.mzmax + 
             "&limit=" + "ALL",

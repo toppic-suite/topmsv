@@ -71,13 +71,9 @@ class GraphFeature{
         return new Promise((resolve, reject) => {
             if($('#featureStatus').val() != "0"){
                 //load feature data in this range
-                let fullDir = (document.getElementById("projectDir").value).split("/");
-                let fileName = (fullDir[fullDir.length -1].split("."))[0];
-                let dir = fullDir[0].concat("/");
-                dir = dir.concat(fullDir[1]);
+
                 let xhttp = new XMLHttpRequest();
-                
-                xhttp.open("GET","loadMzrtData?projectDir=" + dir + "/" + fileName + ".db" + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&limit=" + 500, true);
+                xhttp.open("GET","loadMzrtData?projectDir=" + Graph.projectDir + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&limit=" + 500, true);
                
                 xhttp.onload = () => {
                     if (xhttp.readyState == 4 && xhttp.status == 200) {
