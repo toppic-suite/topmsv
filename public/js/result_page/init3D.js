@@ -128,7 +128,6 @@ function init3D(scanID){
         }
     }).then((precMz)=>{
         let mzRange = calcInitRange(precMz);
-        console.log(mzRange.mzmin, mzRange.mzmax, scanID)
         graph.main(mzRange.mzmin, mzRange.mzmax, scanID);
 
     }).catch((err) => {
