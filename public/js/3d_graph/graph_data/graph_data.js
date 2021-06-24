@@ -135,7 +135,6 @@ class GraphData{
         Graph.curRT = parseFloat(curRT);
         Graph.currentData = await LoadData.load3dData(curViewRange);
         GraphData.getInteRange(Graph.currentData);
-
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
             await GraphData.plotPoint2D();

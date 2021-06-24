@@ -15,6 +15,7 @@ function loadMzrtData(dir, minrt, maxrt, minmz, maxmz, limit, callback) {
     let dbDir = dir;
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
+            console.log("dir", dir);
             console.error("error during db generation", err.message);
         }
        // console.log('Connected to the result database.');
