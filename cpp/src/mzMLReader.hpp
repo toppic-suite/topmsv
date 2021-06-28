@@ -76,23 +76,19 @@ public:
 	char *data_;
 	bool is_new_;
 	std::vector<std::string> peak_color_{"#0000ff","#007fff","#00ffff","#7fff7f","#ffff00","#ff7f00","#ff0000"};//7 colors totla
+	std::vector<peakProperties> all_ms1_peaks_;
 
 	mzMLReader();
 	void setName(std::string file_name);
 	void setNameInMemory(std::string file_name);
 	void openDatabase(std::string file_name);
-	void openDatabaseInMemory(std::string file_name);
 	void closeDatabase();
-	void closeDatabaseInMemory();
 	void creatTable();
-	void creatTableInMemory();
 	void getRange();
 	void getScanRange();
 	void getPeaksFromScan(int scan);
 	void beginTransaction();
 	void endTransaction();
-	void beginTransactionInMemory();
-	void endTransactionInMemory();
 	void openInsertStmt();
 	void openInsertStmtMs1Only(int table_cnt);
 	void openInsertStmtMs1OnlyInMemory(int table_cnt);
@@ -112,7 +108,6 @@ public:
 	void createIndex();
 	void createIndexOnIdOnly();
 	void createIndexInMemory();
-	void createLayerIndexInMemory(int table_cnt);
 	void createLayerIndex(int table_cnt);
 
 	double normalizeInte(std::vector<double> *normalization_data);

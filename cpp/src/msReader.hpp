@@ -30,6 +30,7 @@ public:
 	MSDataFilePtr msd_ptr_;
 	pwiz::msdata::SpectrumListPtr spec_list_ptr_;
 	std::string file_name_;
+	std::vector<peakProperties> all_ms1_peaks_;
 
 	msReader(std::string file_name);
 	//pwiz::msdata::MSData test_msdata;
