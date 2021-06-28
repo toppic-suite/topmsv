@@ -1,6 +1,7 @@
 /*graph_data.js : draws and manages the peaks on the screen*/
 class GraphData{
     constructor(){}
+    
     /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
     static drawCurrentScanMarker = () => {
         let markerGroup = Graph.scene.getObjectByName("markerGroup");
@@ -210,7 +211,7 @@ class GraphData{
 
                 if (point.MZ >= Graph.viewRange.mzmin && point.MZ <= Graph.viewRange.mzmax &&
                     point.RETENTIONTIME >= Graph.viewRange.rtmin && point.RETENTIONTIME <= Graph.viewRange.rtmax){
-                        let lineColor = point.COLOR;
+                        let lineColor = Graph.peakColor[point.COLOR];
 
                         //ySize is current retention time - prevRT
                         //for the first spectra peaks, it is a set length;
@@ -274,7 +275,7 @@ class GraphData{
                 let mz = point.MZ;
                 let rt = point.RETENTIONTIME;
                 let inten = point.INTENSITY;
-                let lineColor = point.COLOR;
+                let lineColor = Graph.peakColor[point.COLOR];
 
                 if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
                     rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
