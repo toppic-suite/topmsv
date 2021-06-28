@@ -299,7 +299,7 @@ void msReader::createDtabase() { //stmt
 }
 // get range of scan from database
 void msReader::getScanRangeDB() {
-  clock_t t1 = clock();
+ /* clock_t t1 = clock();
   databaseReader.openDatabase(file_name_);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
@@ -308,7 +308,7 @@ void msReader::getScanRangeDB() {
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  t1 = clock();
+  t1 = clock();*/
 };
 void msReader::getPeaksFromScanDB(int scan) {
   clock_t t1 = clock();
