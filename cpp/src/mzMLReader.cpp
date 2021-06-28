@@ -755,7 +755,7 @@ void mzMLReader::createLayerTable(std::string num) {
        "MZ              REAL     NOT NULL," \
        "INTENSITY       REAL     NOT NULL," \
        "RETENTIONTIME     REAL     NOT NULL," \
-       "COLOR     INT     NOT NULL);";
+       "COLOR     TINYINT     NOT NULL);";
   sql_ = (char *)sqlstr.c_str();
 
   /* Execute SQL statement */
