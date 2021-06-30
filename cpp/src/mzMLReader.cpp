@@ -194,7 +194,7 @@ void mzMLReader::closeDatabase() {
 void mzMLReader::creatTable() {
    /* Create SQL statement */
    sql_ = (char*)("CREATE TABLE SPECTRA("  \
-         "ID INT PRIMARY KEY      NOT NULL," \
+         "ID INTEGER PRIMARY KEY      NOT NULL," \
          "SCAN           INT      NOT NULL," \
          "RETENTIONTIME  REAL     NOT NULL," \
          "IONTIME  REAL     NOT NULL," \
@@ -219,7 +219,7 @@ void mzMLReader::creatTable() {
 
    /* Create SQL statement */
    sql_ = (char*)("CREATE TABLE PEAKS("  \
-         "ID INT PRIMARY KEY     NOT NULL," \
+         "ID INTEGER PRIMARY KEY     NOT NULL," \
          "SPECTRAID     INT      NOT NULL REFERENCES SPEACTRA(ID)," \
          "MZ            REAL     NOT NULL," \
          "INTENSITY     REAL     NOT NULL," \
@@ -751,7 +751,7 @@ void mzMLReader::insertConfigOneTable(DataRange Range) {
 void mzMLReader::createLayerTable(std::string num) {
   /* Create SQL statement */
   std::string sqlstr = "CREATE TABLE PEAKS" + num + "("  \
-       "ID  INT PRIMARY KEY     NOT NULL," \
+       "ID  INTEGER PRIMARY KEY     NOT NULL," \
        "MZ              REAL     NOT NULL," \
        "INTENSITY       REAL     NOT NULL," \
        "RETENTIONTIME     REAL     NOT NULL," \
