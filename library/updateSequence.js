@@ -10,7 +10,7 @@ function updateSequence(projectDir, proteoform, scan) {
     let resultDb = new BetterDB(dbDir);
     let stmt = resultDb.prepare(`UPDATE sequence
                                 SET proteoform = ?
-                                WHERE scan_id IN (SELECT ID FROM SPECTRA WHERE SCAN = ?);`);
+                                WHERE scan_id IN (SELECT SCAN FROM SPECTRA WHERE SCAN = ?);`);
     let info = stmt.run(proteoform, scan);
     console.log("updateSeq info", info.changes);
     resultDb.close();
