@@ -62,6 +62,7 @@ $( document ).ready(function() {
                     }
                 })
                 .then((response) => {
+                    console.log("Response-2", response);
                     response = response.data;
                     init2D(response);
                     update3D(response);

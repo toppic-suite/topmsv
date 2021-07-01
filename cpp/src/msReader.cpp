@@ -156,7 +156,8 @@ void msReader::createDtabase() { //stmt
         if (retention_time < rt_min){rt_min = retention_time;}
         if (retention_time > rt_max){rt_max = retention_time;}
       }
-        databaseReader.insertPeakStmt(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time);
+        databaseReader.insertPeakStmt(count, getScan(sl->spectrumIdentity(i).id), pairs[j].intensity, pairs[j].mz, retention_time);
+        //databaseReader.insertPeakStmt(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time);
       }
       
       // cout << currentID <<endl;
@@ -187,15 +188,15 @@ void msReader::createDtabase() { //stmt
 
         databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,prec_mz,prec_charge,prec_inte,peaks_int_sum,NULL,level_two_id);
         // update prev's next
-        databaseReader.updateSpStmt(current_id,level_two_id);
-        level_two_id = current_id;
+        databaseReader.updateSpStmt(current_scan_id,level_two_id);
+        level_two_id = current_scan_id;
         level_two_scan_id = current_scan_id;
         databaseReader.insertScanLevelPairStmt(level_one_scan_id, level_two_scan_id);
       }else if(scan_level == 1){
         databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,NULL,NULL,NULL,peaks_int_sum,NULL,level_one_id); 
         // update prev's next
-        databaseReader.updateSpStmt(current_id,level_one_id);
-        level_one_id = current_id;
+        databaseReader.updateSpStmt(current_scan_id,level_one_id);
+        level_one_id = current_scan_id;
         level_one_scan_id = current_scan_id;
       }
       //databaseReader.insertSpStmt(i, getScan(sl->spectrumIdentity(i).id), retentionTime,scanLevel,0,0); 
