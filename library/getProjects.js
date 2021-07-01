@@ -11,7 +11,7 @@ function getProjects(uid,callback) {
         if (err) {
             console.error(err.message);
         }
-        // console.log('Connected to the result database.');
+        //console.log('Connected to the result database.');
     });
     let sql = `SELECT ProjectName AS projectName, ProjectCode AS projectCode, FileName AS fileName, ProjectStatus AS projectStatus, EnvelopeStatus AS envStatus, FeatureStatus AS featureStatus, SequenceStatus AS seqStatus, Description AS description, datetime(Date, 'localtime') AS uploadTime, MS1_envelope_file AS envelopeFile
                 FROM Projects
@@ -23,7 +23,11 @@ function getProjects(uid,callback) {
             return callback(rows);
         }
     });
-    db.close();
+    db.close((err) => {
+        if (err) {
+          console.error(err.message);
+        }
+    });
 }
 
 module.exports = getProjects;
