@@ -69,33 +69,36 @@ class GraphFeature{
     }
     static loadMzrtData = (minmz, maxmz, minrt, maxrt) => {
         return new Promise((resolve, reject) => {
-            if($('#featureStatus').val() != "0"){
-                //load feature data in this range
+            //load feature data in this range
 
-                let xhttp = new XMLHttpRequest();
-                xhttp.open("GET","loadMzrtData?projectDir=" + Graph.projectDir + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&limit=" + 500, true);
-               
-                xhttp.onload = () => {
-                    if (xhttp.readyState == 4 && xhttp.status == 200) {
-                        let featureData = JSON.parse(xhttp.responseText);
-                        Graph.currentFeatureData = featureData;
-                        GraphFeature.updateFeature(minmz, maxmz, minrt, maxrt);            
-                        resolve();
-                    } 
-                }
-                xhttp.send();
+            let xhttp = new XMLHttpRequest();
+            xhttp.open("GET","loadMzrtData?projectDir=" + Graph.projectDir + "&minRT=" + minrt + "&maxRT=" + maxrt + "&minMZ=" + minmz + "&maxMZ=" + maxmz + "&limit=" + 500, true);
+            
+            xhttp.onload = () => {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    let featureData = JSON.parse(xhttp.responseText);
+                    Graph.currentFeatureData = featureData;
+                    GraphFeature.updateFeature(minmz, maxmz, minrt, maxrt);            
+                    resolve();
+                } 
             }
-            else{
-                resolve();
-            }
+            xhttp.send();
         })
     } 
     static drawFeature = (viewRange) => {
         return new Promise((resolve, reject) => {
-            let promise = GraphFeature.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax);
-            promise.then(() => {
+            if($('#featureStatus').val() != "0"){
+                let promise = GraphFeature.loadMzrtData(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax);
+                promise.then(() => {
+                    document.getElementById("featureInfo").style.display = "inline-block";                    
+                    $('#featureTable').DataTable().columns.adjust();
+                    resolve();
+                })
+            }
+            else {
+                document.getElementById("featureInfo").style.display = "none";  
                 resolve();
-            })
+            }
         })
     }
     static drawFeatureNoDataLoad = (viewRange) => {
