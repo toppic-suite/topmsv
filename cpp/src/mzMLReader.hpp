@@ -95,7 +95,7 @@ public:
 	void insertScanLevelPairStmt(int scan_level_one, int scan_level_two);
 	void updateSpStmt(int current_id, int prev_id);
 	void updateSpSumStmt(int current_id, double peaks_int_sum);
-	void insertPeakStmt(int peak_index, int scan_index, double intensity, double mz, double retention_time);
+	void insertPeakStmt(int peak_index, std::string scan, double intensity, double mz, double retention_time);
 	void insertPeakStmtMs1(int peak_index, double intensity, double mz, double retention_time, int peak_color_);
 	void createIndex();
 	void createIndexOnIdOnly();

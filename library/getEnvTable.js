@@ -9,7 +9,7 @@ const sqlite3 = require('sqlite3').verbose();
  */
 function getEnvTable(dir, scanID, callback){
     let sql = `SELECT envelope_id,scan_id, charge, mono_mass, intensity
-                FROM envelope INNER JOIN SPECTRA ON envelope.scan_id = SPECTRA.ID
+                FROM envelope INNER JOIN SPECTRA ON envelope.scan_id = SPECTRA.SCAN
                 WHERE SPECTRA.SCAN = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
