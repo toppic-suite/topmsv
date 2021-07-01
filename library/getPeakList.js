@@ -11,11 +11,14 @@ const sqlite3 = require('sqlite3').verbose();
  */
 function getPeakList(dir, scan, callback) {
     // ORDER BY INTENSITY DESC`;
-    // LIMIT 1000`;
+    /*let sql = `SELECT MZ AS mz,
+               INTENSITY AS intensity
+               FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID = SPECTRA.SCAN
+               WHERE SPECTRA.SCAN = ? `;*/
     let sql = `SELECT MZ AS mz,
                INTENSITY AS intensity
-               FROM PEAKS INNER JOIN SPECTRA ON PEAKS.SPECTRAID = SPECTRA.ID
-               WHERE SPECTRA.SCAN = ? `;
+               FROM PEAKS 
+               WHERE PEAKS.SPECTRAID = ? `;          
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {
