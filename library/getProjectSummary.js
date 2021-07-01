@@ -11,7 +11,7 @@ function getProjectSummary(id, callback) {
         if (err) {
             console.error(err.message);
         }
-        // console.log('Connected to the result database.');
+        //console.log('Connected to the result database.');
     });
     let sql = `SELECT ProjectName AS projectName,
                     ProjectStatus AS projectStatus,
@@ -36,6 +36,10 @@ function getProjectSummary(id, callback) {
             return callback(null, row);
         }
     });
-    db.close();
+    db.close((err) => {
+        if (err) {
+          console.error(err.message);
+        }
+    });
 }
 module.exports = getProjectSummary;
