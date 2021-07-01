@@ -12,7 +12,7 @@ function getProteoform(dir, scanNum) {
                 FROM SPECTRA INNER JOIN sequence ON SPECTRA.ID = sequence.scan_id
                 WHERE SPECTRA.SCAN = ?`);*/
     let stmt = resultDb.prepare(`SELECT sequence.proteoform AS proteoform, sequence.prec_mass AS prec_mass, sequence.e_value AS e_value, sequence.q_value AS q_value
-                FROM SPECTRA INNER JOIN sequence ON SPECTRA.ID = sequence.scan_id
+                FROM SPECTRA INNER JOIN sequence ON SPECTRA.SCAN = sequence.scan_id
                 WHERE SPECTRA.SCAN = ?`);
     if(stmt.get(scanNum)) {
         let proteoform = stmt.get(scanNum).proteoform;

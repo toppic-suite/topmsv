@@ -14,7 +14,7 @@ function getEnvIDListByMZRange(dir, min, max, scan) {
     let resultDB = new BetterDB(dbDir);
     let stmt = resultDB.prepare('SELECT DISTINCT envelope.envelope_id ' +
         'FROM env_peak INNER JOIN envelope ON env_peak.envelope_id = envelope.envelope_id ' +
-        'INNER JOIN SPECTRA ON envelope.scan_id = SPECTRA.ID ' +
+        'INNER JOIN SPECTRA ON envelope.scan_id = SPECTRA.SCAN ' +
         'WHERE SPECTRA.SCAN = ? AND env_peak.mz >= ? AND env_peak.mz <= ?;');
     let envIDList = stmt.all(scan, min, max);
     resultDB.close();
