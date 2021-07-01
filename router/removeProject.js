@@ -11,16 +11,8 @@ const deleteProject = require("../library/deleteProject");
 const removeProject = router.post('/removeProject', function (req, res) {
     console.log("Hello, removeProject!");
     const projectCode = req.query.projectCode;
-    getProjectSummary(projectCode, function (err, row) {
-        let projectStatus = row.projectStatus;
-        if (projectStatus === 3) {
-            res.end();
-            return;
-        } else {
-            deleteProject(projectCode);
-            res.end();
-        }
-    });
+    deleteProject(projectCode);
+    res.end();
 });
 
 module.exports = removeProject;
