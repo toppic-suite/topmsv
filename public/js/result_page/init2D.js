@@ -238,7 +238,6 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             }
         }).then(function(response) {
             peakList2_g = response.data;
-            console.log('peakList2_g', peakList2_g);
             temp_peakList2_g = JSON.parse(JSON.stringify(peakList2_g));
             if($('#envStatus').val() === "1") {
                 return topview_2d.getEnvTable(scanID);
