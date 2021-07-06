@@ -18,8 +18,6 @@ const nodemailerAuth = require('../nodemailer-auth');
 const fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
-const sqlite3 = require('sqlite3').verbose();
-const os = require('os');
 const path = require('path')
 
 const upload = router.post('/upload', function (req, res) {

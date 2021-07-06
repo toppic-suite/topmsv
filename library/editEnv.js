@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 
 /**
  * Edit envelope data by envelope_id. Delete previous corresponding envelope peaks first. Async mode.
@@ -19,23 +19,17 @@ function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
                 WHERE envelope_id = ?;`;
     let sqlDelete = `DELETE FROM env_peak WHERE envelope_id = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
-    let resultDb = new sqlite3.Database(dbDir, (err) => {
-        if (err) {
+    let db = new BetterDB(dbDir);
+    
+    let stmtForUpdate = db.prepare(sql);
+    let stmtForDelete = db.prepare(sqlDelete);
+    let infoForUpdate = stmtForUpdate.run();
+    let infoForDelete = stmtForDelete.run();
 
-            console.error(err.message);
-        }
-        // console.log('Connected to the result database.');
-    });
-    resultDb.run(sql,[charge, monoMass,theoInteSum,envID], function(err) {
-        if (err) {
-            return console.error(err.message);
-        }
-        resultDb.run(sqlDelete,[envID], function (err) {
-            //console.log(this);
-            console.log(`Row(s) edited: ${this.changes}`);
-            return callback();
-        });
-    });
-    resultDb.close();
+    console.log(`Row(s) edited: ${infoForDelete.changes}`);
+
+    db.close();
+
+    return callback();
 }
 module.exports = editEnv;
