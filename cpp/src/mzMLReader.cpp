@@ -215,7 +215,7 @@ void mzMLReader::creatTable() {
 
    /* Create SQL statement */
    sql_ = (char*)("CREATE TABLE PEAKS("  \
-         "SPECTRAID     INT      NOT NULL REFERENCES SPEACTRA(ID)," \
+         "SPECTRAID     INT      NOT NULL REFERENCES SPEACTRA(SCAN)," \
          "MZ            REAL     NOT NULL," \
          "INTENSITY     REAL     NOT NULL," \
          "RETENTIONTIME     REAL     NOT NULL);");

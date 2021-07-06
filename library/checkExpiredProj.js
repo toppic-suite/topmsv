@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 
 /**
  * Get all expired projects in database, which uploaded more than 30 days ago. Async mode.
@@ -7,11 +7,8 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function checkExpiredProj(callback) {
-    let db = new sqlite3.Database('./db/projectDB.db', (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-    });
+    let db = new BetterDB('./db/projectDB.db');
+
     var sql = `SELECT projectCode AS pcode,
             projectDir AS dir,
             fileName AS fileName
@@ -20,14 +17,11 @@ function checkExpiredProj(callback) {
             AND ProjectStatus <> 3
             AND doesExpire = 'true'`;
 
-    db.all(sql,(err, rows) => {
-        if (err) {
-            throw err;
-        }
-        else {
-            return callback(null, rows);
-        }
-    });
+    let stmt = db.prepare(sql);
+    let rows = stmt.all();
+    
     db.close();
+
+    return callback(null, rows);
 }
 module.exports = checkExpiredProj;

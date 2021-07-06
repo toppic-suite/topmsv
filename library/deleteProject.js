@@ -1,3 +1,4 @@
+//may be ok to remove
 const updateProjectStatusSync = require("../library/updateProjectStatusSync");
 const getProjectSummary = require("../library/getProjectSummary");
 const rimraf = require("rimraf");
@@ -19,4 +20,4 @@ function deleteProject(projectCode) {
     });
 }
 
-module.exports = deleteProject;
+//module.exports = deleteProject;

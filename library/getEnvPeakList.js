@@ -1,4 +1,3 @@
-const sqlite3 = require('sqlite3').verbose();
 /**
  * Get list of envelope peaks information. Async mode.
  * @param {sqliteDB} resultDB - Sqlite database object
@@ -8,15 +7,11 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function getEnvPeakList(resultDB, envelope_id, callback) {
-    let sql = `SELECT mz, intensity
-                FROM env_peak
-                WHERE envelope_id = ?`;
-    resultDB.all(sql, [envelope_id], (err, rows) => {
-        if (err) {
-            // console.log(err);
-            // throw err;
-        }
-        return callback(null,rows);
-    });
+    let stmt = resultDB.prepare(`SELECT mz, intensity FROM env_peak WHERE envelope_id = ?`);
+    let rows = stmt.all(envelope_id);
+
+    resultDB.close();
+    
+    callback(null, rows);
 }
 module.exports = getEnvPeakList;
