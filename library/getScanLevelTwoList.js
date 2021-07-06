@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 /**
  * Get a list of level one's corresponding level two scan. Async mode.
  * @param {string} dir - Project directory
@@ -16,18 +16,11 @@ function getScanLevelTwoList(dir, scanID, callback) {
                     RETENTIONTIME AS rt
            FROM ScanPairs INNER JOIN SPECTRA ON ScanPairs.LevelTwoScanID = SPECTRA.SCAN
            WHERE LevelOneScanID = ?`;
-    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
-    let resultDb = new sqlite3.Database(dbDir, (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-    });
-    resultDb.all(sql, [scanID], (err, rows) => {
-        if (err) {
-            throw err;
-        }
-        return callback(null, rows);
-    });
-    resultDb.close();
+    let db = new BetterDB(dbDir);
+    let stmt = db.prepare(sql);
+    let rows = stmt.all(scanID);
+    
+    db.close();
+    return callback(null, rows);
 }
 module.exports = getScanLevelTwoList;
