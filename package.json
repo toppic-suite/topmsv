@@ -33,7 +33,6 @@
     "passport-custom": "1.1.1",
     "rimraf": "3.0.2",
     "serve-favicon": "2.5.0",
-    "sqlite3": "4.2.0",
     "uuid": "3.4.0",
     "unzipper": "0.10.11"
   },
