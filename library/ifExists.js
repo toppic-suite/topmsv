@@ -13,10 +13,9 @@ function ifExists(base64_code, callback) {
              WHERE ProjectCode  = ?`;
     // first row only
     let stmt = db.prepare(sql);
-    let row = stmt.all(base64_code);
+    let row = stmt.get(base64_code);
 
     db.close();
-
     if (row === undefined) {
         return callback(null, false);
     }

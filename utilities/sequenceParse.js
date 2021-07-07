@@ -18,7 +18,7 @@ const stmtCreateSequenceTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS seq
     '    q_value TEXT NULL,\n' +
     '    e_value TEXT NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
-    '       REFERENCES SPECTRA (ID)\n' +
+    '       REFERENCES SPECTRA (SCAN)\n' +
     ');');
 stmtCreateSequenceTable.run();
 const insertMany = betterDB.transaction(importData);
@@ -36,7 +36,7 @@ stmtSeqIndex.run();
 betterDB.close();
 
 function importData(db, data) {
-    const stmtFindScanID = db.prepare('SELECT ID AS id FROM SPECTRA WHERE SCAN = ?');
+    const stmtFindScanID = db.prepare('SELECT SCAN AS id FROM SPECTRA WHERE SCAN = ?');
     const stmtInsert = db.prepare('INSERT INTO sequence(id,scan_id,protein_accession,prec_mass,proteoform,q_value, e_value) VALUES(?,?,?,?,?,?,?)');
     const stmtMaxSeqID = db.prepare('SELECT MAX(id) AS maxID FROM sequence');
     let id = stmtMaxSeqID.get().maxID + 1;

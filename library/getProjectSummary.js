@@ -24,9 +24,9 @@ function getProjectSummary(id, callback) {
                 WHERE ProjectCode = ?`;
     
     let stmt = db.prepare(sql);
-    let rows = stmt.all(id);
+    let row = stmt.get(id);
 
     db.close();
-    return callback(null, rows);
+    return callback(null, row);
 }
 module.exports = getProjectSummary;
