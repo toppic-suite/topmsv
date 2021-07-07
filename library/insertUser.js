@@ -11,7 +11,7 @@ function insertUser(uid, email, firstname, lastname, fullname){
     let db = new BetterDB('./db/projectDB.db');
     let sql = 'INSERT INTO Users(uid, email, firstname, lastname, fullname) VALUES(?,?,?,?,?)';
     let stmt = db.prepare(sql);
-    let rows = stmt.all(uid, email, firstname, lastname, fullname);
+    let rows = stmt.run(uid, email, firstname, lastname, fullname);
 
     db.close();
     console.log(`A row has been inserted with rowid ${this.lastInsertRowid}`);

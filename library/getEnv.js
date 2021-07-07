@@ -16,7 +16,7 @@ function getEnv(dir, envID,callback) {
     let db = new BetterDB(dbDir);
 
     let stmt = db.prepare(sql);
-    let row = stmt.all();
+    let row = stmt.get(envID);
     
     db.close();
 

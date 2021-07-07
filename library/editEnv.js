@@ -23,8 +23,8 @@ function editEnv(dir, envID, charge, monoMass, theoInteSum, callback) {
     
     let stmtForUpdate = db.prepare(sql);
     let stmtForDelete = db.prepare(sqlDelete);
-    let infoForUpdate = stmtForUpdate.run();
-    let infoForDelete = stmtForDelete.run();
+    let infoForUpdate = stmtForUpdate.run(charge, monoMass, theoInteSum, envID);
+    let infoForDelete = stmtForDelete.run(envID);
 
     console.log(`Row(s) edited: ${infoForDelete.changes}`);
 
