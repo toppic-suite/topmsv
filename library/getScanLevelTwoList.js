@@ -16,6 +16,7 @@ function getScanLevelTwoList(dir, scanID, callback) {
                     RETENTIONTIME AS rt
            FROM ScanPairs INNER JOIN SPECTRA ON ScanPairs.LevelTwoScanID = SPECTRA.SCAN
            WHERE LevelOneScanID = ?`;
+    let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";       
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let rows = stmt.all(scanID);

@@ -14,13 +14,8 @@ function getPrecMZ(dir, scan, callback) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
-    let rows = stmt.all(scan);
-    resultDb.get(sql, [scan], (err, row) => {
-        if (err) {
-            throw err;
-        }
-    });
+    let row = stmt.get(scan);
     db.close();
-    return callback(null, rows);
+    return callback(null, row);
 }
 module.exports = getPrecMZ;

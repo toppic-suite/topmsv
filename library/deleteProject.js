@@ -20,4 +20,4 @@ function deleteProject(projectCode) {
     });
 }
 
-//module.exports = deleteProject;
+module.exports = deleteProject;

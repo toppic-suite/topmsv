@@ -261,13 +261,12 @@ const upload = router.post('/upload', function (req, res) {
                     }
                     let adr =  'https://toppic.soic.iupui.edu/data?id=';
                     let id = makeid(11);
-
                     ifExists(id, function (err, result) {
                         if(err) {
                             console.log(err);
                         }
                         while (true) {
-                            // console.log(result);
+                            //console.log(result);
                             if(!result) {
                                 insertRowSync(id, projectname, fname,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus, "true", 0);
                                 // insertDataset(eid, projectname, description, projectsID);
@@ -288,7 +287,6 @@ const upload = router.post('/upload', function (req, res) {
 
                                 submitTask(id, app, parameter, 1);
 
-                                res.end();
                                 break;
                             }
                         }
@@ -307,6 +305,7 @@ const upload = router.post('/upload', function (req, res) {
                     else {
 						res.write("");
 					}
+                    res.end();
                     return;
                 });
             }

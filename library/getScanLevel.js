@@ -14,7 +14,7 @@ function getScanLevel(dir, scanID, callback) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
-    let rows = stmt.all(scanID);
+    let rows = stmt.get(scanID);
 
     db.close();
 

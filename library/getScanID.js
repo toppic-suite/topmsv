@@ -14,7 +14,7 @@ function getScanID(dir, id, callback) {
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
-    let rows = stmt.all(id);
+    let rows = stmt.get(id);
 
     db.close();
 

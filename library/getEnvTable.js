@@ -14,7 +14,7 @@ function getEnvTable(dir, scanID, callback){
     let db = new BetterDB(dbDir);
 
     let stmt = db.prepare(sql);
-    let rows = stmt.all();
+    let rows = stmt.all(scanID);
 
     db.close();
 
