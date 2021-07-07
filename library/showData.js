@@ -2,7 +2,6 @@ let times = 0;
 let result=[];
 const getEnvNum = require("./getEnvNum");
 const getEnvPeakList = require("./getEnvPeakList");
-const sqlite3 = require('sqlite3').verbose();
 
 /**
  * Helper function for router envlist

@@ -9,7 +9,7 @@ const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope
     '    mono_mass REAL NOT NULL,\n' +
     '    intensity REAL NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
-    '       REFERENCES SPECTRA (ID)\n' +
+    '       REFERENCES SPECTRA (SCAN)\n' +
     ');');
 stmtCreateEnvTable.run();
 const stmtCreatePeakTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS env_peak (\n' +
