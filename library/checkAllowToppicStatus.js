@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 
 /**
  * Get allowToppic status by Tasks.projectCode. Sync mode.
@@ -6,20 +6,13 @@ const sqlite3 = require('sqlite3').verbose();
  * @returns {Object} Object contains projectStatus
  */
 function checkAllowToppicStatus(projectCode, callback) {
-    let db = new sqlite3.Database('./db/projectDB.db', (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-    });
+    let db = new BetterDB('./db/projectDB.db');
+    let stmt = db.prepare(`SELECT allowToppic AS allowToppic FROM Projects WHERE projectCode = ?;`);
+    
+    let info = stmt.get(projectCode);
 
-    let sql = `SELECT allowToppic AS allowToppic FROM Projects WHERE projectCode = ?;`;
-    db.get(sql,[projectCode], function (err, row) {
-        if (err) {
-            console.error(err.message);
-            return err;
-        }
-        return callback(err, row);
-    })
     db.close();
+
+    return callback(null, info);
 }
 module.exports = checkAllowToppicStatus;

@@ -1,7 +1,7 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 
 /**
- * Delete envelope data by envelope_id. Async Mode.
+ * Delete envelope data by envelope_id. 
  * @param {string} dir - Project directory
  * @param {number} envID - Envelope ID
  * @param {function} callback - Callback function that handles query results.
@@ -12,19 +12,13 @@ function deleteEnv(dir, envID, callback) {
     let sql = `DELETE FROM envelope
                 WHERE envelope_id = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
-    let resultDb = new sqlite3.Database(dbDir, (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-        // console.log('Connected to the result database.');
-    });
-    resultDb.run(sql,[envID], function(err) {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log(`Row(s) deleted: ${this.changes}`);
-        return callback();
-    });
-    resultDb.close();
+    let db = new BetterDB(dbDir);
+
+    let stmt = db.prepare(sql);
+    let info = stmt.run(envID);
+    db.close();
+
+    console.log(`Row(s) deleted: ${info.changes}`);
+    return callback();
 }
 module.exports = deleteEnv;

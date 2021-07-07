@@ -1,28 +1,21 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 /**
- * Update project status code to 2 by projectCode. Async mode.
+ * Update project status code to 2 by projectCode. 
  * @param {string} id - Project code
  * @param {function} callback - Callback function that handles the query results
  * @returns {function} Callback function
- * @async
  */
 function processFailure(id, callback) {
-    let db = new sqlite3.Database('./db/projectDB.db', (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-        // console.log('Connected to the result database.');
-    });
+    let db = new BetterDB('./db/projectDB.db');
     let sql = `UPDATE Projects
                 SET ProjectStatus = 2
                 WHERE ProjectCode = ?`;
-    db.run(sql, [id], function (err) {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log(`Row(s) updated: ${this.changes}`);
-        return callback(null);
-    });
+
+    let stmt = db.prepare(sql);
+    let rows = stmt.run(id);
+
     db.close();
+    console.log(`Row(s) updated: ${rows.changes}`);
+    return callback(null);
 }
 module.exports = processFailure;

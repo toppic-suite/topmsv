@@ -1,6 +1,6 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 /**
- * Get scan of next level one. Async mode.
+ * Get scan of next level one. 
  * @param {string} dir - Project directory
  * @param {number} tableNum - database table number to get peaks from
  * @param {number} minrt - minimum retention time
@@ -10,16 +10,8 @@ const sqlite3 = require('sqlite3').verbose();
  * @param {number} maxPeaks - maximum number of peaks to be returned
  * @param {function} callback - Callback function that handles query results
  * @returns {function} Callback function
- * @async
  */
 function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, maxPeaks, cutoff, callback) {
-    /*let sql = `SELECT *
-                FROM PEAKS` + tableNum + 
-                ` WHERE RETENTIONTIME <= ? 
-                AND RETENTIONTIME >= ?
-                AND MZ <= ?
-                AND MZ >= ?
-                ORDER BY INTENSITY DESC;`;*/
     let sql = `SELECT *
                 FROM PEAKS` + tableNum +  
                 ` WHERE RETENTIONTIME <= ? 
@@ -30,19 +22,11 @@ function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, maxPea
                 ORDER BY INTENSITY DESC
                 LIMIT ?;`;           
     let dbDir = dir;
-    let resultDb = new sqlite3.Database(dbDir, (err) => {
-        if (err) {
-            console.error("error during db generation", err.message);
-        }
-       // console.log('Connected to the result database.');
-    });
+    let db = new BetterDB(dbDir);
+    let stmt = db.prepare(sql);
+    let rows = stmt.all(maxrt, minrt, maxmz, minmz, cutoff, maxPeaks);
 
-    resultDb.all(sql, [maxrt, minrt, maxmz, minmz, cutoff, maxPeaks], (err, row) => {
-        if (err) {
-            console.error(err.message);
-        }
-        return callback(null, row);
-    });
-    resultDb.close();
+    db.close();
+    return callback(null, rows);
 }
 module.exports = load3dDataByParaRange;
