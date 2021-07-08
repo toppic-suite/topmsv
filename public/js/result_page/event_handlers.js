@@ -107,7 +107,7 @@ $( document ).ready(function() {
     });
 
     $("#inspect").click(function () {
-        let peaklist;
+        /*let peaklist;
         let masslistID = $('#envScan').text();
         if($("#switch").text() === 'MS1') {
             peaklist = peakList2_g;
@@ -141,10 +141,12 @@ $( document ).ready(function() {
                 window.localStorage.setItem('massAndIntensityList', massAndIntensityList);
                 window.localStorage.setItem('ionType', 'Y,B');
                 window.localStorage.setItem('precursorMass', $('#prec_mz').text());
-                window.open('/resources/topview/inspect/spectrum.html', '_blank');
+                window.open('/resources/topview/inspect/spectrum_no_nav.html', '_blank');
                 //console.log(res);
             }
-        });
+        });*/
+        let masslistID = $('#envScan').text();
+        inspect(masslistID,masslistID);
     });
 
     $("#deleteMsalign").click(function () {
