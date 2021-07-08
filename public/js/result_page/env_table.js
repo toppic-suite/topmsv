@@ -61,7 +61,7 @@ function showEnvTable(scan) {
                 className: 'btn',
                 filename: 'envelope_data'
             },
-            {
+            /*{
                 text: 'Add',
                 className: 'btn owner_btn',
                 name: 'add'        // do not change name
@@ -71,7 +71,7 @@ function showEnvTable(scan) {
                 text: 'Update',
                 className: 'btn owner_btn',
                 name: 'edit'        // do not change name
-            },
+            },*/
             {
                 extend: 'selected', // Bind to Selected row
                 text: 'Delete',
@@ -164,10 +164,10 @@ function showEnvTable(scan) {
 function jumpToEnv(data) {
     let mono_mz = data.mono_mz;
     if($('#msType').text() === 'MS2'){
-        graph2_g.para.updateMzRange(mono_mz);
+        graph2_g.getPara().updateMzRange(mono_mz);
         graph2_g.redraw();
     } else {
-        graph1_g.para.updateMzRange(mono_mz);
+        graph1_g.getPara().updateMzRange(mono_mz);
         graph1_g.redraw();
     }
 }
