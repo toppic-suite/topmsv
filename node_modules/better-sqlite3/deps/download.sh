@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # ===
 # This script defines and generates the bundled SQLite3 unit (sqlite3.c).
@@ -18,23 +18,25 @@
 # 3. node-gyp links the two resulting binaries to generate better_sqlite3.node.
 # ===
 
-VERSION="3290000"
-YEAR="2019"
-
-# TODO: SQLITE_ENABLE_GEOPOLY (determine if the emitted warnings are safe or not)
+YEAR="2021"
+VERSION="3350200"
 
 DEFINES="
-SQLITE_THREADSAFE=0
+SQLITE_DQS=0
+SQLITE_LIKE_DOESNT_MATCH_BLOBS
+SQLITE_THREADSAFE=2
+SQLITE_USE_URI=0
 SQLITE_DEFAULT_MEMSTATUS=0
 SQLITE_OMIT_DEPRECATED
 SQLITE_OMIT_GET_TABLE
 SQLITE_OMIT_TCL_VARIABLE
 SQLITE_OMIT_PROGRESS_CALLBACK
+SQLITE_OMIT_SHARED_CACHE
 SQLITE_TRACE_SIZE_LIMIT=32
 SQLITE_DEFAULT_CACHE_SIZE=-16000
 SQLITE_DEFAULT_FOREIGN_KEYS=1
 SQLITE_DEFAULT_WAL_SYNCHRONOUS=1
-SQLITE_USE_URI=1
+SQLITE_ENABLE_DESERIALIZE
 SQLITE_ENABLE_COLUMN_METADATA
 SQLITE_ENABLE_UPDATE_DELETE_LIMIT
 SQLITE_ENABLE_STAT4
@@ -44,8 +46,16 @@ SQLITE_ENABLE_FTS4
 SQLITE_ENABLE_FTS5
 SQLITE_ENABLE_JSON1
 SQLITE_ENABLE_RTREE
+SQLITE_ENABLE_GEOPOLY
 SQLITE_INTROSPECTION_PRAGMAS
 SQLITE_SOUNDEX
+HAVE_STDINT_H=1
+HAVE_INT8_T=1
+HAVE_INT16_T=1
+HAVE_INT32_T=1
+HAVE_UINT8_T=1
+HAVE_UINT16_T=1
+HAVE_UINT32_T=1
 "
 
 # ========== START SCRIPT ========== #
@@ -62,7 +72,7 @@ curl -#f "https://www.sqlite.org/$YEAR/sqlite-src-$VERSION.zip" > "$TEMP/source.
 
 echo "extracting source..."
 unzip "$TEMP/source.zip" -d "$TEMP" > /dev/null || exit 1
-cd "$TEMP/sqlite-src-$VERSION"
+cd "$TEMP/sqlite-src-$VERSION" || exit 1
 
 echo "configuring amalgamation..."
 sh configure > /dev/null || exit 1
@@ -90,7 +100,7 @@ printf "$DEFINES" | sed -e "/^\s*$/d" >> "$DOCS"
 printf "\`\`\`\n" >> "$DOCS"
 
 echo "cleaning up..."
-cd - > /dev/null
+cd - > /dev/null || exit 1
 rm -rf "$TEMP"
 
 echo "done!"
