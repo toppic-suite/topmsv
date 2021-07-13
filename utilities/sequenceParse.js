@@ -18,7 +18,7 @@ const stmtCreateSequenceTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS seq
     '    q_value TEXT NULL,\n' +
     '    e_value TEXT NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
-    '       REFERENCES SPECTRA (ID)\n' +
+    '       REFERENCES SPECTRA (SCAN)\n' +
     ');');
 stmtCreateSequenceTable.run();
 const insertMany = betterDB.transaction(importData);
