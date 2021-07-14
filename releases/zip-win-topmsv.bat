@@ -22,6 +22,10 @@ copy ..\*.html topmsv-%1
 copy ..\*.ini topmsv-%1
 copy ..\*.bat topmsv-%1
 copy ..\*.vbs topmsv-%1
+copy ..\*.exe topmsv-%1
+copy ..\node* topmsv-%1
+copy ..\npm* topmsv-%1
+copy ..\npx* topmsv-%1
 
 copy ..\LICENSE topmsv-%1
 copy ..\README.md topmsv-%1
