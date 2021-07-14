@@ -1,131 +1,179 @@
-class PrsmData {//prsmViewData
-  //missing underscore in variable names
-  residues; 
-  formFirstPos;
-  formLastPos;
-  breakPoints;
-
-  sequence;
-  fixedPtms;
-  variablePtms;
-  massShifts;
-  annotations;
-  proteoform;
-  //information above are retrieved from prsm and proteoform object
-
-  rowNum;
-  displayFirstPos;
-  displayLastPos;
-  // if there is a skipping line at the beginning
-  showStartSkipped; 
-  startSkippedInfo = "";
-  // if there is a skipping line at the end
-  showEndSkipped;
-  endSkippedInfo = "";
-
-  initData = function(prsm, para) {
-    this.parseData(prsm);
-    this.updatePara(para);
-    this.addColor();
-  }
-  // form residues from sequence
-  formResidues = function(sequence) {
-    let residues = [];
-    for (let i = 0; i < sequence.length; i++) {
-      let tempObj = {
-        position: i.toString(),
-        acid: sequence.charAt(i).toUpperCase()
-      }
-    residues.push(tempObj);
+"use strict";
+class PrsmViewData {
+    constructor() {
+        //missing underscore in variable names
+        this.residues_ = [];
+        this.formFirstPos_ = 0;
+        this.formLastPos_ = 0;
+        this.breakPoints_ = [];
+        this.sequence_ = "";
+        this.fixedPtms_ = [];
+        this.protVariablePtms_ = [];
+        this.variablePtms_ = [];
+        this.massShifts_ = [];
+        this.annotations_ = [];
+        this.proteoform_ = null;
+        //information above are retrieved from prsm and proteoform object
+        this.rowNum_ = 0;
+        this.displayFirstPos_ = 0;
+        this.displayLastPos_ = 0;
+        // if there is a skipping line at the beginning
+        this.showStartSkipped_ = true;
+        this.startSkippedInfo_ = "";
+        // if there is a skipping line at the end
+        this.showEndSkipped_ = true;
+        this.endSkippedInfo_ = "";
     }
-    return residues;
-  }
-  generateAnnotation(protVarPtm, variablePtm, massShift){
-    let anno = [];
-    //annotation in prsm object contains only variable and unknown shifts
-    for (let i = 0; i < protVarPtm.length; i++){
-      let temp = {"annoText":protVarPtm[i].getAnnotation(), "leftPos":0, "rightPos":0};
-      temp.leftPos = protVarPtm[i].getLeftPos();
-      temp.rightPos = temp.leftPos + 1;
-      anno.push(temp);
+    //getters and setters
+    getResidues() {
+        return this.residues_;
     }
-    for (let i = 0; i < variablePtm.length; i++){
-      let temp = {"annoText":variablePtm[i].getAnnotation(), "leftPos":0, "rightPos":0};
-      temp.leftPos = variablePtm[i].getLeftPos();
-      temp.rightPos = temp.leftPos + 1;
-      anno.push(temp);
+    getFormFirstPos() {
+        return this.formFirstPos_;
     }
-    for (let i = 0; i < massShift.length; i++){
-      let temp = {"annoText":massShift[i].getAnnotation(), "leftPos":massShift[i].getLeftPos(), "rightPos":massShift[i].getRightPos()};
-      anno.push(temp);
+    getFormLastPos() {
+        return this.formLastPos_;
     }
-    return anno;
-  }
-  parseData = function(prsm) {
-    let proteoformObj = prsm.getProteoform();
-    this.residues = this.formResidues(proteoformObj.getSeq());
-    this.formFirstPos = proteoformObj.getFirstPos();
-    this.formLastPos = proteoformObj.getLastPos();
-    this.breakPoints = prsm.getBreakPoints();
-    this.fixedPtms = proteoformObj.getFixedPtm();
-    this.protVariablePtms = proteoformObj.getProtVarPtm();
-    this.variablePtms = proteoformObj.getVarPtm();
-    this.massShifts = proteoformObj.getUnknownMassShift();
-    this.sequence = proteoformObj.getSeq();
-    this.proteoform = proteoformObj;
-    this.annotations = this.generateAnnotation(this.protVariablePtms, this.variablePtms, this.massShifts);
-  }
- 
-  updatePara = function(para) {
-    let len = this.residues.length; 
-    //console.log(this.formFirstPos, this.formLastPos, len, para.rowLength);
-    // Include 5 amino acids before and after the form
-    this.displayFirstPos = Math.floor((this.formFirstPos - 5) / para.rowLength) * para.rowLength;
-    if (this.displayFirstPos < 0) {
-      this.displayFirstPos = 0;
+    getSequence() {
+        return this.sequence_;
     }
-    this.displayLastPos = Math.ceil((this.formLastPos + 6) / para.rowLength) * para.rowLength - 1;
-    //console.log("display last pos ", this.displayLastPos);
-    if (this.displayLastPos > (len -1)) {
-      this.displayLastPos = len -1;
+    getBreakPoints() {
+        return this.breakPoints_;
     }
-    this.rowNum = Math.ceil((this.displayLastPos - this.displayFirstPos + 1)/para.rowLength);
-    
-    // skipping line
-    this.showStartSkipped = false;
-    this.showEndSkipped = false;
-    if (para.showSkippedLines) {
-      if (this.displayFirstPos !== 0) {
-        this.showStartSkipped = true;
-		    this.startSkippedInfo = "... "+ this.displayFirstPos 
-          + " amino acid residues are skipped at the N-terminus ... ";
-      }
-      if (this.displayLastPos !== len - 1) {
-        this.showEndSkipped = true;
-		    this.endSkippedInfo =  "... "+ (len - 1 - this.displayLastPos) 
-          + " amino acid residues are skipped at the C-terminus ... ";
-      }
+    getFixedPtms() {
+        return this.fixedPtms_;
     }
-
-    //console.log(this.displayFirstPos, this.displayLastPos, 
-    //  this.rowNum, this.showStartSkipped, this.showEndSkipped);
-  }
-
-  addColor = function() {
-    for (let i = 0; i < this.residues.length; i++) {
-      let residue = this.residues[i];
-      let pos = residue.position;
-      if (pos < this.formFirstPos || pos > this.formLastPos) {
-        residue.color = "grey";
-      }
-      else {
-        residue.color = "black";
-      }
+    ;
+    getVariablePtms() {
+        return this.variablePtms_;
     }
-    for (let i = 0; i < this.fixedPtms.length; i++) {
-      let ptm = this.fixedPtms[i];
-      let pos = ptm.getLeftPos();
-      this.residues[pos].color = "red";
+    getMassShifts() {
+        return this.massShifts_;
     }
-  }
+    getAnnotations() {
+        return this.annotations_;
+    }
+    getProteoform() {
+        return this.proteoform_;
+    }
+    getRowNum() {
+        return this.rowNum_;
+    }
+    getDisplayFirstPos() {
+        return this.displayFirstPos_;
+    }
+    getDisplayLastPos() {
+        return this.displayLastPos_;
+    }
+    getShowStartSkipped() {
+        return this.showStartSkipped_;
+    }
+    getStartSkippedInfo() {
+        return this.startSkippedInfo_;
+    }
+    getShowEndSkipped() {
+        return this.showEndSkipped_;
+    }
+    getEndSkippedInfo() {
+        return this.endSkippedInfo_;
+    }
+    initData(prsm, para) {
+        this.parseData(prsm);
+        this.updatePara(para);
+        this.addColor();
+    }
+    // form residues from sequence
+    formResidues(sequence) {
+        let residues = [];
+        for (let i = 0; i < sequence.length; i++) {
+            let tempObj = {
+                position: i,
+                acid: sequence.charAt(i).toUpperCase(),
+                color: ""
+            };
+            residues.push(tempObj);
+        }
+        return residues;
+    }
+    generateAnnotation(protVarPtm, variablePtm, massShift) {
+        let anno = [];
+        //annotation in prsm object contains only variable and unknown shifts
+        for (let i = 0; i < protVarPtm.length; i++) {
+            let temp = { "annoText": protVarPtm[i].getAnnotation(), "leftPos": 0, "rightPos": 0 };
+            temp.leftPos = protVarPtm[i].getLeftPos();
+            temp.rightPos = temp.leftPos + 1;
+            anno.push(temp);
+        }
+        for (let i = 0; i < variablePtm.length; i++) {
+            let temp = { "annoText": variablePtm[i].getAnnotation(), "leftPos": 0, "rightPos": 0 };
+            temp.leftPos = variablePtm[i].getLeftPos();
+            temp.rightPos = temp.leftPos + 1;
+            anno.push(temp);
+        }
+        for (let i = 0; i < massShift.length; i++) {
+            let temp = { "annoText": massShift[i].getAnnotation(), "leftPos": massShift[i].getLeftPos(), "rightPos": massShift[i].getRightPos() };
+            anno.push(temp);
+        }
+        return anno;
+    }
+    parseData(prsm) {
+        let proteoformObj = prsm.getProteoform();
+        this.residues_ = this.formResidues(proteoformObj.getSeq());
+        this.formFirstPos_ = proteoformObj.getFirstPos();
+        this.formLastPos_ = proteoformObj.getLastPos();
+        this.breakPoints_ = prsm.getBreakPoints();
+        this.fixedPtms_ = proteoformObj.getFixedPtm();
+        this.protVariablePtms_ = proteoformObj.getProtVarPtm();
+        this.variablePtms_ = proteoformObj.getVarPtm();
+        this.massShifts_ = proteoformObj.getUnknownMassShift();
+        this.sequence_ = proteoformObj.getSeq();
+        this.proteoform_ = proteoformObj;
+        this.annotations_ = this.generateAnnotation(this.protVariablePtms_, this.variablePtms_, this.massShifts_);
+    }
+    updatePara(para) {
+        let len = this.residues_.length;
+        // Include 5 amino acids before and after the form
+        this.displayFirstPos_ = Math.floor((this.formFirstPos_ - 5) / para.getRowLength()) * para.getRowLength();
+        if (this.displayFirstPos_ < 0) {
+            this.displayFirstPos_ = 0;
+        }
+        this.displayLastPos_ = Math.ceil((this.formLastPos_ + 6) / para.getRowLength()) * para.getRowLength() - 1;
+        //console.log("display last pos ", this.displayLastPos);
+        if (this.displayLastPos_ > (len - 1)) {
+            this.displayLastPos_ = len - 1;
+        }
+        this.rowNum_ = Math.ceil((this.displayLastPos_ - this.displayFirstPos_ + 1) / para.getRowLength());
+        // skipping line
+        this.showStartSkipped_ = false;
+        this.showEndSkipped_ = false;
+        if (para.getShowSkippedLines()) {
+            if (this.displayFirstPos_ !== 0) {
+                this.showStartSkipped_ = true;
+                this.startSkippedInfo_ = "... " + this.displayFirstPos_
+                    + " amino acid residues are skipped at the N-terminus ... ";
+            }
+            if (this.displayLastPos_ !== len - 1) {
+                this.showEndSkipped_ = true;
+                this.endSkippedInfo_ = "... " + (len - 1 - this.displayLastPos_)
+                    + " amino acid residues are skipped at the C-terminus ... ";
+            }
+        }
+    }
+    addColor() {
+        for (let i = 0; i < this.residues_.length; i++) {
+            let residue = this.residues_[i];
+            let pos = residue.position;
+            if (pos < this.formFirstPos_ || pos > this.formLastPos_) {
+                residue.color = "grey";
+            }
+            else {
+                residue.color = "black";
+            }
+        }
+        for (let i = 0; i < this.fixedPtms_.length; i++) {
+            let ptm = this.fixedPtms_[i];
+            let pos = ptm.getLeftPos();
+            this.residues_[pos].color = "red";
+        }
+    }
 }

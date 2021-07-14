@@ -1,177 +1,184 @@
+"use strict";
 /**
  * Sets all the fixed ptms to UI under Fixed Ptm column
  */
-function setFixedPtmListToUI(commonFixedPtmList){    
-    // commonFixedPtmList EX. [{acid: XX, mass: XX}]
+function setFixedPtmListToUI(commonFixedPtmList) {
+    let dropdown = domElements.dropDownMenuLink;
+    if (!dropdown) {
+        console.error("ERROR: dropdown element is empty");
+        return;
+    }
     commonFixedPtmList.forEach((fixedPtm) => {
-        let value = fixedPtm.acid+" : "+fixedPtm.mass;
+        let value = fixedPtm.getResidue() + " : " + fixedPtm.getShift().toString();
         let option = document.createElement("option");
-        option.setAttribute("value",value);
+        let dropdown = domElements.dropDownMenuLink;
+        option.setAttribute("value", value);
         option.innerHTML = value;
-        domElements.dropDownMenuLink.appendChild(option);
-    })
+        dropdown.appendChild(option); //already checked for null
+    });
     jqueryElements.addFixedPtmRow.click(() => {
-        let fixedPtm = domElements.dropDownMenuLink.value;
-        if(fixedPtm !== "fixed_ptm")
-        {
+        let fixedPtm = dropdown.value; //already checked for null
+        if (fixedPtm !== "fixed_ptm") {
             addNewFixedPtmRow(fixedPtm);
         }
-    })
+    });
 }
-
 /**
  * @function addNewFixedPtmRow
- * @description 
+ * @description
  * On Click of '+' symbol under fixed ptms in the HTML, creates new block to add Acid and mass shift
  * @param {String} fixedPtm - Contains Acid name and mass shift seperated by ':'
  */
-function addNewFixedPtmRow(fixedPtm){
+function addNewFixedPtmRow(fixedPtm) {
     let acid = '';
     let mass = '';
     let ifExist = false;
-    if(fixedPtm !== "other")
-    {
+    if (fixedPtm !== "other") {
         let splitVal = fixedPtm.split(":");
         acid = splitVal[0].trim();
         mass = splitVal[1].trim();
         let existingPtmList = getFixedPtmCheckList();
         existingPtmList.forEach((element) => {
             //  && element.mass === parseFloat(mass)
-            if (element.acid === acid) {
-                if (element.mass == mass) {
+            if (element.getResidue() === acid) {
+                if (element.getShift().toString() == mass) {
                     ifExist = true;
                     return;
                 }
-                let replace = confirm("Fixed ptm is already applied for acid " + acid + ". Do you want to replace it?")         
-                if (replace){
-                   //let acid = element.acid;
-                   // $(this).parent().remove();
-                   $(".fixedptms").each(function(){
-                    let acid = $( this ).find('.fixedptmacid').val().toUpperCase();
-                    if (acid == element.acid){
-                        $( this ).remove();
-                    }
-                });
-                }else{
+                let replace = confirm("Fixed ptm is already applied for acid " + acid + ". Do you want to replace it?");
+                if (replace) {
+                    $(".fixedptms").each((i, div) => {
+                        console.log(div);
+                        //let acid: string = div.val().toUpperCase();
+                        if (acid == element.getResidue()) {
+                            div.remove();
+                        }
+                    });
+                }
+                else {
                     ifExist = true;
-                }    
+                }
             }
         });
     }
-    if (ifExist) return;
+    if (ifExist)
+        return;
     let fixedPtmListDiv = domElements.fixedPtmList;
     let fixedptmsdiv = document.createElement("div");
-    fixedptmsdiv.setAttribute("class","fixedptms");
-    
+    fixedptmsdiv.setAttribute("class", "fixedptms");
     //Creating div with input fixed acid and fixed mass 
     let inputAcid = document.createElement("input");
-    inputAcid.setAttribute("type","text");
-    inputAcid.setAttribute("class","form-control fixedptmacid");
+    inputAcid.setAttribute("type", "text");
+    inputAcid.setAttribute("class", "form-control fixedptmacid");
     // inputAcid.setAttribute("id","fixedptmacid");
-    inputAcid.setAttribute("value",acid);
-    
+    inputAcid.setAttribute("value", acid);
     let span = document.createElement("span");
     span.innerHTML = "&nbsp;:&nbsp;";
-    
     let inputMass = document.createElement("input");
-    inputMass.setAttribute("type","text");
-    inputMass.setAttribute("class","form-control fixedptmmass");
+    inputMass.setAttribute("type", "text");
+    inputMass.setAttribute("class", "form-control fixedptmmass");
     // inputMass.setAttribute("id","fixedptmmass");
-    inputMass.setAttribute("value",mass);
-    
+    inputMass.setAttribute("value", mass);
     let span2 = document.createElement("span");
     span2.innerHTML = "&nbsp;";
-    
     let addButton = document.createElement("button");
-    addButton.setAttribute("type","button");
-    addButton.setAttribute("class","form-control btn btn-default btn-sm addnewrow");
-    
+    addButton.setAttribute("type", "button");
+    addButton.setAttribute("class", "form-control btn btn-default btn-sm addnewrow");
     let iAddFrame = document.createElement("i");
-    iAddFrame.setAttribute("class","fa fa-plus");
-    
+    iAddFrame.setAttribute("class", "fa fa-plus");
     addButton.appendChild(iAddFrame);
-    
     let span3 = document.createElement("span");
     span3.innerHTML = "&nbsp;";
-    
     let removeButton = document.createElement("button");
-    removeButton.setAttribute("type","button");
-    removeButton.setAttribute("class","form-control btn btn-default btn-sm removerow");
-
+    removeButton.setAttribute("type", "button");
+    removeButton.setAttribute("class", "form-control btn btn-default btn-sm removerow");
     let iRemoveFrame = document.createElement("i");
-    iRemoveFrame.setAttribute("class","fa fa-times");
+    iRemoveFrame.setAttribute("class", "fa fa-times");
     removeButton.appendChild(iRemoveFrame);
-    
     fixedptmsdiv.appendChild(inputAcid);
     fixedptmsdiv.appendChild(span);
     fixedptmsdiv.appendChild(inputMass);
     fixedptmsdiv.appendChild(span2);
     fixedptmsdiv.appendChild(removeButton);
-    fixedPtmListDiv.appendChild(fixedptmsdiv);	
-    
-    $('.removerow').click(function(){
-        let acid = $(this).parent().find(".fixedptmacid").val();
-        $(this).parent().remove();
-        //temp code
-        let errorVal ;
-        let errorType = jqueryElements.errorDropdown.val();
-        if(errorType === "masserror") {
-            errorVal = parseFloat(jqueryElements.errorValue.val().trim());
+    fixedPtmListDiv.appendChild(fixedptmsdiv);
+    $('.removerow').click((e) => {
+        let parents = $(e.target).parents();
+        for (let i = 0; i < parents.length; i++) {
+            if (parents[i].className == "fixedptms") {
+                parents[i].remove();
+            }
         }
-        else {
-            errorVal = parseFloat(jqueryElements.errorValue.val().trim());
+        //temp code
+        let errorVal;
+        let errorType = jqueryElements.errorDropdown.val();
+        if (typeof (errorType) == "string") {
+            if (errorType === "masserror") {
+                let val = jqueryElements.errorValue.val();
+                if (typeof (val) == "string") {
+                    errorVal = parseFloat(val.trim());
+                }
+            }
+            else {
+                let val = jqueryElements.errorValue.val();
+                if (typeof (val) == "string") {
+                    errorVal = parseFloat(val.trim());
+                }
+            }
         }
         // here
         // reload seqOfExecution to refresh result
         // let executionObj = new SeqOfExecution();
         // executionObj.sequenceOfExecution(errorType,errorVal,acid);
-    })
+    });
 }
-
 /**
  * Set all the fixed masses on html
  */
-function setFixedMasses(fixedPtmList){
-    if(fixedPtmList.length !=0)
-    {
+function setFixedMasses(fixedPtmList) {
+    if (fixedPtmList.length != 0) {
         // let commonfixedPtmList = [{name:"Carbamidomethylation",acid:"C",mass:57.021464},{name:"Carboxymethyl",acid:"C",mass:58.005479}];
-        for(let i=0;i<fixedPtmList.length;i++)
-        {
-            for(let j=0; j<COMMON_FIXED_PTM_LIST.length;j++)
-            {
-                if(fixedPtmList[i].getAnnotation().toUpperCase() ===  COMMON_FIXED_PTM_LIST[j].name.toUpperCase()){
+        for (let i = 0; i < fixedPtmList.length; i++) {
+            for (let j = 0; j < COMMON_FIXED_PTM_LIST.length; j++) {
+                if (fixedPtmList[i].getAnnotation().toUpperCase() === COMMON_FIXED_PTM_LIST[j].getName().toUpperCase()) {
                     let existingPtmList = getFixedPtmCheckList();
                     let isNewPtm = true;
-                    if (existingPtmList.length > 0){//prevent same ptm added again
+                    if (existingPtmList.length > 0) { //prevent same ptm added again
                         existingPtmList.forEach(ptm => {
-                            if (ptm.mass.toFixed(4) == fixedPtmList[i].getShift()){
+                            if (ptm.getShift().toFixed(4) == fixedPtmList[i].getShift().toString()) {
                                 isNewPtm = false;
-                            }  
-                        })
+                            }
+                        });
                     }
-                    if (isNewPtm){
-                        let fixedptm = COMMON_FIXED_PTM_LIST[j].acid + ":" + COMMON_FIXED_PTM_LIST[j].mass;
+                    if (isNewPtm) {
+                        let fixedptm = COMMON_FIXED_PTM_LIST[j].getResidue() + ":" + COMMON_FIXED_PTM_LIST[j].getShift.toString();
                         addNewFixedPtmRow(fixedptm);
-                        break;    
+                        break;
                     }
                 }
             }
         }
-    } 
+    }
 }
-
 /**
  * @return {Array} FixedPtmList - return all the selected fixed ptms with acid and mass
  */
-function getFixedPtmCheckList()
-{
+function getFixedPtmCheckList() {
     let result = [];
-    $(".fixedptms").each(function(){
-        let acid = $( this ).find('.fixedptmacid').val().toUpperCase();
-        let mass = parseFloat($( this ).find('.fixedptmmass').val());
-        if(acid.length !== 0  && !isNaN(mass))
-        {
-            let tempfixedptm = {acid:acid,mass:mass}
+    $(".fixedptms").each((i, div) => {
+        let acid = null;
+        let mass = null;
+        for (let i = 0; i < div.children.length; i++) {
+            if (div.children[i].className == "form-control fixedptmacid") {
+                let acidElement = div.children[i];
+                acid = acidElement.value;
+            }
+            else if (div.children[i].className == "form-control fixedptmmass") {
+                let massElement = div.children[i];
+                mass = massElement.value;
+            }
+        }
+        if (acid && mass) {
+            let tempfixedptm = new Mod(acid.toUpperCase(), parseFloat(mass), "");
             result.push(tempfixedptm);
         }
     });

@@ -33,6 +33,7 @@ if (sendEmail) {
 		text: 'Default text' // Plain text body
 	};
 }
+
 module.exports.transport = transport;
 module.exports.message = message;
 

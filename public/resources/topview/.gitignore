@@ -1,3 +1,6 @@
+#typescript build folder
+build/
+
 # Logs
 logs
 *.log

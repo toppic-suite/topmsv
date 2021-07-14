@@ -12,7 +12,7 @@ const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope
     '    intensity REAL NULL,\n' +
     '    charge INTEGER NULL,\n' +
     '    FOREIGN KEY (scan_id)\n' +
-    '       REFERENCES SPECTRA (ID)\n' +
+    '       REFERENCES SPECTRA (SCAN)\n' +
     ');');
 const stmtCreateEnvPeakTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS env_peak (\n' +
     '    env_peak_id INTEGER PRIMARY KEY,\n' +
@@ -40,7 +40,7 @@ const insertMany = betterDB.transaction(importData);
 function importData(database,data) {
     const stmtEnv = database.prepare('INSERT INTO envelope(envelope_id,scan_id,mono_mass,intensity,charge) VALUES(?,?,?,?,?)');
     // const stmtEnvPeak = database.prepare('INSERT INTO env_peak(env_peak_id, envelope_id, mz, intensity) VALUES(?,?,?,?)');
-    const stmtFindScanID = database.prepare('SELECT ID AS id FROM SPECTRA WHERE SCAN = ?');
+    const stmtFindScanID = database.prepare('SELECT SCAN AS id FROM SPECTRA WHERE SCAN = ?');
     const stmtMaxEnvID = database.prepare('SELECT MAX(envelope_id) AS maxEnvID FROM envelope');
     // const stmtMaxEnvPeakID = database.prepare('SELECT MAX(env_peak_id) AS maxEnvPeakID FROM env_peak');
     // const stmtGetPeakList = database.prepare('SELECT MZ AS mz, INTENSITY AS intensity FROM PEAKS WHERE SPECTRAID = ?');
