@@ -1,6 +1,7 @@
+"use strict";
 /*var AMINO_ACID_ISOTOPES = [];
 
-AMINO_ACID_ISOTOPES["A"] = [{"mass":71.037113784777,"intensity":100},{"mass":72.040468622587,"intensity":3.7056470999999993},{"mass":73.043823460397,"intensity":0.2559336155115976},{"mass":74.047178298207,"intensity":0.007837690269555652},{"mass":75.053455043976,"intensity":0.00010149352253543698},{"mass":76.050489937386,"intensity":5.804534746436304e-7},{"mass":77.054707019024,"intensity":1.2638794227870654e-9}] 
+AMINO_ACID_ISOTOPES["A"] = [{"mass":71.037113784777,"intensity":100},{"mass":72.040468622587,"intensity":3.7056470999999993},{"mass":73.043823460397,"intensity":0.2559336155115976},{"mass":74.047178298207,"intensity":0.007837690269555652},{"mass":75.053455043976,"intensity":0.00010149352253543698},{"mass":76.050489937386,"intensity":5.804534746436304e-7},{"mass":77.054707019024,"intensity":1.2638794227870654e-9}]
 
 AMINO_ACID_ISOTOPES["R"] = [{"mass":156.101111023854,"intensity":100},{"mass":157.104465861664,"intensity":8.126863400000001},{"mass":158.107820699474,"intensity":0.49795044560260393},{"mass":159.111175537284,"intensity":0.022757484865579145},{"mass":160.114530375094,"intensity":0.000677808827720204},{"mass":161.117885212904,"intensity":0.00001314421439693222},{"mass":162.121240050714,"intensity":1.7100375847958628e-7},{"mass":163.125457132352,"intensity":1.5066457084214431e-9}]
 
@@ -48,48 +49,46 @@ AMINO_ACID_ISOTOPES["H2O"] = [{"mass":18.010564683704,"intensity":100},{"mass":1
  * Calculated distribution of amino-acid.
  * The first element in each amino-acid list give tha mass of the amino acid.
  * @param {Char} aminoAcid - Containd Amino Acid
- *//*
+ */ /*
 function getAminoAcidIsotopes(aminoAcid){
-  if (AMINO_ACID_ISOTOPES.hasOwnProperty(aminoAcid)) {
-    return AMINO_ACID_ISOTOPES[aminoAcid];
-  } else {
-    return null;
-  }
+ if (AMINO_ACID_ISOTOPES.hasOwnProperty(aminoAcid)) {
+   return AMINO_ACID_ISOTOPES[aminoAcid];
+ } else {
+   return null;
+ }
 }
 */
-var ION_MASS_SHIFT_LIST ={
-  "A":-27.9949,
-  "A-H2O":-46.0149,
-  "A-NH3":-45.02542,
-  "B":0,
-  "B-H2O":-18.02,
-  "B-NH3":-17.03052,
-  "C":17.0266,
-  "C-H2O":-0.9934,
-  "C-NH3":-0.00392,
-  "X":43.99,
-  "X-H2O":25.97,
-  "X-NH3":26.95948,
-  "Y":18.0106,
-  "Y-H2O":0,
-  "Y-NH3":0.98008,
-  "Z":0.984,
-  "Z-H2O":-17.026,
-  "Z-NH3":-16.04652,
-  "Z_DOT":1.9919,
-  "Z_DOT-H2O":-16.018664,
-  "Z_DOT-NH3":-15.03862
+const ION_MASS_SHIFT_LIST = {
+    "A": -27.9949,
+    "A-H2O": -46.0149,
+    "A-NH3": -45.02542,
+    "B": 0,
+    "B-H2O": -18.02,
+    "B-NH3": -17.03052,
+    "C": 17.0266,
+    "C-H2O": -0.9934,
+    "C-NH3": -0.00392,
+    "X": 43.99,
+    "X-H2O": 25.97,
+    "X-NH3": 26.95948,
+    "Y": 18.0106,
+    "Y-H2O": 0,
+    "Y-NH3": 0.98008,
+    "Z": 0.984,
+    "Z-H2O": -17.026,
+    "Z-NH3": -16.04652,
+    "Z_DOT": 1.9919,
+    "Z_DOT-H2O": -16.018664,
+    "Z_DOT-NH3": -15.03862
 };
-
-function getIonMassShift(ionType){
-  if (ION_MASS_SHIFT_LIST.hasOwnProperty(ionType.toUpperCase())) {
-    return ION_MASS_SHIFT_LIST[ionType.toUpperCase()];
-  } else {
-    return undefined;
-  }
+function getIonMassShift(ionType) {
+    if (ION_MASS_SHIFT_LIST.hasOwnProperty(ionType.toUpperCase())) {
+        return ION_MASS_SHIFT_LIST[ionType.toUpperCase()];
+    }
+    else {
+        return undefined;
+    }
 }
-
 function getWaterMass() {
-  return 18.01056468362; 
+    return 18.01056468362;
 }
-

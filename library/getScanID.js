@@ -11,7 +11,7 @@ const sqlite3 = require('sqlite3').verbose();
 function getScanID(dir, id, callback) {
     let sql = `SELECT SCAN AS scanID
            FROM SPECTRA
-           WHERE ID = ?`;
+           WHERE SCAN = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let resultDb = new sqlite3.Database(dbDir, (err) => {
         if (err) {

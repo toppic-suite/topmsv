@@ -1,28 +1,30 @@
+"use strict";
 class PrsmGraph {
-
-  /*constructor(svgId, prsm, data = new PrsmData(), para = new PrsmPara()){
-    this.id = svgId;
-    this.para = para;
-    this.data = data;
-    if (prsm) {
-      this.data.initData(prsm, this.para); 
+    constructor(svgId, prsmObj, graphData = null) {
+        this.id_ = svgId;
+        this.para_ = new PrsmPara();
+        this.data_ = graphData;
+        if (!this.data_) {
+            this.data_ = new PrsmViewData();
+            if (!prsmObj) {
+                console.error("ERROR: PrsmObj is empty!");
+                return;
+            }
+            this.data_.initData(prsmObj, this.para_);
+        }
     }
-  }*/
-  constructor(svgId, prsmObj, graphData = null){
-    this.id = svgId;
-    this.para = new PrsmPara();
-    this.data = graphData;
-
-    if (!this.data){
-      this.data = new PrsmData();
-      this.data.initData(prsmObj, this.para);   
+    getData() {
+        return this.data_;
     }
-  }
-
-  redraw = function(){
-    //console.log(this.envList);
-    this.data.updatePara(this.para);
-    drawPrsm(this.id, this.para, this.data); 
-  }
-
+    getPara() {
+        return this.para_;
+    }
+    redraw() {
+        if (!this.data_) {
+            console.error("PrsmGraph data is empty");
+            return;
+        }
+        this.data_.updatePara(this.para_);
+        drawPrsm(this.id_, this.para_, this.data_);
+    }
 }

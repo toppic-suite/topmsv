@@ -38,6 +38,8 @@
 <script src="../common/save_image/save_prsm.js"></script>
 <script src="../common/save_image/util.js"></script>
 
+<script src="../common/data_table/draw_table.js"></script>
+
 <script src="../common/proteoform/protein_constant.js"></script>
 <!--<script src="../common/proteoform/proteoform.js"></script>-->
 <script src="../common/distribution_calc/amino_acid_distribution.js"></script>
@@ -51,6 +53,7 @@
 <script src="js/prsm/load_spectra.js"></script>
 <script src="js/prsm/button_action.js"></script>
 <script src="js/prsm/inspect.js"></script>
+<script src="js/prsm/parse_prsm.js"></script>
 
 <!--data classes-->
 <script src="../common/mass_spectrum/peak.js"></script>
@@ -58,6 +61,7 @@
 <script src="../common/sequence/mod.js"></script>
 <script src="../common/mass_spectrum/envelope.js"></script>
 <script src="../common/mass_spectrum/ion.js"></script>
+<script src="../common/mass_spectrum/spectrum.js"></script>
 <script src="../common/sequence/theoMass.js"></script>
 <script src="../common/prsm/matchedPeakEnvelopePair.js"></script>
 <script src="../common/sequence/proteoform.js"></script>
@@ -158,9 +162,9 @@
     <div class="row" id="ms2_svg_div" style="display:none;">
       <ul class="nav nav-tabs graph_nav" id="ms2_graph_nav"></ul>
       <div class="text-center" id="dataLoading">
-        <div class="spinner-border "  role="status">
+        <!--<div class="spinner-border "  role="status">
           <span class="sr-only">Loading...</span>
-        </div><h3>&nbsp; Loading...</h3>
+        </div><h3>&nbsp; Loading...</h3>-->
       </div>
     </div>
     <div>
@@ -169,14 +173,11 @@
           <td width = "55%">
             <div class = "peaks" style="font-size:16px;">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <a id = "all_peak_count" href="#spectrum" 
-                                       onclick="showAllPeaks();"  >All peaks </a>
+              <a id = "all_peak_count" href="#spectrum">All peaks </a>
               &nbsp;&nbsp;
-              <a id = "matched_peak_count" href="#spectrum" 
-                                           onclick="showMatchedPeaks();">Matched peaks </a>
+              <a id = "matched_peak_count" href="#spectrum">Matched peaks </a>
               &nbsp;&nbsp;
-              <a id = "not_matched_peak_count" href="#spectrum" 
-                                               onclick="showNotMatchedPeaks();">Not matched peaks </a>
+              <a id = "not_matched_peak_count" href="#spectrum">Not matched peaks </a>
             </div>
             <td>
               <td width = "15%" align = "right">
@@ -207,7 +208,7 @@
         </tr>
       </table>
     </div>
-    <div class = "row">
+    <div>
       <table id="spectrum" class="display" >
         <thead>
           <tr role="row">

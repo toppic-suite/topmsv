@@ -41,7 +41,6 @@ class LoadData{
         })
 
         let peakCnt = expectedPeakNum / (xRatio * yRatio);
-
         let diff = Number.MAX_VALUE;
         //find which table has the closet number of peaks
         for (let i = 0; i < Graph.configData.length; i++){

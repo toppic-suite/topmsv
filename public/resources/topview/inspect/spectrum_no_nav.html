@@ -36,7 +36,6 @@
 <script src="js/views/monoMassTableView.js"></script>
 <script src="js/views/peakView.js"></script>
 <script src="js/views/sequenceView.js"></script>
-<script src="js/views/popUpWindowView.js"></script>
 <script src="js/views/helperView.js"></script>
 <script src="js/views/graphTabView.js"></script>
 
@@ -85,6 +84,7 @@
 <script src="../common/sequence/proteoform.js"></script>
 <script src="../common/mass_spectrum/spectrum.js"></script>
 <script src="../common/prsm/prsm.js"></script>
+<script src="../common/data_table/draw_table.js"></script>
 
 </head>
 <body>
@@ -298,18 +298,18 @@
 	</div>
 	<div class="row" id="ms2_svg_div">
 		<ul class="nav nav-tabs graph_nav" id="ms2_graph_nav"></ul>
-		<svg id = "spectrum" height="250" width = "1000" style="background-color:white;display:none"></svg>
-		<svg id = "monoMassGraph" height="250" width = "1000" style="background-color:white;display:none"></svg>
+		<svg id = "ms2_svg_div_graph_0" height="250" width = "1000" style="background-color:white;display:none"></svg>
+		<svg id = "ms2_svg_div_mono_graph_0" height="250" width = "1000" style="background-color:white;display:none"></svg>
 	</div>
-	<div class="row" id="peakCount" style="display:none">
+	<!--<div class="row" id="peakCount" style="display:none">
 		<div class="col-2 pull-left" >
-			<a id="all_peak_count" href="#!" onclick="showAllPeaks();">All Peaks</a>
+			<a id="all_peak_count" href="#!">All Peaks</a>
 		</div>
 		<div class="col-2 pull-left" >
-			<a id="matched_peak_count" href="#!" onclick="showMatchedPeaks();">Matched Peaks</a>
+			<a id="matched_peak_count" href="#!">Matched Peaks</a>
 		</div>
 		<div class="col-3 pull-left" >
-			<a id="unmatched_peak_count" href="#!" onclick="showNonMatchedPeaks();">Non Matched Peaks</a>
+			<a id="not_matched_peak_count" href="#!">Non Matched Peaks</a>
 		</div>
 		<div class="col-5 prsmgraphdownload" >
 			<div class="row">
@@ -325,13 +325,74 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
+	</div>-->
+	<div id="peakCount" style="display:none">
+		<table>
+		  <tr>
+			<td width = "55%">
+			  <div class = "peaks" style="font-size:16px;">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a id = "all_peak_count" href="#spectrum">All peaks </a>
+				&nbsp;&nbsp;
+				<a id = "matched_peak_count" href="#spectrum">Matched peaks </a>
+				&nbsp;&nbsp;
+				<a id = "not_matched_peak_count" href="#spectrum">Not matched peaks </a>
+			  </div>
+			  <td>
+				<td width = "15%" align = "right">
+				  <a id = "a_spectrum_help" href="#!">
+					<button type ="button" id = "ms2_graph_help_btn" 
+											class="btn btn-primary btn-sm" 
+											style = "width:80%"
+											data-toggle="modal"
+											data-target="#ms2_graph_help_popup_window">
+					  Help</button>
+				  </a>
+				</td>
+				<td width = "15%" align = "right">
+				  <div class="prsmgraphdownload">
+					<button type="button" class="btn btn-primary btn-sm" 
+										  data-toggle="modal" 
+										  data-target="#ms2_graph_popup_window" 
+										  id="ms2_graph_save_btn" 
+										  style="display:none"> 
+					  Save Spectrum 
+					</button>
+				  </div>
+				</td>
+				<td width = "15%" align = "right">
+				  <a id = "a_show_spectrum" href="#!"><button type ="button" id =
+				  "ms2_graph_show_btn" class="btn btn-primary btn-sm" style="width:80%">Hide Spectrum</button></a>
+				</td>
+		  </tr>
+		</table>
+	  </div>
+	<!--<div class="row">
 		<div class="col-12" >
 			<div id="divtableContainer" >
 			</div>
 		</div>
-	</div>
+	</div>-->
+	
+	<div>
+		<table id="spectrum" class="display" style="display:none" >
+		  <thead>
+			<tr role="row">
+			  <th width="25">Scan</th>
+			  <th width="25">Peak</th>
+			  <th width="90">Mono mass</th>
+			  <th width="90">Mono m/z</th>
+			  <th width="80" style="vertical-align:middle">Intensity</th>
+			  <th width="75" style="vertical-align:middle">Charge</th>
+			  <th width="103">Theoretical mass</th>
+			  <th width="50" style="vertical-align:middle">Ion</th>
+			  <th width="70" style="vertical-align:middle">Pos</th>
+			  <th width="95">Mass error</th>
+			  <th width="80">PPM error</th>
+			</tr>
+		  </thead>
+		</table>
+	  </div>
 	<br>
 	<div class="row">
 			<h4 id="h_fragmentedtable" style="display:none">Theoretical fragment masses</h4>
@@ -421,6 +482,25 @@
     </div>
   </div>
 </div>
+<div class="modal" id="ms2_graph_help_popup_window" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+      <div class="modal-content help-window">
+        <div class="modal-header ">
+          <h3>Help</h3>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li><b>Drag:</b> Press the left mouse button and drag.</li>
+            <li><b>Zoom in/out of the m/z value:</b> Place the mouse cursor below the
+              x-axis and use the mouse wheel to zoom in or out. </li>
+            <li><b>Zoom in/out of the intensity:</b> Place the mouse cursor above the
+              x-axis and use the mouse wheel to zoom in or out. </li>
+          </ul> 
+        </div> 
+      </div>
+    </div>
+  </div>
 <script type="text/javascript" src="js/views/base.js"></script>
 </body>
 </html>

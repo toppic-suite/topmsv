@@ -9,7 +9,7 @@ const sqlite3 = require('sqlite3').verbose();
  */
 function getEnvNum(resultDB, scanid,callback) {
     let sql = `SELECT envelope_id AS id,mono_mass AS mono_mass, charge AS charge
-                FROM envelope INNER JOIN SPECTRA ON envelope.scan_id = SPECTRA.ID
+                FROM envelope INNER JOIN SPECTRA ON envelope.scan_id = SPECTRA.SCAN
 				WHERE SPECTRA.SCAN = ?`;
                 // FROM envelope
                 // WHERE scan_id = ?`;
