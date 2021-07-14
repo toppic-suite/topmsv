@@ -2,9 +2,6 @@
   "name": "topmsv",
   "description": "Cloud-based TopMSV server",
   "main": "server.js",
-  "scripts": {
-    "postinstall": "cd public/resources/topview && npm install"
-  },
   "keywords": [],
   "author": "Tianze Jiang and In Kwon Choi",
   "license": "ISC",
