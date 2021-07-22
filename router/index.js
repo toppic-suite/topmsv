@@ -15,6 +15,11 @@ const index = router.get('/', function (req, res) {
     }else {
         res.cookie('token', '');
     }
+    let userInfo = req.session.passport;
+    let loginMsg = "";
+    if (userInfo) {
+        loginMsg = "[Logged in as " + userInfo.user.profile.displayName + "]";
+    }
     getProjectsGuest(function (rows) {
         rows.forEach(row=>{
             if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
@@ -56,6 +61,7 @@ const index = router.get('/', function (req, res) {
         }
         res.render('pages/home', {
             projects: rows,
+            loginMessage:loginMsg,
             auth: shouldAuthenticate
         });
     });
