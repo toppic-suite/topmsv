@@ -27,6 +27,7 @@ function callAuthentication(e) {//when user clicks sign in button
     }else if (shouldAuthenticate == "false") {
         window.location = window.location.href + "auth/skip";
     }
+
 }
 $(document).ready(() => {
     //check browser
