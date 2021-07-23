@@ -21,7 +21,14 @@ const submit = router.get('/submit', function (req, res) {
             res.end();
             return;
         }
-        res.sendFile( path.resolve(__dirname + "/../public/submit.html") );
+        let loginMsg = "";
+        if (userInfo) {
+            loginMsg = "[Logged in as " + req.session.passport.user.profile.displayName + "]";
+        }
+        res.render('pages/submit', {
+            loginMessage:loginMsg
+        });
+        //res.sendFile( path.resolve(__dirname + "/../public/submit.html") );
     }
 });
 
