@@ -27,13 +27,18 @@ const tasks = router.get('/tasks', async (req,res) => {
             res.end();
             return;
         }
+        let loginMsg = "";
+        if (userInfo) {
+            loginMsg = "[Logged in as " + req.session.passport.user.profile.displayName + "]";
+        }
         // console.log(uid);
         let projectData = loadProjectData(uid);
         projectData.then(function (rows) {
             return loadTaskData(rows, totalTaskData);
         }).then(function(taskData) {
             res.render('pages/tasks', {
-                taskData: taskData
+                taskData: taskData,
+                loginMessage:loginMsg
             });
         }).catch(function () {
             console.log("error loading task data for tasks page");

@@ -28,6 +28,10 @@ const projects = router.get('/projects', function (req,res) {
             res.end();
             return;
         }
+        let loginMsg = "";
+        if (userInfo) {
+            loginMsg = "[Logged in as " + req.session.passport.user.profile.displayName + "]";
+        }
         // console.log(uid);
         getProjects(uid,function (rows) {
             rows.forEach(row=>{
@@ -64,7 +68,8 @@ const projects = router.get('/projects', function (req,res) {
                 row.editLink = '/projectManagement?projectCode=' + row.projectCode;
             });
             res.render('pages/projects', {
-                projects: rows
+                projects: rows,
+                loginMessage:loginMsg
             });
         });
     }
