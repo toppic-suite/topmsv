@@ -225,9 +225,30 @@ $( document ).ready(function() {
         }
     });
     //redraw graph if intensity adjustment checkbox gets checked
-    $("#inte-auto-adjust").click(function () {
+    $("#inte-auto-adjust").click(function() {
         if (document.getElementById("inte-auto-adjust").checked) {
             GraphData.drawNoNewData();
+        }
+    })
+    //show or hide current scan marker
+    $("#highlight-cur-scan").click(function() {
+        let markerGroup = Graph.scene.getObjectByName("markerGroup");
+
+        if (document.getElementById("highlight-cur-scan").checked) {
+            Graph.isHighlightingCurrentScan = true;
+            markerGroup.children.forEach(function(line) {
+                line.visible = true;
+            })
+            GraphData.drawNoNewData();
+            GraphRender.renderImmediate();
+        }
+        else{
+            Graph.isHighlightingCurrentScan = false;
+            markerGroup.children.forEach(function(line) {
+                line.visible = false;
+            })
+            GraphData.drawNoNewData();
+            GraphRender.renderImmediate();
         }
     })
 })
