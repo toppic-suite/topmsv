@@ -77,7 +77,7 @@ class Graph{
         Graph.isFeatureAnnotated = false;
 
         /*whether to highlight current scan*/
-        Graph.isCurrentHighlighted = false;
+        Graph.isHighlightingCurrentScan = false;
 
         /*whether to update values in the text box*/
         Graph.isUpdateTextBox = true;
