@@ -9,13 +9,15 @@ class GraphInit{
     static createSwitchCurrentScan = () => {
         //change current scan when clicked on 3d graph
         document.getElementById("canvas3D").addEventListener("click", function(e) {
-            let [mz, rt] = GraphUtil.getMzRtCoordinate(e);
-            let nearestRt = parseFloat(GraphUtil.findNearestRt(rt));
-            if (nearestRt >= 0) {
-                Graph.curRT = nearestRt;
-                //GraphData.drawNoNewData();
-                GraphData.drawCurrentScanMarker();
-                GraphRender.renderImmediate();
+            if (Graph.isHighlightingCurrentScan && e.ctrlKey) {
+                let [mz, rt] = GraphUtil.getMzRtCoordinate(e);
+                let nearestRt = parseFloat(GraphUtil.findNearestRt(rt));
+                if (nearestRt >= 0) {
+                    Graph.curRT = nearestRt;
+                    //GraphData.drawNoNewData();
+                    GraphData.drawCurrentScanMarker();
+                    GraphRender.renderImmediate();
+                }
             }
         })
     }
@@ -59,6 +61,10 @@ class GraphInit{
                 GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT);
             }
         }, false);
+    }
+    static createEventHandlers = () => {
+        GraphInit.createRedrawEvent();
+        GraphInit.createSaveGraphEvent();
     }
     /******** CREATE GRAPH ELEMENTS ******/
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
@@ -186,8 +192,7 @@ class GraphInit{
 
         GraphInit.createPlane();
         GraphInit.createAxis();
-        GraphInit.createRedrawEvent();
-        GraphInit.createSaveGraphEvent();
+        GraphInit.createEventHandlers();
         GraphInit.createSwitchCurrentScan();
         
         UploadMzrt.main();
