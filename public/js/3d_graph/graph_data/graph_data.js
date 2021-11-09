@@ -147,7 +147,9 @@ class GraphData{
 
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            await GraphData.drawCurrentScanMarker();
+            if (Graph.isHighlightingCurrentScan) {
+                await GraphData.drawCurrentScanMarker();
+            }
         }
         else{
             let markerGroup = Graph.scene.getObjectByName("markerGroup");
@@ -173,7 +175,9 @@ class GraphData{
         
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            GraphData.drawCurrentScanMarker();
+            if (Graph.isHighlightingCurrentScan) {
+                GraphData.drawCurrentScanMarker();
+            }
         }
         else{
             let markerGroup = Graph.scene.getObjectByName("markerGroup");
@@ -237,7 +241,7 @@ class GraphData{
                         line.geometry.attributes.position.needsUpdate = true; 
                         line.material.color.setStyle(lineColor);
                         
-                        if (point.RETENTIONTIME.toFixed(4) == rt){
+                        if (point.RETENTIONTIME.toFixed(4) == rt && Graph.isHighlightingCurrentScan){
                             line.material.color.setStyle(Graph.currentScanColor);
                         }
         
@@ -292,7 +296,7 @@ class GraphData{
                     line.geometry.attributes.position.array[4] = y;
                     line.geometry.attributes.position.needsUpdate = true; 
                     line.material.color.setStyle(lineColor);
-                    if (point.RETENTIONTIME.toFixed(4) == currt){
+                    if (point.RETENTIONTIME.toFixed(4) == currt && Graph.isHighlightingCurrentScan){
                         line.material.color.setStyle(Graph.currentScanColor);
                     }
                     line.position.set(mz, 0, rt);
