@@ -42,21 +42,55 @@ function onclickTopView(e: JQuery.ClickEvent<HTMLElement, null, HTMLElement, HTM
     //remove skipped residue
     sequence = sequence.slice(proteoform.getFirstPos());
     sequence = sequence.slice(0, proteoform.getLastPos() + 1 - proteoform.getFirstPos());
-    
     let fixedPtmList: MassShift[] = proteoform.getFixedPtm();
     //prsmGraph.data.proteoform.compMassShiftList();//recalculate mass shifts
-    let unknownMassShiftList: MassShift[] = proteoform.getUnknownMassShiftAndVarPtm();
+    let unknownMassShiftList: MassShift[] = proteoform.getUnknownMassShift();
+    let protVarPtmsList: MassShift[] = proteoform.getProtVarPtm();
+    let variablePtmsList: MassShift[] = proteoform.getVarPtm();
     let precursorMass: string = currentSpec.getPrecMass().toString();
+
     // Stores all the data in the variables respectively
     window.localStorage.setItem('peakAndIntensityList', JSON.stringify(peakAndIntensityList));
     window.localStorage.setItem('massAndIntensityList', JSON.stringify(massAndIntensityList));
     window.localStorage.setItem('ionType', ionList.toString());
     window.localStorage.setItem('sequence', JSON.stringify(sequence));
     window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
-    window.localStorage.setItem('protVarPtmsList', JSON.stringify([]));
-    window.localStorage.setItem('variablePtmsList', JSON.stringify([]));
+    window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
+    window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmsList));
     window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
-    window.localStorage.setItem('precursorMass', JSON.stringify(precursorMass));
+    window.localStorage.setItem('precursorMass', precursorMass);
+
+    //if some residues are going to be cut off in inspect page, adjust mod pos;
+    if (proteoform.getFirstPos() > 0) {
+        let newUnknownMassShifts: MassShift[] = [];
+        let newProtVarPtms: MassShift[] = [];
+        let newVarPtms: MassShift[] = [];
+
+        unknownMassShiftList.forEach((ptm) => {
+            let newL: number = ptm.getLeftPos() - proteoform.getFirstPos();
+            let newR: number = ptm.getRightPos() - proteoform.getFirstPos();
+            let newPtm = new MassShift(newL, newR, ptm.getShift(), "unknown", ptm.getAnnotation());
+            newPtm.setPtmList(ptm.getPtmList());
+            newUnknownMassShifts.push(newPtm);
+        })
+        protVarPtmsList.forEach((ptm) => {
+            let newL: number = ptm.getLeftPos() - proteoform.getFirstPos();
+            let newR: number = ptm.getRightPos() - proteoform.getFirstPos();
+            let newPtm = new MassShift(newL, newR, ptm.getShift(), "Protein variable", ptm.getAnnotation());
+            newPtm.setPtmList(ptm.getPtmList());
+            newProtVarPtms.push(newPtm);
+        })
+        variablePtmsList.forEach((ptm) => {
+            let newL: number = ptm.getLeftPos() - proteoform.getFirstPos();
+            let newR: number = ptm.getRightPos() - proteoform.getFirstPos();
+            let newPtm = new MassShift(newL, newR, ptm.getShift(), "Variable", ptm.getAnnotation());
+            newPtm.setPtmList(ptm.getPtmList());
+            newVarPtms.push(newPtm);
+        })
+        window.localStorage.setItem('protVarPtmsList', JSON.stringify(newProtVarPtms));
+        window.localStorage.setItem('variablePtmsList', JSON.stringify(newVarPtms));
+        window.localStorage.setItem('unknownMassShiftList', JSON.stringify(newUnknownMassShifts));    
+    }
     window.open("../inspect/spectrum.html");
 }
 /**
@@ -83,11 +117,20 @@ function getDataFromPRSMtoSpectralView(ms2Spec: Spectrum, specID: string | null)
  */
 function getMassAndIntensityData(ms2Spec: Spectrum): string[] {
   let massAndIntensityList: string[] = [];
-
-  ms2Spec.getEnvs().forEach(env => {
-    let tempObj: string = env.getMonoMass().toString() + " " + env.getIntensity().toString() + " " + env.getCharge().toString();
-    massAndIntensityList.push(tempObj);
-  })
+  let decovPeaks: Peak[] | null = ms2Spec.getDeconvPeaks();
+  if (decovPeaks) {
+      decovPeaks.forEach(peak => {
+          let monoMass: number | undefined = peak.getMonoMass();
+          let charge: number | undefined = peak.getCharge();
+          if (monoMass && charge) {
+              let tempObj: string = monoMass.toString() + " " + peak.getIntensity().toString() + " " + charge.toString();
+              massAndIntensityList.push(tempObj);
+          }
+          else {
+              console.error("Error: invalid mono mass or charge found in a peak");
+          }
+      });
+  }
   return massAndIntensityList;
 }
 /**

@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use strict";
 //MIT license
 //Permission is hereby granted, free of charge, to any person obtaining a 

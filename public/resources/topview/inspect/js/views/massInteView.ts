@@ -23,9 +23,7 @@ function getMassListFromUI(): Peak[] {
                 if(massInte[0] !== undefined && massInte[1] !== undefined 
                         && !isNaN(parseFloat(massInte[0])) && !isNaN(parseFloat(massInte[1])))
                 {
-                    let spectrumData = new Peak(i.toString(), parseFloat(massInte[0]), parseFloat(massInte[0]),
-                    parseFloat(massInte[1]), undefined, parseFloat(massInte[2]))
-    
+                    let spectrumData = new Peak(i.toString(), parseFloat(massInte[0]), -1, parseFloat(massInte[1]), parseFloat(massInte[0]), parseFloat(massInte[2]));
                     if(spectrumData.getPos() && spectrumData.getIntensity()) {   
                     spectrumDataList.push(spectrumData) ;
                     }

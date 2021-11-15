@@ -40,37 +40,8 @@ class Prsm {
         return this.ms2Spec_;
     }
     getMatchedPeakCount() {
-        /*if (this.matchedPeaks_.length > 0) {
-          return this.matchedPeaks_.length;
-        }
-        else {
-          let idList: string[] = [];
-          this.getMatchedPeakEnvelopePairs().forEach(pair => {
-            if (idList.indexOf(pair.getPeak().getId()) < 0) {
-              idList.push(pair.getPeak().getId());
-            }
-          })
-          return idList.length;
-        }*/
         return this.getMatchedPeakEnvelopePairs().length;
     }
-    /*getMatchedFragIonCount(): number {
-      if (this.matchedIons_.length > 0) {
-        return this.matchedIons_.length;
-      }
-      else {
-        let alreadyAddedIons: string[] = [];
-        let ionsNoDup: Ion[] = [];
-        this.getMatchedPeakEnvelopePairs().forEach(pair => {
-          let ion = pair.getIon().getId();
-          if (alreadyAddedIons.indexOf(ion) < 0) {
-            ionsNoDup.push(pair.getIon());
-            alreadyAddedIons.push(ion);
-          }
-        })
-        return ionsNoDup.length;
-      }
-    }*/
     getUnexpectedModCount() {
         let protObj = this.getProteoform();
         let unexpectedMod = protObj.getUnknownMassShift();
@@ -94,39 +65,6 @@ class Prsm {
     getMatchedPeakEnvelopePairs() {
         return this.matchedPeakEnvelopePair_;
     }
-    /*getMatchedPeaks(): Peak[] {
-      if (this.matchedPeaks_.length > 0) {
-        return this.matchedPeaks_;
-      }
-      else{
-        let peaks: Peak[] = [];
-        let idList: string[] = [];
-        this.getMatchedPeakEnvelopePairs().forEach(pair => {
-          if (idList.indexOf(pair.getPeak().getId()) < 0) {
-            peaks.push(pair.getPeak());
-            idList.push(pair.getPeak().getId());
-          }
-        })
-        return peaks;
-      }
-    }
-    getMatchedIons(): Ion[] {
-      if (this.matchedIons_.length > 0) {
-        return this.matchedIons_;
-      }
-      else{
-        let alreadyAddedIons: string[] = [];
-        let ionsNoDup: Ion[] = [];
-        this.getMatchedPeakEnvelopePairs().forEach(pair => {
-          let ion = pair.getIon().getId();
-          if (alreadyAddedIons.indexOf(ion) < 0) {
-            ionsNoDup.push(pair.getIon());
-            alreadyAddedIons.push(ion);
-          }
-        })
-        return ionsNoDup;
-      }
-    }*/
     setBreakPoints(breakPoints) {
         this.breakPoints_ = breakPoints;
     }

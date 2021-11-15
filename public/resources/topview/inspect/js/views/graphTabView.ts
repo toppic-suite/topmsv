@@ -48,8 +48,8 @@ function addEventNavBar(): void{
                 let svgId: string  = ms2GraphList[i].id;
                 let svgIdSplit: string[] = svgId.split("_");
                 let type: string = svgIdSplit[3];
-                let spectrumTab = <HTMLElement>document.getElementById("spectrum");
-                let monoMassTab = <HTMLElement>document.getElementById("monoMassGraph");
+                let spectrumTab = <HTMLElement>document.getElementById(Constants.SPECTRUMGRAPHID);
+                let monoMassTab = <HTMLElement>document.getElementById(Constants.MONOMASSGRAPHID);
                 if (type == "graphlist"){
                     spectrumTab.style.display="";
                     monoMassTab.style.display="none";

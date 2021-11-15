@@ -39,7 +39,9 @@ function onclickTopView(e, prsmObj) {
     sequence = sequence.slice(0, proteoform.getLastPos() + 1 - proteoform.getFirstPos());
     let fixedPtmList = proteoform.getFixedPtm();
     //prsmGraph.data.proteoform.compMassShiftList();//recalculate mass shifts
-    let unknownMassShiftList = proteoform.getUnknownMassShiftAndVarPtm();
+    let unknownMassShiftList = proteoform.getUnknownMassShift();
+    let protVarPtmsList = proteoform.getProtVarPtm();
+    let variablePtmsList = proteoform.getVarPtm();
     let precursorMass = currentSpec.getPrecMass().toString();
     // Stores all the data in the variables respectively
     window.localStorage.setItem('peakAndIntensityList', JSON.stringify(peakAndIntensityList));
@@ -47,10 +49,40 @@ function onclickTopView(e, prsmObj) {
     window.localStorage.setItem('ionType', ionList.toString());
     window.localStorage.setItem('sequence', JSON.stringify(sequence));
     window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
-    window.localStorage.setItem('protVarPtmsList', JSON.stringify([]));
-    window.localStorage.setItem('variablePtmsList', JSON.stringify([]));
+    window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
+    window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmsList));
     window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
     window.localStorage.setItem('precursorMass', precursorMass);
+    //if some residues are going to be cut off in inspect page, adjust mod pos;
+    if (proteoform.getFirstPos() > 0) {
+        let newUnknownMassShifts = [];
+        let newProtVarPtms = [];
+        let newVarPtms = [];
+        unknownMassShiftList.forEach((ptm) => {
+            let newL = ptm.getLeftPos() - proteoform.getFirstPos();
+            let newR = ptm.getRightPos() - proteoform.getFirstPos();
+            let newPtm = new MassShift(newL, newR, ptm.getShift(), "unknown", ptm.getAnnotation());
+            newPtm.setPtmList(ptm.getPtmList());
+            newUnknownMassShifts.push(newPtm);
+        });
+        protVarPtmsList.forEach((ptm) => {
+            let newL = ptm.getLeftPos() - proteoform.getFirstPos();
+            let newR = ptm.getRightPos() - proteoform.getFirstPos();
+            let newPtm = new MassShift(newL, newR, ptm.getShift(), "Protein variable", ptm.getAnnotation());
+            newPtm.setPtmList(ptm.getPtmList());
+            newProtVarPtms.push(newPtm);
+        });
+        variablePtmsList.forEach((ptm) => {
+            let newL = ptm.getLeftPos() - proteoform.getFirstPos();
+            let newR = ptm.getRightPos() - proteoform.getFirstPos();
+            let newPtm = new MassShift(newL, newR, ptm.getShift(), "Variable", ptm.getAnnotation());
+            newPtm.setPtmList(ptm.getPtmList());
+            newVarPtms.push(newPtm);
+        });
+        window.localStorage.setItem('protVarPtmsList', JSON.stringify(newProtVarPtms));
+        window.localStorage.setItem('variablePtmsList', JSON.stringify(newVarPtms));
+        window.localStorage.setItem('unknownMassShiftList', JSON.stringify(newUnknownMassShifts));
+    }
     window.open("../inspect/spectrum.html");
 }
 /**

@@ -36,7 +36,6 @@
 <script src="js/views/ionCheckBoxView.js"></script>
 <script src="js/views/ionTableView.js"></script>
 <script src="js/views/massInteView.js"></script>
-<script src="js/views/monoMassTableView.js"></script>
 <script src="js/views/peakView.js"></script>
 <script src="js/views/sequenceView.js"></script>
 <script src="js/views/helperView.js"></script>
@@ -46,23 +45,26 @@
 <script src="js/models/calcMatchedPeaks.js"></script>
 <script src="js/models/parseData.js"></script>
 
-
-<script src="../common/prsm_graph/draw_prsm.js"></script>
-<script src="../common/prsm_graph/prsm_data.js"></script>
-<script src="../common/prsm_graph/prsm_graph.js"></script>
-<script src="../common/prsm_graph/prsm_para.js"></script>
+<script src="../common/prsm_view/add_shift.js"></script>
+<script src="../common/prsm_view/draw_prsm.js"></script>
+<script src="../common/prsm_view/prsm_data.js"></script>
+<script src="../common/prsm_view/prsm_view.js"></script>
+<script src="../common/prsm_view/prsm_para.js"></script>
 
 <script src="../common/proteoform/protein_constant.js"></script>
 
-<script src="../common/spectrum_graph/spectrum_graph.js"></script>
-<script src="../common/spectrum_graph/draw_spectrum.js"></script>
-<script src="../common/spectrum_graph/spectrum_parameter.js"></script>
+<script src="../common/spectrum_view/spectrum_view.js"></script>
+<script src="../common/spectrum_view/draw_spectrum.js"></script>
+<script src="../common/spectrum_view/spectrum_parameter.js"></script>
 <script src="../common/mass_spectrum/spectrumFunction.js"></script>
 
 <script src="../common/distribution_calc/amino_acid_distribution.js"></script>
 <script src="../common/distribution_calc/emass_and_distribution.js"></script>
 <script src="../common/distribution_calc/isotopes.js"></script>
 <script src="../common/distribution_calc/molecular_formulae.js"></script>
+
+<script src="../common/util/types.js"></script>
+<script src="../common/util/common_ptm_list.js"></script>
 
 <!-- Controller -->
 <script src="js/controllers/index.js"></script>
@@ -425,6 +427,34 @@
 			  <button type="button" class="btn btn-default btn-sm addnewrow" data-dismiss="modal">
 				  <i class="fa fa-plus" ></i>
 			  </button>
+			  <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#custom-ptm">Custom PTM</button>
+		  </div> 
+		</div>
+	  </div>
+</div>
+<div class="modal" id="custom-ptm" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+		  <div class="modal-header ">
+			  <h4>Add a custom PTM</h4>
+			  <button type="button" class="close" data-dismiss="modal">&times;</button>
+		  </div>
+		  <div class="modal-body" >
+			  <p>To add a custom PTM, enter an amino residue and mass. Click the
+			  "+" button to apply.
+			  </p>
+ 			  <div>
+				<label for="residue-name">Amino acid: </label>
+				<input type="text" id="residue-name" name="residue-name-input"></input>
+				<label for="residue-mass">Mass: </label>
+				<input type="text" id="residue-mass" name="residue-mass-input"></input>
+				<label for="ptm-name">Ptm name: </label>
+				<input type="text" id="ptm-name" name="ptm-name-input"></input>
+				<button type="button" class="btn btn-default btn-sm addnewrow" onclick="addCustomPtm()">
+					<i class="fa fa-plus" ></i>
+				</button>
+			  </div>			  
+
 		  </div> 
 		</div>
 	  </div>
@@ -503,7 +533,28 @@
         </div> 
       </div>
     </div>
-  </div>
+</div>
+<div id="tooltip-pop" class="tooltip" style="display: none;">
+	<ul class="nav nav-tabs graph_nav" id="mod-type-nav">
+		<li class="active nav-item" id="var-ptm-nav-tab"><a class="nav-link" href="#" id="var-ptm-link">Variable PTM</a></li>
+		<li class="nav-item" id="unknown-mod-nav-tab"><a class="nav-link" href="#" id="unknown-mod-link">Unknown Mod</a></li>
+	</ul>
+	<div id="var-ptm-tab">
+		<h5>Applied variable ptms</h5>
+		<ul id="applied-ptm-list" class="list-group"></ul>
+		<hr>
+		<h5>Total list of variable ptms</h5>
+		<input type="text" id="search-input" placeholder="Search for PTM" class="list-group" onkeyup="AddShift.searchBar()">
+		<ul class="list-group" id="ptm-list"></ul>	
+	</div>
+	<div id="unknown-mod-tab" style="display: none;">
+		<label for="mass-value">Mass shift value: </label>
+		<input type="text" id="mass-value" name="mass-value"></input>
+		<button type="button" class="btn btn-default btn-sm" id="add-unknown-mod-btn">
+			<i class="fa fa-plus" ></i>
+		</button>
+	</div>
+</div>
 <script type="text/javascript" src="js/views/base.js"></script>
 </body>
 </html>

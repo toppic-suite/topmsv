@@ -5,15 +5,15 @@
 function setDataToSequence(sequence, massShiftList, protVarPtmsList, variablePtmsList) {
     let modifiedSequence = formSequence(sequence, massShiftList, protVarPtmsList, variablePtmsList);
     if (protVarPtmsList || variablePtmsList) {
-        //modifiedSequence = addVariablePtm(modifiedSequence, protVarPtmsList, variablePtmsList);
+        modifiedSequence = addVariablePtm(modifiedSequence, protVarPtmsList, variablePtmsList);
     }
     jqueryElements.sequenceData.val(modifiedSequence);
 }
 /**
  * Below function adds variable PTM annotation as mass shifts values
  */
-function addToSequence(sequence, protVarPtms, variablePtms) {
-    /*let tempSeq: string;
+/*function addToSequence(sequence: string, protVarPtms: MassShift, variablePtms: MassShift){
+    let tempSeq: string;
     let isResidue: boolean = true;
     let residuePos: number = 0;
     for (let i = 0; i < sequence.length; i++){
@@ -49,11 +49,36 @@ function addToSequence(sequence, protVarPtms, variablePtms) {
             residuePos++;
         }
     }
-    return sequence;*/
-}
+    return sequence;
+}*/
 /**
  * Below function adds variable PTM annotation as texts
  */
+function addToSequence(sequence, variablePtms) {
+    let tempSeq;
+    let isResidue = true;
+    let residuePos = 0;
+    for (let i = 0; i < sequence.length; i++) {
+        if (residuePos == variablePtms.getLeftPos()) {
+            let tempString = "[" + variablePtms.getAnnotation() + "]";
+            let leftString = sequence.slice(0, i + 1);
+            let rightString = sequence.slice(i + 1);
+            tempSeq = leftString + tempString + rightString;
+            return tempSeq;
+        }
+        if (sequence[i] == "[") {
+            isResidue = false;
+        }
+        if (sequence[i] == "]") {
+            isResidue = true;
+            continue;
+        }
+        if (isResidue) {
+            residuePos++;
+        }
+    }
+    return sequence;
+}
 /*function addToSequence(sequence, protVarPtms, variablePtms){
     let tempSeq;
     let isResidue = true;
@@ -92,14 +117,14 @@ function addToSequence(sequence, protVarPtms, variablePtms) {
     return sequence;
 }*/
 function addVariablePtm(sequence, protVarPtmsList, variablePtmsList) {
-    /*let newSeq = sequence;
-    for (let i = 0; i < protVarPtmsList.length; i++){
+    let newSeq = sequence;
+    for (let i = 0; i < protVarPtmsList.length; i++) {
         newSeq = addToSequence(newSeq, protVarPtmsList[i]);
     }
-    for (let i = 0; i < variablePtmsList.length; i++){
-        newSeq = addToSequence(newSeq, variablePtmsList[i]);
+    for (let j = 0; j < variablePtmsList.length; j++) {
+        newSeq = addToSequence(newSeq, variablePtmsList[j]);
     }
-    return newSeq;*/
+    return newSeq;
 }
 /**
  * Get the sequence entered from the HTML.

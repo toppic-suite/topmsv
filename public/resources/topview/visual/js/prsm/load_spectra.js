@@ -17,7 +17,7 @@ function loadMsOne(ms1Spec, ms1SvgId) {
     spGraph.addRawSpectrumAnno(ms1Spec.getEnvs(), ions);
     let precMonoMz = ms1Spec.getPrecMz();
     spGraph.getPara().updateMzRange(precMonoMz);
-    spGraph.getPara().setHighlight(precMonoMz);
+    spGraph.getPara().setHighlight(ms1Spec);
     spGraph.redraw();
 }
 function loadMsTwo(prsmObj, ms2GraphList, divId, navId) {
@@ -252,6 +252,7 @@ function getIons(matchedPeakEnvPairs, specId) {
                 console.error("Error: invalid envelope");
                 return [[], []];
             }
+            //@ts-ignore
             massError = matchedIon.getMassError(); //undefined already checked above
             ionData = { "mz": x, "intensity": y, "text": ionText, "error": massError, "env": pairEnv };
             ions.push(ionData);
