@@ -1,10 +1,3 @@
-enum ModType {//enum cannot be declared inside class
-  Fixed,
-  Unexpected,
-  ProteinVariable,
-  Variable
-};
-
 class MassShift {
   private leftPos_: number;
   private rightPos_: number;
@@ -45,6 +38,12 @@ class MassShift {
   getPtmList(): Mod[] {
     return this.ptmList_;
   }
+  setLeftPos(pos: number): void {
+    this.leftPos_ = pos;
+  }
+  setRightPos(pos: number): void {
+    this.rightPos_ = pos;
+  }
   setModType(type: string): ModType {
     let modType: ModType;
     if (type == "Fixed") {
@@ -60,5 +59,8 @@ class MassShift {
       modType = ModType.Unexpected;
     }
     return modType;
+  }
+  setPtmList(ptmList: Mod[]): void {
+    this.ptmList_ = ptmList;
   }
 }

@@ -18,7 +18,7 @@ function loadMsOne(ms1Spec: Spectrum | null, ms1SvgId: string): void{
     spGraph.addRawSpectrumAnno(ms1Spec.getEnvs(), ions);
     let precMonoMz: number = ms1Spec.getPrecMz();
     spGraph.getPara().updateMzRange(precMonoMz);
-    spGraph.getPara().setHighlight(precMonoMz);
+    spGraph.getPara().setHighlight(ms1Spec);
     spGraph.redraw();
 }
 function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, navId: string): void {
@@ -29,7 +29,13 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
     }
     let graphList: SpectrumView[] = [];
     let monoGraphList: SpectrumView[] = [];
-    
+    let deconvPeaks: Peak[] = [];
+    ms2Spec.forEach((spectrum: Spectrum, index) => {
+        let deconvPeakTemp: Peak[] | null = spectrum.getDeconvPeaks();
+        if (deconvPeakTemp) {
+            deconvPeaks = deconvPeaks.concat(deconvPeakTemp); //prepare deconvPeaks before graph drawing
+        }
+    });
     ms2Spec.forEach((spectrum, index) => {
         createMs2NavElement(index, divId, navId, spectrum.getScanNum());
         let show: boolean = false;
@@ -38,7 +44,7 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
         }
         let svgId: string = divId + "_graph_" + index;
         createSvg(show, divId, svgId, "ms2_svg_graph_class");
-        let [ions, monoIons] = getIons(prsmObj.getMatchedPeakEnvelopePairs());
+        let [ions, monoIons] = getIons(prsmObj.getMatchedPeakEnvelopePairs(), spectrum.getSpectrumId());
         let spGraph: SpectrumView = new SpectrumView(svgId, spectrum.getPeaks());
         spGraph.addRawSpectrumAnno(spectrum.getEnvs(), ions);
         let spectrumDataPeaks: SpectrumFunction = new SpectrumFunction();
@@ -49,17 +55,16 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
         ms2GraphList.push(spGraph);
 
         //mono mass svg
-        let decovPeaks: Peak[] | null = spectrum.getDeconvPeaks();
         let monoSvgId: string = divId + "_mono_graph_" + index;
         show = false;
         createSvg(show, divId, monoSvgId, "ms2_svg_graph_class");
 
-        if (!decovPeaks) {
+        if (!deconvPeaks) {
             console.error("ERROR: no deconvoluted peaks in ms2 spectrum");
             return;
           }
     
-        let monoMasses: Peak[] = getMonoMasses(decovPeaks);
+        let monoMasses: Peak[] = getMonoMasses(deconvPeaks);
 
         let nIonType: string = spectrum.getNTerminalIon()[0].getName();
         let cIonType: string = spectrum.getCTerminalIon()[0].getName();
@@ -216,43 +221,55 @@ function getMonoMasses(peaks: Peak[]): Peak[] {
  * @param {int} specId - contains information of the spec Id
  * @param {object} json_data - contains complete data of spectrum
  */
-function getIons(matchedPeakEnvPairs: MatchedPeakEnvelopePair[]): [MatchedIon[], MatchedIon[]] {
+function getIons(matchedPeakEnvPairs: MatchedPeakEnvelopePair[], specId: string): [MatchedIon[], MatchedIon[]] {
     let ions: MatchedIon[] = [];
     let monoIons: MatchedIon[] = [];
     matchedPeakEnvPairs.forEach((pair) => {
-        let ionData: MatchedIon;
-        let monoIonData: MatchedIon;
-        let ionText: string = "";
-        let massError: number;
-        let envPeaks: Peak[] = pair.getEnvelope().getPeaks();
-        envPeaks.sort(function (x, y) {
-            return y.getIntensity()- x.getIntensity();
-        });
-        let x = envPeaks[0].getMonoMz();
-        let y = envPeaks[0].getIntensity();
-        let matchedIon: Ion = pair.getIon();
-        let ionType: string = matchedIon.getName();
-        if (ionType == "Z_DOT") {
-            ionType = "Z\u02D9";
+        if (specId == pair.getPeak().getSpecId()) {
+            let ionData: MatchedIon;
+            let monoIonData: MatchedIon;
+            let ionText: string = "";
+            let massError: number;
+            let envPeaks: Peak[] = [];
+            let env: Envelope | null = pair.getEnvelope();
+            if (env) {
+                envPeaks = env.getPeaks();
+            }
+            envPeaks.sort(function (x, y) {
+                return y.getIntensity() - x.getIntensity();
+            });
+            let x: number = envPeaks[0].getMonoMz();
+            let y: number = envPeaks[0].getIntensity();
+            let matchedIon: Ion = pair.getIon();
+            let ionType: string = matchedIon.getName();
+            if (ionType == "Z_DOT") {
+                ionType = "Z\u02D9";
+            }
+            let pos: RegExpMatchArray | null = matchedIon.getId().match(/\d+/);
+            if (!pos) {
+                console.error("ERROR: invalid matched ion position");
+                return;
+            }
+            ionText = ionType + pos[0];
+            if (!matchedIon.getMassError() && matchedIon.getMassError() != 0) { //mass error can be 0
+                console.error("ERROR: mass error is undefined");
+                return;
+            }
+            let pairEnv: Envelope | null = pair.getEnvelope();
+            if (!pairEnv) {
+                console.error("Error: invalid envelope");
+                return [[], []];
+            }
+            //@ts-ignore
+            massError = matchedIon.getMassError(); //undefined already checked above
+            ionData = { "mz": x, "intensity": y, "text": ionText, "error": massError, "env": pairEnv };
+            ions.push(ionData);
+            let monoX: number = pairEnv.getMonoMass();
+            let monoY: number = 0;
+            envPeaks.forEach(element => monoY += element.getIntensity());
+            monoIonData = { "mz": monoX, "intensity": monoY, "text": ionText, "pos": pos[0], "error": massError };
+            addOneIon(monoIons, monoIonData);
         }
-        let pos: RegExpMatchArray | null = matchedIon.getId().match(/\d+/);
-        if (!pos) {
-            console.error("ERROR: invalid matched ion position");
-            return;
-        }
-        ionText = ionType + pos[0];
-        if (!matchedIon.getMassError()) {
-            console.error("ERROR: mass error is undefined");
-            return;
-        }
-        massError = matchedIon.getMassError()!;//undefined already checked above
-        ionData = {"mz": x, "intensity": y, "text": ionText, "error": massError, "env":pair.getEnvelope()};
-        ions.push(ionData);
-        let monoX: number = pair.getEnvelope().getMonoMass();
-        let monoY: number = 0;
-        envPeaks.forEach(element => monoY += element.getIntensity());
-        monoIonData = {"mz": monoX, "intensity": monoY, "text": ionText, "pos": pos[0], "error": massError};
-        addOneIon(monoIons, monoIonData);
     });
     return [ions, monoIons];
 }

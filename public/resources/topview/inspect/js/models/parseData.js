@@ -50,7 +50,7 @@ function parsePTM(dataName) {
     let massShiftList = [];
     if (massShiftData) {
         let massShifts = JSON.parse(massShiftData);
-        massShifts.forEach(d => {
+        massShifts.forEach((d) => {
             let massShift = new MassShift(d.leftPos_, d.rightPos_, d.massShift_, d.type_, d.annotation_, d.ptmList_);
             massShiftList.push(massShift);
         });
@@ -97,23 +97,51 @@ function parseSequenceMassShift(seq) {
     let position = 0;
     let massShift = "";
     let isMassShift = false;
+    let isBracketClosed = true; //to detect invalid brackets; 
     for (let i = 0; i < seq.length; i++) {
+        /**
+         * remove 1 as the data starts from 0 and length starts from 1
+        */
+        let tempPosition = position - 1;
         if (seq[i] == "[") { //mass shift
-            isMassShift = true;
+            if (isBracketClosed) {
+                isMassShift = true;
+                isBracketClosed = false;
+            }
+            else {
+                alert("Bracket [] is not closed properly in the sequence.");
+                return null;
+            }
         }
         else if (seq[i] == "]") { //mass shift
+            if (isBracketClosed) {
+                alert("Bracket [] is not closed properly in the sequence.");
+                return null;
+            }
             isMassShift = false;
             //check mass shift value
             //massShift = massShift.slice(1);//"[" is included in mass shift string
             if (isNaN(parseFloat(massShift))) {
-                alert("Please enter a numeric value for mass shift.");
+                if (massShift == '') {
+                    alert("Invalid PTM annotation in the sequence. There is an empty bracket [].");
+                    return null;
+                }
+                let isVariablePtm = false;
+                //check if this is variable ptm
+                for (let j = 0; j < commonPtmList.length; j++) {
+                    if (massShift == commonPtmList[j].abbr.toUpperCase()) {
+                        let varPtm = new MassShift(tempPosition, tempPosition + 1, commonPtmList[i].mass, "Variable", commonPtmList[j].abbr, new Mod(seq[i], commonPtmList[j].mass, commonPtmList[j].name));
+                        variablePtmsList.push(varPtm);
+                        isVariablePtm = true;
+                    }
+                }
+                if (!isVariablePtm) {
+                    alert(massShift + " is not a valid name for variable PTM.");
+                    return null;
+                }
             }
             else {
                 let mass = parseFloat(massShift);
-                /**
-                 * remove 1 as the data starts from 0 and length starts from 1
-                 */
-                let tempPosition = position - 1;
                 /**
                  * when the split occur at the end we get an extra "" in
                  * the list. This is to check if the mass is numeric.
@@ -124,6 +152,7 @@ function parseSequenceMassShift(seq) {
                 }
             }
             massShift = "";
+            isBracketClosed = true;
         }
         else {
             if (isMassShift) {
@@ -139,6 +168,9 @@ function parseSequenceMassShift(seq) {
                 }
             }
         }
+    }
+    if (!isBracketClosed) {
+        alert("Bracket [] is not closed properly in the sequence.");
     }
     return [parsedseq, unknownMassShiftList, protVarPtmsList, variablePtmsList];
 }
@@ -210,11 +242,21 @@ function parseCheckedFixedPtm(seq) {
     let checkedFixedPtm = getFixedPtmCheckList();
     checkedFixedPtm.forEach(ptm => {
         let fixedPtm = {};
+        let isCustomPtm = true;
         for (let j = 0; j < COMMON_FIXED_PTM_LIST.length; j++) {
             if (ptm.getShift() == COMMON_FIXED_PTM_LIST[j].getShift()) {
                 let name = COMMON_FIXED_PTM_LIST[j].getName();
                 fixedPtm = new Mod(ptm.getResidue(), ptm.getShift(), name);
                 break;
+            }
+        }
+        if (isCustomPtm) {
+            for (let j = 0; j < USER_FIXED_PTM_LIST.length; j++) {
+                if (ptm.getShift() == USER_FIXED_PTM_LIST[j].getShift()) {
+                    let name = USER_FIXED_PTM_LIST[j].getName();
+                    fixedPtm = new Mod(ptm.getResidue(), ptm.getShift(), name);
+                    break;
+                }
             }
         }
         for (let i = 0; i < seq.length; i++) {

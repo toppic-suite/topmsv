@@ -68,7 +68,9 @@ white-space: nowrap;
   margin-left: 0px !important;
   margin-right: 0px !important;
 }
-
+.dataTables_filter, .dataTables_info {
+  display: none;
+}
 /*footer*/
 .footer-copyright
 {
@@ -135,5 +137,11 @@ svg{
 	font-size: 18px !important;
 	text-align: left !important;
 }
-
+/*ptm list*/
+.list-group{
+  max-height: 300px;
+  margin-bottom: 10px;
+  overflow:scroll;
+  -webkit-overflow-scrolling: touch;
+}
 

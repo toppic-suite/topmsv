@@ -9,7 +9,9 @@ class Proteoform {
         this.firstPos_ = firstPos;
         this.lastPos_ = lastPos;
         this.protMass_ = protMass; //rename to prot_mass
-        this.massShiftList_ = massShiftList.concat(fixedPtm, protVarPtm, varPtm);
+        if (massShiftList) {
+            this.massShiftList_ = massShiftList.concat(fixedPtm, protVarPtm, varPtm);
+        }
         this.prefixMasses_ = [];
         this.suffixMasses_ = [];
         this.compPrefixSuffixMasses();

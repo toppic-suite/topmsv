@@ -11,6 +11,20 @@ function allProteins(folderName) {
     let count = 1;
     // get the div container 
     let div = document.getElementsByClassName("container")[0];
+    //switch between spectrum identification and protein identification
+    let p = document.createElement('p'); //need to assign class 
+    let x = location.href;
+    let l_split = x.split(/[?#]+/)[0];
+    let idx = l_split.lastIndexOf('\\');
+    if (idx < 0) {
+        idx = l_split.lastIndexOf('/');
+    }
+    else {
+    }
+    let newAddress = l_split.slice(0, idx + 1) + "ms.html?folder=" + folderName;
+    p.innerHTML = '<a href=' + newAddress + '>Switch to Spectrum Identification</a>';
+    p.id = "switch-to-spectrum";
+    //div.appendChild(p);
     let h2 = document.createElement('h2');
     // Check to see if protein variable inside l_proteins is an array.
     // Checks for multiple proteins
@@ -34,7 +48,7 @@ function allProteins(folderName) {
     if (Array.isArray(l_proteins.protein_list.proteins.protein)) {
         l_proteins.protein_list.proteins.protein.forEach(function (protein, index) {
             let div_temp = proteinToHtml(protein, folderName);
-            let p = getBestPrsm(protein, folderName);
+            let p = getBestPrsmProteins(protein, folderName);
             let br1 = document.createElement('br');
             div_temp.appendChild(p);
             div_temp.appendChild(br1);
@@ -44,7 +58,7 @@ function allProteins(folderName) {
     else {
         let protein = l_proteins.protein_list.proteins.protein;
         let div_temp = proteinToHtml(protein, folderName);
-        let p = getBestPrsm(protein, folderName);
+        let p = getBestPrsmProteins(protein, folderName);
         let br1 = document.createElement('br');
         div_temp.appendChild(p);
         div_temp.appendChild(br1);
@@ -75,7 +89,7 @@ function proteinToHtml(protein, folderName) {
  * @param {object} protein - Contains data of a single protein
  * @param {String} folderName - Provides path to build navigation links
  */
-function getBestPrsm(protein, folderName) {
+function getBestPrsmProteins(protein, folderName) {
     let best_e_value = 100;
     let prsm_id = "";
     let proteoform_count = protein.compatible_proteoform.length;

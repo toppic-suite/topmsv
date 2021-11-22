@@ -1,6 +1,6 @@
 "use strict";
 class SavePrsm {
-    constructor(prsmGraphObj) {
+    constructor(prsmViewObj) {
         this.addPrsmModal = () => {
             let prsmModal = `<div class="modal" id="save_prsm_popup_window" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
@@ -87,20 +87,20 @@ class SavePrsm {
             $("body").append(prsmModal);
         };
         this.createPrsmModalGraph = () => {
-            this.prsmModalGraphObj_ = new PrsmGraph("prsm_popup_svg", null, this.prsmGraphObj_.getData());
+            this.prsmModalGraphObj_ = new PrsmView("prsm_popup_svg", null, this.prsmViewObj_.getData());
         };
         this.initPrsmModalEventHandler = () => {
             // Save PrSM popup window
             d3.select('#save_prsm_btn').on("click", () => {
                 if (!this.prsmModalGraphObj_) {
-                    console.error("ERROR: prsmGraph is not initialized");
+                    console.error("ERROR: prsmView is not initialized");
                     return;
                 }
                 this.prsmModalGraphObj_.redraw();
                 //	set the dimensions of popup svg to be same as prsm in the html page
-                let para = this.prsmGraphObj_.getPara();
+                let para = this.prsmViewObj_.getPara();
                 if (!para) {
-                    console.error("ERROR: prsmGraph parameter is empty!");
+                    console.error("ERROR: prsmView parameter is empty!");
                     return;
                 }
                 ;
@@ -119,12 +119,12 @@ class SavePrsm {
             });
             d3.select('#prsm_graph_redraw_btn').on("click", () => {
                 if (!this.prsmModalGraphObj_) {
-                    console.error("ERROR: prsmGraph is not initialized");
+                    console.error("ERROR: prsmView is not initialized");
                     return;
                 }
                 let para = this.prsmModalGraphObj_.getPara();
                 if (!para) {
-                    console.error("ERROR: prsmGraph parameter is empty!");
+                    console.error("ERROR: prsmView parameter is empty!");
                     return;
                 }
                 ;
@@ -178,17 +178,17 @@ class SavePrsm {
         };
         this.drawPrsmModalGraph = () => {
             if (!this.prsmModalGraphObj_) {
-                console.error("ERROR: prsmGraph is not initialized");
+                console.error("ERROR: prsmView is not initialized");
                 return;
             }
             let para = this.prsmModalGraphObj_.getPara();
             if (!para) {
-                console.error("ERROR: prsmGraph parameter is empty!");
+                console.error("ERROR: prsmView parameter is empty!");
                 return;
             }
             ;
-            para.setRowLength(this.prsmGraphObj_.getPara().getRowLength());
-            para.setLetterWidth(this.prsmGraphObj_.getPara().getLetterWidth());
+            para.setRowLength(this.prsmViewObj_.getPara().getRowLength());
+            para.setLetterWidth(this.prsmViewObj_.getPara().getLetterWidth());
             this.prsmModalGraphObj_.redraw();
         };
         this.main = () => {
@@ -197,6 +197,6 @@ class SavePrsm {
             this.initPrsmModalEventHandler();
             this.drawPrsmModalGraph();
         };
-        this.prsmGraphObj_ = prsmGraphObj;
+        this.prsmViewObj_ = prsmViewObj;
     }
 }

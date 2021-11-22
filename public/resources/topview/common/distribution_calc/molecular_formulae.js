@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * Code to calculate distribution based on molecular formula
+ */
 class MolecularFormulae {
     constructor() {
         this.averagine = "C4.9384H7.7583N1.3577O1.4773S0.0417";
@@ -29,18 +32,14 @@ class MolecularFormulae {
         let atomCountList;
         [atomCountList, calculatedMass] = this.getMolecularFormula();
         let massError = mass - calculatedMass;
-        let len = atomCountList.length;
+        let atomListlen = atomCountList.length;
         let totDistributionList = [];
-        let numOfAtoms = this.atomList.length;
-        for (let i = 0; i < len; i++) {
+        for (let i = 0; i < atomListlen; i++) {
             for (let j = 0; j < atomCountList[i].count; j++) {
                 let atomdist = getIsotopicMassRef(atomCountList[i].atom);
                 totDistributionList = this.getMassAndIntensity(totDistributionList, atomdist);
-                //console.log("totDistributionList:", totDistributionList)
             }
-        }
-        for (let k = 0; k < totDistributionList.length; k++) {
-            for (let i = 0; i < numOfAtoms; i++) {
+            for (let k = 0; k < totDistributionList.length; k++) {
                 let IsotopicMass = getIsotopicMassOfAtom(atomCountList[i].atom);
                 totDistributionList[k].mass = totDistributionList[k].mass + (IsotopicMass[0].mass * atomCountList[i].count);
             }
@@ -174,7 +173,6 @@ class MolecularFormulae {
         let minMz = 10000000;
         let matchedPeakList = [];
         for (let i = 0; i < len; i++) { //iterating through actual peaks in this envelope
-            let maxMzDifference = 0;
             for (let j = 0; j < peakListLen; j++) { //iterating through theo peaks in the data 	
                 let mzDifference = Math.abs(totDistributionList[i].mass - modifiedPeakList[j].getPos());
                 if (mzDifference <= this.toleraceMassDiff) {
@@ -191,20 +189,10 @@ class MolecularFormulae {
         }
         maxMz = maxMz + this.toleraceMassDiff;
         minMz = minMz - this.toleraceMassDiff;
-        for (let i = 0; i < len; i++) {
-            if (minMz <= totDistributionList[i].mass && totDistributionList[i].mass <= maxMz) {
-                if (maxinte < totDistributionList[i].intensity) {
-                    maxinte = totDistributionList[i].intensity;
-                }
-                if (mininte > totDistributionList[i].intensity) {
-                    mininte = totDistributionList[i].intensity;
-                }
-            }
-        }
         /*previous function skews the result if there are > 1 peaks in the mz range and later one has high intensity
-        make sure the max min value changed when it is the peak that is closest to the given env
-        for now, will check if the peak has any envelopes within error tolerance
-        */
+make sure the max min value changed when it is the peak that is closest to the given env
+for now, will check if the peak has any envelopes within error tolerance
+*/
         for (let j = 0; j < peakListLen; j++) {
             if (modifiedPeakList[j].getPos() >= minMz && modifiedPeakList[j].getPos() <= maxMz) {
                 if (peakMaxinte < modifiedPeakList[j].getIntensity()) {
@@ -221,6 +209,16 @@ class MolecularFormulae {
                             peakMininte = modifiedPeakList[j].getIntensity();
                         }
                     }
+                }
+            }
+        }
+        for (let i = 0; i < len; i++) {
+            if (minMz <= totDistributionList[i].mass && totDistributionList[i].mass <= maxMz) {
+                if (maxinte < totDistributionList[i].intensity) {
+                    maxinte = totDistributionList[i].intensity;
+                }
+                if (mininte > totDistributionList[i].intensity) {
+                    mininte = totDistributionList[i].intensity;
                 }
             }
         }

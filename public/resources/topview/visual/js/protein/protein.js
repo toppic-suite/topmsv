@@ -66,7 +66,7 @@ function proteoformToHtml(prsm, index, folderpath, prsmCnt) {
     d3.select("#" + containerId).append("svg")
         .attr("id", svgId);
     //console.log(svgId, BestPrSM);
-    let graph = new PrsmGraph(svgId, prsm);
+    let graph = new PrsmView(svgId, prsm);
     graph.redraw();
 }
 /**

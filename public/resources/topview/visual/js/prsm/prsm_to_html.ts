@@ -64,16 +64,27 @@ function loadDatafromJson2Html(prsmObj: Prsm): void {
         matchedFrag && unexpected && eVal && qVal) {
             fileName.innerHTML = prsmObj.getfileName();
             prsmId.innerHTML = prsmObj.getId();
-            scan.innerHTML = ms2Spectrum[0].getScanNum();
-            precCharge.innerHTML = ms2Spectrum[0].getPrecCharge().toString();
+            if (ms2Spectrum.length > 1) {
+                let scanText: string = "";
+                ms2Spectrum.forEach((spectra) => {
+                    scanText = scanText + spectra.getScanNum() + " ";
+                });
+                scan.innerHTML = scanText;
+            }
+            else {
+                scan.innerHTML = ms2Spectrum[0].getScanNum();
+            }            precCharge.innerHTML = ms2Spectrum[0].getPrecCharge().toString();
             precMz.innerHTML = ms2Spectrum[0].getPrecMz().toString();
             precMass.innerHTML = ms2Spectrum[0].getPrecMass().toString();
             protMass.innerHTML =  proteoformObj.getMass().toString();
             matchedPeak.innerHTML = prsmObj.getMatchedPeakCount().toString();
-            matchedFrag.innerHTML = prsmObj.getMatchedFragIonCount().toString();
             unexpected.innerHTML = prsmObj.getUnexpectedModCount().toString();
             eVal.innerHTML = prsmObj.getEValue().toString();
             qVal.innerHTML = prsmObj.getQValue().toString();
+            let ionCnt = prsmObj.getFragIonCount();
+            if (ionCnt) {
+                matchedFrag.innerHTML = ionCnt.toString();
+            }
         }
 }
 
@@ -227,175 +238,4 @@ function getFixedPtm(ptm: any): string {
     }
     fixed_ptm = ptm.ptm.abbreviation + fixed_ptm;
     return fixed_ptm;
-}
-/**
- * Get the cleavage positions from the prsm data
- * @param {object} prsm - json obeject with complete prsm data
- */
-function json2BreakPoints(prsm: any, firstPos: number) {
-    let breakPoints: BreakPoints[] = [];
-    let dataBps = prsm.annotated_protein.annotation.cleavage;
-    for (let i = 0; i < dataBps.length; i++) {
-        let dataBp = dataBps[i];
-        if (dataBp.exist_n_ion == 0 && dataBp.exist_c_ion == 0) {
-            continue;
-        }
-        let bp: BreakPoints = {} as BreakPoints;
-        bp.position = dataBp.position;
-        bp.existNIon = (dataBp.exist_n_ion == 1);
-        bp.existCIon = (dataBp.exist_c_ion == 1);
-        bp.anno = "";
-        bp.masses = [];
-        if (dataBp.matched_peaks != null) {
-            let dataMasses = [];
-            if (dataBp.matched_peaks.matched_peak.length > 1) {
-                dataMasses = dataBp.matched_peaks.matched_peak;
-            }
-            else {
-                dataMasses.push(dataBp.matched_peaks.matched_peak);
-            }
-            for (let j = 0; j < dataMasses.length; j++) {
-                let dataMass = dataMasses[j];
-                let mass: any = {};
-                // Ion type
-                mass.ionType = dataMass.ion_type;
-                // Ion Display position
-                mass.ionDispPos = parseInt(dataMass.ion_display_position);
-                // Ion Charge
-                mass.charge = parseInt(dataMass.peak_charge);
-                // ion_position
-                // mass.ionPos = parseInt(dataMass.ion_position);
-                bp.masses.push(mass);
-                if (bp.anno != "") {
-                    bp.anno = bp.anno + " ";
-                }
-                bp.anno = bp.anno + mass.ionType + mass.ionDispPos + " " + mass.charge + "+";
-            }
-        }
-        breakPoints.push(bp);
-    }
-    return breakPoints;
-}
-function getAminoAcidSequence(formFirstPos: number, formLastPos: number, residues: any): string {
-    let sequence: string = "";
-    for (let i = formFirstPos; i <= formLastPos; i++) {
-        sequence = sequence + residues[i].acid;
-    }
-    return sequence;
-}
-function getJsonList(item: any) {
-    let valueList = [];
-    if (Array.isArray(item)) {
-        valueList = item;
-    }
-    else {
-        valueList.push(item);
-    }
-    return valueList;
-}
-/**
- * Get occurence of fixed ptm positions
- * @param {object} prsm - json obeject with complete prsm data
- */
-function json2Ptms(prsm: any): [MassShift[], MassShift[], MassShift[]] {
-    let fixedPtmList: MassShift[] = [];
-    let protVarPtmList: MassShift[] = [];
-    let varPtmList: MassShift[] = [];
-    if (!prsm.annotated_protein.annotation.hasOwnProperty("ptm")) {
-        return [fixedPtmList, protVarPtmList, varPtmList];
-    }
-    let dataPtmList = getJsonList(prsm.annotated_protein.annotation.ptm);
-    for (let i = 0; i < dataPtmList.length; i++) {
-        let dataPtm = dataPtmList[i];
-        if (dataPtm.ptm_type == "Fixed" || dataPtm.ptm_type == "Protein variable"
-            || dataPtm.ptm_type == "Variable") {
-            if (dataPtm.hasOwnProperty("occurence")) {
-                let occList = getJsonList(dataPtm.occurence);
-                //console.log(occList);
-                for (let j = 0; j < occList.length; j++) {
-                    let occurence = occList[j];
-                    let ptm: Mod = new Mod(occurence.anno, parseFloat(dataPtm.ptm.mono_mass), dataPtm.ptm.abbreviation);
-                    let massShift: MassShift = new MassShift(parseInt(occurence.left_pos), parseInt(occurence.right_pos), ptm.getShift(), dataPtm.ptm_type, ptm.getName(), ptm);
-                    if (dataPtm.ptm_type == "Fixed") {
-                        fixedPtmList.push(massShift);
-                    }
-                    else if (dataPtm.ptm_type == "Protein variable") {
-                        protVarPtmList.push(massShift);
-                    }
-                    else {
-                        varPtmList.push(massShift);
-                    }
-                }
-            }
-        }
-    }
-    return [fixedPtmList, protVarPtmList, varPtmList];
-}
-/**
- * Get left and right positions of background color and mass shift value
- * @param {object} prsm - json obeject with complete prsm data
- */
-function json2MassShifts(prsm: any): MassShift[] {
-    let massShifts: MassShift[] = [];
-    if (prsm.annotated_protein.annotation.hasOwnProperty('mass_shift')) {
-        let dataMassShifts = getJsonList(prsm.annotated_protein.annotation.mass_shift);
-        for (let i = 0; i < dataMassShifts.length; i++) {
-            let dataShift = dataMassShifts[i];
-            if (dataShift.shift_type == "unexpected" && dataShift.right_position != "0") {
-                if (isNaN(parseFloat(dataShift.anno))) {
-                    //then it is annotated with ptm name
-                    let massShift: MassShift = new MassShift(parseInt(dataShift.left_position), parseInt(dataShift.right_position), parseFloat(dataShift.shift), dataShift.shift_type, dataShift.anno);
-                    massShifts.push(massShift);
-                }
-                else {
-                    let massShift: MassShift = new MassShift(parseInt(dataShift.left_position), parseInt(dataShift.right_position), parseFloat(dataShift.shift), dataShift.shift_type, dataShift.shift);
-                    massShifts.push(massShift);
-                }
-            }
-            else if (dataShift.right_position == 0) {
-                console.error("Mass shift right position is 0!", dataShift);
-            }
-        }
-    }
-    return massShifts;
-    /*
-    // add protein N-terminal modifications
-    if(prsm.annotated_protein.annotation.hasOwnProperty('ptm')) {
-      let ptms = getJsonList(prsm.annotated_protein.annotation.ptm);
-      for (let i = 0; i < ptms.length; i++) {
-        let ptm = ptms[i];
-        if(ptm.ptm_type != "Fixed" && ptm.hasOwnProperty("occurence")) {
-          let occList = getJsonList(ptm.occurence);
-          for (let j = 0; j < occList.length; j++) {
-            let shift = {};
-            shift.anno = ptm.ptm.abbreviation;
-            shift.leftPos = occList[j].left_pos;
-            shift.rightPos = occList[j].right_pos;
-            massShifts.push(shift);
-          }
-        }
-      }
-    }
-    let noDupMassShift = [];
-    let duplicate = false;
-    //remove duplicate mass shifts
-    for (let a = 0; a < massShifts.length; a++){
-      let massShiftA = massShifts[a];
-      for (let b = 0; b < noDupMassShift.length; b++){
-        let massShiftB = noDupMassShift[b];
-        if (massShiftA.anno == massShiftB.anno){
-          if (massShiftA.leftPos == massShiftB.leftPos){
-            if (massShiftA.rightPos == massShiftB.rightPos){
-              duplicate = true;
-            }
-          }
-        }
-      }
-      if (!duplicate){
-        noDupMassShift.push(massShiftA);
-        duplicate = false;
-      }
-    }
-      return noDupMassShift ;
-    */
 }

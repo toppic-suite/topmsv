@@ -1,10 +1,6 @@
 /**
  * Code to calculate distribution based on molecular formula
  */
-type Atom = {
-	atom:string;
-	count:number;
-}
 class MolecularFormulae{
 	private averagine: string = "C4.9384H7.7583N1.3577O1.4773S0.0417" ;
 	private avrgMass: number = 111.0543055992;
@@ -28,35 +24,31 @@ class MolecularFormulae{
 	 * @param {Array} peakDataList - Contains the peak list provided by the user
 	 * @param {Float} charge - Contains the chrage of the ion
 	 */
-	emass(mass: number, charge: number, modifiedPeakList: Peak[]){
+	emass(mass: number, charge: number, modifiedPeakList: Peak[]): Peak[]{
 		//Give the count of each atom in molecule
 		this.eachAtomCount = mass/this.avrgMass ;
 		let calculatedMass: number;
 		let atomCountList: Atom[];
 		[atomCountList,calculatedMass] = this.getMolecularFormula() ;
 		let massError: number = mass - calculatedMass ;
-		let len: number = atomCountList.length;
+		let atomListlen: number = atomCountList.length;
 		let totDistributionList: AminoDist[] = [] ;
-		let numOfAtoms: number = this.atomList.length ;
-		for(let i=0;i<len;i++)
+		for(let i=0;i<atomListlen;i++)
 		{
 			for(let j=0;j<atomCountList[i].count;j++)
 			{
 				let atomdist: AminoDist[] = getIsotopicMassRef(atomCountList[i].atom);
 				totDistributionList = this.getMassAndIntensity(totDistributionList,atomdist);
 			}
-		}
-		for(let k=0;k<totDistributionList.length;k++)
-		{
-			for(let i = 0; i < numOfAtoms ; i++)
+			for(let k=0;k<totDistributionList.length;k++)
 			{
 				let IsotopicMass: AminoDist[]  = getIsotopicMassOfAtom(atomCountList[i].atom);
 				totDistributionList[k].mass = totDistributionList[k].mass + (IsotopicMass[0].mass * atomCountList[i].count) ;
 			}
 		}
-		totDistributionList = this.getMZwithHighInte(totDistributionList,charge,massError,modifiedPeakList);
-		this.getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList,modifiedPeakList);
-		return totDistributionList;
+        totDistributionList = this.getMZwithHighInte(totDistributionList, charge, massError, modifiedPeakList);
+        let finalDistList: Peak[] = this.getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList, modifiedPeakList);
+        return finalDistList;
 	}
 	/**
 	 * Logic to calculate distribution 
@@ -78,13 +70,14 @@ class MolecularFormulae{
 				for(let j=0;j<atomdist.length;j++)
 				{
 					let intensity: number = 0;
-					let index: number = i+j ;
-					let mass: number = totDistributionList[i].mass+atomdist[j].mass ;
-					intensity = totDistributionList[i].intensity * atomdist[j].intensity ;
-					if(completeDistributionList[index].intensity > 0) intensity = intensity + completeDistributionList[index].intensity ;
-					completeDistributionList[index].mass = mass;
-					completeDistributionList[index].intensity = intensity;
-					if(intensity > maxintensity) maxintensity = intensity;
+                    let index: number = i + j;
+                    let mass: number = totDistributionList[i].mass + atomdist[j].mass;
+                    intensity = totDistributionList[i].intensity * atomdist[j].intensity;
+                    if (completeDistributionList[index].mass != 0)
+                        intensity = intensity + completeDistributionList[index].intensity;
+                    completeDistributionList[index] = { mass: mass, intensity: intensity };
+                    if (intensity > maxintensity)
+                        maxintensity = intensity;
 				}
 			}
 	  		let completeDistributionList_temp: AminoDist[] = [];
@@ -172,35 +165,34 @@ class MolecularFormulae{
 		}
 		return newtotDistributionList ;
 	}
+	aminoDistToPeaks(totDistributionList: AminoDist[]): Peak[] {
+        let newDistList: Peak[] = [];
+        totDistributionList.forEach((peak, i) => {
+            newDistList.push(new Peak(i.toString(), peak.mass, peak.mass, peak.intensity));
+        });
+        return newDistList;
+    }
 	//modification of getNormalizedIntensity to add envelope y pos adjustment 
-	getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList: AminoDist[], modifiedPeakList: Peak[])
+	getNormalizedIntensityAndAdjustedEnvelopes(totDistributionList: AminoDist[], modifiedPeakList: Peak[]): Peak[]
 	{
 		let len: number = totDistributionList.length;
 		let peakListLen: number = modifiedPeakList.length;
 		let count: number = 0 ;
 		let maxinte: number = 0;
 		let mininte: number = 100;
-
 		let peakMaxinte: number = 0;
 		let peakMininte: number = 10000000;
-
 		let maxMz: number = 0;
 		let minMz: number = 10000000;
-
 		let matchedPeakList: number[][] = [];
-
-		for(let i=0;i<len;i++)//iterating through actual peaks in this envelope
-		{
-			let maxMzDifference: number = 0;
-			for(let j=0;j<peakListLen;j++)//iterating through theo peaks in the data
-			{
-				let mzDifference: number = Math.abs(totDistributionList[i].mass - modifiedPeakList[j].getPos());
-				if(mzDifference <= this.toleraceMassDiff)
-				{
-					if(maxMz < totDistributionList[i].mass){
+		for(let i=0;i<len;i++) {//iterating through actual peaks in this envelope
+            for (let j = 0; j < peakListLen; j++) { //iterating through theo peaks in the data 	
+                let mzDifference: number = Math.abs(totDistributionList[i].mass - modifiedPeakList[j].getPos());
+				if(mzDifference <= this.toleraceMassDiff) {
+					if (maxMz < totDistributionList[i].mass){
 						maxMz = totDistributionList[i].mass;
 					}
-					if(minMz > totDistributionList[i].mass){
+					if (minMz > totDistributionList[i].mass){
 						minMz = totDistributionList[i].mass;
 					}
 					matchedPeakList.push([i,j]); //i is env index, j is peak index
@@ -210,19 +202,8 @@ class MolecularFormulae{
 		}
 		maxMz = maxMz + this.toleraceMassDiff;
 		minMz = minMz - this.toleraceMassDiff;
-		for(let i=0;i<len;i++)
-		{
-			if(minMz <= totDistributionList[i].mass &&  totDistributionList[i].mass <= maxMz)
-			{
-				if(maxinte < totDistributionList[i].intensity){
-					maxinte = totDistributionList[i].intensity;
-				}
-				if(mininte > totDistributionList[i].intensity){
-					mininte = totDistributionList[i].intensity;
-				}
-			}
-		}
-		/*previous function skews the result if there are > 1 peaks in the mz range and later one has high intensity
+
+				/*previous function skews the result if there are > 1 peaks in the mz range and later one has high intensity
 		make sure the max min value changed when it is the peak that is closest to the given env
 		for now, will check if the peak has any envelopes within error tolerance
 		*/
@@ -249,6 +230,20 @@ class MolecularFormulae{
 				}
 			}
 		}
+
+		for(let i=0;i<len;i++)
+		{
+			if(minMz <= totDistributionList[i].mass &&  totDistributionList[i].mass <= maxMz)
+			{
+				if(maxinte < totDistributionList[i].intensity){
+					maxinte = totDistributionList[i].intensity;
+				}
+				if(mininte > totDistributionList[i].intensity){
+					mininte = totDistributionList[i].intensity;
+				}
+			}
+		}
+
 		/*when calculating new y pos, when a later envelope has higher y pos, evaluate again after reducing peak inte
 		based on that higher envelope, not in the previous left-to-right order.  
 		
@@ -291,8 +286,11 @@ class MolecularFormulae{
 				}
 			}
 		}
-		//remove envelopes without matching peaks
-		this.removeEnvelopes(totDistributionList, matchedPeakList);
+        //convert aminoDist to peaks
+        let newDistList: Peak[] = this.aminoDistToPeaks(totDistributionList);
+        //remove envelopes without matching peaks
+        this.removeEnvelopes(newDistList, matchedPeakList);
+        return newDistList;
 	}
 	/**
 	 * Code to normalize the Intensity. 
@@ -377,16 +375,16 @@ class MolecularFormulae{
 		}
 		return totDistributionList ;
 	}*/
-	removeEnvelopes(envList: AminoDist[], matchedPeakList: number[][]){
+	removeEnvelopes(envList: Peak[], matchedPeakList: number[][]){
 		let threshold: number = 0.95; 
 		let totalInte: number = 0;
 		let remainInte: number = 0;
 		/*keep removing dots with no matching peaks while 
 		(remainig peaks intensity/all peaks intensity) >= threshold
 		remove from the right, but stop when prev dot is not removed -- no remove in the middle only*/
-		for (let i = 0; i < envList.length; i++){
-			totalInte = totalInte + envList[i].intensity;
-		}
+        for (let i = 0; i < envList.length; i++) {
+            totalInte = totalInte + envList[i].getIntensity();
+        }
 		remainInte = totalInte;
 
 		let start: number = 0;
@@ -418,24 +416,24 @@ class MolecularFormulae{
 					removeStartEnv = false;
 				}
 			}
-			if (removeEndEnv){
-				remainInte = remainInte - envList[end].intensity;
-				if (remainInte / totalInte >= threshold){
-					endEnvInte = envList[end].intensity;
-				}
-				else{
-					removeEndEnv = false;
-				}
-			}
-			if (removeStartEnv){
-				remainInte = remainInte - envList[start].intensity;
-				if (remainInte / totalInte >= threshold){
-					startEnvInte = envList[start].intensity;
-				}
-				else{
-					removeStartEnv = false;
-				}
-			}
+			if (removeEndEnv) {
+                remainInte = remainInte - envList[end].getIntensity();
+                if (remainInte / totalInte >= threshold) {
+                    endEnvInte = envList[end].getIntensity();
+                }
+                else {
+                    removeEndEnv = false;
+                }
+            }
+			if (removeStartEnv) {
+                remainInte = remainInte - envList[start].getIntensity();
+                if (remainInte / totalInte >= threshold) {
+                    startEnvInte = envList[start].getIntensity();
+                }
+                else {
+                    removeStartEnv = false;
+                }
+            }
 			//decide which one has lower intensity --and to be removed
 			if (endEnvInte < startEnvInte && removeEndEnv){
 				envList.splice(end, 1);

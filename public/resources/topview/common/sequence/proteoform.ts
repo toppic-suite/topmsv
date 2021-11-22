@@ -23,7 +23,9 @@ class Proteoform {
     this.firstPos_ = firstPos;
     this.lastPos_ = lastPos;
     this.protMass_ = protMass;//rename to prot_mass
-    this.massShiftList_ = massShiftList.concat(fixedPtm, protVarPtm, varPtm);
+    if (massShiftList) {
+      this.massShiftList_ = massShiftList.concat(fixedPtm, protVarPtm, varPtm);
+    }
     this.prefixMasses_ = [];
     this.suffixMasses_ = [];
     this.compPrefixSuffixMasses();
@@ -136,9 +138,8 @@ class Proteoform {
     let prefixModResidueMasses: number[] = this.compPrefixModResidueMasses(aminoAcidMasses, fixedPtmMasses, variablePtmPrefixMasses, unexpectedPrefixMasses);
     this.compPrefixMasses(aminoAcidMasses, fixedPtmMasses, variablePtmPrefixMasses, unexpectedPrefixMasses);
     this.compSuffixMasses(aminoAcidMasses, fixedPtmMasses, variablePtmSuffixMasses, unexpectedSuffixMasses);
-
-    if (isNaN(this.protMass_)) {//if it is inspect page
-      this.compProteoformMass(prefixModResidueMasses);
+    if (this.protMass_ < 0) { //if it is inspect page
+        this.compProteoformMass(prefixModResidueMasses);
     }
   }
 

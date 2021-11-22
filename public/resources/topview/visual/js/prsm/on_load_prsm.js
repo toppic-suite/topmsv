@@ -22,7 +22,8 @@ $(document).ready(function () {
     head.appendChild(prsm_data_script);
     // Wait till the data is losded before calling any functions
     prsm_data_script.onload = function () {
-        geneDataObj(function (prsmObj) {
+        let parsePrsm = new ParsePrsm(true, "../../topfd/ms1_json/", true, "../../topfd/ms2_json/");
+        parsePrsm.geneDataObj(function (prsmObj) {
             //Build Urls to naviga back to proteoform page, proteins page and all protein page
             BuildUrl(folder_path, prsmObj);
             // Get the information of the PRSM to the HTML
@@ -57,20 +58,16 @@ $(document).ready(function () {
             loadMsOne(prsmObj.getMs1Spectra(), "ms1_svg");
             // Get Ms2 ids to draw MS2 Spectrum
             loadMsTwo(prsmObj, ms2GraphList, "ms2_svg_div", "ms2_graph_nav");
-            let prsmGraph = new PrsmGraph("prsm_svg", prsmObj);
-            prsmGraph.redraw();
+            let prsmView = new PrsmView("prsm_svg", prsmObj);
+            prsmView.redraw();
             // add prsm graph to popup
-            let savePrsmObj = new SavePrsm(prsmGraph);
+            let savePrsmObj = new SavePrsm(prsmView);
             savePrsmObj.main();
             // Create peaks data into table content
             let dataTable = new DataTable(prsmObj, true, ms2GraphList);
+            dataTable.setSpecSvgId("ms2_svg_div_graph_");
+            dataTable.setMonoMassSvgId("ms2_svg_div_mono_graph_");
             dataTable.drawTable();
-            // Loading prsm.js after data is loaded to fix no data issue in Data table
-            let prsm_script = document.createElement('script');
-            prsm_script.type = 'text/javascript';
-            prsm_script.src = "js/prsm/prsm.js";
-            // Append scrip tags to the head tag
-            head.appendChild(prsm_script);
         });
     };
 });

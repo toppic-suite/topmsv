@@ -7,15 +7,18 @@ function setPrecursorMass(precursorMass: number): void{
 /**
  * get Precursor mass 
  */
-function getPrecursorMass(): string | null {
-    return domElements.precursorMass.getAttribute("value");
+function getPrecursorMass(): number | null {
+    let mass: string | null = domElements.precursorMass.getAttribute("value");
+    if (mass) {
+        return parseFloat(mass);
+    }
+    return null;
 }
 function setPrecursorMassEventHandler(): void {
     jqueryElements.precursorMassSubmit.click(function(){
         let precursorMass: string | null = domElements.precursorMass.getAttribute("value");
-        let totalMass: string = jqueryElements.totalMass.html();
-
-        if (precursorMass) {
+        let totalMass: string | number | string[] | undefined = jqueryElements.totalMass.val();
+        if (precursorMass && typeof(totalMass) == "string") {
             setMassDifference(parseFloat(precursorMass), parseFloat(totalMass));
         }
         else {
