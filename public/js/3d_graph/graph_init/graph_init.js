@@ -197,7 +197,8 @@ class GraphInit{
         
         UploadMzrt.main();
         
-        GraphData.drawInitGraph(mzmin, mzmax, curRT);
+        //GraphData.drawInitGraph(mzmin, mzmax, curRT);
+        GraphData.drawFullRangeGraph(mzmin, mzmax, curRT);
         
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
