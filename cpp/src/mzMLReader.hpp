@@ -33,7 +33,7 @@ struct DataRange{
   double mz_scale = 2;//number to scale m/z range of a grid block
   double mz_size = 0.05;//initial mz size of a grid block
 
-  double rt_scale = 1.5;
+  double rt_scale = 2;
   double rt_size;
 };
 struct GridProperties{

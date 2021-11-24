@@ -217,7 +217,7 @@ void msReader::createDtabase() { //stmt
   Range.rt_min = rt_min;
   Range.count = ms1_peak_count;//peakCount
   Range.scan_count = ms1_scan_count;
-  Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count;//set rt bin size 
+  Range.rt_size = (Range.rt_max - Range.rt_min) / (ms1_scan_count / 2);//set rt bin size 
 
   //if user has provided custom values for rt_size and mz_size, overwrite the default values
   std::string line;
