@@ -583,7 +583,8 @@ const server = app.listen(8443, function () {
     console.log("Server started on PORT %s", port);
 
     ChromeLauncher.launch({
-        startingUrl: 'http://localhost:8443/'
+        startingUrl: 'http://localhost:8443/',
+        ignoreDefaultFlags: true
     }).then(chrome => {
 		console.log()
 	}).catch(err => {
