@@ -185,7 +185,9 @@ class InteRtGraph {
     
     
         let bisectRT = d3.bisector(function(d) { return d.rt; }).right;
-    
+        
+        let selectedDataPoint;
+
         function mouseClick() {
             let mouse_x = d3.mouse(this)[0];
             let mouse_y = d3.mouse(this)[1];
@@ -201,12 +203,14 @@ class InteRtGraph {
                 fixedLine.attr("x1", mouse_x).attr("x2", mouse_x);
                 fixedLine.style("opacity", 1);
                 self.onClickFunc(d.scanNum);
+                selectedDataPoint = d;
             } else if (i === inteRtArray.length && mouse_x -padding.left<= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
             {
                 let d = inteRtArray[i-1];
                 fixedLine.attr("x1", mouse_x).attr("x2", mouse_x);
                 fixedLine.style("opacity", 1);
                 self.onClickFunc(d.scanNum);
+                selectedDataPoint = d;
             } else {
                 //fixedLine.style("opacity", 1e-6);
             }
@@ -254,7 +258,7 @@ class InteRtGraph {
     
                 hoverLine.style("opacity", 1);
             } else {
-                if(document.getElementById(rt_ID)) {
+                /*if(document.getElementById(rt_ID)) {
                     document.getElementById(rt_ID).innerHTML = 0;
                 }
                 if (document.getElementById(inte_ID)) {
@@ -262,6 +266,16 @@ class InteRtGraph {
                 }
                 if (document.getElementById(inte_ID)) {
                     document.getElementById(scanNum_ID).innerHTML = 0;
+                }*/
+                //below code makes the previous selected rt data to be displayed when mouse cursor is out of range
+                if(document.getElementById(rt_ID)) {
+                    document.getElementById(rt_ID).innerHTML = Math.round(selectedDataPoint.rt * 100)/100;
+                }
+                if (document.getElementById(inte_ID)) {
+                    document.getElementById(inte_ID).innerHTML = selectedDataPoint.inteSum.toExponential(2);
+                }
+                if (document.getElementById(inte_ID)) {
+                    document.getElementById(scanNum_ID).innerHTML = selectedDataPoint.scanNum;
                 }
                 hoverLine.style("opacity", 0);
             }

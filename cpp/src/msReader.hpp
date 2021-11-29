@@ -11,6 +11,8 @@
 
 #include "pwiz/data/msdata/DefaultReaderList.hpp"
 #include "pwiz/data/msdata/MSDataFile.hpp"
+#include "pwiz/data/common/cv.hpp"
+#include "pwiz/data/common/ParamTypes.hpp"
 
 #include "pwiz/data/msdata/SpectrumList_mzML.hpp"
 #include "pwiz/data/msdata/SpectrumInfo.hpp"

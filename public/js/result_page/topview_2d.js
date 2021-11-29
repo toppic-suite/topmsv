@@ -114,7 +114,9 @@ class Topview2D {
         }).then(function(response){
             let rt = parseFloat(response.data);
             // console.log(rtInteGraph);
-            rtInteGraph.moveLine(rt);
+            if (rtInteGraph) {
+                rtInteGraph.moveLine(rt);
+            }
             document.getElementById("scan1RT").innerText = rt.toFixed(4);
         }).catch(function(error) {
             console.log(error);

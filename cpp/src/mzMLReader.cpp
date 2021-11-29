@@ -200,7 +200,9 @@ void mzMLReader::creatTable() {
          "PREC_INTE      REAL     NULL," \
          "PEAKSINTESUM   REAL     NULL," \
          "NEXT           INT      NULL," \
-         "PREV           INT      NULL);");
+         "PREV           INT      NULL," \
+         "MZ_LOW         REAL     NULL," \
+         "MZ_HIGH        REAL     NULL);");
 
    /* Execute SQL statement */
    rc_ = sqlite3_exec(db_, sql_, callback, 0, &z_err_msg_);
@@ -350,7 +352,7 @@ void mzMLReader::endTransaction() {
 
 };
 void mzMLReader::openInsertStmt() {
-  std::string sqlstr = "INSERT INTO SPECTRA (SCAN,RETENTIONTIME,IONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES (? ,?, ?, ?, ?, ?, ?, ?, ?, ?); ";
+  std::string sqlstr = "INSERT INTO SPECTRA (SCAN,RETENTIONTIME,IONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV,MZ_LOW,MZ_HIGH) VALUES (? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?); ";
   sql_ = (char *)sqlstr.c_str();
   sqlite3_prepare_v2(db_, sql_, sqlstr.length(), &stmt_sp, 0);
 
@@ -384,7 +386,8 @@ void mzMLReader::closeInsertStmt() {
 void mzMLReader::closeInsertStmtMs1Only() {
   sqlite3_finalize(stmt_peak_ms1_only);
 };
-void mzMLReader::insertSpStmt(int scan_index, std::string scan, double retention_time, double ion_time, int scan_level, double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev) {
+void mzMLReader::insertSpStmt(int scan_index, std::string scan, double retention_time, double ion_time, int scan_level, 
+double prec_mz, int prec_charge, double prec_inte, double peaks_int_sum, int next, int prev, double mz_low, double mz_high) {
   sqlite3_reset(stmt_sp);
   sqlite3_bind_int(stmt_sp,1,std::stoi(scan));
   sqlite3_bind_double(stmt_sp,2,retention_time);
@@ -396,6 +399,8 @@ void mzMLReader::insertSpStmt(int scan_index, std::string scan, double retention
   sqlite3_bind_double(stmt_sp,8,peaks_int_sum);
   sqlite3_bind_int(stmt_sp,9,next);
   sqlite3_bind_int(stmt_sp,10,prev);
+  sqlite3_bind_double(stmt_sp,11,mz_low);
+  sqlite3_bind_double(stmt_sp,12,mz_high);
   int r = sqlite3_step(stmt_sp);
   if (r != SQLITE_DONE) {
     std::cout << sqlite3_errmsg(db_) << std::endl;

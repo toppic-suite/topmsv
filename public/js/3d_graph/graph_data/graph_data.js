@@ -110,7 +110,7 @@ class GraphData{
             GraphUtil.updateTextBox();
         }*/
     }
-    static drawFullRangeGraph = () => {
+    static drawFullRangeGraph = (scanID) => {
         let promise = LoadData.getRT(scanID);
         promise.then(() =>{
             GraphData.setViewRangeToFull();

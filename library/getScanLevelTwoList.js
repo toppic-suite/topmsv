@@ -13,7 +13,9 @@ function getScanLevelTwoList(dir, scanID, callback) {
                     PREC_MZ AS prec_mz,
                     PREC_CHARGE AS prec_charge,
                     PREC_INTE AS prec_inte,
-                    RETENTIONTIME AS rt
+                    RETENTIONTIME AS rt,
+                    MZ_LOW AS mz_low,
+                    MZ_HIGH AS mz_high
            FROM ScanPairs INNER JOIN SPECTRA ON ScanPairs.LevelTwoScanID = SPECTRA.SCAN
            WHERE LevelOneScanID = ?`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";       
