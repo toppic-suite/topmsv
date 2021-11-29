@@ -655,7 +655,7 @@ function getScanLevelTwoList(scanID,target) {
                 //getPrecMZ(item.scanID);
                 var scanTwoNum = item.scanID;
                 var rt = item.rt;
-                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanID + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanID + ', ' + item.mz_low + ', ' + item.mz_high + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
                 // $( '<li><a href="#spectrum2" class="ui-icon ui-icon-close role=\'presentation\'" onclick="loadPeakList3(' + scanTwoNum + ')">'+ item.prec_mz + '</a></li>' ).appendTo( ul );
             });
             $( "#tabs" ).tabs();

@@ -26,7 +26,6 @@ function initGraph(){
         localStorage.clear();
     }
     //showEnvTable(min);
-
     init2D(min);
     init3D(min);
 
@@ -77,7 +76,7 @@ function initGraph(){
                             response.forEach(function (item) {
                                 let scanTwoNum = item.scanID;
                                 let rt = item.rt;
-                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ', ' + item.mz_low + ', ' + item.mz_high + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
                             });
                             $( "#tabs" ).tabs();
                             document.getElementById(min).click();

@@ -39,7 +39,7 @@ function init2D(scan) {
                             response.data.forEach(function (item) {
                                 let scanTwoNum = item.scanID;
                                 let rt = item.rt;
-                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ', ' + item.mz_low + ', ' + item.mz_high + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
                             });
                             $( "#tabs" ).tabs();
                             document.getElementById(nextScan).click(); // show next scan which is the first scan of scan level 2
@@ -136,7 +136,7 @@ function init2D(scan) {
                         response.data.forEach(function (item) {
                             let scanTwoNum = item.scanID;
                             let rt = item.rt;
-                            $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                            $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ', ' + item.mz_low + ', ' + item.mz_high + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
                         });
                         $( "#tabs" ).tabs();
                         document.getElementById(scan).click();
@@ -151,7 +151,7 @@ function init2D(scan) {
         })
 }
 
-function loadPeakList1(scanID, prec_mz) {
+function loadPeakList1(scanID, prec_mz, mz_low = -1, mz_high = -1) {
     if (scanID !== '0') {
         topview_2d.getPeakList(scanID)
             .then(function(response){
@@ -190,14 +190,17 @@ function loadPeakList1(scanID, prec_mz) {
                             envelopes.push(envObj);
                         })
                         let ions = [];
+                        let spectrum = new Spectrum("0", scanID, 1, peaks, null, envelopes, [], [], -1, -1, prec_mz, mz_low, mz_high);
+
                         let spectrumDataPeaks = new SpectrumFunction();
                         let spectrumDataEnvs = new SpectrumFunction();
-                        spectrumDataPeaks.assignLevelPeaks(peaks);
-                        spectrumDataEnvs.assignLevelEnvs(envelopes);
-                    
-                        spGraph = new SpectrumView("spectrum1",peaks);
-                        spGraph.addRawSpectrumAnno(envelopes, ions);
-                        spGraph.getPara().updateMzRange(prec_mz);
+                        spectrumDataPeaks.assignLevelPeaks(spectrum.getPeaks());
+                        spectrumDataEnvs.assignLevelEnvs(spectrum.getEnvs());
+
+                        spGraph = new SpectrumView("spectrum1",spectrum.getPeaks());
+                        spGraph.addRawSpectrumAnno(spectrum.getEnvs(), ions);
+                        spGraph.getPara().updateMzRange(spectrum.getPrecMz());
+                        spGraph.getPara().setHighlight(spectrum);
                         spGraph.redraw();
     
                         graph1_g = spGraph;
@@ -208,10 +211,13 @@ function loadPeakList1(scanID, prec_mz) {
                         let peakObj = new Peak(i, peakList1_g[i].mz, peakList1_g[i].mz, peakList1_g[i].intensity);
                         peaks.push(peakObj);
                     }
+                    let spectrum = new Spectrum("0", scanID, 1, peaks, null, [], [], [], -1, -1, prec_mz, mz_low, mz_high);
+
                     let spectrumDataPeaks = new SpectrumFunction();
-                    spectrumDataPeaks.assignLevelPeaks(peaks);
-                    spGraph = new SpectrumView("spectrum1",peaks);
-                    spGraph.getPara().updateMzRange(prec_mz);
+                    spectrumDataPeaks.assignLevelPeaks(spectrum.getPeaks());
+                    spGraph = new SpectrumView("spectrum1",spectrum.getPeaks());
+                    spGraph.getPara().updateMzRange(spectrum.getPrecMz());
+                    spGraph.getPara().setHighlight(spectrum);
                     spGraph.redraw();
 
                     graph1_g = spGraph;
@@ -226,7 +232,7 @@ function loadPeakList1(scanID, prec_mz) {
     }
 }
 
-function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
+function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan, mz_low = -1, mz_high = -1) {
     if(scanID !== '0') {
         // show envelope table for MS2
         showEnvTable(scanID);
@@ -302,7 +308,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             document.getElementById("prec_charge").innerHTML = prec_charge;
             document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
             document.getElementById("rt").innerHTML = rt.toFixed(4);
-            loadPeakList1(levelOneScan, prec_mz);
+            loadPeakList1(levelOneScan, prec_mz, mz_low, mz_high);
         }).catch(function(error) {
             console.log(error);
         });

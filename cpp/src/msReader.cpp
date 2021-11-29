@@ -166,15 +166,34 @@ void msReader::createDtabase() { //stmt
         double prec_mz;
         int prec_charge;
         double prec_inte;
+        double mz_low;
+        double mz_high;
         if (spec_info.precursors.size() == 0) {
           prec_mz = 0;
           prec_charge = 1;
           prec_inte = 0.0;
+          mz_low = 0;
+          mz_high = 0;
         } 
         else {
           prec_mz = spec_info.precursors[0].mz;
           prec_charge = static_cast<int>(spec_info.precursors[0].charge);
           prec_inte = spec_info.precursors[0].intensity;
+
+          if (s->precursors.size() > 0) {
+            std::vector<pwiz::data::CVParam> cv_list = s->precursors[0].isolationWindow.cvParams;
+            for (size_t i = 0; i < cv_list.size(); i++) {
+              if (cv_list[i].cvid == pwiz::cv::MS_isolation_window_target_m_z) {
+                prec_mz = std::stod(cv_list[i].value);
+              }
+              if (cv_list[i].cvid == pwiz::cv::MS_isolation_window_lower_offset) {
+                mz_low = prec_mz - std::stod(cv_list[i].value);
+              }
+              if (cv_list[i].cvid == pwiz::cv::MS_isolation_window_upper_offset) {
+                mz_high = prec_mz + std::stod(cv_list[i].value);
+              }
+            }
+          }
         }
         if (prec_mz < 0) {
           prec_mz = 0;
@@ -185,15 +204,21 @@ void msReader::createDtabase() { //stmt
         if (prec_inte < 0) {
           prec_inte = 0.0;
         }
+        if (mz_low < 0) {
+          mz_low = 0;
+        }
+        if (mz_high < 0) {
+          mz_high = 0;
+        }
 
-        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,prec_mz,prec_charge,prec_inte,peaks_int_sum,NULL,level_two_id);
+        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,prec_mz,prec_charge,prec_inte,peaks_int_sum,NULL,level_two_id, mz_low, mz_high);
         // update prev's next
         databaseReader.updateSpStmt(current_scan_id,level_two_id);
         level_two_id = current_scan_id;
         level_two_scan_id = current_scan_id;
         databaseReader.insertScanLevelPairStmt(level_one_scan_id, level_two_scan_id);
       }else if(scan_level == 1){
-        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,NULL,NULL,NULL,peaks_int_sum,NULL,level_one_id); 
+        databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,NULL,NULL,NULL,peaks_int_sum,NULL,level_one_id, NULL, NULL); 
         // update prev's next
         databaseReader.updateSpStmt(current_scan_id,level_one_id);
         level_one_id = current_scan_id;
