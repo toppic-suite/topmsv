@@ -125,7 +125,7 @@ class GraphUtil{
     }
     static findNearestRt = (rt) => {
         let rtScanData = rtInteGraph.inteRtArray;
-        let threshold = Graph.viewRange.rtrange / 200;
+        let threshold = Graph.viewRange.rtrange / 100;
         for (let i = 0; i < rtScanData.length; i++) {
             let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
             if (diff < threshold) {
@@ -136,7 +136,7 @@ class GraphUtil{
     }
     static findNearestScan = (rt) => {
         let rtScanData = rtInteGraph.inteRtArray;
-        let threshold = Graph.viewRange.rtrange / 200;
+        let threshold = Graph.viewRange.rtrange / 100;
         for (let i = 0; i < rtScanData.length; i++) {
             let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
             if (diff < threshold) {
@@ -147,7 +147,7 @@ class GraphUtil{
     }
     static findIonTime = (rt) => {
         let rtScanData = rtInteGraph.inteRtArray;
-        let threshold = Graph.viewRange.rtrange / 200;
+        let threshold = Graph.viewRange.rtrange / 100;
         if ('ionTime' in rtScanData[0]) {
             for (let i = 0; i < rtScanData.length; i++) {
                 let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
