@@ -13,6 +13,11 @@ const fs = require("fs");
 let download = router.get('/download', function (req,res) {
     let projectCode = req.query.id;
     getProjectSummary(projectCode, function (err,row) {
+        if (err || row == undefined) {
+            console.log("Invalid project ID ", projectCode, "! Please check again if this project exists.");
+            res.redirect('../public/404.html');
+            return;
+        }
         let projectDir = row.projectDir;
         let projectName = row.projectName;
         let fileName = row.fileName;
