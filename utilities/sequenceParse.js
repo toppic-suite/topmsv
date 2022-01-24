@@ -51,10 +51,10 @@ function importData(db, data) {
                 let scan = row[4];
                 // console.log('Proteoform:', row[17]);
                 let prec_mass = row[8];
-                let protein_accession = row[13];
-                let proteoform = row[17];
-                let qValue = row[24];//spectral q-value
-                let eValue = row[23];
+                let protein_accession = row[15];
+                let proteoform = row[20];
+                let qValue = row[29];//spectral q-value
+                let eValue = row[28];
 
                 if (isNaN(parseFloat(qValue))){
                     qValue = 'N/A';
