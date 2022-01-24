@@ -249,7 +249,7 @@ void msReader::createDtabase() { //stmt
   double custom_rt_size = -1;
   double custom_mz_size = -1;
 
-  ifstream initFile("init.txt");
+  ifstream initFile("init.ini");
   if (initFile.is_open()){
     std::getline(initFile, line);
     string::size_type pos = line.find(',');
@@ -294,11 +294,11 @@ void msReader::createDtabase() { //stmt
       Range.mz_size = mz_max - mz_min;
     }
   }
+
   std::cout <<"End getting range information: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   std::cout << "mzmin:" << Range.mz_min << "\tmzmax:" << Range.mz_max << "\trtmin:" << Range.rt_min ;
   std::cout << "\trtmax:" << Range.rt_max  << "\tcount:" << Range.count << "\tmzsize:" << Range.mz_size << "\trtsize:" << Range.rt_size << std::endl;
-
   databaseReader.setRange(Range);
   databaseReader.insertConfigOneTable(Range);
   std::cout <<"End insert to config table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
