@@ -33,7 +33,6 @@ function inspect(scanID,scanNum) {
                         type: "get",
                         success: function (res) {
                             let rawSeq = res;
-                            //console.log(res);
                             if (rawSeq == 0) {//if it was not identified
                                 window.localStorage.setItem('sequence', '');
                                 window.localStorage.setItem('precursorMass', '');
@@ -131,8 +130,9 @@ function preprocessSeq(seq) {
     return seq;
     
 }*/
-function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
+function preprocessSeq(seqString, ptmData = [], fixedPtmList = [], unknownMassShiftList = []) {
     seq = JSON.parse(seqString).seq;
+
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
     seq = seq.replace(/\)/g, '');
@@ -160,6 +160,10 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
         seq = seq.slice(firstDotIndex,lastDotIndex);
     }
     //if there is a fixed/variable ptm in the sequence 
+
+    if (ptmData.length == 0 && fixedPtmList.length == 0 && unknownMassShiftList.length == 0) {
+        return seq;
+    }
 
     let newSeq ='';
 
