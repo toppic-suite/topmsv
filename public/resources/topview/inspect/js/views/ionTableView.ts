@@ -3,7 +3,7 @@
  * @param {string} sequence - user entered sequence without mass shifts embedded
  * @param {Array} matchedUnMatchedPeaks - list of all the calculated masses
  */
-function createTableForSelectedFragmentIons(sequence: string, matchedUnMatchedPeaks: matchedUnMatchedObj[], spectrumGraph: SpectrumView) {
+function createTableForSelectedFragmentIons(sequence: string, matchedUnMatchedPeaks: MatchedUnMatchedObj[], spectrumGraph: SpectrumView) {
   /**
   * Remove if table already exist and rebuild the table
   */
@@ -106,7 +106,7 @@ function createTableForSelectedFragmentIons(sequence: string, matchedUnMatchedPe
       {
         td1.setAttribute("class","td_fragments");
         td1.setAttribute("charge", "");
-        td1.innerHTML = "Null";
+        td1.innerHTML = "-";
       }
       else
       {
@@ -153,17 +153,16 @@ function onClickofMatchedPeaks(spectrumGraph: SpectrumView): void {
 /**
  * Get all the N terminus Ions from UI
  */
- function getNterminusCheckedList(): Ion[] | null {
+ function getNterminusCheckedList(): Ion[] {
   let ions: Ion[] = [];
   let cnt: number = 0;
   $.each($("input[name='nterminus']:checked"), function() {
     let id: string | undefined = $(this).attr("id");
     let value: string | number | string[] | undefined = $(this).val();
-
-    if (typeof(id) != 'string' || typeof(value) != 'string') {
-      return null;
+    if (typeof (id) != 'string' || typeof (value) != 'string') {
+      console.error("ERROR: Nterminus ion value is not parsed correctly");
+      return ions;
     }
-
     let ionType: string = getActualIdvalues(id);
     let ion = new Ion(cnt.toString(), ionType, "N", parseFloat(value));
     ions.push(ion);
@@ -180,11 +179,10 @@ function onClickofMatchedPeaks(spectrumGraph: SpectrumView): void {
   $.each($("input[name='cterminus']:checked"), function() {
     let id: string | undefined = $(this).attr("id");
     let value: string | number | string[] | undefined = $(this).val();
-
-    if (typeof(id) != 'string' || typeof(value) != 'string') {
-      return null;
+    if (typeof (id) != 'string' || typeof (value) != 'string') {
+      console.error("ERROR: Cterminus ion value is not parsed correctly");
+      return ions;
     }
-    
     let ionType: string = getActualIdvalues(id);
     let ion = new Ion(cnt.toString(), ionType, "C", parseFloat(value));
     ions.push(ion);

@@ -1,5 +1,5 @@
 const domElements = {
-    precursorMass : <HTMLElement>document.getElementById("precursormass"),
+    precursorMass : <HTMLInputElement>document.getElementById("precursormass"),
     customControlInput : <HTMLCollectionOf<HTMLInputElement>>document.getElementsByClassName("custom-control-input"),
     totalSeqMass : <HTMLElement>document.getElementById("totalseqmass_h6"),
     massVariation : <HTMLElement>document.getElementById("massvariation_h6"),
@@ -39,6 +39,7 @@ const jqueryElements = {
 
 
 const COMMON_FIXED_PTM_LIST: Mod[] = [new Mod("C", 57.021464, "Carbamidomethylation"), new Mod("C", 58.005479, "Carboxymethyl")]
+let USER_FIXED_PTM_LIST: Mod[] = [];//user-defined custom ptm list
 
 let VAR_PTM_LIST: Mod[] = [];
 //it is not const because the variable PTM in the original prsm 
@@ -50,8 +51,8 @@ let VAR_PTM_LIST: Mod[] = [];
 class Constants{
     static SEQSVGID: string = "seqsvg";
     static SVGDOWNLOADID: string = "save_prsm_btn"
-    static SPECTRUMGRAPHID: string = "spectrum";
-    static MONOMASSGRAPHID: string = "monoMassGraph";
+    static SPECTRUMGRAPHID: string = "ms2_svg_div_graph_0";
+    static MONOMASSGRAPHID: string = "ms2_svg_div_mono_graph_0";
     static PEAKCOUNTID: string = "peakCount";
     static MASSERROR: string = "masserror";
     static MASSSHIFT_CLASSID: string = "massshift_class";

@@ -17,24 +17,26 @@ const onLoadOfHTML = function (): void {
     // console.log(peakAndIntensityList);
     let massAndIntensityList: string | null = parsePeakMass('massAndIntensityList');
     let sequence: string | null = parseSeq('sequence');
-    let l_fixedPtmList: MassShift[] | null = parsePTM('fixedPtmList');
-    let protVarPtmsList: MassShift[] | null = parsePTM('protVarPtmsList');
-    let variablePtmsList: MassShift[] | null = parsePTM('variablePtmsList');
-    let unknownMassShiftList: MassShift[] | null = parseUnknowmassList('unknownMassShiftList');
+    let l_fixedPtmList: MassShift[] = parsePTM('fixedPtmList');
+    let protVarPtmsList: MassShift[] = parsePTM('protVarPtmsList');
+    let variablePtmsList: MassShift[] = parsePTM('variablePtmsList');
+    let unknownMassShiftList: MassShift[] = parsePTM('unknownMassShiftList');
     let precursorMass: number | null = parsePrecursorMass("precursorMass");
     if (peakAndIntensityList !== null && massAndIntensityList !== null) {
         setDataToPeakAndIntensity(peakAndIntensityList);
         setDataToMassAndIntensity(massAndIntensityList);
     }
-    if (sequence && unknownMassShiftList && protVarPtmsList && variablePtmsList) {
+    if (sequence) {
         setDataToSequence(sequence, unknownMassShiftList, protVarPtmsList, variablePtmsList);
-    }
+    }    
     if (l_fixedPtmList) {
         setFixedMasses(l_fixedPtmList);
     }
     /*if(protVarPtmsList || variablePtmsList) {//not distinguishing variable PTM from unknown mass shifts
         setVariablePTMList(protVarPtmsList, variablePtmsList);
     }*/
+    setPrecursorMass(100);
+    
     if (precursorMass) {
         setPrecursorMass(precursorMass);
     }
@@ -49,9 +51,9 @@ const onLoadOfHTML = function (): void {
     // }
     //set the checkbox based on the ion type used in the data, which is stored in local storage
     let ionType: string | null = getIonType();
-    if (ionType) {
-        setIonCheckbox(ionType);
-    }
+
+    setIonCheckbox(ionType);
+    
     let massErrorthVal: number = 0.1;
     let ppmErrorthVal: number = 15;
     /**
@@ -78,10 +80,16 @@ const onLoadOfHTML = function (): void {
         }
     });
     /**
+     * On Change Event handler. Updates precursor mass with the newly entered value
+     */
+     domElements.precursorMass.addEventListener("keyup", () => {
+        setPrecursorMass(parseFloat(domElements.precursorMass.value));
+    })
+    /**
      * On Click Event handler. Gets invoked on click of submit button
      * in HTML
      */
-    jqueryElements.submit.click(function () {
+     jqueryElements.submit.click(function () {
         let errorVal: number = 0;
         let errorType: string | number | string[] | undefined = jqueryElements.errorDropdown.val();
         let val:  string | number | string[] | undefined = jqueryElements.errorValue.val();

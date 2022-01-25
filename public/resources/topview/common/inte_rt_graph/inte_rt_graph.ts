@@ -1,9 +1,3 @@
-type InteRt = {
-    "rt": number,
-    "inteSum": number,
-    "intePercentage": number,
-    "scanNum": string
-}
 class InteRtGraph {
     private xScale_g_: any
     private fixedLine_g_: any;
@@ -18,7 +12,7 @@ class InteRtGraph {
     private width_: number;
     private height_: number;
 
-    onClickFunc;
+    onClickFunc: () => void;
 
     constructor(svg_ID: string, inteRtArray: {"rt": string, "inteSum": string, "scanNum": string}[], onClickFunc = ()=>{}, 
     scanNum_ID: string = 'scan-hover', rt_ID: string = 'rt-hover', inte_ID: string = 'intensity-hover', 

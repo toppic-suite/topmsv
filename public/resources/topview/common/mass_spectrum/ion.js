@@ -11,17 +11,6 @@ class Ion {
     getId() {
         return this.id_;
     }
-    getPos() {
-        let numbers = this.id_.match(/(\d+)/);
-        let pos = null;
-        if (numbers) {
-            pos = "";
-            numbers.forEach((number) => {
-                pos = pos + number;
-            });
-        }
-        return pos;
-    }
     getName() {
         return this.name_;
     }

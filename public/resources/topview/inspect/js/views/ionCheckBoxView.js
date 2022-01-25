@@ -12,9 +12,16 @@ function setIonCheckbox(ionType) {
         "Z_DOT": "z_",
         "X": "x"
     };
-    if (!ionType)
-        return;
     let ionsAll = domElements.customControlInput;
+    if (!ionType) {
+        for (let i = 0; i < ionsAll.length; i++) {
+            if ("b" === ionsAll[i].id || "y" === ionsAll[i].id) {
+                ionsAll[i].checked = true;
+            }
+        }
+        return;
+    }
+    ;
     let ionTypeSplit = ionType.split(',');
     ionTypeSplit.forEach(function (ionTy) {
         for (let i = 0; i < ionsAll.length; i++) {
