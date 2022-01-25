@@ -7,7 +7,7 @@
  * @param {list} envPeaks - Contains the data of Envelope peaks to draw circles on the graph
  * @param {list} ions - Contains Ions to draw upon the peaks
  */
-function drawBasicSpectrum(svgId: string, para: SpectrumViewParameters, peaks: Peak[], 
+ function drawBasicSpectrum(svgId: string, para: SpectrumViewParameters, peaks: Peak[], 
   ions: MatchedIon[] | null) {
   let svg = d3.select("body").select("#"+svgId);
   // svg.attr("width", para.svgWidth).attr("height", para.svgHeight);
@@ -42,12 +42,25 @@ function drawRawSpectrum(svgId: string, para: SpectrumViewParameters, envPeaks: 
 function drawMonoMassSpectrum(svgId: string, para: SpectrumViewParameters, proteoform: Proteoform | null, nMasses: TheoMass[], cMasses: TheoMass[], 
   ions: MatchedIon[]) {
   let svg = d3.select("body").select("#"+svgId).select("#svgGroup");
-  updateViewBox(svgId, para.getSVGWidth(), para.getSVGHeight());
+
+  //check whether to draw the annotation lines
+  if ($("#checkbox-anno-line").length) {//if the tab exists
+    if ($("#checkbox-anno-line").is(":checked")) {
+      para.setShowLines(true);
+    }
+    else {
+      para.setShowLines(false);
+    }
+  }
+
+  //updateViewBox(svgId, para.getSVGWidth(), para.getSVGHeight());
   drawSequence(svg, para, proteoform, nMasses, cMasses, ions);
-  addErrorPlot(svg, para);
-  addErrorBox(svg, para);
-  drawErrorYTicks(svg, para);
-  drawErrorPoints(svg, para, ions);
+  if (para.getShowError()) {
+    addErrorPlot(svg, para);
+    addErrorBox(svg, para);
+    drawErrorYTicks(svg, para);
+    drawErrorPoints(svg, para, ions);  
+  }
 }
 
 /**
@@ -251,6 +264,7 @@ function addDatatoAxis(svg: any, para: SpectrumViewParameters){
   let xAxisData = svg.append("g")
     .attr("id", "xAxisPoints");
   let xTickPosList: number[] = para.getXTickPosList();
+  let lastXTickPos: number = -1;
   for(let i = 0 ; i < xTickPosList.length ; i++)
   {
     let tickMz: number = xTickPosList[i];
@@ -258,6 +272,7 @@ function addDatatoAxis(svg: any, para: SpectrumViewParameters){
     if(x >= para.getPadding().left && 
       x <= (para.getSVGWidth() - para.getPadding().right))
     {
+      lastXTickPos = x;
       xAxisData.append("text").attr("id","xtext").attr("x",x)
         .attr("y",(para.getSVGHeight() - para.getPadding().bottom + 20))// Dividing with 1.6 to set the position of the numbers under the ticks appropriately
         .attr("text-anchor","middle")
@@ -284,10 +299,13 @@ function addDatatoAxis(svg: any, para: SpectrumViewParameters){
     // Get the default tick height and calculate the actual tick height position
     tickHeight = para.getTickHeight();
     let data: number = i*tickHeight ;
-    if(data <= 1 && data != 0) data = parseFloat(data.toFixed(1));
+
+    if (data <= 1 && data != 0) {
+      data = parseFloat(data.toFixed(3));
+    }
+
     let tickInt: number = i*tickHeight * para.getDataMaxInte() /100;
     let y: number = para.getPeakYPos(tickInt);
-
     if(!isNaN(y) && y >= para.getPadding().head)
     {
       yAxisData.append("text").attr("class","ytext").attr("x",para.getPadding().left - para.getTickLength())
@@ -548,7 +566,7 @@ function drawIons(svg: any, para: SpectrumViewParameters,
     let ion = ions[i];
     let x: number = ion.mz;
     let xPos: number = para.getPeakXPos(x) + para.getIonXShift();
-    let yPos: number = para.getPeakYPos(ion.intensity) + para.getIonYShift();
+    let yPos: number = para.getPeakYPos(ion.intensity) + para.getIonYShift() + 7;
     //console.log("yPos", yPos);
    // console.log("para.getPeakYPos(ion.intensity)",para.getPeakYPos(ion.intensity))
     
@@ -570,7 +588,8 @@ function drawIons(svg: any, para: SpectrumViewParameters,
           yPos = yPos + 15;
         }
       }
-      ionGroup.append("text")
+      if (yPos >= para.getPadding().head) {
+        ionGroup.append("text")
         .attr("id","graph_matched_ions")
         .attr("x", xPos)
         .attr("y", yPos) 
@@ -578,6 +597,7 @@ function drawIons(svg: any, para: SpectrumViewParameters,
         .style("opacity", "0.8")
         .style("stroke-width","2")
         .text(ion.text);
+      }
     } /*else {
       ionGroup.append("text")
       .attr("id","graph_matched_ions")
@@ -619,7 +639,7 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
     if (curMass > prevMass) {
       if (curMass >= para.getWinMinMz() - 10 && curMass <= para.getWinMaxMz()) {
         let x = para.getPeakXPos(curMass);
-        interAddLineAndAnno(svg,x,y, curMass, i, ions, "n")
+          interAddLineAndAnno(svg,x,y, curMass, i, ions, "n");
       }
       if (i > 0) {
         let mz = (prevMass + curMass)/2
@@ -645,7 +665,7 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
     if (curMass > prevMass) {
       if (curMass >= para.getWinMinMz() - 10 && curMass <= para.getWinMaxMz()) {
         let x = para.getPeakXPos(curMass);
-        interAddLineAndAnno(svg,x,y, curMass, i, ions, "c");
+          interAddLineAndAnno(svg,x,y, curMass, i, ions, "c");
       }
       if (i > 0) {
         let mz = (prevMass + curMass)/2
@@ -659,7 +679,7 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
     }
   }
   function getMatchedIon(residuePos: number, ions: MatchedIon[], 
-  terminal: string){
+  terminal: string): MatchedIon | null {
     for (let i = 0; i < ions.length; i++){
       if (!ions[i].pos) {
         console.error("ERROR: ion information is empty");
@@ -670,7 +690,7 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
         if ((terminal == "n" && (text[0] == "A" || text[0] == "B" || text[0] == "C")) ||
             (terminal == "c" && (text[0] == "X" || text[0] == "Y" || text[0] == "Z"))){
               //return text;
-              return ions[i].text;
+              return ions[i];
         }
       }
     }
@@ -682,7 +702,7 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
     terminal: string) {
     let lineGroup = svg.append("g").attr("id", "seq_peak_line_anno");
     let seqGroup = svg.append("g").attr("id", "graph_sequence");
-    let ionData: string | null = getMatchedIon(residuePos, ions, terminal);
+    let ionData: MatchedIon | null = getMatchedIon(residuePos, ions, terminal);
 
     let lineYPos: number = 180;
 
@@ -699,22 +719,24 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
       .attr("stroke-width","1")
       .on("mouseover",function(){
         //@ts-ignore
-        onMouseOverFragmentMassAndIonType(this, mass, ionData);
+        onMouseOverFragmentMassAndIonType(this, mass, ionData.text);
       })
       .on("mouseout",function(){
         //@ts-ignore
         onFragmentMassAndIonTypeMouseOut(this);
       });
-
-      if (ionData){//if matched peak exists, draw a dotted line
-        lineGroup.append("line")
-        .attr("x1",x)
-        .attr("y1",y+16)
-        .attr("x2",x)
-        .attr("y2",y+lineYPos)
-        .attr("stroke","black")
-        .attr("stroke-width","1")
-        .style("stroke-dasharray", ("3, 3"))
+      if (ionData && para.getShowLines()){//if matched peak exists, draw a dotted line
+        let lineYPosEnd: number = para.getPeakYPos(ionData.intensity) + para.getIonYShift();
+        if (lineYPosEnd - 8 >= para.getPadding().head) {
+          lineGroup.append("line")
+          .attr("x1",x)
+          .attr("y1",para.getPadding().head)
+          .attr("x2",x)
+          .attr("y2",lineYPosEnd - 8)
+          .attr("stroke","black")
+          .attr("stroke-width","1")
+          .style("stroke-dasharray", ("5, 6"))
+        }
       }
   }
  
@@ -800,7 +822,7 @@ function drawErrorYTicks(svg: any, para: SpectrumViewParameters){
 									.attr("class","yErrorTicks");
   let tickSize: number = para.getErrorThreshold()/para.getErrorYTickNum();
 	// Draw ticks
-	for(let i=-para.getErrorYTickNum();i<=para.getErrorYTickNum();i++) {
+	for(let i=-para.getErrorYTickNum();i<=para.getErrorYTickNum();i+=2) {
 		let y: number = para.getErrorYPos(i*tickSize);
 		innerDrawYTick(y);
 		innerAddErrorYTickValue(i*tickSize,y);

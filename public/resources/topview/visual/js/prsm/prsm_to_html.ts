@@ -44,7 +44,7 @@ function loadDatafromJson2Html(prsmObj: Prsm): void {
     let prsmId = document.getElementById("PrSM_ID");
     let scan = document.getElementById("Scan");
     let precCharge = document.getElementById("Precursor_charge");
-    let precMz = document.getElementById("precursor_mz");
+    let precMz = document.getElementById("Precursor_mz");
     let precMass = document.getElementById("Precursor_mass");
     let protMass = document.getElementById("Proteoform_mass");
     let matchedPeak = document.getElementById("matched_peaks");
@@ -73,10 +73,11 @@ function loadDatafromJson2Html(prsmObj: Prsm): void {
             }
             else {
                 scan.innerHTML = ms2Spectrum[0].getScanNum();
-            }            precCharge.innerHTML = ms2Spectrum[0].getPrecCharge().toString();
-            precMz.innerHTML = ms2Spectrum[0].getPrecMz().toString();
-            precMass.innerHTML = ms2Spectrum[0].getPrecMass().toString();
-            protMass.innerHTML =  proteoformObj.getMass().toString();
+            }            
+            precCharge.innerHTML = ms2Spectrum[0].getPrecCharge().toString();
+            precMz.innerHTML = FormatUtil.formatFloat(ms2Spectrum[0].getPrecMz(), "precMz");
+            precMass.innerHTML = FormatUtil.formatFloat(ms2Spectrum[0].getPrecMass(), "precMass");
+            protMass.innerHTML =  FormatUtil.formatFloat(proteoformObj.getMass(), "protMass");
             matchedPeak.innerHTML = prsmObj.getMatchedPeakCount().toString();
             unexpected.innerHTML = prsmObj.getUnexpectedModCount().toString();
             eVal.innerHTML = prsmObj.getEValue().toString();
@@ -93,41 +94,89 @@ function loadDatafromJson2Html(prsmObj: Prsm): void {
  * @param {object} prsm - prsm is the data attribute inside global prsm_data variable
  */
 function occurence_ptm(prsmObj: Prsm): void {
-    let variable_ptm: string = "";
-    let fixed_ptm: string = "";
-    let fixedPtmCount: number = 0;
-    let varPtmCount: number = 0;
-    prsmObj.getProteoform().getFixedPtm().forEach(ptm => {
-        if (fixedPtmCount > 0) {
-            //if it is not the first ptm and it is not the only ptm
-            fixed_ptm = fixed_ptm + ";";
-        }
-        fixed_ptm = fixed_ptm + ptm.getAnnotation() + "[" + ptm.getLeftPos().toString() + "]";
-        fixedPtmCount++;
+    let varPtm: string = "";
+    let fixedPtm: string = "";
+    let fixedPtmObj: {"name": string, "pos": number[]}[] = [];
+    let varPtmObj: {"name": string, "pos": string[]}[] = [];
+
+    let variablePtms: MassShift[] = (prsmObj.getProteoform().getVarPtm()).concat(prsmObj.getProteoform().getProtVarPtm());
+    let fixedPtms: MassShift[] = prsmObj.getProteoform().getFixedPtm();
+
+    fixedPtms.sort(function(x,y) {
+        return x.getLeftPos() - y.getLeftPos();
     })
-    prsmObj.getProteoform().getVarPtm().forEach(ptm => {
-        if (varPtmCount > 0) {
-            //if it is not the first ptm and it is not the only ptm
-            variable_ptm = variable_ptm + ";";
+
+    fixedPtms.forEach((ptm: MassShift) => {
+        let notInObj: boolean = true;
+
+        for (let i = 0; i < fixedPtmObj.length; i++) {
+            if (fixedPtmObj[i].name == ptm.getAnnotation()) {
+                fixedPtmObj[i].pos.push(ptm.getLeftPos() + 1);
+                notInObj = false;
+                break;
+            }
         }
-        variable_ptm = variable_ptm + ptm.getAnnotation() + "[" + ptm.getLeftPos().toString() + "]";
-        varPtmCount++;
-    })
-    prsmObj.getProteoform().getProtVarPtm().forEach(ptm => {
-        if (varPtmCount > 0) {
-            //if it is not the first ptm and it is not the only ptm
-            variable_ptm = variable_ptm + ";";
+        if (notInObj) {
+            fixedPtmObj.push({"name": ptm.getAnnotation(), "pos": [ptm.getLeftPos() + 1]});
         }
-        variable_ptm = variable_ptm + ptm.getAnnotation() + "[" + ptm.getLeftPos().toString() + "]";
     })
-    
+
+    fixedPtmObj.forEach((p: {"name": string, "pos": number[]}) => {
+        let posString: string = "";
+
+        p.pos.forEach((eachPos: number) => {
+            posString = posString + eachPos.toString() + ";";
+        })
+        posString = posString.slice(0, posString.length - 1);//remove ";" at the end
+
+        fixedPtm = fixedPtm + p.name + " [" + posString + "]";
+    })
+
+    variablePtms.sort(function(x,y) {
+        return x.getLeftPos() - y.getLeftPos();
+    })
+    variablePtms.forEach(ptm => {
+        let notInObj: boolean = true;
+
+        for (let i = 0; i < varPtmObj.length; i++) {
+            if (varPtmObj[i].name == ptm.getAnnotation()) {
+                if (ptm.getLeftPos() + 1 == ptm.getRightPos()) {
+                    varPtmObj[i].pos.push((ptm.getLeftPos() + 1).toString());
+                }
+                else {
+                    varPtmObj[i].pos.push((ptm.getLeftPos() + 1).toString() + "-" + (ptm.getRightPos()).toString());
+                }
+                notInObj = false;
+                break;
+            }
+        }
+        if (notInObj) {
+            if (ptm.getLeftPos() + 1 == ptm.getRightPos()) {
+                varPtmObj.push({"name": ptm.getAnnotation(), "pos": [(ptm.getLeftPos() + 1).toString()]});
+            }
+            else {
+                varPtmObj.push({"name": ptm.getAnnotation(), "pos": [(ptm.getLeftPos() + 1).toString() + "-" + (ptm.getRightPos()).toString()]});
+            }
+        }
+    })
+    varPtmObj.forEach((p: {"name": string, "pos": string[]}) => {
+        let posString: string = "";
+
+        p.pos.forEach((eachPos: string) => {
+            posString = posString + eachPos + ";";
+        })
+        posString = posString.slice(0, posString.length - 1);//remove ";" at the end
+
+        varPtm = varPtm + p.name + " [" + posString + "] ";
+    })
+
     // Add the information of fixed ptms to html at id - ptm_abbreviation
-    if (fixed_ptm != "") {
+    if (fixedPtm != "") {
         let div: HTMLElement | null = document.getElementById("ptm_abbreviation");
         let text1: HTMLElement = document.createElement("text");
         let text2: HTMLElement = document.createElement("text");
         text1.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + "Fixed PTMs: ";
-        text2.innerHTML = fixed_ptm;
+        text2.innerHTML = fixedPtm;
         //text2.target = "_blank";
         //@ts-ignore
         text2.style = "color:red";
@@ -140,12 +189,12 @@ function occurence_ptm(prsmObj: Prsm): void {
         div.appendChild(text2);
     }
     // Add the information of varibale ptms to html at id - ptm_abbreviation
-    if (variable_ptm != "") {
+    if (varPtm != "") {
         let div: HTMLElement | null = document.getElementById("ptm_abbreviation");
         let text1: HTMLElement = document.createElement("text");
         let text2: HTMLElement = document.createElement("text");
         text1.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + "Variable PTMs: ";
-        text2.innerHTML = variable_ptm;
+        text2.innerHTML = varPtm;
         //text2.target = "_blank";
         //@ts-ignore
         text2.style = "color:red";
@@ -170,12 +219,12 @@ function getUnknownPtms(prsmObj: Prsm) {
             unknownShift = unknownShift + ", ";
         }
         //unknownShift = unknownShift + "[" + shift.getAnnotation().toString() + "]";
-        unknownShift = unknownShift + shift.getAnnotation().toString()
+        unknownShift = unknownShift + FormatUtil.formatFloat(shift.getAnnotation(), "massShift");
         shiftCount++;
     })
     // If unexpected modifications exist add them to html at id - ptm_unexpectedmodifications
     if (shiftCount > 0) {
-        let val = "Unknown" + "[" + unknownShift + "]";
+        let val = "Unknown" + " [" + unknownShift + "]";
         let unexpectedModDiv = document.getElementById("ptm_unexpectedmodification");
         if (!unexpectedModDiv) {
             console.error("ERROR: invalid div id for unexpected modificiation");

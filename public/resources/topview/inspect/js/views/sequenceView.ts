@@ -2,7 +2,7 @@
  * Set Sequence on to html
  */
 function setDataToSequence(sequence: string, massShiftList: MassShift[], protVarPtmsList: MassShift[], variablePtmsList: MassShift[]): void{
-    let modifiedSequence = formSequence(sequence, massShiftList, protVarPtmsList, variablePtmsList);
+    let modifiedSequence: string = formSequence(sequence, massShiftList, protVarPtmsList, variablePtmsList);
     if(protVarPtmsList || variablePtmsList){
         modifiedSequence = addVariablePtm(modifiedSequence, protVarPtmsList, variablePtmsList);
     }
@@ -131,7 +131,7 @@ function addVariablePtm(sequence: string, protVarPtmsList: MassShift[], variable
  * Get the sequence entered from the HTML.
  */
 function getSequenceFromUI(): string {
-    let seqData = jqueryElements.sequenceData.val();
+    let seqData: string | number | string[] | undefined = jqueryElements.sequenceData.val();
     let seq: string = '';
     
     if (typeof(seqData) == 'string') {
@@ -166,23 +166,22 @@ function formSequence(sequence: string, massShiftList: MassShift[], protVarPtmsL
     if(!massShiftList) {
         return result;
     }
-    // sort mass shift list by position, ascending
     massShiftList.sort(function(x,y){
         return x.getLeftPos() - y.getLeftPos();
     })
-    for(let i=0; i<massShiftList.length; i++)
+    for(let i: number = 0; i<massShiftList.length; i++)
     {
         if(massShiftList[i].getShift() !== 0){
             if(i > 0)
             {
                 // this is the previous added mass
-                let tempString: string = "["+ massShiftList[i-1].getShift()+"]";
+                let tempString: string = "["+ FormatUtil.formatFloat(massShiftList[i-1].getShift(), "massShift")+"]";
                 count = count + tempString.length;
             }
             
             // add +1 as the position need to be added after the position of the acid.
             let tempPosition: number = massShiftList[i].getLeftPos() + 1 + count;
-            result = result.slice(0, tempPosition) + "["+ massShiftList[i].getShift() + "]" + result.slice(tempPosition);
+            result = result.slice(0, tempPosition) + "["+ FormatUtil.formatFloat(massShiftList[i].getShift(), "massShift") + "]" + result.slice(tempPosition);
         }
     }
     return result;

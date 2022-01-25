@@ -3,7 +3,7 @@
  * the data
  */
 
-class SpectrumViewParameters {
+ class SpectrumViewParameters {
   // Ratio between average and monoisopotic mass
   private avgToMonoRatio_: number = 1.000684;
 
@@ -24,6 +24,7 @@ class SpectrumViewParameters {
   //minimum possible m/z after zooming/dragging, to prevent dragging/zooming into negative m/z value
   //if new m/z is less than this value, it is reset to this value
   private minPossibleMz_: number = -100;
+  private maxPossibleMzMargin_: number = 300;
 
   // M/z range of peaks
   private dataMinMz_: number = 0;
@@ -78,12 +79,17 @@ class SpectrumViewParameters {
   private ionYShift_: number = -15;
 
   // Mono mass graph
+  private showError_: boolean = true;
+  private showLines_: boolean = true;
   private isMonoMassGraph_: boolean = false;
   private errorPlotPadding_: Padding = {left:70, right:50, head:10, bottom:10};
   private errorPlotHeight_: number = 40;
   private errorThreshold_: number = 0.2;
   private errorYTickNum_: number = 2;
   
+  //restrict x zoom
+  private isXZoomAllowed_ = true;
+
   //sequence length
   //for determining max m/z window based on seq length in mass graph
   private seqLength_: number = -1; 
@@ -164,8 +170,21 @@ class SpectrumViewParameters {
   getShowIons(): boolean{
     return this.showIons_;
   }
+  getShowError(): boolean{
+    return this.showError_;
+  }
+  getShowLines(): boolean{
+    return this.showLines_;
+  }
+  getSpecHeight(): number {
+    return this.specHeight_;
+  }
+
   getPadding(): Padding {
     return this.padding_;
+  }
+  getIsXZoomAllowed(): boolean {
+    return this.isXZoomAllowed_;
   }
   setSeqLength(seqLength: number): void{
     this.seqLength_ = seqLength; 
@@ -175,6 +194,27 @@ class SpectrumViewParameters {
   }
   setShowIons(showIons: boolean): void{
     this.showIons_ = showIons;
+  }
+  setShowError(showError: boolean): void{
+    this.showError_ = showError;
+  }
+  setShowLines(showLines: boolean) : void {
+    this.showLines_ = showLines;
+  }
+  setIsXZoomAllowed_(allowXZoom: boolean): void {
+    this.isXZoomAllowed_ = allowXZoom;
+  }
+  setSVGHeight(newHeight: number): void {
+    this.svgHeight_ = newHeight;
+  }
+  setPadding(left: number, right: number, head: number, bottom: number): void {
+    this.padding_.left = left;
+    this.padding_.right = right;
+    this.padding_.head = head;
+    this.padding_.bottom = bottom;
+  }
+  setSpecHeight(height: number): void {
+    this.specHeight_ = height;
   }
 
   /**
@@ -224,15 +264,15 @@ class SpectrumViewParameters {
     let tickheight: number = Math.floor(this.tickHeightList_[0]) ;
     let maxIntPercent: number = this.winMaxInte_/this.dataMaxInte_ * 100;
 		for(let i = 0; i < this.tickHeightList_.length; i++)
-		{
-			if(maxIntPercent/this.yTickNum_ <= Math.floor(this.tickHeightList_[i]) 
-        && maxIntPercent/this.yTickNum_ > Math.floor(this.tickHeightList_[i+1]))
+    {
+			if(maxIntPercent/this.yTickNum_ <= this.tickHeightList_[i] 
+        && maxIntPercent/this.yTickNum_ > this.tickHeightList_[i+1])
 			{
-				tickheight = Math.floor(this.tickHeightList_[i]);
-				break;
+				tickheight = this.tickHeightList_[i];
+				return tickheight;
 			}
     }
-	  return tickheight;
+	  return -1;
   }
 
   /**
@@ -354,8 +394,12 @@ class SpectrumViewParameters {
    */
   drag(distX: number): void {
     let mzDist: number = distX / this.xScale_;
+    
+    this.winMinMz_ = this.winMinMz_ - mzDist; 
+    this.winMaxMz_ = this.winMaxMz_ - mzDist;
+    this.winCenterMz_ = this.winCenterMz_ - mzDist;
+    
     //allow drag up to -50 m/z (this.minPossibleMz) to give some padding 
-
     if (this.winMinMz_ - mzDist < this.minPossibleMz_){
         let minMaxDiff: number = this.winMaxMz_ - this.winMinMz_;
         let centerDiff: number = this.winCenterMz_ - this.winMinMz_;
@@ -364,10 +408,12 @@ class SpectrumViewParameters {
         this.winMaxMz_ = this.winMinMz_ + minMaxDiff;
         this.winCenterMz_ = this.winMinMz_ + centerDiff;
     }
-    else{
-      this.winMinMz_ = this.winMinMz_ - mzDist; 
-      this.winMaxMz_ = this.winMaxMz_ - mzDist;
-      this.winCenterMz_ = this.winCenterMz_ - mzDist;
+    if (this.winMaxMz_ > this.dataMaxMz_ + this.maxPossibleMzMargin_) {
+      let minMaxDiff: number = this.winMaxMz_ - this.winMinMz_;
+      this.winMaxMz_ = this.dataMaxMz_ + this.maxPossibleMzMargin_;
+      this.winMinMz_ = this.winMaxMz_ - minMaxDiff;
+      let centerDiff: number = this.winMaxMz_ - this.winCenterMz_;
+      this.winCenterMz_ = this.winMinMz_ + centerDiff;
     }
   }
 
@@ -377,15 +423,33 @@ class SpectrumViewParameters {
    * Function also calls setLimita which helps in drawing limited number of peaks and circles per eachbin/range of mz values.
    */
   xZoom(mouseSvgX: number, ratio: number): void {
+    if (!this.isXZoomAllowed_) {
+      return;
+    }
+    let oriValues: {"min": number, "max": number, "center": number, "xScale": number} = {} as {"min": number, "max": number, "center": number, "xScale": number}; //so that the view range can be restored when the view shouldn't be zoomed
+    oriValues.min = this.winMinMz_;
+    oriValues.max = this.winMaxMz_;
+    oriValues.center = this.winCenterMz_;
+    oriValues.xScale = this.xScale_;
+
     let mouseSpecX: number = mouseSvgX - this.padding_.left;
     this.winCenterMz_ =  mouseSpecX/this.xScale_ + this.winMinMz_;
     /*self is a global variable of datasource object containing all the data needed to use when zoomed*/
     this.xScale_ = this.xScale_ * ratio ; 
     this.winMinMz_ = this.winCenterMz_ - mouseSpecX / this.xScale_; 
     this.winMaxMz_ = this.winCenterMz_ + (this.specWidth_ - mouseSpecX) / this.xScale_;
-
+    //console.log(this.winMaxMz_, this.dataMaxMz_ + 500)
     if (this.winMinMz_ < this.minPossibleMz_){//prevent zooming out into negative mass
       this.winMinMz_ = this.minPossibleMz_;
+    }
+    if (this.winMaxMz_ > this.dataMaxMz_ + this.maxPossibleMzMargin_){
+      this.winMaxMz_ = this.dataMaxMz_ + this.maxPossibleMzMargin_;
+    }
+    if (this.winCenterMz_ > this.winMaxMz_) {
+      this.winMinMz_ = oriValues.min;
+      this.winMaxMz_ = oriValues.max;
+      this.winCenterMz_ = oriValues.center;
+      this.xScale_ = oriValues.xScale;
     }
   }
   /**
@@ -396,8 +460,9 @@ class SpectrumViewParameters {
     //Reducing zoom factor to smoothenup and remove gliches
     if(ratio > 1 ) ratio = 1.4;
     else if(ratio < 1) ratio = 0.9;
-    if ((ratio > 1.0 && this.winMaxInte_ >= this.dataMinInte_ * this.inteMargin_) 
-      || (ratio < 1.0 && this.winMaxInte_ <= this.dataMaxInte_ * this.inteMargin_)) {
+    //restrict zooming in when current max intensity is smaller than 0.01% of the max intensity of entire data
+    if ((ratio > 1.0 && (this.winMaxInte_ >= this.dataMaxInte_ * 0.01 / 100)) 
+    || (ratio < 1.0 && (this.winMaxInte_ <= this.dataMaxInte_ * this.inteMargin_))) {
       this.yScale_ = this.yScale_ * ratio;
       this.winMaxInte_ = this.specHeight_ / this.yScale_;
     }
@@ -449,15 +514,23 @@ class SpectrumViewParameters {
     //console.log(precMonoMz, this.hlMinMz, this.hlMaxMz);
   }
 
+  setDefaultPadding(): void {
+    this.padding_.head = 20;
+    this.padding_.bottom = 50;
+  }
+
+  setMonoMassPaddding(): void {
+    this.padding_.head = 60;
+    this.padding_.bottom = 75;
+  }
+
   setMonoMassGraph(isMonoMass: boolean): void {
     this.isMonoMassGraph_ = isMonoMass;
     if (isMonoMass) {
-      this.padding_.head = 60;
-      this.padding_.bottom = 75;
+      this.setMonoMassPaddding();
     }
     else {
-      this.padding_.head = 20;
-      this.padding_.bottom = 50;
+      this.setDefaultPadding();
     }
     this.specHeight_ = this.svgHeight_ - this.padding_.head - this.padding_.bottom;
     this.updateScale(this.winMinMz_, this.winMaxMz_, this.winMaxInte_);
