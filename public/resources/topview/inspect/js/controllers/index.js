@@ -35,6 +35,7 @@ const onLoadOfHTML = function () {
     /*if(protVarPtmsList || variablePtmsList) {//not distinguishing variable PTM from unknown mass shifts
         setVariablePTMList(protVarPtmsList, variablePtmsList);
     }*/
+    setPrecursorMass(100);
     if (precursorMass) {
         setPrecursorMass(precursorMass);
     }
@@ -49,9 +50,7 @@ const onLoadOfHTML = function () {
     // }
     //set the checkbox based on the ion type used in the data, which is stored in local storage
     let ionType = getIonType();
-    if (ionType) {
-        setIonCheckbox(ionType);
-    }
+    setIonCheckbox(ionType);
     let massErrorthVal = 0.1;
     let ppmErrorthVal = 15;
     /**
@@ -76,6 +75,12 @@ const onLoadOfHTML = function () {
             jqueryElements.errorValue.val(ppmErrorthVal);
             jqueryElements.errorUnit.html("ppm&nbsp;&nbsp;");
         }
+    });
+    /**
+     * On Change Event handler. Updates precursor mass with the newly entered value
+     */
+    domElements.precursorMass.addEventListener("keyup", () => {
+        setPrecursorMass(parseFloat(domElements.precursorMass.value));
     });
     /**
      * On Click Event handler. Gets invoked on click of submit button

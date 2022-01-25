@@ -6,10 +6,6 @@
  * The first element in each amino-acid list give tha mass of the amino acid.
  * @param {Char} aminoAcid - Containd Amino Acid
  */
-type AminoDist = {
-  "mass":number, 
-  "intensity":number
-}
 const getAminoAcidDistribution = function (aminoAcid: string): AminoDist[] | null{
   let aminoAcidDisList: {[key:string]:AminoDist[]} = {
     "A": [{ "mass": 71.037113784777, "intensity": 100 }, { "mass": 72.040468622587, "intensity": 3.7056470999999993 }, { "mass": 73.043823460397, "intensity": 0.2559336155115976 }, { "mass": 74.047178298207, "intensity": 0.007837690269555652 }, { "mass": 75.053455043976, "intensity": 0.00010149352253543698 }, { "mass": 76.050489937386, "intensity": 5.804534746436304e-7 }, { "mass": 77.054707019024, "intensity": 1.2638794227870654e-9 }],

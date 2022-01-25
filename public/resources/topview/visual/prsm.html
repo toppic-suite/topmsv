@@ -28,9 +28,9 @@
 <!--draw nav bar-->
 <script src="../common/topmsv_nav_bar/js/topmsv_nav_bar.js"></script>
 
-<script src="../common/spectrum_graph/spectrum_parameter.js"></script>
-<script src="../common/spectrum_graph/spectrum_graph.js"></script>
-<script src="../common/spectrum_graph/draw_spectrum.js"></script>
+<script src="../common/spectrum_view/spectrum_parameter.js"></script>
+<script src="../common/spectrum_view/spectrum_view.js"></script>
+<script src="../common/spectrum_view/draw_spectrum.js"></script>
 <script src="../common/mass_spectrum/spectrumFunction.js"></script>
 
 <!--library for downloading graphs-->
@@ -44,16 +44,18 @@
 <!--<script src="../common/proteoform/proteoform.js"></script>-->
 <script src="../common/distribution_calc/amino_acid_distribution.js"></script>
 
-<script src="../common/prsm_graph/prsm_data.js"></script>
-<script src="../common/prsm_graph/prsm_para.js"></script>
-<script src="../common/prsm_graph/draw_prsm.js"></script>
-<script src="../common/prsm_graph/prsm_graph.js"></script>
+<script src="../common/prsm_view/prsm_data.js"></script>
+<script src="../common/prsm_view/prsm_para.js"></script>
+<script src="../common/prsm_view/draw_prsm.js"></script>
+<script src="../common/prsm_view/prsm_view.js"></script>
 
 <script src="js/prsm/prsm_to_html.js"></script>
 <script src="js/prsm/load_spectra.js"></script>
 <script src="js/prsm/button_action.js"></script>
 <script src="js/prsm/inspect.js"></script>
-<script src="js/prsm/parse_prsm.js"></script>
+
+<script src="../common/parse_json/parse_prsm.js"></script>
+<script src="../common/parse_json/parse_util.js"></script>
 
 <!--data classes-->
 <script src="../common/mass_spectrum/peak.js"></script>
@@ -66,6 +68,9 @@
 <script src="../common/prsm/matchedPeakEnvelopePair.js"></script>
 <script src="../common/sequence/proteoform.js"></script>
 <script src="../common/prsm/prsm.js"></script>
+
+<script src="../common/util/types.js"></script>
+<script src="../common/util/format_util.js"></script>
 
 <script src="js/prsm/on_load_prsm.js"></script>
 </head>
@@ -108,10 +113,10 @@
           <td id = "Precursor_charge"></td>
         </tr>
         <tr>
-          <td>Precursor m/z:</td>
-          <td><a id = "precursor_mz" data-toggle="modal"
+          <td>Precursor m/z (mono):</td>
+          <td><a id = "Precursor_mz" data-toggle="modal"
                                     data-target="#ms1_graph_popup_window"></a></td>
-          <td>Precursor mass:</td>
+          <td>Precursor mass (mono):</td>
           <td id = "Precursor_mass"></td>
           <td>Proteoform mass:</td>
           <td id = "Proteoform_mass"></td>

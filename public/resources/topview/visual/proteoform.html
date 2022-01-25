@@ -12,7 +12,7 @@
 <script src="../common/topmsv_nav_bar/js/topmsv_nav_bar.js"></script>
 <script src="js/proteoform/proteoform.js"></script>
 <script src="js/proteoform/on_load_proteoform.js"></script>
-<script src="js/proteoform/parse_proteoform.js"></script>
+<script src="../common/parse_json/parse_proteoform.js"></script>
 
 <!--data classes-->
 <script src="../common/mass_spectrum/peak.js"></script>
@@ -26,6 +26,8 @@
 <script src="../common/sequence/proteoform.js"></script>
 <script src="../common/prsm/prsm.js"></script>
 
+<script src="../common/util/types.js"></script>
+
 </head>
 <body>
 <div id="nav-bar"></div>
@@ -38,7 +40,13 @@
 <p id = "prsm_count" style="font-size:16px;"></p>
 <table id = "proteoform_data" class="table table-hover table-bordered table-striped table-nonfluid">
 	<tr>
-		<th>Scan</th><th>Protein</th><th>E-value</th><th># all peaks</th><th># matched peaks</th><th># matched fragment ions</th><th>Link</th>
+		<th class="text-center">Scan</th>
+		<th class="text-center">Protein</th>
+		<th class="text-center">E-value</th>
+		<th class="text-center"># all peaks</th>
+		<th class="text-center"># matched peaks</th>
+		<th class="text-center"># matched fragment ions</th>
+		<th class="text-center">Link</th>
 	</tr>
 </table>
 <p style="font-size:15px;">
@@ -47,7 +55,7 @@
 </p>
 </div>
 <footer class="page-footer font-small blue">
-	<div class="footer-copyright text-center py-3">© 2019 Copyright: The Trustees of 
+	<div class="footer-copyright text-center py-3">© 2019-2022 Copyright: The Trustees of 
 		<a href="https://www.iu.edu/" target="#">Indiana University</a>
 	</div>
 </footer>
