@@ -581,16 +581,16 @@ console.log("Server database is Ready!");
 const server = app.listen(8443, function () {
     const port = server.address().port;
     console.log("Server started on PORT %s", port);
-
+    const newFlags = ChromeLauncher.Launcher.defaultFlags().filter(flag => flag !== '--no-default-browser-check');
     ChromeLauncher.launch({
         startingUrl: 'http://localhost:8443/',
-        ignoreDefaultFlags: true
+        ignoreDefaultFlags: true,
+        chromeFlags: newFlags
     }).then(chrome => {
 		console.log()
 	}).catch(err => {
 		console.log(err);
-	})
-	;
+	});
 });
 process.title = "TopMSV";
 
