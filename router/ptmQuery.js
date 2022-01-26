@@ -12,6 +12,11 @@ const parsePtm = require("../library/parsePtm");
 const ptmQuery = router.get('/ptmQuery', function (req, res) {
     let projectCode = req.query.projectCode;
     getProjectSummary(projectCode, function (err,row) {
+        if (!row) {
+            res.write("invalid project ID!");
+            res.end();
+            return;
+        }
         let filePath = row.projectDir;
         let idx = filePath.indexOf(".mzML");
         filePath = (filePath.slice(0, idx)).concat("_ms2_toppic_prsm.tsv");

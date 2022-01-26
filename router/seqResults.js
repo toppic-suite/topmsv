@@ -14,7 +14,7 @@ const seqResults = router.get('/seqResults', function (req,res) {
     let projectCode = req.query.projectCode;
     getProjectSummary(projectCode, function (err,row) {
         if(row===undefined) {
-            res.sendStatus(404);
+            res.send("invalid project ID!");
             return;
         }
         let projectDir = row.projectDir;
@@ -22,6 +22,10 @@ const seqResults = router.get('/seqResults', function (req,res) {
         let seqStatus = row.sequenceStatus;
         if (seqStatus === 1 && envStatus === 1){
             let results = getAllSeq(projectDir);
+            if (!results) {
+                res.send("sequence information could not be parsed!");
+                return;
+            }
             //format qVal and eVal
             results.forEach(prot => {
                 if (prot.q_value != "N/A"){
@@ -38,6 +42,10 @@ const seqResults = router.get('/seqResults', function (req,res) {
             });
         } else if(seqStatus === 1 && envStatus === 0) {
             let results = getAllSeq(projectDir);
+                        if (!results) {
+                res.send("sequence information could not be parsed!");
+                return;
+            }
             //format qVal and eVal
             results.forEach(prot => {
                 if (prot.q_value != "N/A"){
@@ -47,7 +55,6 @@ const seqResults = router.get('/seqResults', function (req,res) {
                     prot.e_value = (parseFloat(prot.e_value).toExponential(2)).toString();
                 }   
             })
-            console.log()
             res.render('pages/seqWithoutEnv', {
                 projectDir: projectDir,
                 projectCode: projectCode,

@@ -22,7 +22,11 @@ let envlist = router.get('/envlist', function(req, res) {
     const resultDb = new BetterDB(dbDir);
     ifEnvExists(projectCode,(err, row)=> {
         // console.log("row:", row);
-        if(row.EnvelopeStatus === 1) {
+        if (row == null || row == undefined) {
+            res.write('0');
+            res.end();
+        }
+        else if(row.EnvelopeStatus === 1) {
             showData(resultDb,scanid,res);
         }else {
             res.write('0');

@@ -32,6 +32,11 @@ let msalign = router.post('/msalign', function (req, res) {
 
         console.log('Deleted previous Envelope Peaks!');
         let email = fields.email;
+        if (!dbDir) {
+            console.error("Invalid DB path when uploading msalign files");
+            sendFailureMess(projectName, projectCode, email);
+            return;
+        }
         dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
         let des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms1.name;
         let des_ms2 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms2.name;

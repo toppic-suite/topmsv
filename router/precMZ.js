@@ -16,7 +16,7 @@ const precMZ = router.get('/precMZ', function (req, res) {
             res.write(precMZ);
             res.end();
         }else {
-            res.write("-1");
+            res.write("0");
             res.end();
         }
     })

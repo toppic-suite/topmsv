@@ -13,7 +13,17 @@ function showData(resultDB,scan_id,res) {
     getEnvNum(resultDB, scan_id, function (err, rows) {
         // console.log(rows.length);
         // console.log(typeof rows);
+
+        if (rows == undefined || rows == null){
+            //console.log("Empty rows!");
+            res.write("0");
+            res.end();
+            resultDB.close();
+            return;
+        }
+
         let max = rows.length;
+
         if (rows.length === 0){
             //console.log("Empty rows!");
             res.write("0");

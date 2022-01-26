@@ -28,6 +28,13 @@ let sequence = router.post('/sequence', function (req,res) {
         let projectName = fields.projectName;
         let projectCode = fields.projectCode;
         let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
+
+        if (!dbDir) {
+            res.send("Cannot find db file!");
+            res.end();
+            return;
+        }
+
         let des_seq = dbDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqFile.name;
         if (os.type == "Windows_NT") {
             des_seq = dbDir.substr(0, projectDir.lastIndexOf("\\")) + '\\' + seqFile.name;

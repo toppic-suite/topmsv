@@ -39,8 +39,12 @@ $( document ).ready(function() {
                 })
                 .then((response) => {
                     response = response.data;
-                    init2D(response);
-                    update3D(response);
+                    if(response !== 0){
+                        init2D(response);
+                        update3D(response);
+                    }else {
+                        alert("NULL");
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -63,8 +67,12 @@ $( document ).ready(function() {
                 })
                 .then((response) => {
                     response = response.data;
-                    init2D(response);
-                    update3D(response);
+                    if(response !== 0){
+                        init2D(response);
+                        update3D(response);
+                    }else {
+                        alert("NULL");
+                    }
                 })
                 .catch((error) => {
                     console.log(error);

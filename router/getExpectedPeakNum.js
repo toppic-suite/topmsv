@@ -15,7 +15,7 @@ const getExpectedPeakNum = router.get('/getExpectedPeakNum', function (req,res) 
         console.log("peakNumber router: ", peakNumber)
 
         if(!peakNumber) {
-            res.write('3000');
+            res.write('4000');
         }else{
             res.write(peakNumber);
         }
