@@ -14,6 +14,11 @@ const seqQuery = router.get('/seqQuery', function (req, res) {
     let projectCode = req.query.projectCode;
     let scanNum = req.query.scanID;
     getProjectSummary(projectCode,function (err,row) {
+        if (!row) {
+            res.write('0');
+            res.end();
+            return;
+        }
         let seqStatus = row.sequenceStatus;
         if(seqStatus === 1) {
             let proteoform = getProteoform(projectDir, scanNum);

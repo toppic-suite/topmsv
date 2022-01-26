@@ -34,6 +34,11 @@ const projects = router.get('/projects', function (req,res) {
         }
         // console.log(uid);
         getProjects(uid,function (rows) {
+            if (!rows) {
+                res.write("Cannot connect to project DB");
+                res.end();
+                return;
+            }
             rows.forEach(row=>{
                 // console.log("row", row);
                 if(row.envelopeFile === '0') row.envelopeFile = 'N/A';

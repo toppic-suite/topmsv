@@ -61,6 +61,9 @@ let readOneTask = (project) => {
     return new Promise((resolve, reject) => {
         let data = [];
         getTasksPerUser(project.projectCode, function(taskData) {
+            if (!taskData) {
+                reject();
+            }
             taskData.forEach(task =>{
                 if (task.app != "node") {
                     let appName = path.basename(task.app);

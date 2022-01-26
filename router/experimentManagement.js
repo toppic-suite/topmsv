@@ -24,9 +24,15 @@ let experimentManagement = router.get('/experimentManagement', function (req,res
         let pid = req.query.pid;
         console.log(uid);
         let rows = getExperiment(uid, pid);
-        res.render('pages/experiments', {
-            experiments: rows
-        });
+        if (!rows) {
+            res.render('pages/experiments', {
+                experiments: []
+            });
+        } else {
+            res.render('pages/experiments', {
+                experiments: rows
+            });
+        }
         // getProjects(uid,function (rows) {
         //     rows.forEach(row=>{
         //         if(row.envelopeFile === '0') row.envelopeFile = 'N/A';

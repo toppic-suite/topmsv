@@ -55,7 +55,12 @@ const upload = router.post('/upload', function (req, res) {
     form.keepExtensions = true;
     form.parse(req, function (err, fields, files) {
         if (err) {
-            console.log(err);
+            console.error(err);
+            return;
+        }
+        if (fields == null || fields == undefined || files == null || files == undefined) {
+            console.error("upload form was not corretly generated");
+            return;
         }
         let projectname = fields.projectname;
         let emailtosend = email;
