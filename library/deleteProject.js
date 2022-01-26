@@ -9,8 +9,8 @@ const os = require("os");
  * @param {string} projectCode - Project code
  */
 function deleteProject(projectCode) {
-    /*updateProjectStatusSync(3, projectCode);
-    getProjectSummary(projectCode, function (err, row) {
+    updateProjectStatusSync(3, projectCode);
+   /* getProjectSummary(projectCode, function (err, row) {
         let projectDir = row.projectDir;
         let dir = projectDir.substr(0, projectDir.lastIndexOf("/"));
         if (os.type != "Linux") {
