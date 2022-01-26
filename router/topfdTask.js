@@ -38,13 +38,13 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
 
     let msMsSignalNoiseRatio = req.query.MS_MS_signal_noise_ratio;
     if (msMsSignalNoiseRatio !== '') {
-        commandArr += ' -t ';
+        commandArr += ' -s ';
         commandArr += msMsSignalNoiseRatio;
     }
 
     let mzError = req.query.M_Z_error;
     if (mzError !== '') {
-        commandArr += ' -e ';
+        commandArr += ' -t ';
         commandArr += mzError;
     }
 
