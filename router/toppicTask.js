@@ -35,6 +35,11 @@ const toppicTask = router.post('/toppicTask', function (req, res) {
         console.log("parameter",parameter);
         //console.log(projectCode);
         getProjectSummary(projectCode, function (err, row) {
+            if (!row) {
+                res.send("invalid project ID!");
+                res.end();
+                return;
+            }
             let envStatus = row.envelopeStatus;
             let projectDir = row.projectDir;
             let fileName = row.fileName;

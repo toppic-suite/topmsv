@@ -8,7 +8,7 @@ const getDataset = require("./getDataset");
  * @returns {string} Tree view contains experiments and datasets
  */
 function buildProjectView(pid) {
-    let result = [];
+    /*let result = [];
     let experiments = getExperimentByPid(pid);
     if (experiments.length === 0) {
         // NO experiments
@@ -31,7 +31,7 @@ function buildProjectView(pid) {
     }
 
     console.log("result: ", JSON.stringify(result));
-    return JSON.stringify(result);
+    return JSON.stringify(result);*/
 }
 
 module.exports = buildProjectView;

@@ -1,4 +1,4 @@
-let graph3D;//3d graph
+/*let graph3D;//3d graph
 let configData;
 let rawRT; //rt before it is converted to seconds
 
@@ -47,6 +47,10 @@ function getScanID(ID) {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var response = this.responseText;
+            if (parseInt(response) < 0) {
+                alert("No scan found for a given ID");
+                return;
+            }
             findNextLevelOneScan(response);
         }
     };
@@ -210,7 +214,7 @@ function load3dDataByParaRange(minmz, maxmz, minrt, maxrt, rt, updateTextBox){
 function calculateTableNum(minrt, maxrt, minmz, maxmz){
     /*decide which table to query based on what is the ratio is between current range and whole graph
     if the ratio is small (1:100), the detail level is high, and the peaks in that range are more*/
-
+/*
     let tableNum = -1;
   
     let totalMzRange = configData[0].MZMAX - configData[0].MZMIN; 
@@ -287,7 +291,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 /*
                                         var t5 = performance.now();
                                         console.log("Call to fetch peaklist2 data from server took " + (t5 - t4) + " milliseconds.");
-                */
+                *//*
                 peakList2_g = JSON.parse(this.responseText);
                 // document.getElementById("scanID2").innerText = scanID;
                 //getPrecMZ(scanID);
@@ -335,7 +339,7 @@ function loadInteSumList() {
             // console.log("Call to fetch inteSum data from server took " + (t3 - t2) + " milliseconds.");
             var response = JSON.parse(this.responseText);
 /*            console.log("SumList:");
-            console.log(response);*/
+            console.log(response);*//*
             var t0 = performance.now();
             addFigure(response);
             var t1 = performance.now();
@@ -472,7 +476,7 @@ function addFigure(dataset) {
                 var hoverTT3 = hoverLineGroup.append('text')
                         .attr("class", "hover-text capo")
                         .style('fill', 'red')
-                        .attr('dy', "0.45em");*/
+                        .attr('dy', "0.45em");*//*
 
     hoverLine.style("opacity", 1e-6);
     /*
@@ -483,7 +487,7 @@ function addFigure(dataset) {
                         .attr("width", width - padding.right -padding.left)
                         .attr("height", height - padding.bottom - padding.top)
                         .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
-    */
+    *//*
 
     vis
         .on("mouseout", hoverMouseOff)
@@ -546,7 +550,7 @@ function addFigure(dataset) {
             hoverTT3.text("Scan: " + d.scanNum)
                     .attr('x', mouse_x)
                     .attr('y', yScale(d.intePercentage) + 42);
-            hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*/
+            hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*//*
             hoverLine.style("opacity", 1);
         } else if (i === dataset.length&& mouse_x-padding.left <= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.top)
         {
@@ -564,7 +568,7 @@ function addFigure(dataset) {
             hoverTT3.text("Scan: " + d.scanNum)
                     .attr('x', mouse_x)
                     .attr('y', yScale(d.intePercentage) + 42);
-            hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*/
+            hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);*//*
             hoverLine.style("opacity", 1);
         } else {
             document.getElementById("rt-hover").innerHTML = 0;
@@ -594,7 +598,7 @@ function prev(scanID) {
                 /*$( "#spectrum1" ).empty();
                 $( "#spectrum2" ).empty();
                 $("#scanID1").empty();
-                cleanInfo();*/
+                cleanInfo();*//*
                 alert("NULL");
             }
         }
@@ -614,7 +618,7 @@ function next(scanID) {
                 /*$("#spectrum1" ).empty();
                 $("#spectrum2" ).empty();
                 $("#scanID1").empty();
-                cleanInfo();*/
+                cleanInfo();*//*
                 alert("NULL");
             }
         }
@@ -668,7 +672,7 @@ function getScanLevelTwoList(scanID,target) {
                                 var showID = (parseInt(scanID) + 1).toString(10);
                                 console.log(showID);
                                 console.log(document.getElementById(showID));
-            */
+            *//*
             document.getElementById(target).click();
         }
     };
@@ -760,7 +764,7 @@ function showEnvTable(scan) {
                 defaultContent: '',
                 className: 'select-checkbox',
                 orderable: false
-            },*/
+            },*//*
             { "data": "envelope_id", readonly: 'true'},
             { "data": "scan_id", "visible": true, type:"hidden"},
             { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
@@ -776,7 +780,7 @@ function showEnvTable(scan) {
                         return `<a href="#spectrum2" onclick="relocSpet2( `+ mono_mz + `)">` + mono_mz + '</a>';
                     } else {
                         return `<a href="#spectrum1" onclick="relocSpet1( `+ mono_mz + `)">` + mono_mz + '</a>';
-                    }*/
+                    }*//*
                     return mono_mz;
                 }
                 // ,type: "readonly"
@@ -1164,7 +1168,7 @@ function setProgress(event) {
     seq = seq.replace(/\[[A-z]*\]/g, '');
     return seq;
     //console.log(seq);
-}*/
+}*//*
 function preprocessSeq(seq) {
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
@@ -1259,7 +1263,7 @@ function refresh() {
     if (msType_old === 'MS1') {
         showEnvTable($("#scanID1").text());
         $("#switch").text('MS2');
-    }*/
+    }*//*
 
     // addSpectrum('spectrum1', peakList1_g, envList1_g, mono_mz_list1_g);
     const graphFeatures = new GraphFeatures();
@@ -1299,4 +1303,4 @@ function refresh() {
     //setTimeout()
 }
 let lockPara_3 = false;
-var correspondingSpecParams_g = [];
+var correspondingSpecParams_g = [];*/

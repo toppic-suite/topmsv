@@ -23,6 +23,11 @@ const projects = router.get('/projectTab', function (req,res) {
         let uid = req.session.passport.user.profile.id;
         console.log(uid);
         let rows = getProjectNew(uid);
+        if (!rows) {
+            res.write("Cannot connect to project DB");
+            res.end();
+            return;
+        }
         rows.forEach(row=>{
             row.link = '/experimentManagement?pid=' + row.pid;
         })

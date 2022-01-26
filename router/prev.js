@@ -11,6 +11,11 @@ const prev = router.get('/prev', function(req, res) {
     const projectDir = req.query.projectDir;
     const scanID = req.query.scanID;
     getPrev(projectDir, scanID, function (err, row) {
+        if (!row) {
+            res.write("0");
+            res.end();
+            return;
+        }
         let prevID = row.prev.toString();
         res.write(prevID);
         res.end();

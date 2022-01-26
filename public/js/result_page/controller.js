@@ -58,7 +58,10 @@ function initGraph(){
 
         topview_2d.getScanLevel(min)
             .then((response) => {
-                if (response === "1") {
+                if (response.data === 0) {//invalid result
+                    throw new Error("invalid scan level!");
+                }
+                else if (response === "1") {
                     loadPeakList1(min, null);
                     $('#scanLevelTwo').hide();
                 }

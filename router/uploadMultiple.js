@@ -54,6 +54,11 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
     form.parse(req, function (err, fields, files) {
         if (err) {
             console.log(err);
+            return;
+        }
+        if (fields == null || fields == undefined || files == null || files == undefined) {
+            console.error("upload form was not corretly generated");
+            return;
         }
         let projectname = fields.projectname;
         let emailtosend = email;

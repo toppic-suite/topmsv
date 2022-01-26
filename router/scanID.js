@@ -12,6 +12,11 @@ const scanID = router.get('/scanID', function (req, res) {
     const projectDir = req.query.projectDir;
     const id = req.query.ID;
     getScanID(projectDir, id, function (err, row) {
+        if (!row) {
+            res.write("0");
+            res.end();
+            return;
+        }
         let scanID = row.scanID.toString();
         res.write(scanID);
         res.end();
