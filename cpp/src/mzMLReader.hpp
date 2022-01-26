@@ -35,6 +35,7 @@ struct DataRange{
 
   double rt_scale = 2;
   double rt_size;
+  double rt_divider = 1;
 };
 struct GridProperties{
 	vector<vector<int>> grid_sizes;
