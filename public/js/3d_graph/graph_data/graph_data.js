@@ -160,6 +160,7 @@ class GraphData{
         GraphLabel.displayGraphData(Graph.currentData.length);//display metadata about the graph
 
         await GraphFeature.drawFeature(Graph.viewRange);
+
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
     }
