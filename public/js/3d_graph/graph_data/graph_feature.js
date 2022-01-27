@@ -93,7 +93,6 @@
                         GraphFeature.updateFeature(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax);       
                         return;
                     }).then(() => {
-                        document.getElementById("featureInfo").style.display = "inline-block";                    
                         resolve();
                     })
                 }
