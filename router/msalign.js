@@ -60,10 +60,10 @@ let msalign = router.post('/msalign', function (req, res) {
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
                 res.end();
-                let parameterTask1 = path.join(__dirname, '..', 'utilities', 'convertMS1Msalign.js') + ' ' + dbDir + ' ' + des_ms1;
+                let parameterTask1 = path.join(__dirname, '..', 'utilities', 'convertMS1Msalign.js') + ' ' + dbDir + ' ' + des_ms1 + ' ' + projectCode;;
                 submitTask(projectCode, 'node', parameterTask1, 1);
 
-                let parameterTask2 = path.join(__dirname, '..', 'utilities', 'convertMS2Msalign.js') + ' ' + dbDir + ' ' + des_ms2;
+                let parameterTask2 = path.join(__dirname, '..', 'utilities', 'convertMS2Msalign.js') + ' ' + dbDir + ' ' + des_ms2 + ' ' + projectCode;;
                 submitTask(projectCode, 'node', parameterTask2, 1);
                 updateEnvStatusSync(1, projectCode);
             })
