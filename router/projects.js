@@ -15,10 +15,11 @@ const projects = router.get('/projects', function (req,res) {
     //console.log(req.session);
     //let uid = req.session.passport.user.profile.uid;
     console.log("hello projects");
-    if (req.session.passport === undefined)
-        res.render('pages/projects', {
-            projects: []
-        });
+    if (req.session.passport === undefined) {
+        res.write("User does not exist in the system! Please log in first!");
+        res.end();
+        return;
+    }
     else {
         //console.log(req.session.passport.user.profile);
         let uid = req.session.passport.user.profile.id;

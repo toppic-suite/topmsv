@@ -13,10 +13,11 @@ const fs = require("fs");
  */
 const tasks = router.get('/tasks', async (req,res) => {
     console.log("hello tasks");
-    if (req.session.passport === undefined)
-        res.render('pages/tasks', {
-            taskData: []
-        });
+    if (req.session.passport === undefined) {
+        res.write("User does not exist in the system! Please log in first!");
+        res.end();
+        return;
+    }
     else {
         //console.log(req.session.passport.user.profile);
         let uid = req.session.passport.user.profile.id;
