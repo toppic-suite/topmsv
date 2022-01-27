@@ -262,6 +262,7 @@ class Graph{
             GraphInit.main(mzmin, mzmax, scanNum);
 
             if($('#featureStatus').val() !== "0"){
+                document.getElementById("featureInfo").style.display = "inline-block";
                 showFeatureTable();
             }
         })
