@@ -19,58 +19,65 @@ function parsePtm(tsvFile, callback) {
     let commonPtms = [];
     let varPtms = [];
 
-    const readInterface = readline.createInterface({
-        input: fs.createReadStream(tsvFile)
-    });
-
-    readInterface.on('line', function(line) {
-        if (fixedPtm || commonPtm || varPtm) {
-            let idx = line.indexOf('\t');
-            if (idx > -1) {
-                let ptmName = (line.slice(0, idx)).trim();
-                let ptmMass = (line.slice(idx + 1)).trim(); 
-                if (fixedPtm) {
-                    fixedPtms.push({"name": ptmName, "mass": ptmMass});
+    try {
+        const readInterface = readline.createInterface({
+            input: fs.createReadStream(tsvFile).on('error', function(err) {
+                throw err;
+            })
+        });
+    
+        readInterface.on('line', function(line) {
+            if (fixedPtm || commonPtm || varPtm) {
+                let idx = line.indexOf('\t');
+                if (idx > -1) {
+                    let ptmName = (line.slice(0, idx)).trim();
+                    let ptmMass = (line.slice(idx + 1)).trim(); 
+                    if (fixedPtm) {
+                        fixedPtms.push({"name": ptmName, "mass": ptmMass});
+                    }
+                    else if (commonPtm) {
+                        commonPtms.push({"name": ptmName, "mass": ptmMass});
+                    }
+                    else{
+                        varPtms.push({"name": ptmName, "mass": ptmMass});
+                    }
                 }
-                else if (commonPtm) {
-                    commonPtms.push({"name": ptmName, "mass": ptmMass});
+            }
+            if (line == fixedPtmTitle) {
+                if (fixedPtm){
+                    fixedPtm = false;
                 }
                 else{
-                    varPtms.push({"name": ptmName, "mass": ptmMass});
+                    fixedPtm = true;
                 }
             }
-        }
-        if (line == fixedPtmTitle) {
-            if (fixedPtm){
-                fixedPtm = false;
+            else if (line == commonPtmTitle) {
+                if (commonPtm){
+                    commonPtm = false;
+                }
+                else{
+                    commonPtm = true;
+                }
             }
-            else{
-                fixedPtm = true;
+            else if (line == varPtmTitle) {
+                if (varPtm){
+                    varPtm = false;
+                }
+                else{
+                    varPtm = true;
+                }
             }
-        }
-        else if (line == commonPtmTitle) {
-            if (commonPtm){
-                commonPtm = false;
-            }
-            else{
-                commonPtm = true;
-            }
-        }
-        else if (line == varPtmTitle) {
-            if (varPtm){
-                varPtm = false;
-            }
-            else{
-                varPtm = true;
-            }
-        }
-    });
-    readInterface.on('close', function() {
-        let ptm = {};
-        ptm["fixedPtms"] = fixedPtms;
-        ptm["varPtms"] = varPtms;
-        ptm["commonPtms"] = commonPtms;
-        callback(null, ptm);    
-    })
+        });
+        readInterface.on('close', function() {
+            let ptm = {};
+            ptm["fixedPtms"] = fixedPtms;
+            ptm["varPtms"] = varPtms;
+            ptm["commonPtms"] = commonPtms;
+            callback(null, ptm);    
+        })
+    } catch(err) {
+        console.log(err);
+        callback(err, null);
+    }
 }
 module.exports = parsePtm;

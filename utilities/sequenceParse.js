@@ -2,6 +2,8 @@ const Papa = require('papaparse');
 const Database = require('better-sqlite3');
 const fs = require('fs');
 
+const updateSeqStatusSync = require("../library/updateSeqStatusSync");
+
 const myArgs = process.argv.slice(2);
 const parameter = '********************** Parameters **********************';
 const fixedPtm = "********************** Fixed PTM **********************";
@@ -24,9 +26,19 @@ stmtCreateSequenceTable.run();
 const insertMany = betterDB.transaction(importData);
 
 //let specFDRValue = 'N/A';
-fs.writeFile('input.txt', myArgs[1], function(err, data){})
-let file = fs.readFileSync(myArgs[1], "utf-8");
+
 let projectCode = myArgs[2];
+
+fs.writeFile('input.txt', myArgs[1], function(err, data){})
+let file;
+try {
+    file = fs.readFileSync(myArgs[1], "utf-8");
+} catch(err) {
+    console.log(err);
+    updateSeqStatusSync(0, projectCode);
+    return;
+}
+
 file = findCSV(file);
 
 insertMany(betterDB, file);

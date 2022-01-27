@@ -2,6 +2,8 @@ const fs = require('fs');
 const Database = require('better-sqlite3');
 // const molecularFormulae = require('./distribution_calc/molecular_formulae');
 // const calcDistrubution = new molecularFormulae();
+const updateEnvStatusSync = require("../library/updateEnvStatusSync");
+
 const myArgs = process.argv.slice(2);
 const betterDB = new Database(myArgs[0]);
 const stmtCreateEnvTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS envelope (\n' +
@@ -24,16 +26,23 @@ const stmtCreateEnvPeakTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS env_
     ');');
 stmtCreateEnvTable.run();
 // stmtCreateEnvPeakTable.run();
-fs.readFile(myArgs[1], ((err, data) => {
-    if (err) throw err;
-    insertMany(betterDB,data.toString());
-    const stmtEnvIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `envelope_index` ON `envelope` ( `scan_id` )");
-    stmtEnvIndex.run();
-    // const stmtEnvPeakIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `env_peak_index` ON `env_peak` ( `envelope_id` )");
-    // stmtEnvPeakIndex.run();
-    betterDB.close();
-}));
 
+let projectCode = myArgs[2];
+try {
+    fs.readFile(myArgs[1], ((err, data) => {
+        if (err) throw err;
+        insertMany(betterDB,data.toString());
+        const stmtEnvIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `envelope_index` ON `envelope` ( `scan_id` )");
+        stmtEnvIndex.run();
+        // const stmtEnvPeakIndex = betterDB.prepare("CREATE INDEX IF NOT EXISTS `env_peak_index` ON `env_peak` ( `envelope_id` )");
+        // stmtEnvPeakIndex.run();
+        betterDB.close();
+    }));
+} catch (err) {
+    console.log(err);
+    updateEnvStatusSync(0, projectCode);
+    return;
+}
 const insertMany = betterDB.transaction(importData);
 
 function importData(database,data) {
