@@ -1,8 +1,12 @@
 const fs = require('fs');
 const readline = require('readline');
-const fixedPtmTitle = "********************** Fixed PTM **********************";
-const commonPtmTitle = "********************** Common PTM **********************";
+const fixedPtmTitle = "Fixed PTMs BEGIN";
+const fixedPtmTitleEnd = "Fixed PTMs END";
+const commonPtmTitle = "PTMs for MIScore BEGIN";
+const commonPtmTitleEnd = "PTMs for MIScore END";
 const varPtmTitle = "********************** Variable PTM **********************";
+const paramTitle = "********************** Parameters **********************";
+
 /**
  * Parse identification file and return ptm data
  * @param {string} tsvFile - tsv file path
@@ -11,6 +15,7 @@ const varPtmTitle = "********************** Variable PTM **********************"
  * @sync
  */
 function parsePtm(tsvFile, callback) {
+    let isReadingParam = false;
     let fixedPtm = false;
     let commonPtm = false;
     let varPtm = false;
@@ -18,7 +23,7 @@ function parsePtm(tsvFile, callback) {
     let fixedPtms = [];
     let commonPtms = [];
     let varPtms = [];
-
+    console.log("tsvfile", tsvFile);
     try {
         const readInterface = readline.createInterface({
             input: fs.createReadStream(tsvFile).on('error', function(err) {
@@ -27,11 +32,24 @@ function parsePtm(tsvFile, callback) {
         });
     
         readInterface.on('line', function(line) {
+            if (line.includes(fixedPtmTitle)) {
+                fixedPtm = true;
+            }
+            else if (line.includes(commonPtmTitle)) {
+                commonPtm = true;
+            }
+            else if (line.includes(fixedPtmTitleEnd)) {
+                fixedPtm = false;
+            }
+            else if(line.includes(commonPtmTitleEnd)) {
+                commonPtm = false;
+            }
             if (fixedPtm || commonPtm || varPtm) {
-                let idx = line.indexOf('\t');
-                if (idx > -1) {
-                    let ptmName = (line.slice(0, idx)).trim();
-                    let ptmMass = (line.slice(idx + 1)).trim(); 
+                let ptmInfo = line.split("\t");
+                if (ptmInfo.length == 3) {
+                    let ptmName = ptmInfo[0].trim();
+                    let ptmMass = ptmInfo[1].trim();
+
                     if (fixedPtm) {
                         fixedPtms.push({"name": ptmName, "mass": ptmMass});
                     }
@@ -41,31 +59,7 @@ function parsePtm(tsvFile, callback) {
                     else{
                         varPtms.push({"name": ptmName, "mass": ptmMass});
                     }
-                }
-            }
-            if (line == fixedPtmTitle) {
-                if (fixedPtm){
-                    fixedPtm = false;
-                }
-                else{
-                    fixedPtm = true;
-                }
-            }
-            else if (line == commonPtmTitle) {
-                if (commonPtm){
-                    commonPtm = false;
-                }
-                else{
-                    commonPtm = true;
-                }
-            }
-            else if (line == varPtmTitle) {
-                if (varPtm){
-                    varPtm = false;
-                }
-                else{
-                    varPtm = true;
-                }
+                } 
             }
         });
         readInterface.on('close', function() {
@@ -73,6 +67,7 @@ function parsePtm(tsvFile, callback) {
             ptm["fixedPtms"] = fixedPtms;
             ptm["varPtms"] = varPtms;
             ptm["commonPtms"] = commonPtms;
+            console.log("ptm", ptm);
             callback(null, ptm);    
         })
     } catch(err) {
