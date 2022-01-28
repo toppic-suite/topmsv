@@ -18,7 +18,6 @@ const nodemailerAuth = require('../nodemailer-auth');
 const fs = require('fs');
 const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
-const sqlite3 = require('sqlite3').verbose();
 const unzipper = require('unzipper');
 const os = require('os');
 
@@ -55,6 +54,11 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
     form.parse(req, function (err, fields, files) {
         if (err) {
             console.log(err);
+            return;
+        }
+        if (fields == null || fields == undefined || files == null || files == undefined) {
+            console.error("upload form was not corretly generated");
+            return;
         }
         let projectname = fields.projectname;
         let emailtosend = email;

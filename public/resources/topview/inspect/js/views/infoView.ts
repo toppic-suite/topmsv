@@ -7,15 +7,18 @@ function setPrecursorMass(precursorMass: number): void{
 /**
  * get Precursor mass 
  */
-function getPrecursorMass(): string | null {
-    return domElements.precursorMass.getAttribute("value");
+function getPrecursorMass(): number | null {
+    let mass: string | null = domElements.precursorMass.getAttribute("value");
+    if (mass) {
+        return parseFloat(mass);
+    }
+    return null;
 }
 function setPrecursorMassEventHandler(): void {
     jqueryElements.precursorMassSubmit.click(function(){
         let precursorMass: string | null = domElements.precursorMass.getAttribute("value");
-        let totalMass: string = jqueryElements.totalMass.html();
-
-        if (precursorMass) {
+        let totalMass: string | number | string[] | undefined = jqueryElements.totalMass.val();
+        if (precursorMass && typeof(totalMass) == "string") {
             setMassDifference(parseFloat(precursorMass), parseFloat(totalMass));
         }
         else {
@@ -28,7 +31,7 @@ function setPrecursorMassEventHandler(): void {
  * @param {*} totalMass 
  */
 function setTotalSeqMass(mass: number): void{
-    let totalMass: string = mass.toFixed(4);
+    let totalMass: string = FormatUtil.formatFloat(mass, "protMass");
     jqueryElements.totalMass.html(totalMass);
     domElements.totalSeqMass.setAttribute("style", 'block');
 }
@@ -40,6 +43,6 @@ function setTotalSeqMass(mass: number): void{
  */
 function setMassDifference(precursorMass: number, proteinMass: number): void{
     let diff: number = precursorMass - proteinMass;
-    domElements.massDifference.innerHTML = diff.toFixed(4);
+    domElements.massDifference.innerHTML = FormatUtil.formatFloat(diff, "massDiff");
     domElements.massVariation.setAttribute("style", 'block');
 }

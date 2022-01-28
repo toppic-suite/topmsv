@@ -18,6 +18,11 @@ const projectManagement = router.get('/projectManagement', function (req, res) {
         const uid = req.session.passport.user.profile.id;
         const projectCode = req.query.projectCode;
         getProjectSummary(projectCode, function (err, row) {
+            if (!row) {
+                res.write("Invalid project ID!");
+                res.end();
+                return;
+            }
             let projectName = row.projectName;
             let projectPublic = row.public;
             let projectDescription = row.description;

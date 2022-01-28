@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 
 /**
  * Add a new envelope into database. Async mode.
@@ -12,23 +12,15 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function addEnv(dir, envID, scan, charge, monoMass,theoInteSum,callback) {
-    let sql = `INSERT INTO envelope(envelope_id, scan_id, charge, mono_mass, intensity)
-                VALUES(?,?,?,?,?);`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
-    let resultDb = new sqlite3.Database(dbDir, (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-        // console.log('Connected to the result database.');
-    });
-    resultDb.run(sql,[envID,scan,charge,monoMass,theoInteSum], function(err) {
-        if (err) {
-            return console.error(err.message);
-        }
-        //console.log(this);
-        console.log(`Row(s) added: ${this.changes}`);
-        return callback();
-    });
+    let resultDb = new BetterDB(dbDir);
+    let stmt = resultDb.prepare(`INSERT INTO envelope(envelope_id, scan_id, charge, mono_mass, intensity)
+    VALUES(?,?,?,?,?)`);
+
+    let info = stmt.run(envID,scan,charge,monoMass,theoInteSum);
+
     resultDb.close();
+    console.log(`Row(s) added: ${info.changes}`);
+    return callback();
 }
 module.exports = addEnv;

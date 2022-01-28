@@ -9,10 +9,17 @@ const router = express.Router();
 const archiver = require("archiver");
 const getProjectSummary = require("../library/getProjectSummary");
 const fs = require("fs");
+const path = require("path");
 
 let download = router.get('/download', function (req,res) {
     let projectCode = req.query.id;
+    console.log("projectCode", projectCode);
     getProjectSummary(projectCode, function (err,row) {
+        if (err || row == undefined) {
+            console.log("Invalid project ID ", projectCode, "! Please check again if this project exists.");
+            res.redirect('../public/404.html');
+            return;
+        }
         let projectDir = row.projectDir;
         let projectName = row.projectName;
         let fileName = row.fileName;
@@ -22,9 +29,9 @@ let download = router.get('/download', function (req,res) {
             res.download(projectDir);
         } else {
             let fName = fileName.substr(0, fileName.lastIndexOf("."));
-            let dbDir = projectDir.substr(0, projectDir.lastIndexOf("/"));
+            let dbDir = projectDir.substr(0, projectDir.lastIndexOf(path.sep));
 
-            let zipName = '/'+projectName+'.zip';
+            let zipName = path.sep +projectName+'.zip';
             let output = fs.createWriteStream(dbDir + zipName);
 
             let archive = archiver('zip', {
@@ -47,13 +54,13 @@ let download = router.get('/download', function (req,res) {
             let toppicFiles = ['_ms2_toppic_proteoform.tsv', '_ms2_toppic_proteoform.xml', '_ms2_toppic_prsm.tsv', '.mzid'];
 
             topfdFiles.forEach(fileName => {
-                let path = dbDir + '/' + fName + fileName;
-                if (fs.existsSync(path)) {
-                    archive.append(fs.createReadStream(path), { name: fName + fileName });
+                let filePath = dbDir + path.sep + fName + fileName;
+                if (fs.existsSync(filePath)) {
+                    archive.append(fs.createReadStream(filePath), { name: fName + fileName });
                 }
             })
 
-            let dirName = dbDir + '/' + fName + '_file';
+            let dirName = dbDir + path.sep + fName + '_file';
             //topfd _file folder
             if (fs.existsSync(dirName)) {
                 archive.directory(dirName, fName + '_file')
@@ -61,9 +68,9 @@ let download = router.get('/download', function (req,res) {
 
             if (seqStatus == 1) {
                 toppicFiles.forEach(fileName => {
-                    let path = dbDir + '/' + fName + fileName;
-                    if (fs.existsSync(path)) {
-                        archive.append(fs.createReadStream(path), { name: fName + fileName });
+                    let filePath = dbDir + path.sep + fName + fileName;
+                    if (fs.existsSync(filePath)) {
+                        archive.append(fs.createReadStream(filePath), { name: fName + fileName });
                     }
                 })
             }

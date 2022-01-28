@@ -39,8 +39,12 @@ $( document ).ready(function() {
                 })
                 .then((response) => {
                     response = response.data;
-                    init2D(response);
-                    update3D(response);
+                    if(response !== 0){
+                        init2D(response);
+                        update3D(response);
+                    }else {
+                        alert("NULL");
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -63,8 +67,12 @@ $( document ).ready(function() {
                 })
                 .then((response) => {
                     response = response.data;
-                    init2D(response);
-                    update3D(response);
+                    if(response !== 0){
+                        init2D(response);
+                        update3D(response);
+                    }else {
+                        alert("NULL");
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -194,7 +202,11 @@ $( document ).ready(function() {
         } else if (!seqFile.files[0].name.match(/.(tsv)$/i)) {
             alert('Please upload a tsv file for sequence!');
             return;
+        } else if (!seqFile.files[0].name.includes("single")) {
+            alert('Please upload a "*_ms2_toppic_prsm_single.tsv" file for sequence!');
+            return;
         }
+
         let formData = new FormData();
         formData.append('seqFile', seqFile.files[0]);
         formData.append('projectDir', document.getElementById('projectDir').value);

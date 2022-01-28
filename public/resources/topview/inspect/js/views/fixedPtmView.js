@@ -105,6 +105,16 @@ function addNewFixedPtmRow(fixedPtm) {
         let parents = $(e.target).parents();
         for (let i = 0; i < parents.length; i++) {
             if (parents[i].className == "fixedptms") {
+                let residue = (parents[i].getElementsByClassName("fixedptmacid")[0]);
+                let mass = (parents[i].getElementsByClassName("fixedptmmass")[0]);
+                for (let j = 0; j < USER_FIXED_PTM_LIST.length; j++) {
+                    if (parseFloat(mass.value) == USER_FIXED_PTM_LIST[j].getShift()) {
+                        if (residue.value == USER_FIXED_PTM_LIST[j].getResidue()) {
+                            USER_FIXED_PTM_LIST.splice(j, 1);
+                            break;
+                        }
+                    }
+                }
                 parents[i].remove();
             }
         }
@@ -150,7 +160,7 @@ function setFixedMasses(fixedPtmList) {
                         });
                     }
                     if (isNewPtm) {
-                        let fixedptm = COMMON_FIXED_PTM_LIST[j].getResidue() + ":" + COMMON_FIXED_PTM_LIST[j].getShift.toString();
+                        let fixedptm = COMMON_FIXED_PTM_LIST[j].getResidue() + ":" + COMMON_FIXED_PTM_LIST[j].getShift().toString();
                         addNewFixedPtmRow(fixedptm);
                         break;
                     }
@@ -183,4 +193,29 @@ function getFixedPtmCheckList() {
         }
     });
     return result;
+}
+/**
+ * sets fixed PTM based on user input
+ */
+function addCustomPtm() {
+    let acid = document.getElementById("residue-name");
+    let mass = document.getElementById("residue-mass");
+    let name = document.getElementById("ptm-name");
+    if (!acid || !mass) {
+        alert("Please enter both acid and mass for this PTM!");
+    }
+    else {
+        if (/\d/.test(acid.value)) {
+            alert("Invalid amino acid!");
+        }
+        else if (isNaN(parseFloat(mass.value))) {
+            alert("Invalid mass value!");
+        }
+        else {
+            let fixedPtm = (acid.value).toUpperCase() + ":" + mass.value;
+            USER_FIXED_PTM_LIST.push(new Mod((acid.value).toUpperCase(), parseFloat(mass.value), name.value));
+            addNewFixedPtmRow(fixedPtm);
+            $('.modal').modal('hide');
+        }
+    }
 }

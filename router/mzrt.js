@@ -6,6 +6,7 @@ const submitTask = require("../library/submitTask");
 const updateFeatureStatusSync = require("../library/updateFeatureStatusSync");
 const formidable = require('formidable');
 const fs = require("fs");
+const path = require("path");
 
 /**
  * Express.js router for /mzrt
@@ -23,10 +24,9 @@ const mzrt = router.post('/mzrt', function (req, res) {
         let projectName = fields.projectName;
         let projectCode = fields.projectCode;
         deleteFeature(dbDir, projectCode);
-        console.log('Deleted previous Feature!');
         let email = fields.email;
         dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
-        let des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + mzrtFile.name;
+        let des_ms1 = dbDir.substr(0, dbDir.lastIndexOf(path.sep)) + path.sep + mzrtFile.name;
         if (mzrtFile === undefined) {
             console.log("Upload files failed!");
             sendFailureMess(projectName, projectCode, email);
@@ -38,7 +38,7 @@ const mzrt = router.post('/mzrt', function (req, res) {
                 return res.send({"error": 403, "message": "Error on saving file!"});
             }
             res.end();
-            let parameterTask1 = __dirname + '/../utilities/annotateFeature.js '+ dbDir + ' ' + des_ms1;
+            let parameterTask1 = path.join(__dirname, '..', 'utilities', 'annotateFeature.js') + ' '+ dbDir + ' ' + des_ms1;
             submitTask(projectCode, 'node', parameterTask1, 1);
 
             updateFeatureStatusSync(1, projectCode);

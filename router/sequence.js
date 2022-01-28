@@ -28,12 +28,16 @@ let sequence = router.post('/sequence', function (req,res) {
         let projectName = fields.projectName;
         let projectCode = fields.projectCode;
         let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
-        let des_seq = dbDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqFile.name;
-        if (os.type == "Windows_NT") {
-            des_seq = dbDir.substr(0, projectDir.lastIndexOf("\\")) + '\\' + seqFile.name;
+
+        if (!dbDir) {
+            res.send("Cannot find db file!");
+            res.end();
+            return;
         }
-        console.log("seqFile.path", seqFile.path, "des_seq", des_seq);
+
+        let des_seq = dbDir.substr(0, projectDir.lastIndexOf(path.sep)) + path.sep + seqFile.name;
         console.log("dbDir", dbDir);
+        console.log("des_seq", des_seq);
         if (seqFile === undefined) {
             console.log("Upload files failed!");
             sendFailureMess(projectName, projectCode, email);

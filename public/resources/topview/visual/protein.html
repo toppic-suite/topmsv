@@ -20,10 +20,13 @@
 <!--<script src="../common/proteoform/proteoform.js"></script>-->
 <script src="../common/distribution_calc/amino_acid_distribution.js"></script>
 
-<script src="../common/prsm_graph/prsm_data.js"></script>
-<script src="../common/prsm_graph/prsm_para.js"></script>
-<script src="../common/prsm_graph/draw_prsm.js"></script>
-<script src="../common/prsm_graph/prsm_graph.js"></script>
+<script src="../common/prsm_view/prsm_data.js"></script>
+<script src="../common/prsm_view/prsm_para.js"></script>
+<script src="../common/prsm_view/draw_prsm.js"></script>
+<script src="../common/prsm_view/prsm_view.js"></script>
+
+<script src="../common/util/types.js"></script>
+<script src="../common/util/format_util.js"></script>
 
 <!--data classes-->
 <script src="../common/sequence/massShift.js"></script>
@@ -37,7 +40,8 @@
 <script src="js/protein/on_load_protein.js"></script>
 <script src="js/prsm/prsm_to_html.js"></script>
 
-<script src="js/protein/parse_protein.js"></script>
+<script src="../common/parse_json/parse_util.js"></script>
+<script src="../common/parse_json/parse_protein.js"></script>
 </head>
 <body>
 <div id="nav-bar"></div>
@@ -59,7 +63,7 @@
 	</div>
 </div>
 <footer class="page-footer font-small blue">
-	<div class="footer-copyright text-center py-3">© 2019 Copyright: The Trustees of 
+	<div class="footer-copyright text-center py-3">© 2019-2022 Copyright: The Trustees of 
 		<a href="https://www.iu.edu/" target="#">Indiana University</a>
 	</div>
 </footer>

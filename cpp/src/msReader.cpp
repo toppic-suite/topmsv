@@ -1,5 +1,6 @@
 #include "msReader.hpp" 
 #include <chrono>
+#include <boost/filesystem.hpp>
 
 bool cmpPoints(Point p1, Point p2) {
   return p1.inten > p2.inten;
@@ -217,29 +218,59 @@ void msReader::createDtabase() { //stmt
   Range.rt_min = rt_min;
   Range.count = ms1_peak_count;//peakCount
   Range.scan_count = ms1_scan_count;
-  Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count;//set rt bin size 
 
   //if user has provided custom values for rt_size and mz_size, overwrite the default values
   std::string line;
   double custom_rt_size = -1;
   double custom_mz_size = -1;
+  double custom_rt_divider = -1;
 
-  ifstream initFile("init.txt");
+  std::string sep = "/";
+
+  #if defined (_WIN32) || defined (_WIN64) || defined (__MINGW32__) || defined (__MINGW64__)
+    sep = "\\";
+  #endif
+
+  std::string root = (boost::filesystem::current_path().parent_path().parent_path()).string();
+  std::string init_file_path = root + sep + "init.ini";
+
+  ifstream initFile(init_file_path);
   if (initFile.is_open()){
     std::getline(initFile, line);
-    string::size_type pos = line.find(',');
-    if (line.npos != pos){
-      std::string mz = line.substr(0, pos);
-      std::string rt = line.substr(pos + 1);
+
+    string::size_type first_comma_pos = line.find(',');
+    if (line.npos != first_comma_pos){
+      std::string mz = line.substr(0, first_comma_pos);
       try{
         custom_mz_size = std::stod(mz);
-      }catch(const std::exception& e){
-        std::cout << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
+      } catch(const std::exception& e){
+        std::cout << "WARN: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
       }
-      try{
-        custom_rt_size = std::stod(rt);
-      }catch(const std::exception& e){
-        std::cout << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+
+      line = line.substr(first_comma_pos + 1);
+      string::size_type second_comma_pos = line.find(',');
+
+      if (line.npos != second_comma_pos){//check if there is a third value, rt bin size divider
+        std::string rt = line.substr(0, second_comma_pos);
+        std::string rt_divider = line.substr(second_comma_pos + 1);
+        try{
+          custom_rt_size = std::stod(rt);
+        } catch(const std::exception& e){
+          std::cout << "WARN: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+        }
+        try{
+          custom_rt_divider = std::stod(rt_divider);
+        } catch(const std::exception& e){
+          std::cout << "WARN: rt divider given by the user " << rt_divider << " is invalid. Setting them to default value." << std::endl;
+        }
+      }
+      else {//no third value
+        std::string rt = line.substr(first_comma_pos + 1);
+        try{
+          custom_rt_size = std::stod(rt);
+        } catch(const std::exception& e){
+          std::cout << "WARN: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+        }
       }
     }
     else{
@@ -261,6 +292,7 @@ void msReader::createDtabase() { //stmt
       Range.rt_size = rt_max - rt_min;
     }
   }
+
   if (custom_mz_size > 0){
     if (custom_mz_size < mz_max - mz_min){
       Range.mz_size = custom_mz_size;
@@ -269,11 +301,19 @@ void msReader::createDtabase() { //stmt
       Range.mz_size = mz_max - mz_min;
     }
   }
+
+  if (custom_rt_divider > 0) {
+    Range.rt_divider = custom_rt_divider;
+    Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count / Range.rt_divider;
+  }
+  else {
+    Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count;
+  }
+  
   std::cout <<"End getting range information: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   std::cout << "mzmin:" << Range.mz_min << "\tmzmax:" << Range.mz_max << "\trtmin:" << Range.rt_min ;
   std::cout << "\trtmax:" << Range.rt_max  << "\tcount:" << Range.count << "\tmzsize:" << Range.mz_size << "\trtsize:" << Range.rt_size << std::endl;
-
   databaseReader.setRange(Range);
   databaseReader.insertConfigOneTable(Range);
   std::cout <<"End insert to config table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;

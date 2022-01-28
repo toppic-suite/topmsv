@@ -24,7 +24,10 @@ function init2D(scan) {
         .then(function(response) {
             //document.getElementById("scanID1").innerText = scan;
             //console.log("scan level response:", response.data);
-            if (response.data === 1) { // scan level 1
+            if (response.data === 0) {//invalid result
+                throw new Error("invalid scan level!");
+            }
+            else if (response.data === 1) { // scan level 1
                 $("#scanID1").text(scan);
                 if (nextScan - scan === 1) { // if there are scan level 2 for this scan
                     // console.log("Scan Level 1, nextScan - scan === 1");

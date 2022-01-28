@@ -1,7 +1,7 @@
 class TheoMass {
   private mass_: number;
   private pos_: number;
-  private ion_: string = "";
+  private ion_ = {} as Ion;
 
   constructor(mass: number, pos: number) {
     this.mass_ = mass;
@@ -16,10 +16,10 @@ class TheoMass {
   getPos(): number {
     return this.pos_;
   }
-  getIon(): string {
+  getIon(): Ion {
     return this.ion_;
   }
-  setIon(ion: string) {
+  setIon(ion: Ion): void {
     this.ion_ = ion;
   }
 }

@@ -1,11 +1,3 @@
-type BreakPoints = {
-  "anno": string,
-  "existCIon": boolean,
-  "existNIon": boolean,
-  "masses": {"charge": number, "ionDispPos": number, "ionType": string}[],
-  "position": string
-}
-
 class Prsm {
   private matchedPeaks_: Peak[] = [];
   private matchedIons_: Ion[] = [];
@@ -18,24 +10,35 @@ class Prsm {
   private eValue_: number;
   private qValue_: number;
   private fileName_: string;
+  private featureInte_: number | undefined;
+  private precMass_: number | undefined;
+  private fragIonCount_: number | undefined;
 
   constructor(id: string, proteoform: Proteoform, ms1Spec: Spectrum | null, ms2Spec: Spectrum[] | null, 
-    breakPoints: BreakPoints[], matchedPeakEnvelopePair: MatchedPeakEnvelopePair[] = [],  fileName: string = "", eValue: number = -1, qValue: number = -1) {
+    breakPoints: BreakPoints[], matchedPeakEnvelopePair: MatchedPeakEnvelopePair[] = [],  fileName: string = "", eValue: number = -1, qValue: number = -1,
+    featureInte?: number, precMass?: number, fragIonCount?: number) {
     this.id_ = id;
     this.proteoform_ = proteoform;
     this.ms1Spec_ = ms1Spec;
     this.ms2Spec_ = ms2Spec;
     this.breakPoints_ = breakPoints;
-    /*if (matchedPeakEnvelopePair.length > 0) {
-      this.setMatchedPeakEnvelopePairs(matchedPeakEnvelopePair);
-    }*/
     this.matchedPeakEnvelopePair_ = matchedPeakEnvelopePair;
     this.fileName_ = fileName;
     this.eValue_ = eValue;
     this.qValue_ = qValue;
+    this.fragIonCount_ = fragIonCount;
+    if (featureInte) {
+      this.featureInte_ = featureInte;
+    }
+    if (precMass) {
+        this.precMass_ = precMass;
+    }
   }
   getId(): string {
     return this.id_;
+  }
+  getFragIonCount(): number | undefined {
+    return this.fragIonCount_;
   }
   getfileName(): string {
     return this.fileName_;
@@ -50,23 +53,7 @@ class Prsm {
     return this.ms2Spec_;
   }
   getMatchedPeakCount(): number {
-    let peaksCnt: number = 0;
-    this.getMatchedPeakEnvelopePairs().forEach(pair => {
-      peaksCnt++;
-    })
-    return peaksCnt;
-  }
-  getMatchedFragIonCount(): number {
-    let alreadyAddedIons: string[] = [];
-    let ionsNoDup: Ion[] = [];
-    this.getMatchedPeakEnvelopePairs().forEach(pair => {
-      let ion = pair.getIon().getId();
-      if (alreadyAddedIons.indexOf(ion) < 0) {
-        ionsNoDup.push(pair.getIon());
-        alreadyAddedIons.push(ion);
-      } 
-    })
-    return ionsNoDup.length;
+    return this.getMatchedPeakEnvelopePairs().length;
   }
   getUnexpectedModCount(): number {
     let protObj: Proteoform = this.getProteoform();
@@ -79,46 +66,22 @@ class Prsm {
   getQValue(): number {
     return this.qValue_;
   }
+  getFeatureInte(): number | undefined{
+    return this.featureInte_;
+  }
+  getPrecMass(): number | undefined {
+    return this.precMass_;
+  }
   getBreakPoints(): BreakPoints[] {
     return this.breakPoints_;
   }
   getMatchedPeakEnvelopePairs(): MatchedPeakEnvelopePair[] {
     return this.matchedPeakEnvelopePair_;
   }
-  getMatchedPeaks(): Peak[] {
-    let peaks: Peak[] = [];
-    this.getMatchedPeakEnvelopePairs().forEach(pair => {
-      peaks.push(pair.getPeak());
-    })
-    return peaks;
-  }
-  getMatchedIons(): Ion[] {
-    let alreadyAddedIons: string[] = [];
-    let ionsNoDup: Ion[] = [];
-    this.getMatchedPeakEnvelopePairs().forEach(pair => {
-      let ion = pair.getIon().getId();
-      if (alreadyAddedIons.indexOf(ion) < 0) {
-        ionsNoDup.push(pair.getIon());
-        alreadyAddedIons.push(ion);
-      } 
-    })
-    return ionsNoDup;
-  }
   setBreakPoints(breakPoints: BreakPoints[]): void {
     this.breakPoints_ = breakPoints;
   }
   setProteoform(proteoform: Proteoform): void {
     this.proteoform_ = proteoform;
-  }
-  setMatchedPeakEnvelopePairs(matchedPairs: MatchedPeakEnvelopePair[]): void {
-    let ionsNoDup: string[] = [];
-    matchedPairs.forEach(pair => {
-      this.matchedPeaks_.push(pair.getPeak());
-      let ion = pair.getIon().getId();
-      if (ionsNoDup.indexOf(ion) < 0) {
-        this.matchedIons_.push(pair.getIon());
-        ionsNoDup.push(ion);
-      } 
-    })
   }
 }
