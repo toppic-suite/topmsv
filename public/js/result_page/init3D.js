@@ -80,12 +80,12 @@ function calcInitRange(precMz){
     let specPara = new SpectrumViewParameters();
     if (parseFloat(precMz) > 0){//if has ms2 scan, calculate m/z range}
         specPara.updateMzRange(precMz);
-        mzRange["mzmin"] = specPara.winMinMz;
-        mzRange["mzmax"] = specPara.winMaxMz;
+        mzRange["mzmin"] = specPara.getWinMinMz();
+        mzRange["mzmax"] = specPara.getWinMaxMz();
     }
     else{
-        mzRange["mzmin"] = specPara.winMinMz;
-        mzRange["mzmax"] = specPara.winMaxMz;
+        mzRange["mzmin"] = specPara.getWinMinMz();
+        mzRange["mzmax"] = specPara.getWinMaxMz();
     }
     return mzRange;
 }

@@ -13,10 +13,11 @@ const fs = require("fs");
  */
 const tasks = router.get('/tasks', async (req,res) => {
     console.log("hello tasks");
-    if (req.session.passport === undefined)
-        res.render('pages/tasks', {
-            taskData: []
-        });
+    if (req.session.passport === undefined) {
+        res.write("User does not exist in the system! Please log in first!");
+        res.end();
+        return;
+    }
     else {
         //console.log(req.session.passport.user.profile);
         let uid = req.session.passport.user.profile.id;
@@ -27,13 +28,18 @@ const tasks = router.get('/tasks', async (req,res) => {
             res.end();
             return;
         }
+        let loginMsg = "";
+        if (userInfo) {
+            loginMsg = "[Logged in as " + req.session.passport.user.profile.displayName + "]";
+        }
         // console.log(uid);
         let projectData = loadProjectData(uid);
         projectData.then(function (rows) {
             return loadTaskData(rows, totalTaskData);
         }).then(function(taskData) {
             res.render('pages/tasks', {
-                taskData: taskData
+                taskData: taskData,
+                loginMessage:loginMsg
             });
         }).catch(function () {
             console.log("error loading task data for tasks page");
@@ -56,6 +62,9 @@ let readOneTask = (project) => {
     return new Promise((resolve, reject) => {
         let data = [];
         getTasksPerUser(project.projectCode, function(taskData) {
+            if (!taskData) {
+                reject();
+            }
             taskData.forEach(task =>{
                 if (task.app != "node") {
                     let appName = path.basename(task.app);

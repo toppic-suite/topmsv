@@ -131,7 +131,28 @@
 #divtableContainer a{
   color: #428bca !important ;
 }
-
+/*for peaks table*/
+.table-borderless{
+  margin-left: 1rem !important;
+}
+.table-borderless td,
+.table-borderless th {
+  border: 0;
+	border-top: none !important;
+}
+.table-borderless tr, .table-borderless td{
+  padding: .20rem !important;
+  margin: 0 !important;
+}
+.table-borderless {
+	margin-bottom: 0.5rem !important;
+}
+.dataTables_filter, .dataTables_info {
+	display: none;
+}
+.table-nonfluid {
+  width: auto;
+}
 /**
 *CSS to set the color of matched fragments in the fragment table
 */
@@ -151,6 +172,6 @@
 }
 /*precursor mass text box*/
 #precursormass{
-  width:80px;
+  width:100px;
 
 }

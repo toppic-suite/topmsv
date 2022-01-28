@@ -33,49 +33,47 @@ function inspect(scanID,scanNum) {
                         type: "get",
                         success: function (res) {
                             let rawSeq = res;
-                            //console.log(res);
-
+                            if (rawSeq == 0) {//if it was not identified
+                                window.localStorage.setItem('sequence', '');
+                                window.localStorage.setItem('precursorMass', '');
+                                if (document.getElementById('prec_mz')) {
+                                    window.localStorage.setItem('precursorMass', $('#prec_mz').text()); 
+                                }
+                                else {
+                                    window.localStorage.setItem('precursorMass', '');
+                                }
+                                window.open('/resources/topview/inspect/spectrum_no_nav.html', '_self');
+                            }
+                            else {
                             //get fixed/variable ptm information from tsv file
                             //convert variable ptm to unknown ptm
-                            $.ajax({
-                                url:"ptmQuery?projectCode=" + document.getElementById("projectCode").value,
-                                type: "get",
-                                success: function (res) {
-                                    let ptmData = JSON.parse(res);
-                                    let fixedPtmList = [];
-                                    let protVarPtmsList = [];
-                                    let variablePtmsList = [];
-                                    let unknownMassShiftList = [];
+                                $.ajax({
+                                    url:"ptmQuery?projectCode=" + document.getElementById("projectCode").value,
+                                    type: "get",
+                                    success: function (res) {
+                                        let ptmData = JSON.parse(res);
+                                        let fixedPtmList = [];
+                                        let protVarPtmsList = [];
+                                        let variablePtmsList = [];
+                                        let unknownMassShiftList = [];
+                                        let sequence = preprocessSeq(rawSeq, ptmData, fixedPtmList, unknownMassShiftList);
 
-                                    let sequence = preprocessSeq(rawSeq, ptmData, fixedPtmList, unknownMassShiftList);
-
-                                    if (fixedPtmList.length < 1) {//display fixed ptm even when it was not found in the seq
-                                        ptmData["fixedPtms"].forEach(fixedPtm => {
-                                            let newPtm = new Mod('', fixedPtm.mass, fixedPtm.name);
-                                            fixedPtmList.push(new MassShift('', '', newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));                  
-                                        })
-                                    }
-
-                                    window.localStorage.setItem('sequence', JSON.stringify(sequence));
-                                    window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
-                                    window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
-                                    window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmsList));
-                                    window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
-                                    axios.get('/precMZ',{
-                                        params:{
-                                            projectDir: document.getElementById("projectDir").value,
-                                            scanID: scanNum
+                                        if (fixedPtmList.length < 1) {//display fixed ptm even when it was not found in the seq
+                                            ptmData["fixedPtms"].forEach(fixedPtm => {
+                                                let newPtm = new Mod('', fixedPtm.mass, fixedPtm.name);
+                                                fixedPtmList.push(new MassShift('', '', newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));                  
+                                            })
                                         }
-                                    }).then((response)=>{
-                                        window.localStorage.setItem('precursorMass', parseFloat(response.data));
+                                        window.localStorage.setItem('sequence', JSON.stringify(sequence));
+                                        window.localStorage.setItem('fixedPtmList', JSON.stringify(fixedPtmList));
+                                        window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
+                                        window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmsList));
+                                        window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
+                                        window.localStorage.setItem('precursorMass', (JSON.parse(rawSeq)).prec_mass);
                                         window.open('/resources/topview/inspect/spectrum_no_nav.html', '_self');
-                                    }).catch((error) => {
-                                        console.log(error);
-                                    })
-                                }
-                            })
-
-                            
+                                    }
+                                })
+                            }
                         }
                     })
                 }
@@ -132,8 +130,9 @@ function preprocessSeq(seq) {
     return seq;
     
 }*/
-function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
+function preprocessSeq(seqString, ptmData = [], fixedPtmList = [], unknownMassShiftList = []) {
     seq = JSON.parse(seqString).seq;
+
     let firstIsDot = 1;
     seq = seq.replace(/\(/g,'');
     seq = seq.replace(/\)/g, '');
@@ -161,6 +160,10 @@ function preprocessSeq(seqString, ptmData, fixedPtmList, unknownMassShiftList) {
         seq = seq.slice(firstDotIndex,lastDotIndex);
     }
     //if there is a fixed/variable ptm in the sequence 
+
+    if (ptmData.length == 0 && fixedPtmList.length == 0 && unknownMassShiftList.length == 0) {
+        return seq;
+    }
 
     let newSeq ='';
 

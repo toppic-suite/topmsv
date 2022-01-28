@@ -1,4 +1,6 @@
 #include "msReader.hpp" 
+#include <chrono>
+#include <boost/filesystem.hpp>
 
 bool cmpPoints(Point p1, Point p2) {
   return p1.inten > p2.inten;
@@ -80,11 +82,9 @@ void msReader::createDtabase() { //stmt
   clock_t t0 = clock();
   clock_t t1 = clock();
   databaseReader.openDatabase(file_name_);
-  databaseReader.openDatabaseInMemory(file_name_);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.creatTable();
-  databaseReader.creatTableInMemory();
   std::cout <<"Create table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   int scan_level = 1;
@@ -92,11 +92,9 @@ void msReader::createDtabase() { //stmt
   int sp_size = sl->size();
   std::vector<Point> points_list;
   databaseReader.beginTransaction();
-  databaseReader.beginTransactionInMemory();
   std::cout <<"Begin Transaction: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.openInsertStmt();
-  databaseReader.openInsertStmtInMemory();
 
   int level_one_id = 0;
   int level_two_id = 0;
@@ -140,7 +138,14 @@ void msReader::createDtabase() { //stmt
         // std::cout << count << std::endl;
         peaks_int_sum = peaks_int_sum + pairs[j].intensity;
         if (scan_level == 1){//PEAKS0 contains level 1 data only
-          databaseReader.insertPeakStmtInMemory(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
+          peakProperties peak;
+          peak.id = count;
+          peak.mz = pairs[j].mz;
+          peak.inte = pairs[j].intensity;
+          peak.rt = retention_time;
+          peak.color = databaseReader.peak_color_[0];
+          databaseReader.all_ms1_peaks_.push_back(peak);
+          //databaseReader.insertPeakStmtInMemory(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
           ms1_peak_count++ ;
           
           //compare with min max values to find overall min max value
@@ -151,9 +156,9 @@ void msReader::createDtabase() { //stmt
         //compare with min max values to find overall min max value
         if (retention_time < rt_min){rt_min = retention_time;}
         if (retention_time > rt_max){rt_max = retention_time;}
-
       }
-        databaseReader.insertPeakStmt(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time);
+        databaseReader.insertPeakStmt(count, getScan(sl->spectrumIdentity(i).id), pairs[j].intensity, pairs[j].mz, retention_time);
+        //databaseReader.insertPeakStmt(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time);
       }
       
       // cout << currentID <<endl;
@@ -184,15 +189,15 @@ void msReader::createDtabase() { //stmt
 
         databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,prec_mz,prec_charge,prec_inte,peaks_int_sum,NULL,level_two_id);
         // update prev's next
-        databaseReader.updateSpStmt(current_id,level_two_id);
-        level_two_id = current_id;
+        databaseReader.updateSpStmt(current_scan_id,level_two_id);
+        level_two_id = current_scan_id;
         level_two_scan_id = current_scan_id;
         databaseReader.insertScanLevelPairStmt(level_one_scan_id, level_two_scan_id);
       }else if(scan_level == 1){
         databaseReader.insertSpStmt(current_id, getScan(sl->spectrumIdentity(i).id),retention_time,ion_time,scan_level,NULL,NULL,NULL,peaks_int_sum,NULL,level_one_id); 
         // update prev's next
-        databaseReader.updateSpStmt(current_id,level_one_id);
-        level_one_id = current_id;
+        databaseReader.updateSpStmt(current_scan_id,level_one_id);
+        level_one_id = current_scan_id;
         level_one_scan_id = current_scan_id;
       }
       //databaseReader.insertSpStmt(i, getScan(sl->spectrumIdentity(i).id), retentionTime,scanLevel,0,0); 
@@ -201,7 +206,6 @@ void msReader::createDtabase() { //stmt
     // }
   }
   databaseReader.closeInsertStmt();
-  databaseReader.closeInsertStmtInMemory();
   std::cout <<"Insert Time: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
 
@@ -214,39 +218,59 @@ void msReader::createDtabase() { //stmt
   Range.rt_min = rt_min;
   Range.count = ms1_peak_count;//peakCount
   Range.scan_count = ms1_scan_count;
-  Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count;//set rt bin size 
 
   //if user has provided custom values for rt_size and mz_size, overwrite the default values
   std::string line;
   double custom_rt_size = -1;
   double custom_mz_size = -1;
+  double custom_rt_divider = -1;
 
-  ifstream initFile("init.txt");
-  //ofstream output("output.txt");
+  std::string sep = "/";
+
+  #if defined (_WIN32) || defined (_WIN64) || defined (__MINGW32__) || defined (__MINGW64__)
+    sep = "\\";
+  #endif
+
+  std::string root = (boost::filesystem::current_path().parent_path().parent_path()).string();
+  std::string init_file_path = root + sep + "init.ini";
+
+  ifstream initFile(init_file_path);
   if (initFile.is_open()){
     std::getline(initFile, line);
-    //std::cout << "line: " << line << std::endl;
 
-    string::size_type pos = line.find(',');
-    if (line.npos != pos){
-      std::string mz = line.substr(0, pos);
-      std::string rt = line.substr(pos + 1);
-
-      //std::cout << "mz: " << mz << "rt: " << rt << std::endl;
-      //output << "user mz:" << mz << "user rt:" << rt << "\n" << std::endl;
-
+    string::size_type first_comma_pos = line.find(',');
+    if (line.npos != first_comma_pos){
+      std::string mz = line.substr(0, first_comma_pos);
       try{
         custom_mz_size = std::stod(mz);
-      }catch(const std::exception& e){
-        std::cout << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
-        //output << "ERROR: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
-
+      } catch(const std::exception& e){
+        std::cout << "WARN: m/z size given by the user " << mz << " is invalid. Setting them to default value." << std::endl;
       }
-      try{
-        custom_rt_size = std::stod(rt);
-      }catch(const std::exception& e){
-        std::cout << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
-        //output << "ERROR: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+
+      line = line.substr(first_comma_pos + 1);
+      string::size_type second_comma_pos = line.find(',');
+
+      if (line.npos != second_comma_pos){//check if there is a third value, rt bin size divider
+        std::string rt = line.substr(0, second_comma_pos);
+        std::string rt_divider = line.substr(second_comma_pos + 1);
+        try{
+          custom_rt_size = std::stod(rt);
+        } catch(const std::exception& e){
+          std::cout << "WARN: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+        }
+        try{
+          custom_rt_divider = std::stod(rt_divider);
+        } catch(const std::exception& e){
+          std::cout << "WARN: rt divider given by the user " << rt_divider << " is invalid. Setting them to default value." << std::endl;
+        }
+      }
+      else {//no third value
+        std::string rt = line.substr(first_comma_pos + 1);
+        try{
+          custom_rt_size = std::stod(rt);
+        } catch(const std::exception& e){
+          std::cout << "WARN: rt size given by the user " << rt << " is invalid. Setting them to default value." << std::endl;
+        }
       }
     }
     else{
@@ -255,7 +279,6 @@ void msReader::createDtabase() { //stmt
         custom_mz_size = std::stod(line);
       }catch(const std::exception& e){
         std::cout << "No m/z or rt value given by the user. Setting them to default value." << std::endl;
-        //output << "No m/z or rt value given by the user. Setting them to default value." << std::endl;
       }
     }
     initFile.close();
@@ -269,6 +292,7 @@ void msReader::createDtabase() { //stmt
       Range.rt_size = rt_max - rt_min;
     }
   }
+
   if (custom_mz_size > 0){
     if (custom_mz_size < mz_max - mz_min){
       Range.mz_size = custom_mz_size;
@@ -278,45 +302,45 @@ void msReader::createDtabase() { //stmt
     }
   }
 
+  if (custom_rt_divider > 0) {
+    Range.rt_divider = custom_rt_divider;
+    Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count / Range.rt_divider;
+  }
+  else {
+    Range.rt_size = (Range.rt_max - Range.rt_min) / ms1_scan_count;
+  }
+  
+  std::cout <<"End getting range information: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   std::cout << "mzmin:" << Range.mz_min << "\tmzmax:" << Range.mz_max << "\trtmin:" << Range.rt_min ;
   std::cout << "\trtmax:" << Range.rt_max  << "\tcount:" << Range.count << "\tmzsize:" << Range.mz_size << "\trtsize:" << Range.rt_size << std::endl;
-  
-  std::cout <<"End Insert to PEAKS0: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  t1 = clock();
-
   databaseReader.setRange(Range);
   databaseReader.insertConfigOneTable(Range);
+  std::cout <<"End insert to config table: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
+  t1 = clock();
 
-  databaseReader.createIndexInMemory();//create index on PEAKS0 table by ID, then another index on rt
-  //based on PEAKS0 table in memory, inser to PEAKS0 with correct colors
+  //insert to all_ms1_peaks_ correct peak colors
   databaseReader.setColor();
-
   //create index on peak id (for copying to each layer later)
-  databaseReader.createIndexOnIdOnly();
-  
+  //databaseReader.createIndexOnIdOnly();
+  std::cout <<"End assigning colors: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
   databaseReader.insertDataLayerTable();
   std::cout <<"End Insert to all layer tables: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-
   t1 = clock();
   databaseReader.createIndexLayerTable();
   databaseReader.createIndex();
   std::cout <<"Creat Index: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
 
   databaseReader.endTransaction();
-  databaseReader.endTransactionInMemory();
-
-  t1 = clock();
   databaseReader.closeDatabase();
-  databaseReader.closeDatabaseInMemory();
 
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   std::cout <<"total elapsed time: "<< (clock() - t0) * 1.0 / CLOCKS_PER_SEC << std::endl;
 }
 // get range of scan from database
 void msReader::getScanRangeDB() {
-  clock_t t1 = clock();
+ /* clock_t t1 = clock();
   databaseReader.openDatabase(file_name_);
   std::cout <<"Open Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
   t1 = clock();
@@ -325,7 +349,7 @@ void msReader::getScanRangeDB() {
   t1 = clock();
   databaseReader.closeDatabase();
   std::cout <<"Close Database: "<< (clock() - t1) * 1.0 / CLOCKS_PER_SEC << std::endl;
-  t1 = clock();
+  t1 = clock();*/
 };
 void msReader::getPeaksFromScanDB(int scan) {
   clock_t t1 = clock();

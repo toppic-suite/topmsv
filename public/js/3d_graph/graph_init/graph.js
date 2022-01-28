@@ -60,6 +60,16 @@ class Graph{
         Graph.gridColor = "#555555";
         Graph.featureColor = "#a8b5ff";
 
+        Graph.peakColor = {//7 colors total
+            "0": "#0000ff",
+            "1": "#007fff",
+            "2": "#00ffff",
+            "3": "#7fff7f",
+            "4": "#ffff00",
+            "5": "#ff7f00",
+            "6": "#ff0000"
+        };
+
         /*whether to plot cylinder or line*/
         Graph.isPerpendicular = false;
 
@@ -252,6 +262,7 @@ class Graph{
             GraphInit.main(mzmin, mzmax, scanNum);
 
             if($('#featureStatus').val() !== "0"){
+                document.getElementById("featureInfo").style.display = "inline-block";
                 showFeatureTable();
             }
         })

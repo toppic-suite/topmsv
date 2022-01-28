@@ -39,8 +39,12 @@ $( document ).ready(function() {
                 })
                 .then((response) => {
                     response = response.data;
-                    init2D(response);
-                    update3D(response);
+                    if(response !== 0){
+                        init2D(response);
+                        update3D(response);
+                    }else {
+                        alert("NULL");
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -63,8 +67,12 @@ $( document ).ready(function() {
                 })
                 .then((response) => {
                     response = response.data;
-                    init2D(response);
-                    update3D(response);
+                    if(response !== 0){
+                        init2D(response);
+                        update3D(response);
+                    }else {
+                        alert("NULL");
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
@@ -107,7 +115,7 @@ $( document ).ready(function() {
     });
 
     $("#inspect").click(function () {
-        let peaklist;
+        /*let peaklist;
         let masslistID = $('#envScan').text();
         if($("#switch").text() === 'MS1') {
             peaklist = peakList2_g;
@@ -141,10 +149,12 @@ $( document ).ready(function() {
                 window.localStorage.setItem('massAndIntensityList', massAndIntensityList);
                 window.localStorage.setItem('ionType', 'Y,B');
                 window.localStorage.setItem('precursorMass', $('#prec_mz').text());
-                window.open('/resources/topview/inspect/spectrum.html', '_blank');
+                window.open('/resources/topview/inspect/spectrum_no_nav.html', '_blank');
                 //console.log(res);
             }
-        });
+        });*/
+        let masslistID = $('#envScan').text();
+        inspect(masslistID,masslistID);
     });
 
     $("#deleteMsalign").click(function () {
@@ -192,7 +202,11 @@ $( document ).ready(function() {
         } else if (!seqFile.files[0].name.match(/.(tsv)$/i)) {
             alert('Please upload a tsv file for sequence!');
             return;
+        } else if (!seqFile.files[0].name.includes("single")) {
+            alert('Please upload a "*_ms2_toppic_prsm_single.tsv" file for sequence!');
+            return;
         }
+
         let formData = new FormData();
         formData.append('seqFile', seqFile.files[0]);
         formData.append('projectDir', document.getElementById('projectDir').value);

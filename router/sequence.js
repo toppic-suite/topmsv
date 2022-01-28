@@ -6,7 +6,8 @@ const submitTask = require("../library/submitTask");
 const sendFailureMess = require("../library/sendFailureMess");
 const formidable = require('formidable');
 const fs = require('fs');
-
+const os = require('os');
+const path = require('path');
 /**
  * Express router for /sequence
  *
@@ -27,7 +28,16 @@ let sequence = router.post('/sequence', function (req,res) {
         let projectName = fields.projectName;
         let projectCode = fields.projectCode;
         let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
-        let des_seq = projectDir.substr(0, projectDir.lastIndexOf("/")) + '/' + seqFile.name;
+
+        if (!dbDir) {
+            res.send("Cannot find db file!");
+            res.end();
+            return;
+        }
+
+        let des_seq = dbDir.substr(0, projectDir.lastIndexOf(path.sep)) + path.sep + seqFile.name;
+        console.log("dbDir", dbDir);
+        console.log("des_seq", des_seq);
         if (seqFile === undefined) {
             console.log("Upload files failed!");
             sendFailureMess(projectName, projectCode, email);
@@ -41,7 +51,7 @@ let sequence = router.post('/sequence', function (req,res) {
             deleteSeq(projectDir, projectCode);
             updateSeqStatusSync(0,projectCode);
             res.end();
-            let parameter = __dirname + '/../utilities/sequenceParse.js ' + dbDir + ' ' + des_seq + ' ' + projectCode;
+            let parameter = path.join(__dirname, '..', 'utilities', 'sequenceParse.js') + ' ' + dbDir + ' ' + des_seq + ' ' + projectCode;
             submitTask(projectCode, 'node', parameter, 1);
             updateSeqStatusSync(1, projectCode);
         })

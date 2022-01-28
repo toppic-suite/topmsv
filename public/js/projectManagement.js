@@ -9,13 +9,34 @@ $( document ).ready(function() {
 
     $('#removeProject').click(function () {
         var result = confirm("Are you sure that you want to remove this project?");
-        if (result) {
+        /*if (result) {
             $.ajax({
                 url:"removeProject?projectCode=" + document.getElementById('projectCode').value,
                 type: "post",
                 success: function (res) {
                     alert('Your project has been removed.');
                     window.location.href = '/projects';
+                }
+            });
+        }*/
+        if (result) {
+            $.ajax({
+                url:"checkProjectStatusSync?projectCode=" + document.getElementById('projectCode').value,
+                type: "post",
+                success: function (res) {
+                    if (res !== 3) {//if it is not already removed
+                        $.ajax({
+                            url:"removeProject?projectCode=" + document.getElementById('projectCode').value,
+                            type: "post",
+                            success: function (res) {
+                                alert('Your project has been removed.');
+                                window.location.href = '/projects';
+                            }
+                        });
+                    } else {
+                        alert('ERROR: The project is already removed.');
+                        window.location.href = '/projects';
+                    }
                 }
             });
         }

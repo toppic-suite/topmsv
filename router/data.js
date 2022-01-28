@@ -32,7 +32,6 @@ let data = router.get('/data', function(req, res) {
             // console.log(row.projectStatus);
             if(row === undefined) {
                 res.send("No such project, please check your link.");
-                res.end();
             } else {
                 //console.log(row);
                 if (row.projectStatus === 1) {
@@ -51,6 +50,10 @@ let data = router.get('/data', function(req, res) {
                     
                     if(uid === projectUid) {
                         getScanRange(projectDir, function (err, row) {
+                            if(row === undefined) {
+                                res.send("Error when retrieving scan range information.");
+                                return;
+                            }
                             let scanRange = {
                                 MIN: row.minScan,
                                 MAX: row.maxScan
@@ -67,6 +70,10 @@ let data = router.get('/data', function(req, res) {
                         })
                     } else {
                         getScanRange(projectDir, function (err, row) {
+                            if(row === undefined) {
+                                res.send("Error when retrieving scan range information.");
+                                return;
+                            }
                             let scanRange = {
                                 MIN: row.minScan,
                                 MAX: row.maxScan

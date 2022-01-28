@@ -1,42 +1,48 @@
+"use strict";
 /**
- * Set Precursor mass on html 
+ * Set Precursor mass on html
  */
-function setPrecursorMass(precursorMass)
-{
-    domElements.precursorMass.value = precursorMass;
+function setPrecursorMass(precursorMass) {
+    domElements.precursorMass.setAttribute("value", precursorMass.toString());
 }
 /**
- * get Precursor mass 
+ * get Precursor mass
  */
-function getPrecursorMass()
-{
-    return domElements.precursorMass.value;
+function getPrecursorMass() {
+    let mass = domElements.precursorMass.getAttribute("value");
+    if (mass) {
+        return parseFloat(mass);
+    }
+    return null;
 }
-function setPrecursorMassEventHandler()
-{
-    jqueryElements.precursorMassSubmit.click(function(){
-        let precursorMass = domElements.precursorMass.value;
-        let totalMass = jqueryElements.totalMass.html();
-        setMassDifference(precursorMass,totalMass);
-    })
+function setPrecursorMassEventHandler() {
+    jqueryElements.precursorMassSubmit.click(function () {
+        let precursorMass = domElements.precursorMass.getAttribute("value");
+        let totalMass = jqueryElements.totalMass.val();
+        if (precursorMass && typeof (totalMass) == "string") {
+            setMassDifference(parseFloat(precursorMass), parseFloat(totalMass));
+        }
+        else {
+            console.error("ERROR: precursor mass is null");
+        }
+    });
 }
 /**
  * Set Total mass on to the html
- * @param {*} totalMass 
+ * @param {*} totalMass
  */
-function setTotalSeqMass(totalMass){
-    totalMass = totalMass.toFixed(4);
+function setTotalSeqMass(mass) {
+    let totalMass = FormatUtil.formatFloat(mass, "protMass");
     jqueryElements.totalMass.html(totalMass);
-    domElements.totalSeqMass.style = 'block';
+    domElements.totalSeqMass.setAttribute("style", 'block');
 }
-
 /**
  * Set Mass difference on to the html
  * @param {Float} precursorMass - Contains Precursor mass
  * @param {Float} proteinMass - Contains calculated protein Mass
  */
-function setMassDifference(precursorMass, proteinMass){
+function setMassDifference(precursorMass, proteinMass) {
     let diff = precursorMass - proteinMass;
-    domElements.massDifference.innerHTML = diff.toFixed(4);
-    domElements.massVariation.style = 'block';
+    domElements.massDifference.innerHTML = FormatUtil.formatFloat(diff, "massDiff");
+    domElements.massVariation.setAttribute("style", 'block');
 }

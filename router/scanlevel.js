@@ -12,6 +12,11 @@ const scanlevel = router.get('/scanlevel', function (req, res) {
     const projectDir = req.query.projectDir;
     const scanID = req.query.scanID;
     getScanLevel(projectDir, scanID, function (err, row) {
+        if (!row) {
+            res.write("0");
+            res.end();
+            return;
+        }
         let scanLevel = row.scanLevel.toString();
         res.write(scanLevel);
         res.end();

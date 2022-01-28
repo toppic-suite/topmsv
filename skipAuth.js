@@ -15,7 +15,7 @@ module.exports = function (passport) {
         function(req, done) {
             let profile = {};
             profile.id = "0";
-            profile.displayName = "Test User";
+            profile.displayName = "Guest";
             profile.name = {"familyName": "Test", "givenName": "Test"};
             profile.emails = [{"value": "test@test.com", "verified": true}];
 

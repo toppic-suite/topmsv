@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 
 /**
  * Get project information summary by projectCode. Async Mode.
@@ -7,12 +7,7 @@ const sqlite3 = require('sqlite3').verbose();
  * @async
  */
 function getProjectSummary(id, callback) {
-    let db = new sqlite3.Database('./db/projectDB.db', (err) => {
-        if (err) {
-            console.error(err.message);
-        }
-        // console.log('Connected to the result database.');
-    });
+    let db = new BetterDB('./db/projectDB.db');
     let sql = `SELECT ProjectName AS projectName,
                     ProjectStatus AS projectStatus,
                     Email AS email,
@@ -27,15 +22,11 @@ function getProjectSummary(id, callback) {
                     Description AS description
                 FROM Projects
                 WHERE ProjectCode = ?`;
-    db.get(sql, [id], (err, row) => {
-        if (err) {
-            return callback(err);
-        }
-        else {
-            //console.log(row);
-            return callback(null, row);
-        }
-    });
+    
+    let stmt = db.prepare(sql);
+    let row = stmt.get(id);
+
     db.close();
+    return callback(null, row);
 }
 module.exports = getProjectSummary;
