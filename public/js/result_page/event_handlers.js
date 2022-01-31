@@ -247,4 +247,12 @@ $( document ).ready(function() {
             GraphData.drawNoNewData();
         }
     })
+    //hide feature annotation on 3D graph
+    $("#show-feature-anno").click(function () {
+        if (document.getElementById("show-feature-anno").checked) {
+            GraphFeature.showFeature();
+        } else {
+            GraphFeature.hideFeature();
+        }
+    })
 })
