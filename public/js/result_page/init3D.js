@@ -89,8 +89,8 @@ function calcInitRange(precMz){
     }
     return mzRange;
 }
-function update3DShowFull(){
-    GraphData.drawFullRangeGraph();
+function update3DShowFull(scanID){
+    GraphData.drawFullRangeGraph(scanID);
 }
 function update3D(scanID){
     let projectDir = document.getElementById("projectDir").value;
