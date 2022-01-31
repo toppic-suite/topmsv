@@ -21,6 +21,11 @@ $( document ).ready(function() {
     resetButton.addEventListener('click', function() {
         //let min = document.getElementById("rangeMin").value;
         //init2D(parseInt(min));
+        $("#rtRangeMin").val("");
+        $("#rtRangeMax").val("1");
+
+        $("#mzRangeMin").val("");
+        $("#mzRangeMax").val("50");
         update3DShowFull();
     })
 
