@@ -51,7 +51,7 @@ let download = router.get('/download', function (req,res) {
             archive.pipe(output);
 
             let topfdFiles = ['_ms2.feature', '_ms1.msalign','_ms2.msalign', '_ms1.feature', '_feature.xml'];
-            let toppicFiles = ['_ms2_toppic_proteoform.tsv', '_ms2_toppic_proteoform.xml', '_ms2_toppic_prsm.tsv', '.mzid'];
+            let toppicFiles = ['_ms2_toppic_proteoform.tsv', '_ms2_toppic_proteoform.xml', '_ms2_toppic_prsm.tsv', '_ms2_toppic_prsm_single.tsv','.mzid'];
 
             topfdFiles.forEach(fileName => {
                 let filePath = dbDir + path.sep + fName + fileName;
