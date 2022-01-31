@@ -1,4 +1,10 @@
-@ECHO OFF
-ECHO Installing TopMSV...
-cd /d "%~dp0"
-@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin" && choco install python visualcpp-build-tools -y && npm config set msvs_version 2017 && npm install && ECHO . && ECHO . && ECHO TopMSV installation finished. && ECHO Run startServer.bat to start TopMSV. You can close this window now. && ECHO . && ECHO . && pause
+@echo off
+set PATH=%PATH%;%CD%
+call npm install
+cd public/resources/topview
+call npm install
+echo .
+echo . 
+echo TopMSV installation finished. 
+echo Run startServer.bat to start TopMSV.
+pause

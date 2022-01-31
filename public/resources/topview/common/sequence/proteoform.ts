@@ -1,5 +1,5 @@
 class Proteoform {
-  private massShiftList_: MassShift[];
+  private massShiftList_: MassShift[] = [] as MassShift[];
   private prefixMasses_: TheoMass[];
   private suffixMasses_: TheoMass[];
   private id_: string;
@@ -23,7 +23,9 @@ class Proteoform {
     this.firstPos_ = firstPos;
     this.lastPos_ = lastPos;
     this.protMass_ = protMass;//rename to prot_mass
-    this.massShiftList_ = massShiftList.concat(fixedPtm, protVarPtm, varPtm);
+    if (massShiftList) {
+      this.massShiftList_ = massShiftList.concat(fixedPtm, protVarPtm, varPtm);
+    }
     this.prefixMasses_ = [];
     this.suffixMasses_ = [];
     this.compPrefixSuffixMasses();
@@ -136,9 +138,8 @@ class Proteoform {
     let prefixModResidueMasses: number[] = this.compPrefixModResidueMasses(aminoAcidMasses, fixedPtmMasses, variablePtmPrefixMasses, unexpectedPrefixMasses);
     this.compPrefixMasses(aminoAcidMasses, fixedPtmMasses, variablePtmPrefixMasses, unexpectedPrefixMasses);
     this.compSuffixMasses(aminoAcidMasses, fixedPtmMasses, variablePtmSuffixMasses, unexpectedSuffixMasses);
-
-    if (isNaN(this.protMass_)) {//if it is inspect page
-      this.compProteoformMass(prefixModResidueMasses);
+    if (this.protMass_ < 0) { //if it is inspect page
+        this.compProteoformMass(prefixModResidueMasses);
     }
   }
 
@@ -190,18 +191,16 @@ class Proteoform {
       else if(massShift.getType() == ModType.ProteinVariable) {
         let pos: number = massShift.getLeftPos();
         variablePtmPrefixMasses[pos-this.firstPos_] += massShift.getShift();
-        variablePtmSuffixMasses[pos-this.firstPos_] += massShift.getShift();
-  
+        variablePtmSuffixMasses[pos-this.firstPos_ - 1] += massShift.getShift();
       }
       else if(massShift.getType() == ModType.Variable) {
         let leftPos: number = massShift.getLeftPos(); 
-        let rightPos: number = massShift.getRightPos();
         variablePtmPrefixMasses[leftPos-this.firstPos_] += massShift.getShift();
-        variablePtmSuffixMasses[rightPos-this.firstPos_] += massShift.getShift();
+        variablePtmSuffixMasses[leftPos-this.firstPos_] += massShift.getShift();
       }
       else{
         unexpectedPrefixMasses[massShift.getLeftPos() - this.firstPos_] += massShift.getShift();
-        unexpectedSuffixMasses[massShift.getRightPos() - 1 - this.firstPos_] += massShift.getShift();  
+        unexpectedSuffixMasses[massShift.getLeftPos() - this.firstPos_] += massShift.getShift();  
       }
     })
     return [fixedPtmMasses, variablePtmPrefixMasses, variablePtmSuffixMasses, unexpectedPrefixMasses, unexpectedSuffixMasses];

@@ -2,6 +2,8 @@ const Papa = require('papaparse');
 const Database = require('better-sqlite3');
 const fs = require('fs');
 
+const updateSeqStatusSync = require("../library/updateSeqStatusSync");
+
 const myArgs = process.argv.slice(2);
 const parameter = '********************** Parameters **********************';
 const fixedPtm = "********************** Fixed PTM **********************";
@@ -24,9 +26,19 @@ stmtCreateSequenceTable.run();
 const insertMany = betterDB.transaction(importData);
 
 //let specFDRValue = 'N/A';
-fs.writeFile('input.txt', myArgs[1], function(err, data){})
-let file = fs.readFileSync(myArgs[1], "utf-8");
+
 let projectCode = myArgs[2];
+
+fs.writeFile('input.txt', myArgs[1], function(err, data){})
+let file;
+try {
+    file = fs.readFileSync(myArgs[1], "utf-8");
+} catch(err) {
+    console.log(err);
+    updateSeqStatusSync(0, projectCode);
+    return;
+}
+
 file = findCSV(file);
 
 insertMany(betterDB, file);
@@ -51,10 +63,10 @@ function importData(db, data) {
                 let scan = row[4];
                 // console.log('Proteoform:', row[17]);
                 let prec_mass = row[8];
-                let protein_accession = row[13];
-                let proteoform = row[17];
-                let qValue = row[24];//spectral q-value
-                let eValue = row[23];
+                let protein_accession = row[15];
+                let proteoform = row[20];
+                let qValue = row[29];//spectral q-value
+                let eValue = row[28];
 
                 if (isNaN(parseFloat(qValue))){
                     qValue = 'N/A';

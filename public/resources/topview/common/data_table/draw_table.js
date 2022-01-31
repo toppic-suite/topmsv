@@ -6,6 +6,8 @@
  */
 class DataTable {
     constructor(prsmObj, showScanNum, ms2GraphList) {
+        this.specSvgId_ = "";
+        this.monoMassSvgId_ = "";
         this.prsmObj_ = prsmObj;
         this.showScanNum_ = showScanNum;
         this.ms2GraphList_ = ms2GraphList;
@@ -15,6 +17,12 @@ class DataTable {
         else {
             this.addOneToPeakNum_ = false;
         }
+    }
+    setSpecSvgId(svgId) {
+        this.specSvgId_ = svgId;
+    }
+    setMonoMassSvgId(svgId) {
+        this.monoMassSvgId_ = svgId;
     }
     addEventHandlers() {
         var _a, _b, _c;
@@ -32,104 +40,90 @@ class DataTable {
         });
         //mono mz click
         $(".row_mono_mz").click((e) => {
-            let parentId = $(e.currentTarget).parent().parent().prop('id');
             /*	get Mono M/z value till 3 decimal values	*/
             let monoMz = parseFloat(parseFloat(e.currentTarget.innerHTML).toFixed(3));
-            let scanNumDiv = document.getElementById(parentId).firstChild;
-            let scanNum = scanNumDiv.innerHTML;
-            if (scanNum === null) {
-                console.error("ERROR: scan number is null");
-            }
             if (typeof ms2ScanList != "undefined") {
+                let parentId = $(e.currentTarget).parent().parent().prop('id'); //ion type
+                let parentDiv = document.getElementById(parentId);
+                if (!parentDiv) {
+                    return;
+                }
+                let scanNumDiv = parentDiv.firstChild;
+                if (!scanNumDiv) {
+                    return;
+                }
+                let scanNum = scanNumDiv.innerHTML;
+                if (scanNum === null) {
+                    console.error("ERROR: scan number is null");
+                }
                 for (let i = 0; i < ms2ScanList.length; i++) {
                     let listId = "ms2_svg_div_graphlist_" + i;
-                    let graphId = "ms2_svg_div_graph_" + i;
+                    let graphId = this.specSvgId_ + i;
                     let monolistId = "ms2_svg_div_monographlist_" + i;
-                    let monoGraphId = "ms2_svg_div_mono_graph_" + i;
+                    let monoGraphId = this.monoMassSvgId_ + i;
                     let listElement = document.getElementById(listId);
                     let graphElement = document.getElementById(graphId);
                     let monoListElement = document.getElementById(monolistId);
                     let monoGraphElement = document.getElementById(monoGraphId);
                     if (scanNum == ms2ScanList[i]) {
-                        if (!listElement) {
-                            console.log("ERROR: listElement is null");
-                            return;
+                        if (listElement) {
+                            listElement.classList.add("active");
                         }
-                        if (!graphElement) {
-                            console.log("ERROR: graphElement is null");
-                            return;
+                        if (graphElement) {
+                            graphElement.style.display = "";
                         }
-                        if (!monoListElement) {
-                            console.log("ERROR: monoListElement is null");
-                            return;
+                        if (monoListElement) {
+                            monoListElement.classList.remove("active");
                         }
-                        if (!monoGraphElement) {
-                            console.log("ERROR: monoGraphElement is null");
-                            return;
+                        if (monoGraphElement) {
+                            monoGraphElement.style.display = "none";
                         }
-                        listElement.classList.add("active");
-                        graphElement.style.display = "";
-                        monoListElement.classList.remove("active");
-                        monoGraphElement.style.display = "none";
                         let spGraph = this.ms2GraphList_[i];
                         // set monoMz to do
                         spGraph.getPara().updateMzRange(monoMz);
                         spGraph.redraw();
                     }
                     else {
-                        if (!listElement) {
-                            console.log("ERROR: listElement is null");
-                            return;
+                        if (listElement) {
+                            listElement.classList.remove("active");
                         }
-                        if (!graphElement) {
-                            console.log("ERROR: graphElement is null");
-                            return;
+                        if (graphElement) {
+                            graphElement.style.display = "none";
                         }
-                        if (!monoListElement) {
-                            console.log("ERROR: monoListElement is null");
-                            return;
+                        if (monoListElement) {
+                            monoListElement.classList.remove("active");
                         }
-                        if (!monoGraphElement) {
-                            console.log("ERROR: monoGraphElement is null");
-                            return;
+                        if (monoGraphElement) {
+                            monoGraphElement.style.display = "none";
                         }
-                        listElement.classList.remove("active");
-                        graphElement.style.display = "none";
-                        monoListElement.classList.remove("active");
-                        monoGraphElement.style.display = "none";
                     }
                 }
                 showMs2Graph();
             }
             else {
                 let listId = "ms2_svg_div_graphlist_0";
-                let graphId = "ms2_svg_div_graph_0";
+                let graphId = this.specSvgId_;
                 let monolistId = "ms2_svg_div_monographlist_0";
-                let monoGraphId = "ms2_svg_div_mono_graph_0";
+                let monoGraphId = this.monoMassSvgId_;
                 let listElement = document.getElementById(listId);
                 let graphElement = document.getElementById(graphId);
                 let monoListElement = document.getElementById(monolistId);
                 let monoGraphElement = document.getElementById(monoGraphId);
-                if (!listElement) {
-                    console.log("ERROR: listElement is null");
-                    return;
-                }
-                if (!graphElement) {
-                    console.log("ERROR: graphElement is null");
-                    return;
-                }
-                if (!monoListElement) {
-                    console.log("ERROR: monoListElement is null");
-                    return;
-                }
-                if (!monoGraphElement) {
-                    console.log("ERROR: monoGraphElement is null");
-                    return;
-                }
-                listElement.classList.add("active");
-                graphElement.style.display = "";
-                monoListElement.classList.remove("active");
-                monoGraphElement.style.display = "none";
+                //console.log("graphId", graphId);
+                //console.log("monolistId", monolistId);
+                switchTab("graphlist");
+                /* if (listElement) {
+                   listElement.classList.add("active");
+                 }
+                 if (graphElement) {
+                   graphElement.style.display = "";
+                 }
+                 if (monoListElement) {
+                   monoListElement.classList.remove("active");
+                 }
+                 if (monoGraphElement) {
+                   monoGraphElement.style.display = "none";
+                 }*/
                 let spGraph = this.ms2GraphList_[0];
                 // set monoMz to do
                 spGraph.getPara().updateMzRange(monoMz);
@@ -201,8 +195,6 @@ class DataTable {
         }
         let tbdy = document.createElement('tbody');
         tbdy.setAttribute("id", "peaksTableBody");
-        //let l_scans: string[] = ms2Spectrum[0].getScanNum().split(" ");
-        //let l_specIds: string[] = ms2Spectrum[0].getSpectrumId().split(" ");
         let l_scans = [];
         let l_specIds = [];
         ms2Spectrum.forEach((spectra) => {
@@ -268,7 +260,7 @@ class DataTable {
                     l_class = "matched_peak odd";
                 }
                 l_matched_peak_count++;
-                //	create a name for each row          
+                //	create a name for each row
                 let ion = matchedPeakPair.getIon().getName();
                 let ionPos = parseInt((matchedPeakPair.getIon().getId()).slice(1));
                 if (ion.indexOf("X") >= 0 || ion.indexOf("Y") >= 0 || ion.indexOf("Z") >= 0) {
@@ -277,13 +269,13 @@ class DataTable {
                     }
                 }
                 tr.setAttribute("name", ionPos.toString());
-                /*let peakId: string = peak.getId();
+                let peakId = peak.getId();
                 if (recordedPeaks.indexOf(peakId) < 0) {
-                  recordedPeaks.push(peakId);
+                    recordedPeaks.push(peakId);
                 }
-                else{
-                  l_duc_peak_count++;
-                }*/
+                else {
+                    l_duc_peak_count++;
+                }
             }
             //	Set "id","class name" and "role" for each row
             tr.setAttribute("id", id);
@@ -315,8 +307,7 @@ class DataTable {
                         console.error("ERROR: mono peak does not have mono mass");
                         return;
                     }
-                    //td.innerHTML = peak.getPos().toString();
-                    td.innerHTML = monoMass.toString();
+                    td.innerHTML = FormatUtil.formatFloat(monoMass.toString(), "dataTable");
                     td.setAttribute("class", "row_monoMass");
                 }
                 if (i == 3) {
@@ -324,11 +315,13 @@ class DataTable {
                     let a = document.createElement('a');
                     a.href = "#!";
                     a.className = "row_mono_mz";
-                    a.innerHTML = peak.getMonoMz().toString();
+                    a.innerHTML = FormatUtil.formatFloat(peak.getMonoMz().toString(), "dataTable");
                     td.appendChild(a);
                 }
                 if (i == 4) {
-                    td.innerHTML = peak.getIntensity().toString();
+                    //td.innerHTML = peak.getIntensity().toString();
+                    let intensity = (peak.getIntensity()).toExponential();
+                    td.innerHTML = Number.parseFloat(intensity).toPrecision(3);
                     td.setAttribute("class", "row_intensity");
                 }
                 if (i == 5) {
@@ -342,7 +335,7 @@ class DataTable {
                 }
                 if (matchedPeaks && matchedPeakPair) {
                     if (i == 6) {
-                        td.innerHTML = matchedPeakPair.getTheoMass().toString();
+                        td.innerHTML = FormatUtil.formatFloat(matchedPeakPair.getTheoMass().toString(), "dataTable");
                     }
                     if (i == 7) {
                         let ionPos = matchedPeakPair.getIon().getId();
@@ -370,7 +363,7 @@ class DataTable {
                             console.error("ERROR: massError is not provided");
                         }
                         else {
-                            td.innerHTML = massError.toString();
+                            td.innerHTML = FormatUtil.formatFloat(massError.toString(), "dataTable");
                         }
                     }
                     if (i == 10) {
@@ -380,7 +373,7 @@ class DataTable {
                             console.error("ERROR: ppmError is not provided");
                         }
                         else {
-                            td.innerHTML = ppmError.toString();
+                            td.innerHTML = FormatUtil.formatFloat(ppmError.toString(), "ppmError");
                         }
                     }
                 }

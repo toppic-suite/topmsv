@@ -23,12 +23,23 @@ const projectview = router.get('/projectview', function (req,res) {
     // resultDb.close();
     console.log(projectInfo);
 
+    if (!projectInfo) {
+        res.write("Invalid project ID!");
+        res.end();
+        return;
+    }
+
     let projectPermission = projectInfo.permission;
     let projectUid = projectInfo.uid;
 
     let node = buildProjectView(pid);
     console.log("node:", node);
 
+    if (!node) {
+        res.write("Invalid project ID!");
+        res.end();
+        return;
+    }
 
     if (req.session.passport === undefined){
         if (projectPermission === 0) {

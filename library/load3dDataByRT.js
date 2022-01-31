@@ -1,12 +1,11 @@
-const sqlite3 = require('sqlite3').verbose();
+const BetterDB = require('better-sqlite3'); 
 /**
- * Get scan of next level one. Async mode.
+ * Get scan of next level one. 
  * @param {string} dir - Project directory
  * @param {number} tableNum - database table number to get peaks from
  * @param {number} minmz - minimum m/z
  * @param {number} maxmz - maximum m/z
  * @param {function} callback
- * @async
  */
 function load3dDataByRT(dir, rt, tableNum, minmz, maxmz, callback) {
     let sql = `SELECT *
@@ -16,19 +15,11 @@ function load3dDataByRT(dir, rt, tableNum, minmz, maxmz, callback) {
                 AND MZ <= ?;`;
 
     let dbDir = dir;
-    let resultDb = new sqlite3.Database(dbDir, (err) => {
-        if (err) {
-            console.error("error during db generation", err.message);
-        }
-        // console.log('Connected to the result database.');
-    });
-    
-    resultDb.all(sql, [rt, minmz, maxmz], (err, row) => {
-        if (err) {
-            console.error(err.message);
-        }
-        return callback(null, row);
-    });
-    resultDb.close();
+    let db = new BetterDB(dbDir);
+    let stmt = db.prepare(sql);
+    let rows = stmt.all(rt, minmz, maxmz);
+
+    db.close();
+    return callback(null, rows);
 }
 module.exports = load3dDataByRT;

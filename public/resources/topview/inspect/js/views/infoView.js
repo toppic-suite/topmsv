@@ -18,9 +18,8 @@ function getPrecursorMass() {
 function setPrecursorMassEventHandler() {
     jqueryElements.precursorMassSubmit.click(function () {
         let precursorMass = domElements.precursorMass.getAttribute("value");
-        let totalMass = jqueryElements.totalMass.html();
-        console.log("precursorMass", precursorMass);
-        if (precursorMass) {
+        let totalMass = jqueryElements.totalMass.val();
+        if (precursorMass && typeof (totalMass) == "string") {
             setMassDifference(parseFloat(precursorMass), parseFloat(totalMass));
         }
         else {
@@ -33,7 +32,7 @@ function setPrecursorMassEventHandler() {
  * @param {*} totalMass
  */
 function setTotalSeqMass(mass) {
-    let totalMass = mass.toFixed(4);
+    let totalMass = FormatUtil.formatFloat(mass, "protMass");
     jqueryElements.totalMass.html(totalMass);
     domElements.totalSeqMass.setAttribute("style", 'block');
 }
@@ -44,6 +43,6 @@ function setTotalSeqMass(mass) {
  */
 function setMassDifference(precursorMass, proteinMass) {
     let diff = precursorMass - proteinMass;
-    domElements.massDifference.innerHTML = diff.toFixed(4);
+    domElements.massDifference.innerHTML = FormatUtil.formatFloat(diff, "massDiff");
     domElements.massVariation.setAttribute("style", 'block');
 }

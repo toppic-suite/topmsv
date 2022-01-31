@@ -1,4 +1,7 @@
 "use strict";
+/**
+ * Class to calculate Matched Peaks and distribution of the Amoino Acids
+ */
 class CalcMatchedPeaks {
     constructor() {
         this.PREFIX = "PREFIX";
@@ -40,7 +43,7 @@ class CalcMatchedPeaks {
                 PPMerror = Math.round(PPMerror * 10000) / 10000;
             }
             matchedPeak.ion = ion;
-            matchedPeak.ionPos = ionPos;
+            matchedPeak.ionPos = ionPos.toString();
             matchedPeak.position = position;
             matchedPeak.massError = massDiff;
         }
@@ -141,9 +144,12 @@ class CalcMatchedPeaks {
             let matched = false;
             let peakId = i + 1;
             for (let j = 0; j < len; j++) {
-                if (peakId == parseInt(matchedList[j].peakId)) {
-                    matched = true;
-                    break;
+                let id = matchedList[j].peakId;
+                if (id) {
+                    if (peakId == parseInt(id)) {
+                        matched = true;
+                        break;
+                    }
                 }
             }
             if (!matched) {

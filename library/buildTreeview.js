@@ -9,7 +9,7 @@ const getDataset = require("./getDataset");
  * @returns {string} Tree view that contains projects, experiments, datasets for given user
  */
 function buildTreeview(uid) {
-    let projects = getProjectNew(uid);
+    /*let projects = getProjectNew(uid);
     console.log("projects: ", projects);
     let result = [];
     if (!projects) {
@@ -41,7 +41,7 @@ function buildTreeview(uid) {
 
     }
     console.log("result: ", JSON.stringify(result));
-    return JSON.stringify(result);
+    return JSON.stringify(result);*/
 
 
 }

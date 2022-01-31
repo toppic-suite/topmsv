@@ -1,15 +1,7 @@
 "use strict";
-var ModType;
-(function (ModType) {
-    ModType[ModType["Fixed"] = 0] = "Fixed";
-    ModType[ModType["Unexpected"] = 1] = "Unexpected";
-    ModType[ModType["ProteinVariable"] = 2] = "ProteinVariable";
-    ModType[ModType["Variable"] = 3] = "Variable";
-})(ModType || (ModType = {}));
-;
 class MassShift {
     constructor(leftPos, rightPos, massShift, type, annotation, ptm = null) {
-        this.leftPos_ = leftPos;
+        this.leftPos_ = leftPos; //for drawing annotation background
         this.rightPos_ = rightPos;
         this.massShift_ = massShift;
         this.type_ = this.setModType(type);
@@ -40,6 +32,12 @@ class MassShift {
     getPtmList() {
         return this.ptmList_;
     }
+    setLeftPos(pos) {
+        this.leftPos_ = pos;
+    }
+    setRightPos(pos) {
+        this.rightPos_ = pos;
+    }
     setModType(type) {
         let modType;
         if (type == "Fixed") {
@@ -55,5 +53,8 @@ class MassShift {
             modType = ModType.Unexpected;
         }
         return modType;
+    }
+    setPtmList(ptmList) {
+        this.ptmList_ = ptmList;
     }
 }

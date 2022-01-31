@@ -15,10 +15,11 @@ const projects = router.get('/projects', function (req,res) {
     //console.log(req.session);
     //let uid = req.session.passport.user.profile.uid;
     console.log("hello projects");
-    if (req.session.passport === undefined)
-        res.render('pages/projects', {
-            projects: []
-        });
+    if (req.session.passport === undefined) {
+        res.write("User does not exist in the system! Please log in first!");
+        res.end();
+        return;
+    }
     else {
         //console.log(req.session.passport.user.profile);
         let uid = req.session.passport.user.profile.id;
@@ -28,8 +29,17 @@ const projects = router.get('/projects', function (req,res) {
             res.end();
             return;
         }
+        let loginMsg = "";
+        if (userInfo) {
+            loginMsg = "[Logged in as " + req.session.passport.user.profile.displayName + "]";
+        }
         // console.log(uid);
         getProjects(uid,function (rows) {
+            if (!rows) {
+                res.write("Cannot connect to project DB");
+                res.end();
+                return;
+            }
             rows.forEach(row=>{
                 // console.log("row", row);
                 if(row.envelopeFile === '0') row.envelopeFile = 'N/A';
@@ -64,7 +74,8 @@ const projects = router.get('/projects', function (req,res) {
                 row.editLink = '/projectManagement?projectCode=' + row.projectCode;
             });
             res.render('pages/projects', {
-                projects: rows
+                projects: rows,
+                loginMessage:loginMsg
             });
         });
     }

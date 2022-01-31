@@ -18,7 +18,7 @@ function loadMsOne(ms1Spec: Spectrum | null, ms1SvgId: string): void{
     spGraph.addRawSpectrumAnno(ms1Spec.getEnvs(), ions);
     let precMonoMz: number = ms1Spec.getPrecMz();
     spGraph.getPara().updateMzRange(precMonoMz);
-    spGraph.getPara().setHighlight(precMonoMz);
+    spGraph.getPara().setHighlight(ms1Spec);
     spGraph.redraw();
 }
 function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, navId: string): void {
@@ -29,7 +29,13 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
     }
     let graphList: SpectrumView[] = [];
     let monoGraphList: SpectrumView[] = [];
-    
+    let deconvPeaks: Peak[] = [];
+    ms2Spec.forEach((spectrum: Spectrum, index) => {
+        let deconvPeakTemp: Peak[] | null = spectrum.getDeconvPeaks();
+        if (deconvPeakTemp) {
+            deconvPeaks = deconvPeaks.concat(deconvPeakTemp); //prepare deconvPeaks before graph drawing
+        }
+    });
     ms2Spec.forEach((spectrum, index) => {
         createMs2NavElement(index, divId, navId, spectrum.getScanNum());
         let show: boolean = false;
@@ -38,7 +44,7 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
         }
         let svgId: string = divId + "_graph_" + index;
         createSvg(show, divId, svgId, "ms2_svg_graph_class");
-        let [ions, monoIons] = getIons(prsmObj.getMatchedPeakEnvelopePairs());
+        let [ions, monoIons] = getIons(prsmObj.getMatchedPeakEnvelopePairs(), spectrum.getSpectrumId());
         let spGraph: SpectrumView = new SpectrumView(svgId, spectrum.getPeaks());
         spGraph.addRawSpectrumAnno(spectrum.getEnvs(), ions);
         let spectrumDataPeaks: SpectrumFunction = new SpectrumFunction();
@@ -49,17 +55,16 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
         ms2GraphList.push(spGraph);
 
         //mono mass svg
-        let decovPeaks: Peak[] | null = spectrum.getDeconvPeaks();
         let monoSvgId: string = divId + "_mono_graph_" + index;
         show = false;
         createSvg(show, divId, monoSvgId, "ms2_svg_graph_class");
 
-        if (!decovPeaks) {
+        if (!deconvPeaks) {
             console.error("ERROR: no deconvoluted peaks in ms2 spectrum");
             return;
           }
     
-        let monoMasses: Peak[] = getMonoMasses(decovPeaks);
+        let monoMasses: Peak[] = getMonoMasses(deconvPeaks);
 
         let nIonType: string = spectrum.getNTerminalIon()[0].getName();
         let cIonType: string = spectrum.getCTerminalIon()[0].getName();
@@ -72,8 +77,26 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
         monoSpGraph.redraw();
         monoGraphList.push(monoSpGraph);
     })
+    //add a tab for checkbox for mono graph
+    addCheckboxTab(navId);
+
+    //add an event listner for checkbox
+    $("#checkbox-anno-line").on("change", function() {
+        for (let i = 0; i < ms2GraphList.length; i++) {
+            let monoListId: string = "ms2_svg_div_monographlist_" + i;
+            let monoGraphId: string = "ms2_svg_div_mono_graph_" + i;
+            let monoListElement: HTMLElement | null = document.getElementById(monoListId);
+            let monoGraphElement: HTMLElement | null = document.getElementById(monoGraphId);
+            if (monoListElement) {
+                if (monoListElement.classList.contains("active")) {
+                    monoGraphList[i].redraw();
+                };
+            }
+        }
+    })
+
     // add action for nav bar
-    $(".ms2_graph_list").click(function () {
+    $(".ms2_graph_list").on("click", function() {
         let ms2Id: string = this.id;
         //console.log("ms2id", ms2Id);
         let ms2Split: string[] = ms2Id.split("_");
@@ -89,6 +112,7 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
             let monoListElement: HTMLElement | null = document.getElementById(monoListId);
             let graphElement: HTMLElement | null = document.getElementById(graphId);
             let monoGraphElement: HTMLElement | null = document.getElementById(monoGraphId);
+            let checkboxTab: HTMLElement | null = document.getElementById("checkbox-tab");
             if (i == ms2Index) {
                 if (type == "graphlist") {
                     if (listElement && monoListElement && graphElement && monoGraphElement) {
@@ -96,6 +120,9 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
                         monoListElement.classList.remove("active");
                         graphElement.style.display = "";
                         monoGraphElement.style.display = "none";
+                        if (checkboxTab != null) {
+                            checkboxTab.style.display = "none";
+                        }
                     }
                     else{
                         console.error("ERROR: graph ID is invalid");
@@ -107,6 +134,9 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
                         monoListElement.classList.add("active");
                         graphElement.style.display = "none";
                         monoGraphElement.style.display = "";
+                        if (checkboxTab != null) {
+                            checkboxTab.style.display = "";
+                        }
                     }
                     else{
                         console.error("ERROR: graph ID is invalid");
@@ -119,6 +149,10 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
                     monoListElement.classList.remove("active");
                     graphElement.style.display = "none";
                     monoGraphElement.style.display = "none";
+
+                    if (checkboxTab) {
+                        checkboxTab.style.display = "none";
+                    }
                 }
                 else{
                     console.error("ERROR: graph ID is invalid");
@@ -131,7 +165,44 @@ function loadMsTwo(prsmObj: Prsm, ms2GraphList: SpectrumView[], divId: string, n
     let saveSpectrumObj: SaveSpectrum = new SaveSpectrum(ms2GraphList, monoGraphList);
     saveSpectrumObj.main();
 }
+function addCheckboxTab(navId: string): void {
+    let ul: HTMLElement | null = document.getElementById(navId);
 
+    if (!ul) {
+        console.error("ERROR: invalid navId");
+        return;
+    }
+
+    let li: HTMLLIElement = document.createElement("li");
+    //let li_id: string = "checkbox-tab";
+    //li.setAttribute("id", li_id);
+    li.setAttribute("class", "nav-item");
+
+    let div: HTMLDivElement = document.createElement("div");
+    div.setAttribute("class", "nav-link");
+    div.setAttribute("id", "checkbox-tab");
+    div.style.display = "none";
+
+    let checkbox: HTMLInputElement = document.createElement("input");
+    checkbox.setAttribute("type", "checkbox");
+    checkbox.setAttribute("id", "checkbox-anno-line");
+    checkbox.setAttribute("name", "checkbox-anno-line");
+    checkbox.setAttribute("checked", "true");
+    checkbox.setAttribute("value", "true");
+
+    let label: HTMLLabelElement = document.createElement("label");
+    label.setAttribute("for", "checkbox-anno-line");
+
+    let text: Text = document.createTextNode("Show annotation lines");
+
+    label.appendChild(text);
+
+    div.appendChild(checkbox);
+    div.appendChild(label);
+
+    li.appendChild(div);
+    ul.appendChild(li);
+}
 /**
  * Function to Create Navigation buttons to navigate between spectrums
  * @param {Array} scanidList - Contains scan Id List
@@ -216,43 +287,55 @@ function getMonoMasses(peaks: Peak[]): Peak[] {
  * @param {int} specId - contains information of the spec Id
  * @param {object} json_data - contains complete data of spectrum
  */
-function getIons(matchedPeakEnvPairs: MatchedPeakEnvelopePair[]): [MatchedIon[], MatchedIon[]] {
+function getIons(matchedPeakEnvPairs: MatchedPeakEnvelopePair[], specId: string): [MatchedIon[], MatchedIon[]] {
     let ions: MatchedIon[] = [];
     let monoIons: MatchedIon[] = [];
     matchedPeakEnvPairs.forEach((pair) => {
-        let ionData: MatchedIon;
-        let monoIonData: MatchedIon;
-        let ionText: string = "";
-        let massError: number;
-        let envPeaks: Peak[] = pair.getEnvelope().getPeaks();
-        envPeaks.sort(function (x, y) {
-            return y.getIntensity()- x.getIntensity();
-        });
-        let x = envPeaks[0].getMonoMz();
-        let y = envPeaks[0].getIntensity();
-        let matchedIon: Ion = pair.getIon();
-        let ionType: string = matchedIon.getName();
-        if (ionType == "Z_DOT") {
-            ionType = "Z\u02D9";
+        if (specId == pair.getPeak().getSpecId()) {
+            let ionData: MatchedIon;
+            let monoIonData: MatchedIon;
+            let ionText: string = "";
+            let massError: number;
+            let envPeaks: Peak[] = [];
+            let env: Envelope | null = pair.getEnvelope();
+            if (env) {
+                envPeaks = env.getPeaks();
+            }
+            envPeaks.sort(function (x, y) {
+                return y.getIntensity() - x.getIntensity();
+            });
+            let x: number = envPeaks[0].getMonoMz();
+            let y: number = envPeaks[0].getIntensity();
+            let matchedIon: Ion = pair.getIon();
+            let ionType: string = matchedIon.getName();
+            if (ionType == "Z_DOT") {
+                ionType = "Z\u02D9";
+            }
+            let pos: RegExpMatchArray | null = matchedIon.getId().match(/\d+/);
+            if (!pos) {
+                console.error("ERROR: invalid matched ion position");
+                return;
+            }
+            ionText = ionType + pos[0];
+            if (!matchedIon.getMassError() && matchedIon.getMassError() != 0) { //mass error can be 0
+                console.error("ERROR: mass error is undefined");
+                return;
+            }
+            let pairEnv: Envelope | null = pair.getEnvelope();
+            if (!pairEnv) {
+                console.error("Error: invalid envelope");
+                return [[], []];
+            }
+            //@ts-ignore
+            massError = matchedIon.getMassError(); //undefined already checked above
+            ionData = { "mz": x, "intensity": y, "text": ionText, "error": massError, "env": pairEnv };
+            ions.push(ionData);
+            let monoX: number = pairEnv.getMonoMass();
+            let monoY: number = 0;
+            envPeaks.forEach(element => monoY += element.getIntensity());
+            monoIonData = { "mz": monoX, "intensity": monoY, "text": ionText, "pos": pos[0], "error": massError };
+            addOneIon(monoIons, monoIonData);
         }
-        let pos: RegExpMatchArray | null = matchedIon.getId().match(/\d+/);
-        if (!pos) {
-            console.error("ERROR: invalid matched ion position");
-            return;
-        }
-        ionText = ionType + pos[0];
-        if (!matchedIon.getMassError()) {
-            console.error("ERROR: mass error is undefined");
-            return;
-        }
-        massError = matchedIon.getMassError()!;//undefined already checked above
-        ionData = {"mz": x, "intensity": y, "text": ionText, "error": massError, "env":pair.getEnvelope()};
-        ions.push(ionData);
-        let monoX: number = pair.getEnvelope().getMonoMass();
-        let monoY: number = 0;
-        envPeaks.forEach(element => monoY += element.getIntensity());
-        monoIonData = {"mz": monoX, "intensity": monoY, "text": ionText, "pos": pos[0], "error": massError};
-        addOneIon(monoIons, monoIonData);
     });
     return [ions, monoIons];
 }

@@ -34,8 +34,10 @@ let editRequest = router.get('/editRequest', function (req,res) {
                 WHERE pid = ?;`);
             let queryResult = stmt.get(id);
             resultDb.close();
-            name = queryResult.projectName;
-            description = queryResult.description;
+            if (queryResult != null && queryResult != undefined) {
+                name = queryResult.projectName;
+                description = queryResult.description;    
+            }
         }
         if (type === 'eid') {
             let resultDb = new BetterDB("./db/projectDB.db");
@@ -44,8 +46,10 @@ let editRequest = router.get('/editRequest', function (req,res) {
                 WHERE eid = ?;`);
             let queryResult = stmt.get(id);
             resultDb.close();
-            name = queryResult.ename;
-            description = queryResult.description;
+            if (queryResult != null && queryResult != undefined) {
+                name = queryResult.ename;
+                description = queryResult.description;    
+            }
         }
         if (type === 'datasetID') {
             let resultDb = new BetterDB("./db/projectDB.db");
@@ -54,8 +58,10 @@ let editRequest = router.get('/editRequest', function (req,res) {
                 WHERE Dataset.datasetID = ?;`);
             let queryResult = stmt.get(id);
             resultDb.close();
-            name = queryResult.dname;
-            description = queryResult.description;
+            if (queryResult != null && queryResult != undefined) {
+                name = queryResult.dname;
+                description = queryResult.description;     
+            }
         }
         res.render('pages/editPage', {
             typePlaceholder: type,

@@ -114,10 +114,23 @@ function addNewFixedPtmRow(fixedPtm: string){
     fixedptmsdiv.appendChild(removeButton);
     fixedPtmListDiv.appendChild(fixedptmsdiv);	
     
-    $('.removerow').click((btn) => {
-        console.log("btn", btn);
-        /*let acid: string = btn.parent().find(".fixedptmacid").val();
-        $(this).parent().remove();*/
+    $('.removerow').click((e) => {
+        let parents: JQuery<HTMLElement> = $(e.target).parents();
+        for (let i: number = 0; i < parents.length; i++) {
+            if (parents[i].className == "fixedptms") {
+                let residue: HTMLInputElement = <HTMLInputElement>(parents[i].getElementsByClassName("fixedptmacid")[0]);
+                let mass: HTMLInputElement = <HTMLInputElement>(parents[i].getElementsByClassName("fixedptmmass")[0]);
+                for (let j = 0; j < USER_FIXED_PTM_LIST.length; j++) {
+                    if (parseFloat(mass.value) == USER_FIXED_PTM_LIST[j].getShift()) {
+                        if (residue.value == USER_FIXED_PTM_LIST[j].getResidue()) {
+                            USER_FIXED_PTM_LIST.splice(j, 1);
+                            break;
+                        }
+                    }
+                }
+                parents[i].remove();
+            }
+        }
         //temp code
         let errorVal: number;
         let errorType: any = jqueryElements.errorDropdown.val();
@@ -164,7 +177,7 @@ function setFixedMasses(fixedPtmList: MassShift[]){
                         })
                     }
                     if (isNewPtm){
-                        let fixedptm: string = COMMON_FIXED_PTM_LIST[j].getResidue() + ":" + COMMON_FIXED_PTM_LIST[j].getShift.toString();
+                        let fixedptm: string = COMMON_FIXED_PTM_LIST[j].getResidue() + ":" + COMMON_FIXED_PTM_LIST[j].getShift().toString();
                         addNewFixedPtmRow(fixedptm);
                         break;    
                     }
@@ -181,13 +194,49 @@ function getFixedPtmCheckList(): Mod[]
 {
     let result: Mod[] = [];
     $(".fixedptms").each((i, div) => {
-        //let acid: string = div.val().toUpperCase();
-        //let mass: number = parseFloat(div.find('.fixedptmmass').val());
-        //if(acid.length !== 0  && !isNaN(mass))
-        //{
-           // let tempfixedptm = new Mod(acid, mass, "");
-           // result.push(tempfixedptm);
-        //}
+        let acid: string | null = null;
+        let mass: string | null = null;
+        for (let i: number = 0; i < div.children.length; i++) {
+            if (div.children[i].className == "form-control fixedptmacid") {
+                let acidElement: HTMLInputElement = <HTMLInputElement> div.children[i];
+                acid = acidElement.value;
+            }
+            else if (div.children[i].className == "form-control fixedptmmass") {
+                let massElement: HTMLInputElement = <HTMLInputElement> div.children[i];
+                mass = massElement.value;
+            }
+        }
+        if (acid && mass) {
+            let tempfixedptm: Mod = new Mod(acid.toUpperCase(), parseFloat(mass), "");
+            result.push(tempfixedptm);
+        }
     });
     return result;
+}
+
+/**
+ * sets fixed PTM based on user input
+ */
+function addCustomPtm(): void {
+    let acid: HTMLInputElement = <HTMLInputElement>document.getElementById("residue-name");
+    let mass: HTMLInputElement = <HTMLInputElement>document.getElementById("residue-mass");
+    let name: HTMLInputElement = <HTMLInputElement>document.getElementById("ptm-name");
+
+    if (!acid || !mass) {
+        alert("Please enter both acid and mass for this PTM!");
+    }
+    else {
+        if (/\d/.test(acid.value)) {
+            alert("Invalid amino acid!");
+        }
+        else if(isNaN(parseFloat(mass.value))) {
+            alert("Invalid mass value!");
+        }
+        else {
+            let fixedPtm = (acid.value).toUpperCase() + ":" + mass.value;
+            USER_FIXED_PTM_LIST.push(new Mod((acid.value).toUpperCase(), parseFloat(mass.value), name.value))
+            addNewFixedPtmRow(fixedPtm);
+            $('.modal').modal('hide');
+        }
+    }
 }

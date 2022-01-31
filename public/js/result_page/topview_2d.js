@@ -120,7 +120,7 @@ class Topview2D {
             console.log(error);
         });
     }
-
+/*
     findNextLevelOneScan(scan) {
         return axios.get('/findNextLevelOneScan', {
             params: {
@@ -130,7 +130,7 @@ class Topview2D {
         });
     }
 
-/*     loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
+     loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
         if(scanID !== '0') {
             const graphFeatures = new GraphFeatures();
             // show envelope table for MS2

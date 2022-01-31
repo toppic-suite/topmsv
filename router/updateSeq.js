@@ -9,7 +9,7 @@ const updateSequence = require("../library/updateSequence");
  * Handle request to update one proteoform in database by scan
  */
 const updateSeq = router.post('/updateSeq', function (req, res) {
-    console.log('Hello updateSeq!');
+    /*console.log('Hello updateSeq!');
     let uid;
     //console.log(req.session.passport.user.profile);
     if (!req.session.passport) {
@@ -23,6 +23,11 @@ const updateSeq = router.post('/updateSeq', function (req, res) {
     let scanNum = req.query.scanNum;
     let proteoform = req.query.proteoform;
     getProjectSummary(projectCode, function (err, row) {
+        if (!row) {
+            res.write('0');
+            res.end();
+            return;
+        }
         let seqStatus = row.sequenceStatus;
         let projectDir = row.projectDir;
         let projectUid = row.uid;
@@ -45,7 +50,7 @@ const updateSeq = router.post('/updateSeq', function (req, res) {
             res.write('0');
             res.end();
         }
-    })
+    })*/
 });
 
 module.exports = updateSeq;

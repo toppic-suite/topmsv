@@ -32,6 +32,11 @@ let msalign = router.post('/msalign', function (req, res) {
 
         console.log('Deleted previous Envelope Peaks!');
         let email = fields.email;
+        if (!dbDir) {
+            console.error("Invalid DB path when uploading msalign files");
+            sendFailureMess(projectName, projectCode, email);
+            return;
+        }
         dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
         let des_ms1 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms1.name;
         let des_ms2 = dbDir.substr(0, dbDir.lastIndexOf("/")) + '/' + ms2.name;
@@ -55,10 +60,10 @@ let msalign = router.post('/msalign', function (req, res) {
                     return res.send({"error": 403, "message": "Error on saving file!"});
                 }
                 res.end();
-                let parameterTask1 = path.join(__dirname, '..', 'utilities', 'convertMS1Msalign.js') + ' ' + dbDir + ' ' + des_ms1;
+                let parameterTask1 = path.join(__dirname, '..', 'utilities', 'convertMS1Msalign.js') + ' ' + dbDir + ' ' + des_ms1 + ' ' + projectCode;;
                 submitTask(projectCode, 'node', parameterTask1, 1);
 
-                let parameterTask2 = path.join(__dirname, '..', 'utilities', 'convertMS2Msalign.js') + ' ' + dbDir + ' ' + des_ms2;
+                let parameterTask2 = path.join(__dirname, '..', 'utilities', 'convertMS2Msalign.js') + ' ' + dbDir + ' ' + des_ms2 + ' ' + projectCode;;
                 submitTask(projectCode, 'node', parameterTask2, 1);
                 updateEnvStatusSync(1, projectCode);
             })

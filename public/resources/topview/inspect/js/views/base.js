@@ -37,6 +37,7 @@ const jqueryElements = {
     precursorMassSubmit: $("#precursormass-submit"),
 };
 const COMMON_FIXED_PTM_LIST = [new Mod("C", 57.021464, "Carbamidomethylation"), new Mod("C", 58.005479, "Carboxymethyl")];
+let USER_FIXED_PTM_LIST = []; //user-defined custom ptm list
 let VAR_PTM_LIST = [];
 //it is not const because the variable PTM in the original prsm 
 //will be added to this list in index.js
