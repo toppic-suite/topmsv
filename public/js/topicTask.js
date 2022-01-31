@@ -167,7 +167,7 @@
     // 成功上传
     function uploadSuccess(event) {
         if (xhr.readyState === 4) {
-            setTimeout(function(){ if(!alert("Data uploaded successfully!\nPlease wait for processing!"))window.location.href ='/';}, 100)
+            setTimeout(function(){ if(!alert("Data uploaded successfully!\nPlease wait for processing!"))window.location.href ='/projects';}, 100)
         }
     }
 
