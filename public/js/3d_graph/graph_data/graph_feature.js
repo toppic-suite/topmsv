@@ -108,4 +108,14 @@
                 resolve();
             })
         }
+        static hideFeature = () => {
+            let featureGroup = Graph.scene.getObjectByName("featureGroup");
+            featureGroup.visible = false;
+            GraphRender.renderImmediate();
+        }
+        static showFeature = () => {
+            let featureGroup = Graph.scene.getObjectByName("featureGroup");
+            featureGroup.visible = true;
+            GraphRender.renderImmediate();
+        }
     }

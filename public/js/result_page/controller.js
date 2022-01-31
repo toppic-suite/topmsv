@@ -19,6 +19,11 @@ function initGraph(){
     $('#envFileInfo').hide();
     $("#ms2Info").hide();
 
+    if ($('#featureStatus').val() === '0') {
+        $('#show-feature-anno-div').hide();
+    } else {
+        $('#show-feature-anno-div').show();
+    }
     let scanRef = window.localStorage.getItem('scan');
     if(scanRef) {
         //init2D(scanRef);
