@@ -57,8 +57,10 @@
                         featureRect.computeLineDistances();
                         featureRect.mz_low = feature.mz_low;
                         featureRect.mz_high = feature.mz_high;
-                        featureRect.rt_low = feature.rt_low;
-                        featureRect.rt_high = feature.rt_high;
+                        //featureRect.rt_low = feature.rt_low;
+                        //featureRect.rt_high = feature.rt_high;
+                        featureRect.rt_low = rt_low;
+                        featureRect.rt_high = rt_high;
                         featureRect.featureId = feature.id;
     
                         featureRect.mass = feature.mass;
