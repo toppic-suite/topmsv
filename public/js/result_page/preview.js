@@ -49,76 +49,69 @@ function change_mono_mz() {
 // let lockPara2 = false;
 let graphMz1;
 let graphMz2;
-function refresh() {
+function refresh(rowdata) {
     let msType_old = $('#msType').text();
     let scanID;
     let scanLevelOneFlag = true;
     if (msType_old === 'MS1') {
-        graphMz1 = graph1_g.para.winCenterMz;
+        graphMz1 = graph1_g.getPara().winCenterMz;
         scanID = $('#scanID1').text();
         showEnvTable($("#scanID1").text());
         $("#switch").text('MS2');
     } else {
-        graphMz2 = graph2_g.para.winCenterMz;
+        graphMz2 = graph2_g.getPara().winCenterMz;
         scanID = $('#scanID2').text();
         scanLevelOneFlag = false;
     }
 
-    topview_2d.getEnvTable(scanID)
-        .then(response => {
-            let envtable = response.data;
-            if (scanLevelOneFlag) {
-                envList1_g = calcDistrubution.getEnvDistribution(envtable, peakList1_g);
-                if (envList1_g !== 0 && envList1_g.length !== 0){
-                    graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
-                    graph1_g.redraw(graphMz1);
-                }else {
-                    graph1_g = new SpectrumGraph("spectrum1", peakList1_g, [],[],null);
-                    graph1_g.redraw(graphMz1);
-                }
-            } else {
-                envList2_g = calcDistrubution.getEnvDistribution(envtable, peakList2_g);
-                if (envList2_g !== 0 && envList2_g.length !== 0){
-                    graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
-                    graph2_g.redraw(graphMz2);
-                }else {
-                    graph2_g = new SpectrumGraph("spectrum2", peakList2_g, [],[],null);
-                    graph2_g.redraw(graphMz2);
+    if (scanLevelOneFlag) {
+        let origEnv = graph1_g.getEnvList();
+        let newEnv = [];
+        for (let i = 0; i < origEnv.length; i++) {
+            if (rowdata.envList.length < 1) {
+                break;
+            } 
+            let isDelete = false;
+            for (k = 0; k < rowdata.envList.length; k++) {
+                let envId = origEnv[i].getPeaks()[0].getId(); 
+                if (envId == rowdata.envList[k].envelope_id) {
+                    isDelete = true;
+                    rowdata.envList = rowdata.envList.splice(k, 1);
+                    break;
                 }
             }
-        })
-        .catch(error => {
-            console.log(error);
-        })
-
-
-    /*
-    $.ajax({
-        url:"envlist?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scanID + "&projectCode=" + document.getElementById("projectCode").value,
-        type: "get",
-        // dataType: 'json',
-        success: function (res) {
-            if (msType_old === 'MS1') {
-                envList1_g = JSON.parse(res);
-                if(envList1_g===0) {
-                    envList1_g = [];
-                }
-                graph1_g = new SpectrumGraph("spectrum1", peakList1_g, envList1_g,[],null);
-                graph1_g.redraw(graphMz1);
-                // graph1_g = addSpectrum('spectrum1', peakList1_g, envList1_g, null, null, graphFeatures);
-            } else {
-                envList2_g = JSON.parse(res);
-                // console.log(envList2_g);
-                if(envList2_g===0) {
-                    envList2_g = [];
-                }
-                graph2_g = new SpectrumGraph("spectrum2", peakList2_g, envList2_g,[],null);
-                graph2_g.redraw(graphMz2);
-                // graph2_g = addSpectrum('spectrum2', peakList2_g, envList2_g, null, null, graphFeatures);
+            if (!isDelete) {
+                newEnv.push(origEnv[i]);
             }
         }
-    });
-    */
+        graph1_g.addRawSpectrumAnno(newEnv, []);
+        graph1_g.redraw();
+    } else {
+        let origEnv = graph2_g.getEnvList();
+        let newEnv = [];
+        for (let i = 0; i < origEnv.length; i++) {
+            if (rowdata.envList.length < 1) {
+                break;
+            } 
+            let isDelete = false;
+            for (k = 0; k < rowdata.envList.length; k++) {
+                let envId = origEnv[i].getPeaks()[0].getId(); 
+                if (envId == rowdata.envList[k].envelope_id) {
+                    isDelete = true;
+                    rowdata.envList = rowdata.envList.splice(k, 1);
+                    break;
+                }
+            }
+            if (!isDelete) {
+                newEnv.push(origEnv[i]);
+            }
+        }
+        console.log("origEnv", origEnv);
+        console.log("newEnv", newEnv);
+        console.log("rowdata.envList", rowdata.envList);
+        graph2_g.addRawSpectrumAnno(newEnv, []);
+        graph2_g.redraw();
+    }
 }
 
 let peakList_temp;
