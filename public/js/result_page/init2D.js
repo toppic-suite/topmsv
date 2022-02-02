@@ -174,7 +174,7 @@ function loadPeakList1(scanID, prec_mz) {
                 let modfiablePeaks = [];
                 let envelopes = [];
 
-                if (response) {
+                if (response && response.data.length > 0) {
                     let envtable = response.data;
                     if (envtable != 0){
                         for (let i = 0; i < peakList1_g.length; i++){
@@ -187,7 +187,7 @@ function loadPeakList1(scanID, prec_mz) {
                             let envObj = new Envelope(env.mono_mass, env.charge)
                             let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
                             for (let j = 0; j < env_peaks.length; j++){
-                                let peak = new Peak(j, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
+                                let peak = new Peak(env.envelope_id, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
                                 envObj.addPeaks(peak);
                             }
                             envelopes.push(envObj);
@@ -252,8 +252,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             let peaks = [];
             let modifiablePeaks = [];
             let envelopes = [];
-
-            if (response) {
+            if (response && response.data.length > 0) {
                 let envtable = response.data;
                 if (envtable != 0){
                     for (let i = 0; i < peakList2_g.length; i++){
@@ -267,7 +266,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                         let envObj = new Envelope(env.mono_mass, env.charge);
                         let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modifiablePeaks);
                         for (let j = 0; j < env_peaks.length; j++){
-                            let peak = new Peak(j, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
+                            let peak = new Peak(env.envelope_id, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
                             envObj.addPeaks(peak);
                         }
                         envelopes.push(envObj);
