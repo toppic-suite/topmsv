@@ -12,10 +12,15 @@ class HoverFeature{
         for (let i = 0; i < objGroup.children.length; i++) {
             let feature = objGroup.children[i];
             if (feature.visible) {
-                if (((mz >= feature.mz_low && mz <= feature.mz_high) && (Math.abs(rt - feature.rt_low) <= rtThreshold || Math.abs(rt - feature.rt_high) <= rtThreshold)) || 
-                    ((rt >= feature.rt_low && rt <= feature.rt_high) && (Math.abs(mz - feature.mz_low) <= mzThreshold || Math.abs(mz - feature.mz_high) <= mzThreshold))) {
+                //if close to one of the edges of the feature annotation rect
+                if ( (Math.abs(mz - feature.mz_low) <= mzThreshold && rt >= feature.rt_low && rt <= feature.rt_high) || 
+                     (Math.abs(mz - feature.mz_high) <= mzThreshold && rt >= feature.rt_low && rt <= feature.rt_high) || 
+                     (Math.abs(rt - feature.rt_low) <= rtThreshold && mz >= feature.mz_low && mz <= feature.mz_high) ||
+                     (Math.abs(rt - feature.rt_high) <= rtThreshold && mz >= feature.mz_low && mz <= feature.mz_high)
+                   ) 
+                {
                     return feature;
-                } 
+                }
             }
         }
         return null;

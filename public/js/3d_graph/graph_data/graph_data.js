@@ -86,6 +86,21 @@ class GraphData{
         Graph.viewRange.rtmax = rtmax;
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
+    static setViewRangeForNewScan = (curRT) => {
+        let dataTotal = Graph.configData[0];
+        let rtInterval = (dataTotal.RTMAX - dataTotal.RTMIN) / Graph.ms1ScanCount;
+
+        Graph.curRT = curRT;
+
+        Graph.viewRange.mzmin = 0;
+        Graph.viewRange.mzmax = dataTotal.MZMAX;
+        Graph.viewRange.mzrange = dataTotal.MZMAX;
+        
+        Graph.viewRange.rtmin = curRT - (rtInterval * 10);
+        Graph.viewRange.rtmax = curRT + (rtInterval * 10);
+        Graph.viewRange.rtrange = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
+
+    }
     static setViewRangeToFull = () => {
         Graph.viewRange.mzmin = 0;
         Graph.viewRange.mzmax = Graph.dataRange.mzmax;
@@ -96,7 +111,7 @@ class GraphData{
         Graph.viewRange.rtrange = Graph.dataRange.rtmax;
     }
      /******** PLOT PEAKS ******/
-    static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
+     static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         await GraphData.draw(curRT);
         /*if (Graph.isUpdateTextBox){
@@ -128,6 +143,13 @@ class GraphData{
             /*if (Graph.isUpdateTextBox){
                 GraphUtil.updateTextBox();
             }*/
+        })
+    }
+    static updateGraphForNewScan = (scanID) => {
+        let promise = LoadData.getRT(scanID);
+        promise.then(async(curRT) =>{
+            GraphData.setViewRangeForNewScan(curRT);
+            await GraphData.draw(curRT);
         })
     }
      /******** PLOT PEAKS ******/

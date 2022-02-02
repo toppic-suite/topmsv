@@ -548,6 +548,7 @@ app.use('/', require("./router/loadMzrtData"));
 app.use('/', require("./router/mzrt"));
 app.use('/', require("./router/deleteMzrt"));
 app.use('/', require("./router/getExpectedPeakNum"));
+app.use('/', require("./router/getTotalScanCount"));
 
 app.use('/', require("./router/auth_google"));
 app.use('/', require("./router/auth_skip"));
