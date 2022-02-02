@@ -28,6 +28,7 @@ class GraphInit{
             let rangeRT = parseFloat(document.getElementById('rtRangeMax').value);
             let centerMZ = parseFloat(document.getElementById('mzRangeMin').value);
             let rangeMZ = parseFloat(document.getElementById('mzRangeMax').value);
+            let inteCutoff = document.getElementById("cutoff-threshold").value;
 
             let minRT = Graph.viewRange.rtmin;
             let maxRT = Graph.viewRange.rtmax;
@@ -47,6 +48,14 @@ class GraphInit{
             if (!isNaN(rangeMZ)) {
                 minMZ = centerMZ - rangeMZ;
                 maxMZ = centerMZ + rangeMZ;
+            }
+
+            if (isNaN(inteCutoff) || inteCutoff == '') {
+                if (isNaN(parseFloat(inteCutoff))) {
+                    document.getElementById("cutoff-threshold").value = 0;
+                } else {
+                    document.getElementById("cutoff-threshold").value = parseFloat(inteCutoff);
+                }
             }
             //error handing
             if (minRT > maxRT){
