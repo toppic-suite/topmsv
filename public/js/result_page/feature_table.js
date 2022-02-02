@@ -16,8 +16,10 @@ function showFeatureTable() {
     let fullDir = (document.getElementById("projectDir").value).split("/");
     $('#featureTable').DataTable( {
         destroy: true,
-        paging: false,
-        searching: false,
+        paging: true,
+        pageLength: 30,
+        deferRender: true,
+        searching: true,
         dom: 'Bfrtip',
         scrollY: 370,
         scroller: true,
@@ -49,6 +51,25 @@ function showFeatureTable() {
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'}
         ],
     });
+    $("#feature-table-search-min, #feature-table-search-max").keyup(() => {
+        $('#featureTable').DataTable().draw();
+    })
+    //custom filtering function for search box
+    $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            let min = parseFloat( $('#feature-table-search-min').val(), 10 );
+            var max = parseFloat( $('#feature-table-search-max').val(), 10 );
+            let mz = parseFloat(data[4])|| 0;
+     
+            if ((isNaN(min) && isNaN(max)) || 
+               (min <= mz && mz <= max)) {
+                return true;
+            }
+            return false;
+        }
+    );
+    //hide the default search box
+    $("#featureTable_filter").hide();
 }
 
 function jumpToFeature(data) {
