@@ -122,24 +122,32 @@ function showEnvTable(scan) {
         ],
         onAddRow: function(datatable, rowdata, success, error) {
             console.log(rowdata);
+            function customSuccessFunction() {
+                success();
+                refresh(rowdata);
+            }
+
             $.ajax({
                 // a tipycal url would be / with type='PUT'
                 url: "/addrow?projectDir=" + document.getElementById("projectDir").value,
                 type: 'GET',
                 data: rowdata,
-                success: success,
+                success: customSuccessFunction,
                 error: error
             });
         },
         onDeleteRow: function(datatable, rowdata, success, error) {
-            // console.log(rowdata);
             //rowdata=JSON.stringify(rowdata);
+            function customSuccessFunction() {
+                success();
+                refresh(rowdata);
+            }
             $.ajax({
                 // a tipycal url would be /{id} with type='DELETE'
                 url: "/deleterow?projectDir=" + document.getElementById("projectDir").value,
                 type: 'GET',
                 data: rowdata,
-                success: success,
+                success: customSuccessFunction,
                 error: error
             });
         },

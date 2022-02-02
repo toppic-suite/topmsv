@@ -483,7 +483,8 @@
                 jsonDataArray.envList = envList;
                 that.onDeleteRow(that,
                     jsonDataArray,
-                    function(data){ that._deleteRowCallback(data); refresh();},
+                    //function(data){ that._deleteRowCallback(data); refresh();},
+                    function(data){ that._deleteRowCallback(data);},
                     function(data){ that._errorCallback(data);
                 });
             },
@@ -741,7 +742,7 @@
 
                 that.onAddRow(that,
                     rowDataArray,
-                    function(data){ that._addRowCallback(data); refresh();},
+                    function(data){ that._addRowCallback(data);},
                     function(data){ that._errorCallback(data);
                     // alert('There is no matched peaks for this envelope!')
                 });
