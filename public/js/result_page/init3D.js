@@ -93,8 +93,9 @@ function update3DShowFull(scanID){
     GraphData.drawFullRangeGraph(scanID);
 }
 function update3D(scanID){
-    let projectDir = document.getElementById("projectDir").value;
-    let promise = checkRelatedScan(projectDir, scanID);
+    GraphData.updateGraphForNewScan(scanID);
+
+    /*let promise = checkRelatedScan(projectDir, scanID);
 
     promise.then((ms2Scan) => {
         return getPrecursorMz(projectDir, ms2Scan);
@@ -103,10 +104,10 @@ function update3D(scanID){
             precMz = 0;
         }
         let mzRange = calcInitRange(precMz);
-        GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
+        //GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
     }).catch((err) => {
         console.log(err);
-    })
+    })*/
 }
 function init3D(scanID){
     let projectDir = document.getElementById("projectDir").value;
