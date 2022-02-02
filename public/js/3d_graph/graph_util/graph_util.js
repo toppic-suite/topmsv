@@ -161,4 +161,14 @@ class GraphUtil{
             return null;
         }
     }
+
+    static getTotalScanCount = async () => {
+        let fullDir = Graph.projectDir;
+
+        let res = await fetch('/getTotalScanCount?' + new URLSearchParams({
+            projectDir: fullDir
+        }));
+        let resJSON = await res.json();
+        return resJSON.COUNT;
+    }
 }
