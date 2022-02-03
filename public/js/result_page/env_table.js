@@ -10,6 +10,9 @@ function cleanInfo() {
 }
 
 function showEnvTable(scan) {
+    let resultViz = new ResultViz;
+    let format = resultViz.getConfig();
+
     $('#envScan').text(scan);
     if(scan == $('#scanID1').text()) {
         $('#msType').text('MS1');
@@ -112,12 +115,24 @@ function showEnvTable(scan) {
             {
                 "data": "mono_mz",
                 render: function (data, type, row) {
-                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(5);
+                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(format.floatDigit);
                     row.mono_mz = mono_mz; // set mono_mz value
                     return mono_mz;
                 }
                 // ,type: "readonly"
                 , required: 'true'
+            }
+        ],
+        "columnDefs": [
+            {
+              targets: 3,
+              render: $.fn.dataTable.render.number('', '.', format.floatDigit, '')
+            },
+            {
+                targets: 4,
+                render: function(data) {
+                    return data.toExponential(format.scientificDigit);
+                }
             }
         ],
         onAddRow: function(datatable, rowdata, success, error) {

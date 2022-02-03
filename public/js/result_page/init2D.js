@@ -9,13 +9,15 @@ let graph2_g;
 let temp_peakList2_g;
 
 let rtInteGraph;
+let config;
 
 const topview_2d = new Topview2D();
 const calcDistrubution = new MolecularFormulae();
 
-function init2D(scan) {
+function init2D(scan, configFromResultViz) {
     let nextScan;
-
+    config = configFromResultViz;
+    
     topview_2d.findNextLevelOneScan(scan)
         .then(function(response) {
             nextScan = parseInt(response.data); // next scan level one
@@ -300,10 +302,10 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 graph2_g = spGraph;
             }
             document.getElementById("scanID2").innerHTML = scanID;
-            document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
+            document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(config.floatDigit);
             document.getElementById("prec_charge").innerHTML = prec_charge;
-            document.getElementById("prec_inte").innerHTML = prec_inte.toExponential(2);
-            document.getElementById("rt").innerHTML = rt.toFixed(4);
+            document.getElementById("prec_inte").innerHTML = prec_inte.toExponential(config.scientificDigit);
+            document.getElementById("rt").innerHTML = rt.toFixed(config.floatDigit);
             loadPeakList1(levelOneScan, prec_mz);
         }).catch(function(error) {
             console.log(error);

@@ -13,6 +13,9 @@ function showFeatureTable() {
     if($('#featureStatus').val() === "0"){
         return;
     }
+    let resultViz = new ResultViz;
+    let format = resultViz.getConfig();
+
     let fullDir = (document.getElementById("projectDir").value).split("/");
     $('#featureTable').DataTable( {
         destroy: true,
@@ -50,6 +53,22 @@ function showFeatureTable() {
             { "data": "mono_mz", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
             { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'}
         ],
+        "columnDefs": [
+            {
+              targets: 3,
+              render: $.fn.dataTable.render.number('', '.', format.floatDigit, '')
+            },
+            {
+                targets: 4,
+                render: $.fn.dataTable.render.number('', '.', format.floatDigit, '')
+            },
+            {
+                targets: 5,
+                render: function(data) {
+                    return data.toExponential(format.scientificDigit);
+                }
+            }
+        ]
     });
     $("#feature-table-search-min, #feature-table-search-max").keyup(() => {
         $('#featureTable').DataTable().draw();

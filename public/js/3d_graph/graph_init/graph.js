@@ -2,9 +2,10 @@
 //and call to initialize empty 3D graph
 
 class Graph{
-    constructor(projectDir){
+    constructor(projectDir, resultViz){
         Graph.graphEl = document.querySelector("#graph-container"); 
         Graph.projectDir = projectDir;
+        Graph.resultViz = resultViz;
     }
     setProperties = () => {
         /*default m/z range when scan changes*/
@@ -251,6 +252,11 @@ class Graph{
         let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
         plotGroup.scale.set(plotGroup.scale.x, scale, plotGroup.scale.z);
     }
+
+    getScene = () => {
+        return Graph.scene;
+    }
+    
     main = async (mzmin, mzmax, scanNum) => {
         this.setProperties();
         this.createGroups();
