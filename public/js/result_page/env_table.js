@@ -138,9 +138,10 @@ function showEnvTable(scan) {
         },
         onDeleteRow: function(datatable, rowdata, success, error) {
             //rowdata=JSON.stringify(rowdata);
-            function customSuccessFunction() {
+            async function customSuccessFunction(res) {
+                let deletedEnvs = await JSON.parse(res);
                 success();
-                refresh(rowdata);
+                refresh(deletedEnvs);
             }
             $.ajax({
                 // a tipycal url would be /{id} with type='DELETE'
