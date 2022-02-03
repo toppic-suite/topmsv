@@ -574,3 +574,10 @@ button#graph-full-screen{
 #feature-table-range-search-div input{
     max-width: 80px;
 }
+#feature-table-id-search-div{
+    float:right;
+    margin-right: 147px;
+}
+#feature-table-id-search-div input{
+    max-width:80px;
+}
