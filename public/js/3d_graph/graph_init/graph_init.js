@@ -195,7 +195,7 @@ class GraphInit{
         window.addEventListener("resize", GraphControl.resizeCamera);
         GraphControl.resizeCamera();
     }
-    static main = (mzmin, mzmax, curRT) => {
+    static main = (mzmin, mzmax, scanId) => {
         GraphInit.initScene();
         GraphInit.initGraphControl();
 
@@ -206,7 +206,7 @@ class GraphInit{
         
         UploadMzrt.main();
         
-        GraphData.drawFullRangeGraph(mzmin, mzmax, curRT);
+        GraphData.drawFullRangeGraph(scanId);
         
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();
