@@ -13,7 +13,9 @@ class InteRtGraph {
 
     onClickFunc;
 
-    constructor(svg_ID, inteRtArray, onClickFunc = ()=>{}, scanNum_ID = 'scan-hover', rt_ID = 'rt-hover', inte_ID = 'intensity-hover', height = 120, width = 1100, padding = {top: 10, right: 10, bottom: 50, left: 80}) {
+    config;
+
+    constructor(svg_ID, inteRtArray, onClickFunc = ()=>{}, config, scanNum_ID = 'scan-hover', rt_ID = 'rt-hover', inte_ID = 'intensity-hover', height = 120, width = 1100, padding = {top: 10, right: 10, bottom: 50, left: 80}) {
         this.inteRtArray = inteRtArray;
         this.svg_ID = "#"+svg_ID;
         this.rt_ID = rt_ID;
@@ -23,6 +25,7 @@ class InteRtGraph {
         this.height = height;
         this.padding = padding;
         this.onClickFunc = onClickFunc;
+        this.config = config;
     }
 
     set padding(obj) {
@@ -62,7 +65,6 @@ class InteRtGraph {
     }
 
     drawGraph() {
-
         let inteRtArray = this.inteRtArray;
         let padding = this.padding;
         let rt_ID = this.rt_ID;
@@ -70,6 +72,7 @@ class InteRtGraph {
         let scanNum_ID = this.scanNum_ID;
         let width = this.width;
         let height = this.height;
+        let config = this.config;
 
         let maxInte = d3.max(this.inteRtArray, function(d) {
             return d.inteSum;
@@ -233,10 +236,10 @@ class InteRtGraph {
                 // work out which date value is closest to the mouse
                 let d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
                 if(document.getElementById(rt_ID)) {
-                    document.getElementById(rt_ID).innerHTML = Math.round(d.rt * 100)/100;
+                    document.getElementById(rt_ID).innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit);
                 }
                 if (document.getElementById(inte_ID)) {
-                    document.getElementById(inte_ID).innerHTML = d.inteSum.toExponential(2);
+                    document.getElementById(inte_ID).innerHTML = d.inteSum.toExponential(config.scientificDigit);
                 }
                 if (document.getElementById(inte_ID)) {
                     document.getElementById(scanNum_ID).innerHTML = d.scanNum;
@@ -247,10 +250,10 @@ class InteRtGraph {
             {
                 let d = inteRtArray[i-1];
                 if(document.getElementById(rt_ID)) {
-                    document.getElementById(rt_ID).innerHTML = Math.round(d.rt * 100)/100;
+                    document.getElementById(rt_ID).innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit);
                 }
                 if (document.getElementById(inte_ID)) {
-                    document.getElementById(inte_ID).innerHTML = d.inteSum.toExponential(2);
+                    document.getElementById(inte_ID).innerHTML = d.inteSum.toExponential(config.scientificDigit);
                 }
                 if (document.getElementById(inte_ID)) {
                     document.getElementById(scanNum_ID).innerHTML = d.scanNum;

@@ -118,6 +118,8 @@ class Topview2D {
                 rtInteGraph.moveLine(rt);
             }
             document.getElementById("scan1RT").innerText = rt.toFixed(4);
+            Graph.resultViz.getRtInteGraph().moveLine(rt);
+            document.getElementById("scan1RT").innerText = rt.toFixed(Graph.resultViz.getConfig().floatDigit);
         }).catch(function(error) {
             console.log(error);
         });
@@ -194,5 +196,13 @@ class Topview2D {
                 scanID: scanID
             }
         });
+    }
+    getPrecursorMz(ms2Scan) {
+        return axios.get('/precMZ', {
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                ms2Scan: ms2Scan
+            }
+        })
     }
 }

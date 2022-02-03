@@ -1,4 +1,6 @@
-function getMs2Scan(projectDir, scanID){
+/*function getMs2Scan(projectDir, scanID, dataGetter){
+    let res = await dataGetter.getRelatedScan2(scanID);
+
     return new Promise(function(resolve, reject){
         let xhttp = new XMLHttpRequest();
         let fullDir = projectDir;
@@ -16,7 +18,7 @@ function getMs2Scan(projectDir, scanID){
     })
 }
 function getMs1Scan(projectDir, scanID){
-    return new Promise(function(resolve, reject){
+    /*return new Promise(function(resolve, reject){
         let xhttp = new XMLHttpRequest();
         let fullDir = projectDir;
         let dotIndex = fullDir.lastIndexOf(".");
@@ -31,7 +33,7 @@ function getMs1Scan(projectDir, scanID){
         }
         xhttp.send();
     })
-}
+}*/
 function checkRelatedScan(projectDir, scanID){
     /*input: projectDir = project directory, scanID = number the user provided in the textBox
     output: a related ms2 scan for given scanID.*/
@@ -59,8 +61,9 @@ function checkRelatedScan(projectDir, scanID){
         })
     })
 }
+/*
 function getPrecursorMz(projectDir, ms2Scan){
-    return new Promise(function(resolve, reject){
+    /*return new Promise(function(resolve, reject){
         let xhttp = new XMLHttpRequest();
         let fullDir = projectDir;
         let dotIndex = fullDir.lastIndexOf(".");
@@ -74,7 +77,7 @@ function getPrecursorMz(projectDir, ms2Scan){
         }
         xhttp.send();
     })
-}
+}*/
 function calcInitRange(precMz){
     let mzRange = {};
     let specPara = new SpectrumViewParameters();
@@ -88,50 +91,4 @@ function calcInitRange(precMz){
         mzRange["mzmax"] = specPara.getWinMaxMz();
     }
     return mzRange;
-}
-function update3DShowFull(scanID){
-    GraphData.drawFullRangeGraph(scanID);
-}
-function update3D(scanID){
-    GraphData.updateGraphForNewScan(scanID);
-
-    /*let promise = checkRelatedScan(projectDir, scanID);
-
-    promise.then((ms2Scan) => {
-        return getPrecursorMz(projectDir, ms2Scan);
-    }).then((precMz)=>{
-        if (!precMz) {
-            precMz = 0;
-        }
-        let mzRange = calcInitRange(precMz);
-        //GraphData.drawInitGraph(mzRange.mzmin, mzRange.mzmax, scanID);
-    }).catch((err) => {
-        console.log(err);
-    })*/
-}
-function init3D(scanID){
-    let projectDir = document.getElementById("projectDir").value;
-    let dir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
-    let graph = new Graph(dir);
-
-    let promise = getMs2Scan(projectDir, scanID);
-
-    promise.then((ms2Scan) => {
-        let scan = ms2Scan;
-        if (ms2Scan < 0){
-            let promise = getMs1Scan(projectDir, scanID);
-            promise.then((ms1Scan) => {
-                scan = ms1Scan;
-                return getPrecursorMz(projectDir,scan);
-            })
-        }else{
-            return getPrecursorMz(projectDir,ms2Scan);
-        }
-    }).then((precMz)=>{
-        let mzRange = calcInitRange(precMz);
-        graph.main(mzRange.mzmin, mzRange.mzmax, scanID);
-
-    }).catch((err) => {
-        console.log(err);
-    })
 }

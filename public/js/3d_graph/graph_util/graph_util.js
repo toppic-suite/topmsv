@@ -26,13 +26,16 @@ class GraphUtil{
         }
     };
     static formatScientificNotation = (intensity) => {
-        let sciNumber = intensity.toExponential();
-        let decimalPoint = sciNumber.indexOf(".")
-        let eNotation = sciNumber.slice(sciNumber.indexOf("e"), sciNumber.length);
-        let truncated = sciNumber.slice(0, decimalPoint + 3);
-
-        return truncated.concat(eNotation);
+        let sciNumber = intensity.toExponential(Graph.resultViz.getConfig().scientificDigit);
+        return sciNumber;
     };
+    static formatFloat = (num) => {
+        if (isNaN(parseFloat(num))) {
+            return '';
+        } else {
+            return parseFloat(num).toFixed(Graph.resultViz.getConfig().floatDigit);
+        }
+    }
     static updateTextBox = () => {
         //update data range in textboxes if getting range from each scan, not by users
         let centerRT = (Graph.viewRange.rtmax + Graph.viewRange.rtmin)/2;
@@ -107,6 +110,7 @@ class GraphUtil{
         let mousePos = GraphUtil.getMousePosition(event);
         let mz = mousePos.x * Graph.viewRange.mzrange + Graph.viewRange.mzmin;//current mz and rt that has a cursor pointed to
         let rt = mousePos.z * Graph.viewRange.rtrange + Graph.viewRange.rtmin;
+
         if (mz < Graph.viewRange.mzmin){
             mz = "";
         }else if(mz > Graph.viewRange.mzmax){
@@ -124,7 +128,7 @@ class GraphUtil{
         return [mz, rt];
     }
     static findNearestRt = (rt) => {
-        let rtScanData = rtInteGraph.inteRtArray;
+        let rtScanData = Graph.resultViz.getRtInteGraph().inteRtArray;
         let threshold = Graph.viewRange.rtrange / 100;
         for (let i = 0; i < rtScanData.length; i++) {
             let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
@@ -135,7 +139,7 @@ class GraphUtil{
         return -1;   
     }
     static findNearestScan = (rt) => {
-        let rtScanData = rtInteGraph.inteRtArray;
+        let rtScanData = Graph.resultViz.getRtInteGraph().inteRtArray;
         let threshold = Graph.viewRange.rtrange / 100;
         for (let i = 0; i < rtScanData.length; i++) {
             let diff = Math.abs(rtScanData[i].rt.toFixed(5) - parseFloat(rt).toFixed(5));
@@ -146,7 +150,7 @@ class GraphUtil{
         return -1;   
     }
     static findIonTime = (rt) => {
-        let rtScanData = rtInteGraph.inteRtArray;
+        let rtScanData = Graph.resultViz.getRtInteGraph().inteRtArray;
         let threshold = Graph.viewRange.rtrange / 100;
         if ('ionTime' in rtScanData[0]) {
             for (let i = 0; i < rtScanData.length; i++) {
