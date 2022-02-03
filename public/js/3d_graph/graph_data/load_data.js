@@ -66,9 +66,9 @@ class LoadData{
                 if (this.readyState == 4 && this.status == 200) {
                     var rt = parseFloat(this.responseText);
                     
-                    if (rt != undefined){
+                    if (rt != undefined && rt != 0){
                         resolve(rt);
-                    }
+                    } 
                 }
             };
             xhttpRT.open("GET", "getRT?projectDir=" + dir + "&scanID=" + scanNum, true);

@@ -66,49 +66,24 @@ function refresh(rowdata) {
 
     if (scanLevelOneFlag) {
         let origEnv = graph1_g.getEnvList();
-        let newEnv = [];
-        for (let i = 0; i < origEnv.length; i++) {
-            if (rowdata.envList.length < 1) {
-                break;
-            } 
-            let isDelete = false;
-            for (k = 0; k < rowdata.envList.length; k++) {
-                let envId = origEnv[i].getPeaks()[0].getId(); 
-                if (envId == rowdata.envList[k].envelope_id) {
-                    isDelete = true;
-                    rowdata.envList = rowdata.envList.splice(k, 1);
-                    break;
-                }
+        let newEnv = origEnv.filter((env) => {
+            let envId = env.getPeaks()[0].getId(); 
+            let deletedId = rowdata.map(x => parseInt(x.envelope_id));
+            if (!deletedId.includes(envId)) {
+                return env;
             }
-            if (!isDelete) {
-                newEnv.push(origEnv[i]);
-            }
-        }
+        })
         graph1_g.addRawSpectrumAnno(newEnv, []);
         graph1_g.redraw();
     } else {
         let origEnv = graph2_g.getEnvList();
-        let newEnv = [];
-        for (let i = 0; i < origEnv.length; i++) {
-            if (rowdata.envList.length < 1) {
-                break;
-            } 
-            let isDelete = false;
-            for (k = 0; k < rowdata.envList.length; k++) {
-                let envId = origEnv[i].getPeaks()[0].getId(); 
-                if (envId == rowdata.envList[k].envelope_id) {
-                    isDelete = true;
-                    rowdata.envList = rowdata.envList.splice(k, 1);
-                    break;
-                }
+        let newEnv = origEnv.filter((env) => {
+            let envId = env.getPeaks()[0].getId(); 
+            let deletedId = rowdata.map(x => parseInt(x.envelope_id));
+            if (!deletedId.includes(envId)) {
+                return env;
             }
-            if (!isDelete) {
-                newEnv.push(origEnv[i]);
-            }
-        }
-        console.log("origEnv", origEnv);
-        console.log("newEnv", newEnv);
-        console.log("rowdata.envList", rowdata.envList);
+        })
         graph2_g.addRawSpectrumAnno(newEnv, []);
         graph2_g.redraw();
     }

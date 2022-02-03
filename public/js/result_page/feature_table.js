@@ -68,13 +68,19 @@ function showFeatureTable() {
             return false;
         }
     );
-    //hide the default search box
     $("#featureTable_filter").hide();
+    $("#feature-table-search-id").on("keyup", function() {
+        $('#featureTable').DataTable().columns(0).search(this.value).draw();
+    });
 }
 
 function jumpToFeature(data) {
     let mzPadding = 1;
     let rtPadding = 0.01;
+
+    if (data.rt_low == data.rt_high) {
+        [data.rt_low, data.rt_high] = GraphUtil.addPaddingToFeature(data.rt_low);
+    }
     GraphData.updateGraph(data.mz_low - mzPadding, data.mz_high + mzPadding, data.rt_low - rtPadding, data.rt_high + rtPadding, Graph.curRT);
 }
 

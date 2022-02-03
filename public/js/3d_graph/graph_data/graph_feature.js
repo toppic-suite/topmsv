@@ -13,8 +13,7 @@
                     let rt_low = feature.rt_low;
                     let rt_high = feature.rt_high;
                     if (rt_low == rt_high) {
-                        rt_low = rt_low * (1 - Graph.featurePadding);
-                        rt_high = rt_high * (1 + Graph.featurePadding);    
+                        [rt_low, rt_high] = GraphUtil.addPaddingToFeature(rt_low);
                     }
                     if (mz_low < minmz){
                         mz_low = minmz;

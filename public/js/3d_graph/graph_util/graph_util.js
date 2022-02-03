@@ -171,4 +171,9 @@ class GraphUtil{
         let resJSON = await res.json();
         return resJSON.COUNT;
     }
+    static addPaddingToFeature = (rt) => {
+        let rt_row = rt * (1 - Graph.featurePadding);
+        let rt_high = rt * (1 + Graph.featurePadding);
+        return [rt_row, rt_high];
+    }
 }

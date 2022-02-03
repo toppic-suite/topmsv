@@ -127,7 +127,8 @@ class GraphData{
     }
     static drawFullRangeGraph = (scanID) => {
         let promise = LoadData.getRT(scanID);
-        promise.then(() =>{
+        promise.then((rt) =>{
+            Graph.curRT = rt;
             GraphData.setViewRangeToFull();
             GraphData.draw(Graph.curRT);
             /*if (Graph.isUpdateTextBox){
