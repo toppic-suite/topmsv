@@ -1,7 +1,7 @@
 /*hover_positon.js: display m/z and rt information of the point the mouse cursor is on */
 class HoverPosition{
     constructor(){};
-    showHighlight = (mz, rt) => {        
+    showHighlight = (mz, rt) => {      
         //disdlay a line and a scan information in tooltip
         let scanNum = GraphUtil.findNearestScan(parseFloat(rt));
         let sep = "</br>";
@@ -9,7 +9,7 @@ class HoverPosition{
             document.getElementById("tooltip-scanID").style.display = "inline-block";
             document.getElementById("tooltip-scanID").style.top = (event.clientY - 70) + 'px';
             document.getElementById("tooltip-scanID").style.left = (event.clientX + 20) + 'px';
-            document.getElementById("tooltiptext-scanID").innerHTML = "scan: " + scanNum + sep + "mz: " + mz + sep + "rt: " + rt + sep;
+            document.getElementById("tooltiptext-scanID").innerHTML = "scan: " + scanNum + sep + "mz: " + GraphUtil.formatFloat(mz) + sep + "rt: " + GraphUtil.formatFloat(rt) + sep;
             
         }
         else{
@@ -43,10 +43,10 @@ class HoverPosition{
             if (ionTime < 0) {
                 ionTime = "n/a";
             }
-            cursorData = "m/z: " + mz + "\n" + "retention time (min): " + rt + "\n" + "ion injection time (ms): " + ionTime + "\n" + "scan ID: " + scan;
+            cursorData = "m/z: " + GraphUtil.formatFloat(mz) + "\n" + "retention time (min): " + GraphUtil.formatFloat(rt) + "\n" + "ion injection time (ms): " + GraphUtil.formatFloat(ionTime) + "\n" + "scan ID: " + scan;
         }
         else{
-            cursorData = "m/z: " + mz + "\n" + "retention time (min): " + rt + "\n" + "scan ID: " + scan;
+            cursorData = "m/z: " + GraphUtil.formatFloat(mz) + "\n" + "retention time (min): " + GraphUtil.formatFloat(rt) + "\n" + "scan ID: " + scan;
         }
         document.getElementById("graph-cursor-data").innerText = cursorData;
     }
