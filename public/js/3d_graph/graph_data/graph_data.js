@@ -170,7 +170,7 @@ class GraphData{
 
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            if (Graph.isHighlightingCurrentScan) {
+            if ($("#highlight-cur-scan").prop("checked")) {
                 await GraphData.drawCurrentScanMarker();
             }
         }
@@ -199,7 +199,7 @@ class GraphData{
         
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            if (Graph.isHighlightingCurrentScan) {
+            if ($("#highlight-cur-scan").prop("checked")) {
                 GraphData.drawCurrentScanMarker();
             }
         }
