@@ -44,7 +44,7 @@ function init2D(scan, configFromResultViz) {
                             response.data.forEach(function (item) {
                                 let scanTwoNum = item.scanID;
                                 let rt = item.rt;
-                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
                             });
                             $( "#tabs" ).tabs();
                             document.getElementById(nextScan).click(); // show next scan which is the first scan of scan level 2
@@ -141,7 +141,7 @@ function init2D(scan, configFromResultViz) {
                         response.data.forEach(function (item) {
                             let scanTwoNum = item.scanID;
                             let rt = item.rt;
-                            $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                            $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
                         });
                         $( "#tabs" ).tabs();
                         document.getElementById(scan).click();
@@ -305,7 +305,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(config.floatDigit);
             document.getElementById("prec_charge").innerHTML = prec_charge;
             document.getElementById("prec_inte").innerHTML = prec_inte.toExponential(config.scientificDigit);
-            document.getElementById("rt").innerHTML = rt.toFixed(config.floatDigit);
+            document.getElementById("rt").innerHTML = rt.toFixed(config.floatDigit) + " (min)";
             loadPeakList1(levelOneScan, prec_mz);
         }).catch(function(error) {
             console.log(error);

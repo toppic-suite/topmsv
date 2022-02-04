@@ -29,7 +29,6 @@ const insertMany = betterDB.transaction(importData);
 
 let projectCode = myArgs[2];
 
-fs.writeFile('input.txt', myArgs[1], function(err, data){})
 let file;
 try {
     file = fs.readFileSync(myArgs[1], "utf-8");
@@ -53,39 +52,39 @@ function importData(db, data) {
     const stmtMaxSeqID = db.prepare('SELECT MAX(id) AS maxID FROM sequence');
     let id = stmtMaxSeqID.get().maxID + 1;
     Papa.parse(data, {
+        header:true,
         complete: function(results) {
             // console.log("Finished:", results);
-            let parseResult = results.data.slice(1);
-            // console.log("parseResult", parseResult);
-            parseResult.forEach(row => {
-                // console.log(row);
-                // console.log('Scans:', row[4]);
-                let scan = row[4];
-                // console.log('Proteoform:', row[17]);
-                let prec_mass = row[8];
-                let protein_accession = row[15];
-                let proteoform = row[20];
-                let qValue = row[29];//spectral q-value
-                let eValue = row[28];
+            results.data.forEach(row => {
+                if (row["Spectrum ID"] != "") {
+                    // console.log('Scans:', row[4]);
+                    let scan = row["Scan(s)"];
+                    // console.log('Proteoform:', row[17]);
+                    let prec_mass = row["Precursor mass"];
+                    let protein_accession = row["Protein accession"];
+                    let proteoform = row["Proteoform"];
+                    let qValue = row["Spectrum-level Q-value"];//spectral q-value
+                    let eValue = row["E-value"];
 
-                if (isNaN(parseFloat(qValue))){
-                    qValue = 'N/A';
-                } 
-                if (parseFloat(qValue) < 0){
-                    qValue = 'N/A';
-                }
+                    if (isNaN(parseFloat(qValue))){
+                        qValue = 'N/A';
+                    } 
+                    if (parseFloat(qValue) < 0){
+                        qValue = 'N/A';
+                    }
 
-                if (isNaN(parseFloat(eValue))){
-                    eValue = 'N/A';
-                } 
-                if (parseFloat(eValue) < 0){
-                    eValue = 'N/A';
-                }
+                    if (isNaN(parseFloat(eValue))){
+                        eValue = 'N/A';
+                    } 
+                    if (parseFloat(eValue) < 0){
+                        eValue = 'N/A';
+                    }
 
-                if(scan !== 'Scan(s)'){
-                    let scan_id = stmtFindScanID.get(scan).id;
-                    stmtInsert.run(id, scan_id,protein_accession, prec_mass, proteoform, qValue, eValue);
-                    id++;
+                    if(scan !== 'Scan(s)'){
+                        let scan_id = stmtFindScanID.get(scan).id;
+                        stmtInsert.run(id, scan_id,protein_accession, prec_mass, proteoform, qValue, eValue);
+                        id++;
+                    }
                 }
             })
         }
@@ -111,5 +110,6 @@ function findCSV(data) {
         indexBegin = data.indexOf(parameter) + parameter.length + 1;
     }
     data = data.trim();
-    return data.slice(indexBegin);
+
+    return data.slice(indexBegin + 1);
 }
