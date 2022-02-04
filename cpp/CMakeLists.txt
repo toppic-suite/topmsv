@@ -48,5 +48,5 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(mzMLReader boost_filesystem-mt boost_chrono-mt boost_filesystem-mt boost_thread-mtpthread z)
+  target_link_libraries(mzMLReader boost_filesystem-mt boost_chrono-mt boost_iostreams-mt boost_thread-mt pthread z)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows") 
