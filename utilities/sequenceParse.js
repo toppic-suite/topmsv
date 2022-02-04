@@ -29,7 +29,6 @@ const insertMany = betterDB.transaction(importData);
 
 let projectCode = myArgs[2];
 
-fs.writeFile('input.txt', myArgs[1], function(err, data){})
 let file;
 try {
     file = fs.readFileSync(myArgs[1], "utf-8");
