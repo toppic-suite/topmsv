@@ -236,7 +236,7 @@ class InteRtGraph {
                 // work out which date value is closest to the mouse
                 let d = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
                 if(document.getElementById(rt_ID)) {
-                    document.getElementById(rt_ID).innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit);
+                    document.getElementById(rt_ID).innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
                 }
                 if (document.getElementById(inte_ID)) {
                     document.getElementById(inte_ID).innerHTML = d.inteSum.toExponential(config.scientificDigit);
@@ -250,7 +250,7 @@ class InteRtGraph {
             {
                 let d = inteRtArray[i-1];
                 if(document.getElementById(rt_ID)) {
-                    document.getElementById(rt_ID).innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit);
+                    document.getElementById(rt_ID).innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
                 }
                 if (document.getElementById(inte_ID)) {
                     document.getElementById(inte_ID).innerHTML = d.inteSum.toExponential(config.scientificDigit);

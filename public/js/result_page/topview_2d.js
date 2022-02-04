@@ -119,7 +119,7 @@ class Topview2D {
             }
             document.getElementById("scan1RT").innerText = rt.toFixed(4);
             Graph.resultViz.getRtInteGraph().moveLine(rt);
-            document.getElementById("scan1RT").innerText = rt.toFixed(Graph.resultViz.getConfig().floatDigit);
+            document.getElementById("scan1RT").innerText = rt.toFixed(Graph.resultViz.getConfig().floatDigit) + " (min)";
         }).catch(function(error) {
             console.log(error);
         });
