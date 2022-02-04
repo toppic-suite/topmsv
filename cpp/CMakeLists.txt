@@ -15,7 +15,6 @@ message(STATUS "system name " ${CMAKE_SYSTEM_NAME})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath,./mzMLReader_resources/lib")
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
@@ -44,12 +43,10 @@ file(GLOB MSREADER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/msReader.cpp
 add_executable(mzMLReader ${MZMLREADER_MAIN_SRCS} ${MSREADER_SRC} ${PWIZ_SRC} ${SQLITE3})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  target_link_libraries(mzMLReader dl boost_program_options
-        boost_filesystem boost_system boost_thread boost_iostreams boost_chrono pthread z)
+  target_link_libraries(mzMLReader dl boost_filesystem boost_chrono boost_thread boost_iostreams pthread z)
 
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(mzMLReader boost_program_options-mt
-        boost_filesystem-mt boost_system-mt boost_thread-mt boost_iostreams-mt boost_chrono-mt pthread z)
+  target_link_libraries(mzMLReader boost_filesystem-mt boost_chrono-mt boost_filesystem-mt boost_thread-mtpthread z)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows") 
