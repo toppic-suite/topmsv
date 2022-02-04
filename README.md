@@ -4,26 +4,18 @@ A cloud-based MS data processing and visualization platform.
 
 After downloading the codes, please visit http://proteomics.informatics.iupui.edu/software/topmsv/tutorial.html for installation instructions. 
 
+## (optional) Run TopMSV Server with pm2
+
+```sh
 # install pm2 and set it as a daemon on system startup
 sudo npm install -g bufferutil
 sudo npm install -g utf-8-validate
 sudo npm install -g pm2
 sudo pm2 startup systemd
 
-# install npm dependencies
-npm install
-
-# building cpp program and back to app root folder
-cd cpp/build
-cmake ..
-make
-cd ../..
-
 # start server by pm2
 pm2 start ecosystem.config.js --env production
 
-# start TopMSV Server locally without pm2
-npm start
 ```
 For more information about TopMSV Server setup, please visit TopMSV Server wiki page.
 
