@@ -52,20 +52,18 @@ function importData(db, data) {
     const stmtMaxSeqID = db.prepare('SELECT MAX(id) AS maxID FROM sequence');
     let id = stmtMaxSeqID.get().maxID + 1;
     Papa.parse(data, {
+        header:true,
         complete: function(results) {
             // console.log("Finished:", results);
-            let parseResult = results.data.slice(1);
-            // console.log("parseResult", parseResult);
-            parseResult.forEach(row => {
-                // console.log(row);
+            results.data.forEach(row => {
                 // console.log('Scans:', row[4]);
-                let scan = row[4];
+                let scan = row["Scan(s)"];
                 // console.log('Proteoform:', row[17]);
-                let prec_mass = row[8];
-                let protein_accession = row[15];
-                let proteoform = row[20];
-                let qValue = row[29];//spectral q-value
-                let eValue = row[28];
+                let prec_mass = row["Precursor mass"];
+                let protein_accession = row["Protein accession"];
+                let proteoform = row["Proteoform"];
+                let qValue = row["Spectrum-level Q-value"];//spectral q-value
+                let eValue = row["E-value"];
 
                 if (isNaN(parseFloat(qValue))){
                     qValue = 'N/A';
@@ -110,5 +108,6 @@ function findCSV(data) {
         indexBegin = data.indexOf(parameter) + parameter.length + 1;
     }
     data = data.trim();
-    return data.slice(indexBegin);
+
+    return data.slice(indexBegin + 1);
 }
