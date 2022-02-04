@@ -111,5 +111,5 @@ function findCSV(data) {
     }
     data = data.trim();
 
-    return data.slice(indexBegin + 1);
+    return data.slice(indexBegin + 2);
 }
