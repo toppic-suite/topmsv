@@ -2,7 +2,7 @@
 A cloud-based MS data processing and visualization platform.
 ## Linux setup (Ubuntu):
 
-After downloading the codes, please visit http://proteomics.informatics.iupui.edu/software/topmsv/tutorial.html for installation instructions. 
+After downloading the codes, please visit https://www.toppic.org/software/topmsv/tutorial.html for installation instructions. 
 
 ## (optional) Run TopMSV Server with pm2
 
