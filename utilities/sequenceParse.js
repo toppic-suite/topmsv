@@ -56,33 +56,35 @@ function importData(db, data) {
         complete: function(results) {
             // console.log("Finished:", results);
             results.data.forEach(row => {
-                // console.log('Scans:', row[4]);
-                let scan = row["Scan(s)"];
-                // console.log('Proteoform:', row[17]);
-                let prec_mass = row["Precursor mass"];
-                let protein_accession = row["Protein accession"];
-                let proteoform = row["Proteoform"];
-                let qValue = row["Spectrum-level Q-value"];//spectral q-value
-                let eValue = row["E-value"];
+                if (row["Spectrum ID"] != "") {
+                    // console.log('Scans:', row[4]);
+                    let scan = row["Scan(s)"];
+                    // console.log('Proteoform:', row[17]);
+                    let prec_mass = row["Precursor mass"];
+                    let protein_accession = row["Protein accession"];
+                    let proteoform = row["Proteoform"];
+                    let qValue = row["Spectrum-level Q-value"];//spectral q-value
+                    let eValue = row["E-value"];
 
-                if (isNaN(parseFloat(qValue))){
-                    qValue = 'N/A';
-                } 
-                if (parseFloat(qValue) < 0){
-                    qValue = 'N/A';
-                }
+                    if (isNaN(parseFloat(qValue))){
+                        qValue = 'N/A';
+                    } 
+                    if (parseFloat(qValue) < 0){
+                        qValue = 'N/A';
+                    }
 
-                if (isNaN(parseFloat(eValue))){
-                    eValue = 'N/A';
-                } 
-                if (parseFloat(eValue) < 0){
-                    eValue = 'N/A';
-                }
+                    if (isNaN(parseFloat(eValue))){
+                        eValue = 'N/A';
+                    } 
+                    if (parseFloat(eValue) < 0){
+                        eValue = 'N/A';
+                    }
 
-                if(scan !== 'Scan(s)'){
-                    let scan_id = stmtFindScanID.get(scan).id;
-                    stmtInsert.run(id, scan_id,protein_accession, prec_mass, proteoform, qValue, eValue);
-                    id++;
+                    if(scan !== 'Scan(s)'){
+                        let scan_id = stmtFindScanID.get(scan).id;
+                        stmtInsert.run(id, scan_id,protein_accession, prec_mass, proteoform, qValue, eValue);
+                        id++;
+                    }
                 }
             })
         }
