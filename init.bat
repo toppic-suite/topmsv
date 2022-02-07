@@ -1,2 +1,2 @@
 @ECHO OFF
-npm start
+node server
