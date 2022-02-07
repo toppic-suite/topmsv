@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const deleteEnvPeak = require("../library/deleteEnvPeak");
+const deleteEnvFile = require("../library/deleteEnvFile");
 const sendFailureMess = require("../library/sendFailureMess");
 const submitTask = require("../library/submitTask");
 const updateEnvStatusSync = require("../library/updateEnvStatusSync");
@@ -29,7 +30,8 @@ let msalign = router.post('/msalign', function (req, res) {
         let projectName = fields.projectName;
         let projectCode = fields.projectCode;
         deleteEnvPeak(dbDir, projectCode);
-
+        deleteEnvFile(dbDir);
+        
         console.log('Deleted previous Envelope Peaks!');
         let email = fields.email;
         if (!dbDir) {

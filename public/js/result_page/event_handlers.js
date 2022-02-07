@@ -212,10 +212,10 @@ class EventHandler {
             } else if (!seqFile.files[0].name.match(/.(tsv)$/i)) {
                 alert('Please upload a tsv file for sequence!');
                 return;
-            } else if (!seqFile.files[0].name.includes("single")) {
+            } /*else if (!seqFile.files[0].name.includes("single")) {
                 alert('Please upload a "*_ms2_toppic_prsm_single.tsv" file for sequence!');
                 return;
-            }
+            }*/
 
             let formData = new FormData();
             formData.append('seqFile', seqFile.files[0]);
