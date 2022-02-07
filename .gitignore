@@ -87,3 +87,6 @@ tmp/*.tsv
 tmp/*.msalign
 tmp/*.csv
 tmp/*.mzML
+
+#ignore examples
+public/resources/topview/common/*/example
