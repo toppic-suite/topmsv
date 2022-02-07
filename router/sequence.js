@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const deleteSeq = require("../library/deleteSeqSync")
+const deleteSeq = require("../library/deleteSeqSync");
+const deleteSeqFile = require("../library/deleteSeqFile");
 const updateSeqStatusSync = require("../library/updateSeqStatusSync");
 const submitTask = require("../library/submitTask");
 const sendFailureMess = require("../library/sendFailureMess");
@@ -34,6 +35,7 @@ let sequence = router.post('/sequence', function (req,res) {
             res.end();
             return;
         }
+        deleteSeqFile(projectDir);//delete previous seq file
 
         let des_seq = dbDir.substr(0, projectDir.lastIndexOf(path.sep)) + path.sep + seqFile.name;
         //console.log("dbDir", dbDir);

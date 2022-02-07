@@ -29,7 +29,6 @@ const ptmQuery = router.get('/ptmQuery', function (req, res) {
             }
         } catch(err) {
             console.error(err);
-            console.error(err.stack);
         }
 
         parsePtm(filePath, function(err, data){
