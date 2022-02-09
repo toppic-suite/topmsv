@@ -26,12 +26,13 @@ class EventHandler {
         resetButton.addEventListener('click', () => {
             //let min = document.getElementById("rangeMin").value;
             //init2D(parseInt(min));
+            let curScan = document.getElementById("scanID1").innerHTML;
             $("#rtRangeMin").val("");
             $("#rtRangeMax").val("1");
 
             $("#mzRangeMin").val("");
             $("#mzRangeMax").val("50");
-            this.resultViz.update3DShowFull();
+            this.resultViz.update3DShowFull(curScan);
         })
 
         let prev1 = document.getElementById('prev1');
