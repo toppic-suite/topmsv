@@ -95,8 +95,8 @@ class GraphData{
         Graph.viewRange.mzmax = dataTotal.MZMAX;
         Graph.viewRange.mzrange = dataTotal.MZMAX;
         
-        Graph.viewRange.rtmin = curRT - (rtInterval * 5);
-        Graph.viewRange.rtmax = curRT + (rtInterval * 5);
+        Graph.viewRange.rtmin = curRT - (rtInterval * Graph.scanDisplayed / 2);
+        Graph.viewRange.rtmax = curRT + (rtInterval * Graph.scanDisplayed / 2);
         Graph.viewRange.rtrange = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
 
     }
