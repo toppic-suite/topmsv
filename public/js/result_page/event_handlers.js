@@ -249,7 +249,7 @@ class EventHandler {
         //redraw graph if intensity adjustment checkbox gets checked
         $("#inte-auto-adjust").click(function() {
             if (document.getElementById("inte-auto-adjust").checked) {
-                GraphData.drawNoNewData();
+                GraphData.drawNoNewData(true);
             }
         })
         //hide feature annotation on 3D graph
@@ -270,7 +270,7 @@ class EventHandler {
                 markerGroup.children.forEach(function(line) {
                     line.visible = true;
                 })
-                GraphData.drawNoNewData();
+                GraphData.drawNoNewData(false);
                 GraphRender.renderImmediate();
             }
             else{
@@ -278,7 +278,7 @@ class EventHandler {
                 markerGroup.children.forEach(function(line) {
                     line.visible = false;
                 })
-                GraphData.drawNoNewData();
+                GraphData.drawNoNewData(false);
                 GraphRender.renderImmediate();
             }
         })

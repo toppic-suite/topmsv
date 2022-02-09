@@ -8,7 +8,7 @@ const BetterDB = require('better-sqlite3');
  */
 
 function getScanID(dir, callback) {
-    let sql = `SELECT COUNT(*) AS COUNT FROM SPECTRA`;
+    let sql = `SELECT COUNT(*) AS COUNT FROM SPECTRA WHERE SCANLEVEL=1`;
     let dbDir = dir.substr(0, dir.lastIndexOf(".")) + ".db";
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
