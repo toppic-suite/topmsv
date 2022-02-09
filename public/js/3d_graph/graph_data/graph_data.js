@@ -89,10 +89,6 @@ class GraphData{
     static setViewRangeForNewScan = (curRT) => {
         let dataTotal = Graph.configData[0];
         let rtInterval = (dataTotal.RTMAX - dataTotal.RTMIN) / Graph.ms1ScanCount;
-        console.log("Graph.ms1ScanCount", Graph.ms1ScanCount);
-        console.log("rtInterval", rtInterval);
-        console.log("dataTotal.RTMAX", dataTotal.RTMAX, "dataTotal.RTMIN", dataTotal.RTMIN);
-        console.log("dataTotal", dataTotal);
         Graph.curRT = curRT;
 
         Graph.viewRange.mzmin = 0;

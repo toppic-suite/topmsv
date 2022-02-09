@@ -37,6 +37,12 @@ class GraphInit{
             let minMZ = Graph.viewRange.mzmin;
             let maxMZ = Graph.viewRange.mzmax;
 
+            if (isNaN(centerMZ) && isNaN(centerRT)) {
+                //if both mz and rt range are not given
+                alert("Please enter at least one of the ranges, m/z range or retention time range");
+                return;
+            }
+        
             if (isNaN(centerRT)) {
                 centerRT = (Graph.viewRange.rtmin + Graph.viewRange.rtmax) / 2;
             }
