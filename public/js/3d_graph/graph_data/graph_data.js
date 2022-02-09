@@ -89,15 +89,18 @@ class GraphData{
     static setViewRangeForNewScan = (curRT) => {
         let dataTotal = Graph.configData[0];
         let rtInterval = (dataTotal.RTMAX - dataTotal.RTMIN) / Graph.ms1ScanCount;
-
+        console.log("Graph.ms1ScanCount", Graph.ms1ScanCount);
+        console.log("rtInterval", rtInterval);
+        console.log("dataTotal.RTMAX", dataTotal.RTMAX, "dataTotal.RTMIN", dataTotal.RTMIN);
+        console.log("dataTotal", dataTotal);
         Graph.curRT = curRT;
 
         Graph.viewRange.mzmin = 0;
         Graph.viewRange.mzmax = dataTotal.MZMAX;
         Graph.viewRange.mzrange = dataTotal.MZMAX;
         
-        Graph.viewRange.rtmin = curRT - (rtInterval * 10);
-        Graph.viewRange.rtmax = curRT + (rtInterval * 10);
+        Graph.viewRange.rtmin = curRT - (rtInterval * 5);
+        Graph.viewRange.rtmax = curRT + (rtInterval * 5);
         Graph.viewRange.rtrange = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
 
     }
@@ -187,7 +190,8 @@ class GraphData{
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
     }
-    static drawNoNewData = async() => {
+    static drawNoNewData = async(checkIntensity) => {
+        console.log("checkIntensity", checkIntensity);
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
             GraphData.plotPoint2D();
@@ -213,7 +217,7 @@ class GraphData{
         
         await GraphFeature.drawFeatureNoDataLoad(Graph.viewRange);
 
-        GraphControl.updateViewRange(Graph.viewRange);
+        GraphControl.updateViewRange(Graph.viewRange, checkIntensity);
         GraphRender.renderImmediate();
     }
     static plotPoint2D = () => {
