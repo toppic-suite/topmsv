@@ -152,6 +152,7 @@ class Graph{
         let line = new THREE.Line(linegeo, linemat);
 
         line.position.set(0, 0, 0);
+        line.visible = false;
 
         line.name = "currentScanMarker";
 
