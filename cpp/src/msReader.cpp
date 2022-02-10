@@ -1,6 +1,7 @@
 #include "msReader.hpp" 
 #include <chrono>
 #include <boost/filesystem.hpp>
+#include <cfloat>
 
 bool cmpPoints(Point p1, Point p2) {
   return p1.inten > p2.inten;
