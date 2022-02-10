@@ -4,6 +4,50 @@ A cloud-based MS data processing and visualization platform.
 
 After downloading the codes, please visit https://www.toppic.org/software/topmsv/tutorial.html for installation instructions. 
 
+## Windows setup:
+
+1. TopPIC Suite installation:<br/>
+a. Visit https://www.toppic.org/software/toppic/register.html to download the latest TopPIC Suite for Windows. <br/>
+b. Put the downloaded zip file in the root directory of TopMSV. <br/>
+c. Use the commands below to unzip files in a folder:<br/>
+```sh
+mkdir proteomics_cpp 
+move toppic-windows-*.zip proteomics_cpp
+cd proteomics_cpp #at this point, you should be in C:\Users\..\topmsv-[version_num]\proteomics_cpp
+tar -xf toppic-windows-*.zip
+ren toppic-windows-* bin
+del toppic-windows-*.zip
+```
+
+2. mzMLReader compilation:<br/>
+a. To build mzMLReader, MSYS2 needs to be installed to install required packages. Please follow the instructions in the <a href="https://www.msys2.org/">MSYS2</a> website to install MSYS2.<br/>
+b. After installing MSYS2, run the following commands to install packages for mzMLReader.<br/>
+```sh
+pacman -S git
+pacman -S mingw-w64-x86_64-gcc
+pacman -S mingw-w64-x86_64-make
+pacman -S mingw-w64-x86_64-cmake
+pacman -S mingw-w64-x86_64-boost
+```
+&emsp;&emsp;c. After installing, please add C:\msys64\mingw64\bin into your PATH environmental variable.<br/>
+&emsp;&emsp;d. In the root directory of TopMSV, run the following commands.
+
+```sh
+cd cpp
+mkdir build
+cd build
+cmake -G "MinGW Makefiles" ..
+mingw32-make
+```
+3. TopMSV installation: <br/>
+Download and install the latest <a href="https://nodejs.org/en/">Node.js</a> if it is not installed already. Then run the following command in the root directory of TopMSV.
+```sh
+npm install
+```
+## Start running TopMSV 
+In the root directory of TopMSV, use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. Or, run "startServer.bat" and "stopServer.bat" for Windows and "startServer.sh" and "stopServer.sh" for Linux, to start and close TopMSV.
+
+
 ## (optional) Run TopMSV Server with pm2
 
 ```sh
