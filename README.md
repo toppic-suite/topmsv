@@ -21,7 +21,7 @@ move toppic-windows-* bin
 
 2. mzMLReader compilation:<br/>
 a. To build mzMLReader, MSYS2 needs to be installed to install required packages. Please follow the instructions in the <a href="https://www.msys2.org/">MSYS2</a> website to install MSYS2.<br/>
-b. After installing MSYS2, run the following commands to install packages for mzMLReader.<br/>
+b. After installing MSYS2, run the following commands to in an <strong>MSYS shell</strong> to install packages for mzMLReader.<br/>
 ```sh
 pacman -S git
 pacman -S mingw-w64-x86_64-gcc
@@ -30,7 +30,7 @@ pacman -S mingw-w64-x86_64-cmake
 pacman -S mingw-w64-x86_64-boost
 ```
 &emsp;&emsp;c. After installing, please add C:\msys64\mingw64\bin into your PATH environmental variable.<br/>
-&emsp;&emsp;d. In the root directory of TopMSV, run the following commands.
+&emsp;&emsp;d. In the root directory of TopMSV, run the following commands in a <strong> Windows Command Prompt</strong>.
 
 ```sh
 cd cpp
