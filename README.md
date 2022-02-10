@@ -15,8 +15,8 @@ mkdir proteomics_cpp
 move toppic-windows-*.zip proteomics_cpp
 cd proteomics_cpp #at this point, you should be in C:\Users\..\topmsv-[version_num]\proteomics_cpp
 tar -xf toppic-windows-*.zip
-ren toppic-windows-* bin
 del toppic-windows-*.zip
+move toppic-windows-* bin
 ```
 
 2. mzMLReader compilation:<br/>
