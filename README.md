@@ -44,7 +44,7 @@ Download and install the latest <a href="https://nodejs.org/en/">Node.js</a> if 
 ```sh
 npm install
 ```
-## Start running TopMSV 
+## Start/Stop TopMSV 
 In the root directory of TopMSV, use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. Or, run "startServer.bat" and "stopServer.bat" for Windows and "startServer.sh" and "stopServer.sh" for Linux, to start and close TopMSV.
 
 
