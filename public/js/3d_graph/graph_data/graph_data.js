@@ -86,6 +86,20 @@ class GraphData{
         Graph.viewRange.rtmax = rtmax;
         Graph.viewRange.rtrange = rtmax - rtmin;
     }
+    static setViewRangeForNewScan = (curRT) => {
+        let dataTotal = Graph.configData[0];
+        let rtInterval = (dataTotal.RTMAX - dataTotal.RTMIN) / Graph.ms1ScanCount;
+        Graph.curRT = curRT;
+
+        Graph.viewRange.mzmin = 0;
+        Graph.viewRange.mzmax = dataTotal.MZMAX;
+        Graph.viewRange.mzrange = dataTotal.MZMAX;
+        
+        Graph.viewRange.rtmin = curRT - (rtInterval * Graph.scanDisplayed / 2);
+        Graph.viewRange.rtmax = curRT + (rtInterval * Graph.scanDisplayed / 2);
+        Graph.viewRange.rtrange = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
+
+    }
     static setViewRangeToFull = () => {
         Graph.viewRange.mzmin = 0;
         Graph.viewRange.mzmax = Graph.dataRange.mzmax;
@@ -96,7 +110,7 @@ class GraphData{
         Graph.viewRange.rtrange = Graph.dataRange.rtmax;
     }
      /******** PLOT PEAKS ******/
-    static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
+     static updateGraph = async(mzmin, mzmax,rtmin, rtmax, curRT) => {
         GraphData.setViewRange(mzmin, mzmax, rtmax, rtmin, curRT);
         await GraphData.draw(curRT);
         /*if (Graph.isUpdateTextBox){
@@ -110,9 +124,10 @@ class GraphData{
             GraphUtil.updateTextBox();
         }*/
     }
-    static drawFullRangeGraph = () => {
+    static drawFullRangeGraph = (scanID) => {
         let promise = LoadData.getRT(scanID);
-        promise.then(() =>{
+        promise.then((rt) =>{
+            Graph.curRT = rt;
             GraphData.setViewRangeToFull();
             GraphData.draw(Graph.curRT);
             /*if (Graph.isUpdateTextBox){
@@ -128,6 +143,13 @@ class GraphData{
             /*if (Graph.isUpdateTextBox){
                 GraphUtil.updateTextBox();
             }*/
+        })
+    }
+    static updateGraphForNewScan = (scanID) => {
+        let promise = LoadData.getRT(scanID);
+        promise.then(async(curRT) =>{
+            GraphData.setViewRangeForNewScan(curRT);
+            await GraphData.draw(curRT);
         })
     }
      /******** PLOT PEAKS ******/
@@ -147,7 +169,9 @@ class GraphData{
 
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            await GraphData.drawCurrentScanMarker();
+            if ($("#highlight-cur-scan").prop("checked")) {
+                await GraphData.drawCurrentScanMarker();
+            }
         }
         else{
             let markerGroup = Graph.scene.getObjectByName("markerGroup");
@@ -162,7 +186,8 @@ class GraphData{
         GraphControl.updateViewRange(Graph.viewRange);
         GraphRender.renderImmediate();
     }
-    static drawNoNewData = async() => {
+    static drawNoNewData = async(checkIntensity) => {
+        console.log("checkIntensity", checkIntensity);
         //if camera angle is perpendicular to the graph plane
         if (Graph.isPerpendicular){
             GraphData.plotPoint2D();
@@ -174,7 +199,9 @@ class GraphData{
         
         // make sure the groups are plotted and update the view
         if (parseFloat(Graph.curRT) <= Graph.viewRange.rtmax && parseFloat(Graph.curRT) >= Graph.viewRange.rtmin){
-            GraphData.drawCurrentScanMarker();
+            if ($("#highlight-cur-scan").prop("checked")) {
+                GraphData.drawCurrentScanMarker();
+            }
         }
         else{
             let markerGroup = Graph.scene.getObjectByName("markerGroup");
@@ -186,7 +213,7 @@ class GraphData{
         
         await GraphFeature.drawFeatureNoDataLoad(Graph.viewRange);
 
-        GraphControl.updateViewRange(Graph.viewRange);
+        GraphControl.updateViewRange(Graph.viewRange, checkIntensity);
         GraphRender.renderImmediate();
     }
     static plotPoint2D = () => {
@@ -238,7 +265,7 @@ class GraphData{
                         line.geometry.attributes.position.needsUpdate = true; 
                         line.material.color.setStyle(lineColor);
                         
-                        if (point.RETENTIONTIME.toFixed(4) == rt){
+                        if (point.RETENTIONTIME.toFixed(4) == rt && Graph.isHighlightingCurrentScan){
                             line.material.color.setStyle(Graph.currentScanColor);
                         }
         
@@ -293,7 +320,7 @@ class GraphData{
                     line.geometry.attributes.position.array[4] = y;
                     line.geometry.attributes.position.needsUpdate = true; 
                     line.material.color.setStyle(lineColor);
-                    if (point.RETENTIONTIME.toFixed(4) == currt){
+                    if (point.RETENTIONTIME.toFixed(4) == currt && Graph.isHighlightingCurrentScan){
                         line.material.color.setStyle(Graph.currentScanColor);
                     }
                     line.position.set(mz, 0, rt);

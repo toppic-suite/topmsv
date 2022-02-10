@@ -33,10 +33,8 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
 jspm_packages/
 cpp/build
-cpp/bin
 data/
 db/
 # TypeScript v1 declaration files
@@ -79,6 +77,16 @@ Thumbs.db
 
 .vscode
 
-# ignore database file and txt file
+# ignore database file and log files
 *.db
-*.txt
+log/*.txt
+
+#ignore tmp folder files
+tmp/*.fasta
+tmp/*.tsv
+tmp/*.msalign
+tmp/*.csv
+tmp/*.mzML
+
+#ignore examples
+public/resources/topview/common/*/example

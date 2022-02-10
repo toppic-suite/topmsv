@@ -10,6 +10,9 @@ function cleanInfo() {
 }
 
 function showEnvTable(scan) {
+    let resultViz = new ResultViz;
+    let format = resultViz.getConfig();
+
     $('#envScan').text(scan);
     if(scan == $('#scanID1').text()) {
         $('#msType').text('MS1');
@@ -112,7 +115,7 @@ function showEnvTable(scan) {
             {
                 "data": "mono_mz",
                 render: function (data, type, row) {
-                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(5);
+                    let mono_mz =  (( row.mono_mass / row.charge ) + 1).toFixed(format.floatDigit);
                     row.mono_mz = mono_mz; // set mono_mz value
                     return mono_mz;
                 }
@@ -120,26 +123,47 @@ function showEnvTable(scan) {
                 , required: 'true'
             }
         ],
+        "columnDefs": [
+            {
+              targets: 3,
+              render: $.fn.dataTable.render.number('', '.', format.floatDigit, '')
+            },
+            {
+                targets: 4,
+                render: function(data) {
+                    return data.toExponential(format.scientificDigit);
+                }
+            }
+        ],
         onAddRow: function(datatable, rowdata, success, error) {
             console.log(rowdata);
+            function customSuccessFunction() {
+                success();
+                refresh(rowdata);
+            }
+
             $.ajax({
                 // a tipycal url would be / with type='PUT'
                 url: "/addrow?projectDir=" + document.getElementById("projectDir").value,
                 type: 'GET',
                 data: rowdata,
-                success: success,
+                success: customSuccessFunction,
                 error: error
             });
         },
         onDeleteRow: function(datatable, rowdata, success, error) {
-            // console.log(rowdata);
             //rowdata=JSON.stringify(rowdata);
+            async function customSuccessFunction(res) {
+                let deletedEnvs = await JSON.parse(res);
+                success();
+                refresh(deletedEnvs);
+            }
             $.ajax({
                 // a tipycal url would be /{id} with type='DELETE'
                 url: "/deleterow?projectDir=" + document.getElementById("projectDir").value,
                 type: 'GET',
                 data: rowdata,
-                success: success,
+                success: customSuccessFunction,
                 error: error
             });
         },

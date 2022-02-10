@@ -159,7 +159,7 @@ class GraphControl{
         }
     }
     /*resizes the renderer and camera, especially in response to a window resize*/
-    static repositionPlot = (r) => {
+    static repositionPlot = (r, checkIntensity) => {
         let heightScale = Graph.viewRange.intmax;
         // This step allows points to be plotted at their normal mz,rt locations in plotPoint,
         // but keeping them in the grid. Scaling datagroup transforms the coordinate system
@@ -185,7 +185,7 @@ class GraphControl{
             int_squish = Graph.intSquish;
         }
         //if intensity scaling is off, don't adjust intensity;
-        if (!document.getElementById("inte-auto-adjust").checked) {
+        if (!document.getElementById("inte-auto-adjust").checked || checkIntensity == false) {
             int_squish = Graph.intSquish;
         }
         Graph.intSquish = int_squish;
@@ -287,9 +287,9 @@ class GraphControl{
         }*/
     };
     /*update labels and legend to reflect a new view range*/
-    static updateViewRange = (newViewRange) => {
+    static updateViewRange = (newViewRange, checkIntensity) => {
         Graph.viewRange = newViewRange;
-        GraphControl.repositionPlot(newViewRange);
+        GraphControl.repositionPlot(newViewRange, checkIntensity);
         //GraphLabel.drawDataLabels();
     }
     /*prevent user from going outside the data range or zooming in so far that math breaks down*/

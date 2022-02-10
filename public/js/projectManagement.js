@@ -47,7 +47,7 @@ $( document ).ready(function() {
         let publicStatus = $('#public').prop("checked") === true;
         if (result) {
             $.ajax({
-                url:"editProject?projectCode=" + document.getElementById('projectCode').value + "&projectName=" + $('#project_Name').val() + '&description=' + $('#description').val() + "&publicStatus=" + publicStatus,
+                url:"editProject?projectCode=" + document.getElementById('projectCode').value + "&projectName=" + $('#project_Name').val() + '&description=' + $('#project_Description').val() + "&publicStatus=" + publicStatus,
                 type: "post",
                 success: function (res) {
                     alert('Your project has been edited.');

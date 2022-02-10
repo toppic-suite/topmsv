@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const deleteSeq = require("../library/deleteSeqSync")
+const deleteSeq = require("../library/deleteSeqSync");
+const deleteSeqFile = require("../library/deleteSeqFile");
 const updateSeqStatusSync = require("../library/updateSeqStatusSync");
 const submitTask = require("../library/submitTask");
 const sendFailureMess = require("../library/sendFailureMess");
@@ -34,10 +35,11 @@ let sequence = router.post('/sequence', function (req,res) {
             res.end();
             return;
         }
+        deleteSeqFile(projectDir);//delete previous seq file
 
         let des_seq = dbDir.substr(0, projectDir.lastIndexOf(path.sep)) + path.sep + seqFile.name;
-        console.log("dbDir", dbDir);
-        console.log("des_seq", des_seq);
+        //console.log("dbDir", dbDir);
+        //console.log("des_seq", des_seq);
         if (seqFile === undefined) {
             console.log("Upload files failed!");
             sendFailureMess(projectName, projectCode, email);
@@ -50,10 +52,10 @@ let sequence = router.post('/sequence', function (req,res) {
             }
             deleteSeq(projectDir, projectCode);
             updateSeqStatusSync(0,projectCode);
-            res.end();
             let parameter = path.join(__dirname, '..', 'utilities', 'sequenceParse.js') + ' ' + dbDir + ' ' + des_seq + ' ' + projectCode;
             submitTask(projectCode, 'node', parameter, 1);
             updateSeqStatusSync(1, projectCode);
+            res.end();
         })
     })
 });

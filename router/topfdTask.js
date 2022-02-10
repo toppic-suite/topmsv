@@ -64,6 +64,13 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
         commandArr += ' -u ';
         commandArr += threadNumber;
     }
+    let isGenerateFeatureAnno = req.query.feature_anno_topfd;
+    if (isGenerateFeatureAnno === 'on') {
+        isGenerateFeatureAnno = true;
+    } else {
+        isGenerateFeatureAnno = false;
+    }
+
     let dbPath = path.join('db', 'projectDB.db')
     let resultDb = new BetterDB(dbPath);
     let stmt = resultDb.prepare(`SELECT ProjectDir AS projectDir, FileName AS fileName
@@ -95,7 +102,14 @@ const topfdTask = router.get('/topfdTask', function (req,res) {
 
         submitTask(projectCode, 'node', ms1CodePath + ' ' + dbDir + ' ' + des_ms1, 1);
         submitTask(projectCode, 'node', ms2CodePath + ' ' + dbDir + ' ' + des_ms2, 1);
-        //submitTask(projectCode, 'node','./utilities/annotateFeature.js ' + dbDir + ' ' + feature, 1);
+
+        if (isGenerateFeatureAnno) {
+            let featureFile = path.join(path.dirname(projectDir), fileName + '_file', fileName + '_frac.mzrt.csv');
+            let parameterTask1 = path.join(__dirname, '..', 'utilities', 'annotateFeature.js') + ' '+ dbDir + ' ' + featureFile;
+            submitTask(projectCode, 'node', parameterTask1, 1);
+
+            updateFeatureStatusSync(1, projectCode);
+        }
     } else {
         res.write("No such project exists!");
         res.end();

@@ -9,13 +9,15 @@ class GraphInit{
     static createSwitchCurrentScan = () => {
         //change current scan when clicked on 3d graph
         document.getElementById("canvas3D").addEventListener("click", function(e) {
-            let [mz, rt] = GraphUtil.getMzRtCoordinate(e);
-            let nearestRt = parseFloat(GraphUtil.findNearestRt(rt));
-            if (nearestRt >= 0) {
-                Graph.curRT = nearestRt;
-                //GraphData.drawNoNewData();
-                GraphData.drawCurrentScanMarker();
-                GraphRender.renderImmediate();
+            if (Graph.isHighlightingCurrentScan && e.ctrlKey) {
+                let [mz, rt] = GraphUtil.getMzRtCoordinate(e);
+                let nearestRt = parseFloat(GraphUtil.findNearestRt(rt));
+                if (nearestRt >= 0) {
+                    Graph.curRT = nearestRt;
+                    //GraphData.drawNoNewData();
+                    GraphData.drawCurrentScanMarker();
+                    GraphRender.renderImmediate();
+                }
             }
         })
     }
@@ -28,12 +30,19 @@ class GraphInit{
             let rangeRT = parseFloat(document.getElementById('rtRangeMax').value);
             let centerMZ = parseFloat(document.getElementById('mzRangeMin').value);
             let rangeMZ = parseFloat(document.getElementById('mzRangeMax').value);
+            let inteCutoff = document.getElementById("cutoff-threshold").value;
 
             let minRT = Graph.viewRange.rtmin;
             let maxRT = Graph.viewRange.rtmax;
             let minMZ = Graph.viewRange.mzmin;
             let maxMZ = Graph.viewRange.mzmax;
 
+            if (isNaN(centerMZ) && isNaN(centerRT)) {
+                //if both mz and rt range are not given
+                alert("Please enter at least one of the ranges, m/z range or retention time range");
+                return;
+            }
+        
             if (isNaN(centerRT)) {
                 centerRT = (Graph.viewRange.rtmin + Graph.viewRange.rtmax) / 2;
             }
@@ -48,6 +57,14 @@ class GraphInit{
                 minMZ = centerMZ - rangeMZ;
                 maxMZ = centerMZ + rangeMZ;
             }
+
+            if (isNaN(inteCutoff) || inteCutoff == '') {
+                if (isNaN(parseFloat(inteCutoff))) {
+                    document.getElementById("cutoff-threshold").value = 0;
+                } else {
+                    document.getElementById("cutoff-threshold").value = parseFloat(inteCutoff);
+                }
+            }
             //error handing
             if (minRT > maxRT){
                 alert("Invalid Range : Minimum retention time is bigger than maximum.");
@@ -59,6 +76,10 @@ class GraphInit{
                 GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT);
             }
         }, false);
+    }
+    static createEventHandlers = () => {
+        GraphInit.createRedrawEvent();
+        GraphInit.createSaveGraphEvent();
     }
     /******** CREATE GRAPH ELEMENTS ******/
     // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
@@ -180,19 +201,18 @@ class GraphInit{
         window.addEventListener("resize", GraphControl.resizeCamera);
         GraphControl.resizeCamera();
     }
-    static main = (mzmin, mzmax, curRT) => {
+    static main = (mzmin, mzmax, scanId) => {
         GraphInit.initScene();
         GraphInit.initGraphControl();
 
         GraphInit.createPlane();
         GraphInit.createAxis();
-        GraphInit.createRedrawEvent();
-        GraphInit.createSaveGraphEvent();
+        GraphInit.createEventHandlers();
         GraphInit.createSwitchCurrentScan();
         
         UploadMzrt.main();
         
-        GraphData.drawInitGraph(mzmin, mzmax, curRT);
+        GraphData.drawFullRangeGraph(scanId);
         
         Graph.renderer.setAnimationLoop(function() {
             Graph.graphControls.update();

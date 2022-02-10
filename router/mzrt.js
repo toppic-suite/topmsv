@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const deleteFeature = require("../library/deleteFeature");
+const deleteFeatureFile = require("../library/deleteFeatureFile");
 const sendFailureMess = require("../library/sendFailureMess");
 const submitTask = require("../library/submitTask");
 const updateFeatureStatusSync = require("../library/updateFeatureStatusSync");
@@ -24,6 +25,7 @@ const mzrt = router.post('/mzrt', function (req, res) {
         let projectName = fields.projectName;
         let projectCode = fields.projectCode;
         deleteFeature(dbDir, projectCode);
+        deleteFeatureFile(dbDir);
         let email = fields.email;
         dbDir = dbDir.substr(0, dbDir.lastIndexOf(".")) + '.db';
         let des_ms1 = dbDir.substr(0, dbDir.lastIndexOf(path.sep)) + path.sep + mzrtFile.name;

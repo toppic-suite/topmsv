@@ -9,13 +9,15 @@ let graph2_g;
 let temp_peakList2_g;
 
 let rtInteGraph;
+let config;
 
 const topview_2d = new Topview2D();
 const calcDistrubution = new MolecularFormulae();
 
-function init2D(scan) {
+function init2D(scan, configFromResultViz) {
     let nextScan;
-
+    config = configFromResultViz;
+    
     topview_2d.findNextLevelOneScan(scan)
         .then(function(response) {
             nextScan = parseInt(response.data); // next scan level one
@@ -42,7 +44,7 @@ function init2D(scan) {
                             response.data.forEach(function (item) {
                                 let scanTwoNum = item.scanID;
                                 let rt = item.rt;
-                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
                             });
                             $( "#tabs" ).tabs();
                             document.getElementById(nextScan).click(); // show next scan which is the first scan of scan level 2
@@ -139,7 +141,7 @@ function init2D(scan) {
                         response.data.forEach(function (item) {
                             let scanTwoNum = item.scanID;
                             let rt = item.rt;
-                            $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(4) + '</a></li>');
+                            $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
                         });
                         $( "#tabs" ).tabs();
                         document.getElementById(scan).click();
@@ -174,7 +176,7 @@ function loadPeakList1(scanID, prec_mz) {
                 let modfiablePeaks = [];
                 let envelopes = [];
 
-                if (response) {
+                if (response && response.data.length > 0) {
                     let envtable = response.data;
                     if (envtable != 0){
                         for (let i = 0; i < peakList1_g.length; i++){
@@ -187,7 +189,7 @@ function loadPeakList1(scanID, prec_mz) {
                             let envObj = new Envelope(env.mono_mass, env.charge)
                             let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modfiablePeaks);
                             for (let j = 0; j < env_peaks.length; j++){
-                                let peak = new Peak(j, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
+                                let peak = new Peak(env.envelope_id, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
                                 envObj.addPeaks(peak);
                             }
                             envelopes.push(envObj);
@@ -252,8 +254,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
             let peaks = [];
             let modifiablePeaks = [];
             let envelopes = [];
-
-            if (response) {
+            if (response && response.data.length > 0) {
                 let envtable = response.data;
                 if (envtable != 0){
                     for (let i = 0; i < peakList2_g.length; i++){
@@ -267,7 +268,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                         let envObj = new Envelope(env.mono_mass, env.charge);
                         let env_peaks = calcDistrubution.emass(env.mono_mass, env.charge, modifiablePeaks);
                         for (let j = 0; j < env_peaks.length; j++){
-                            let peak = new Peak(j, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
+                            let peak = new Peak(env.envelope_id, env_peaks[j].getPos(), env_peaks[j].getMonoMz(), env_peaks[j].getIntensity());
                             envObj.addPeaks(peak);
                         }
                         envelopes.push(envObj);
@@ -301,10 +302,10 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 graph2_g = spGraph;
             }
             document.getElementById("scanID2").innerHTML = scanID;
-            document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(4);
+            document.getElementById("prec_mz").innerHTML = prec_mz.toFixed(config.floatDigit);
             document.getElementById("prec_charge").innerHTML = prec_charge;
-            document.getElementById("prec_inte").innerHTML = prec_inte.toFixed(4);
-            document.getElementById("rt").innerHTML = rt.toFixed(4);
+            document.getElementById("prec_inte").innerHTML = prec_inte.toExponential(config.scientificDigit);
+            document.getElementById("rt").innerHTML = rt.toFixed(config.floatDigit) + " (min)";
             loadPeakList1(levelOneScan, prec_mz);
         }).catch(function(error) {
             console.log(error);

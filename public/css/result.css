@@ -567,3 +567,17 @@ button#graph-full-screen{
 #proteoform{
     overflow-wrap: break-word;
 }
+#feature-table-range-search-div{
+    float:right; 
+    margin-top: 10px;
+}
+#feature-table-range-search-div input{
+    max-width: 80px;
+}
+#feature-table-id-search-div{
+    float:right;
+    margin-right: 147px;
+}
+#feature-table-id-search-div input{
+    max-width:80px;
+}

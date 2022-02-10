@@ -10,8 +10,11 @@
                     let feature = data[index];
                     let mz_low = feature.mz_low;
                     let mz_high = feature.mz_high;
-                    let rt_low = feature.rt_low * (1 - Graph.featurePadding);
-                    let rt_high = feature.rt_high * (1 + Graph.featurePadding);
+                    let rt_low = feature.rt_low;
+                    let rt_high = feature.rt_high;
+                    if (rt_low == rt_high) {
+                        [rt_low, rt_high] = GraphUtil.addPaddingToFeature(rt_low);
+                    }
                     if (mz_low < minmz){
                         mz_low = minmz;
                         feature.mz_low = minmz;
@@ -53,8 +56,10 @@
                         featureRect.computeLineDistances();
                         featureRect.mz_low = feature.mz_low;
                         featureRect.mz_high = feature.mz_high;
-                        featureRect.rt_low = feature.rt_low;
-                        featureRect.rt_high = feature.rt_high;
+                        //featureRect.rt_low = feature.rt_low;
+                        //featureRect.rt_high = feature.rt_high;
+                        featureRect.rt_low = rt_low;
+                        featureRect.rt_high = rt_high;
                         featureRect.featureId = feature.id;
     
                         featureRect.mass = feature.mass;
@@ -107,5 +112,15 @@
                 GraphFeature.updateFeature(viewRange.mzmin, viewRange.mzmax, viewRange.rtmin, viewRange.rtmax);
                 resolve();
             })
+        }
+        static hideFeature = () => {
+            let featureGroup = Graph.scene.getObjectByName("featureGroup");
+            featureGroup.visible = false;
+            GraphRender.renderImmediate();
+        }
+        static showFeature = () => {
+            let featureGroup = Graph.scene.getObjectByName("featureGroup");
+            featureGroup.visible = true;
+            GraphRender.renderImmediate();
         }
     }

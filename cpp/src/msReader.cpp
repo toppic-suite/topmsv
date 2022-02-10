@@ -134,31 +134,33 @@ void msReader::createDtabase() { //stmt
       }
 
       for (int j=0; j<pairs.size(); j++) {
-        count++;
-        // std::cout << count << std::endl;
-        peaks_int_sum = peaks_int_sum + pairs[j].intensity;
-        if (scan_level == 1){//PEAKS0 contains level 1 data only
-          peakProperties peak;
-          peak.id = count;
-          peak.mz = pairs[j].mz;
-          peak.inte = pairs[j].intensity;
-          peak.rt = retention_time;
-          peak.color = databaseReader.peak_color_[0];
-          databaseReader.all_ms1_peaks_.push_back(peak);
-          //databaseReader.insertPeakStmtInMemory(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
-          ms1_peak_count++ ;
-          
-          //compare with min max values to find overall min max value
-        if (pairs[j].mz < mz_min){mz_min = pairs[j].mz;}
-        if (pairs[j].mz > mz_max){mz_max = pairs[j].mz;}
-        if (pairs[j].intensity < int_min){int_min = pairs[j].intensity;}
-        if (pairs[j].intensity > int_max){int_max = pairs[j].intensity;}
-        //compare with min max values to find overall min max value
-        if (retention_time < rt_min){rt_min = retention_time;}
-        if (retention_time > rt_max){rt_max = retention_time;}
-      }
-        databaseReader.insertPeakStmt(count, getScan(sl->spectrumIdentity(i).id), pairs[j].intensity, pairs[j].mz, retention_time);
-        //databaseReader.insertPeakStmt(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time);
+        if (pairs[j].intensity > 0) {
+          count++;
+          // std::cout << count << std::endl;
+          peaks_int_sum = peaks_int_sum + pairs[j].intensity;
+          if (scan_level == 1){//PEAKS0 contains level 1 data only
+            peakProperties peak;
+            peak.id = count;
+            peak.mz = pairs[j].mz;
+            peak.inte = pairs[j].intensity;
+            peak.rt = retention_time;
+            peak.color = databaseReader.peak_color_[0];
+            databaseReader.all_ms1_peaks_.push_back(peak);
+            //databaseReader.insertPeakStmtInMemory(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time, databaseReader.peak_color_[0]);
+            ms1_peak_count++ ;
+            
+            //compare with min max values to find overall min max value
+            if (pairs[j].mz < mz_min){mz_min = pairs[j].mz;}
+            if (pairs[j].mz > mz_max){mz_max = pairs[j].mz;}
+            if (pairs[j].intensity < int_min){int_min = pairs[j].intensity;}
+            if (pairs[j].intensity > int_max){int_max = pairs[j].intensity;}
+            //compare with min max values to find overall min max value
+            if (retention_time < rt_min){rt_min = retention_time;}
+            if (retention_time > rt_max){rt_max = retention_time;}
+          }
+          databaseReader.insertPeakStmt(count, getScan(sl->spectrumIdentity(i).id), pairs[j].intensity, pairs[j].mz, retention_time);
+          //databaseReader.insertPeakStmt(count, current_id, pairs[j].intensity, pairs[j].mz, retention_time);
+        }
       }
       
       // cout << currentID <<endl;

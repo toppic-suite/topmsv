@@ -2,9 +2,10 @@
 //and call to initialize empty 3D graph
 
 class Graph{
-    constructor(projectDir){
+    constructor(projectDir, resultViz){
         Graph.graphEl = document.querySelector("#graph-container"); 
         Graph.projectDir = projectDir;
+        Graph.resultViz = resultViz;
     }
     setProperties = () => {
         /*default m/z range when scan changes*/
@@ -77,7 +78,7 @@ class Graph{
         Graph.isFeatureAnnotated = false;
 
         /*whether to highlight current scan*/
-        Graph.isCurrentHighlighted = false;
+        Graph.isHighlightingCurrentScan = false;
 
         /*whether to update values in the text box*/
         Graph.isUpdateTextBox = true;
@@ -95,6 +96,10 @@ class Graph{
 
         /*control height of feature annotation*/
         Graph.featurePadding = 0.001;
+
+        /*number of scans to show alongside the selected scan*/
+        Graph.scanDisplayed = 10;
+        Graph.ms1ScanCount = 0;
     }
     createGroups = () => {
         /*groups to hold different graph elements */
@@ -147,6 +152,7 @@ class Graph{
         let line = new THREE.Line(linegeo, linemat);
 
         line.position.set(0, 0, 0);
+        line.visible = false;
 
         line.name = "currentScanMarker";
 
@@ -247,7 +253,12 @@ class Graph{
         let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
         plotGroup.scale.set(plotGroup.scale.x, scale, plotGroup.scale.z);
     }
-    main = (mzmin, mzmax, scanNum) => {
+
+    getScene = () => {
+        return Graph.scene;
+    }
+    
+    main = async (mzmin, mzmax, scanNum) => {
         this.setProperties();
         this.createGroups();
         this.initPlotGroup();
@@ -255,16 +266,14 @@ class Graph{
         this.initFeatureGroup();
         this.initMarkerGroup();
         
-        let promise = this.initDataRange();
+        await this.initDataRange();
+        await this.setInitScale();
+        Graph.ms1ScanCount = await GraphUtil.getTotalScanCount();
+        GraphInit.main(mzmin, mzmax, scanNum);
 
-        promise.then(()=>{
-            this.setInitScale();
-            GraphInit.main(mzmin, mzmax, scanNum);
-
-            if($('#featureStatus').val() !== "0"){
-                document.getElementById("featureInfo").style.display = "inline-block";
-                showFeatureTable();
-            }
-        })
+        if($('#featureStatus').val() !== "0"){
+            document.getElementById("featureInfo").style.display = "inline-block";
+            showFeatureTable();
+        }
     }
 }
