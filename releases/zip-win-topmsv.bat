@@ -39,7 +39,7 @@ copy C:\msys64\mingw64\bin\libboost_thread-mt.dll topmsv-windows-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\libbz2-1.dll topmsv-windows-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\libgcc_s_seh-1.dll topmsv-windows-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\liblzma-5.dll topmsv-windows-%1\cpp\bin\
-copy C:\msys64\mingw64\bin\libstdc++-6.dll topmsv-windows-%1\cpp\bin\
+copy "C:\msys64\mingw64\bin\libstdc++-6.dll" topmsv-windows-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\libwinpthread-1.dll topmsv-windows-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\libzstd.dll topmsv-windows-%1\cpp\bin\
 copy C:\msys64\mingw64\bin\zlib1.dll topmsv-windows-%1\cpp\bin\
