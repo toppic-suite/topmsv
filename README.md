@@ -1,25 +1,64 @@
 # TopMSV Server
 A cloud-based MS data processing and visualization platform.
 ## Linux setup (Ubuntu):
-
-After downloading the codes, please visit https://www.toppic.org/software/topmsv/tutorial.html for installation instructions. 
-
-## Windows setup:
-
-1. TopPIC Suite installation:<br/>
-a. Visit https://www.toppic.org/software/toppic/register.html to download the latest TopPIC Suite for Windows. <br/>
-b. Put the downloaded zip file in the root directory of TopMSV. <br/>
-c. Use the commands below to unzip files in a folder:<br/>
+### Compilation
+1. TopPIC Suite Compilation: <br/>
+a. This step compiles TopFD and TopPIC, which perform spectral deconvolution and protein identification using the uploaded spectra data.<br/>
+b. Go to the folder TopMSV source files are unzipped. For example, if you unzipped the source code zip file in <code>/home/alex/Documents</code>, there will be a new directory <code>/home/alex/Documents/topmsv-[version-number]</code>. Go to that directory. <br/>
+c. Download the latest source code zip file from <a href="https://github.com/liuxiaowen/proteomics_cpp/releases">TopPIC Suite Github repository</a> and place the zip file in the same directory as above, the directory that cotains the unzipped TopMSV source files.<br/>
+d. Type the following commands to build TopPIC Suite: <br/>
 ```sh
-mkdir proteomics_cpp 
-move toppic-windows-*.zip proteomics_cpp
-cd proteomics_cpp #at this point, you should be in C:\Users\..\topmsv-[version_num]\proteomics_cpp
-tar -xf toppic-windows-*.zip
-del toppic-windows-*.zip
-move toppic-windows-* bin
+# unzip the TopPic Suite release from the TopPIC Suite repository
+unzip toppic-suite-*.zip                            
+rm toppic-suite-*.zip
+mv toppic-suite-* proteomics_cpp
+
+# install compiling tools
+sudo apt-get install build-essential cmake
+
+# install other dependencies
+sudo apt-get install zlib1g-dev \
+                     libxerces-c-dev \ 
+                     libboost-filesystem-dev \
+                     libboost-program-options-dev \
+                     libboost-system-dev \
+                     libboost-thread-dev \
+                     libboost-iostreams-dev \
+                     libboost-chrono-dev \
+                     libeigen3-dev \
+                     nlohmann-json3-dev
+
+# building TopFD and TopPIC
+cd proteomics_cpp
+mkdir build
+cd build
+cmake ..
+make topfd -j$(nproc) && make toppic -j$(nproc)
+cd ../bin
+ln -s ../toppic_resources .
+```
+2. mzMLReader Compilation: <br/>
+a. This step compiles mzMLReader, which parses spectra data from uploaded mzML files.<br/>
+b. Enter the commands below after finishing the step 1 TopPIC Suite Compilation
+```sh
+cd ../../
+cd cpp
+mkdir build
+cd build
+cmake ..
+make -j$(nproc)
+```
+### Installation
+1. Installation of Node.js and node packages: <br/>
+a. After finishing both steps in Compilation, type the following commands: 
+```sh
+cd ../../
+./installServer.sh
 ```
 
-2. mzMLReader compilation:<br/>
+## Windows setup:
+### Compilation
+1. mzMLReader compilation:<br/>
 a. To build mzMLReader, MSYS2 needs to be installed to install required packages. Please follow the instructions in the <a href="https://www.msys2.org/">MSYS2</a> website to install MSYS2.<br/>
 b. After installing MSYS2, run the following commands to in an <strong>MSYS shell</strong> to install packages for mzMLReader.<br/>
 ```sh
@@ -28,7 +67,7 @@ pacman -S mingw-w64-x86_64-make
 pacman -S mingw-w64-x86_64-cmake
 pacman -S mingw-w64-x86_64-boost
 ```
-&emsp;&emsp;c. After installing, please add C:\msys64\mingw64\bin into your PATH environmental variable.<br/>
+&emsp;&emsp;c. After installing, please add <code>C:\msys64\mingw64\bin</code> into your PATH environmental variable.<br/>
 &emsp;&emsp;d. In the root directory of TopMSV, run the following commands in a <strong> Windows Command Prompt</strong>.
 
 ```sh
@@ -38,13 +77,27 @@ cd build
 cmake -G "MinGW Makefiles" ..
 mingw32-make
 ```
-3. TopMSV installation: <br/>
-Download and install the latest <a href="https://nodejs.org/en/">Node.js</a> if it is not installed already. Then run the following command in the root directory of TopMSV.
+### Installation
+1. TopPIC Suite installation:<br/>
+a. Visit <a href="https://www.toppic.org/software/toppic/register.html">TopPIC Suite website</a> to download the latest TopPIC Suite for Windows. <br/>
+b. Put the downloaded zip file in the directory where the TopMSV source files are unzipped. For instance, if you unzipped the TopMSV source zip file in <code>C:\Documents</code>, the source files are in <code>C:\Documents\topmsv-[version-number]</code>. Put the TopPIC Suite zip file inside the folder.<br/>
+c. Use the commands below to unzip files in a folder:<br/>
+```sh
+mkdir proteomics_cpp 
+move toppic-windows-*.zip proteomics_cpp
+cd proteomics_cpp 
+#at this point, you should be in C:\Documents\topmsv-[version_num]\proteomics_cpp, if unzipped the TopMSV zip file at C:\Documents
+tar -xf toppic-windows-*.zip
+del toppic-windows-*.zip
+move toppic-windows-* bin
+```
+2. Node.js and node packages installation: <br/>
+a. Download and install the latest <a href="https://nodejs.org/en/">Node.js</a> if it is not installed already. Then run the following command in the root directory of TopMSV (at the directory <code>topmsv-[version_num]</code>)
 ```sh
 npm install
 ```
 ## Start/Stop TopMSV 
-In the root directory of TopMSV, use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. Or, run "startServer.bat" and "stopServer.bat" for Windows and "startServer.sh" and "stopServer.sh" for Linux, to start and close TopMSV.
+At the root directory of TopMSV (<code>topmsv-[version_num]</code>), use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. Or, run "startServer.bat" and "stopServer.bat" for Windows and "startServer.sh" and "stopServer.sh" for Linux, to start and close TopMSV.
 
 
 ## (optional) Run TopMSV Server with pm2
@@ -60,8 +113,6 @@ sudo pm2 startup systemd
 pm2 start ecosystem.config.js --env production
 
 ```
-For more information about TopMSV Server setup, please visit TopMSV Server wiki page.
-
 ---
 ## TopMSV Server Design Summary
 ### Server entry point
