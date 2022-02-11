@@ -33,7 +33,7 @@ cd proteomics_cpp
 mkdir build
 cd build
 cmake ..
-make topfd -j$(nproc) && make toppic -j$(nproc)
+make topfd -j$(nproc) && make toppic -j$(nproc) #Make sure to build only TopFD and TopPIC. Simply using "make" will result in error.
 cd ../bin
 ln -s ../toppic_resources .
 ```
