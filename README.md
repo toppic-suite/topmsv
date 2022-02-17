@@ -2,7 +2,7 @@
 A web-based platform for mass spectrometry data processing and visualization. 
 ## Linux setup (Ubuntu):
 
-# 1. Install nodejs
+### 1. Install nodejs
 sudo apt-get install nodejs
 
 ### Compilation
