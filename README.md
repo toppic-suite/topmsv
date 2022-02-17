@@ -1,6 +1,10 @@
 # TopMSV Server
-A cloud-based MS data processing and visualization platform.
+A web-based platform for mass spectrometry data processing and visualization. 
 ## Linux setup (Ubuntu):
+
+# 1. Install nodejs
+sudo apt-get install nodejs
+
 ### Compilation
 1. TopPIC Suite Compilation: <br/>
 a. This step compiles TopFD and TopPIC, which perform spectral deconvolution and protein identification using the uploaded spectra data.<br/>
