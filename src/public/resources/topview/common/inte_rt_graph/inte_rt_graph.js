@@ -63,10 +63,10 @@ class InteRtGraph {
         }
         this.rawInteRtArray_.forEach(function (element) {
             let inteRtSingle = {
-                inteSum: parseFloat(element.inteSum),
-                rt: parseFloat(element.rt),
+                inteSum: element.inteSum,
+                rt: element.rt,
                 intePercentage: -1,
-                scanNum: element.scanNum
+                scanNum: element.scanNum.toString()
             };
             inteRtArray.push(inteRtSingle);
         });

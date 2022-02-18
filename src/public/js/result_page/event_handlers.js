@@ -4,99 +4,134 @@ class EventHandler {
         this.resultViz = resultViz;
     }
     initialize() {
-        let requestButton = document.getElementById('request');
-        requestButton.addEventListener('click', () => {
-            // $( "#spectrum2" ).empty();
-            let requestID = document.getElementById("scanID").value;
-            let min = document.getElementById("rangeMin").value;
-            let max = document.getElementById("rangeMax").value;
-            if (parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
-                //console.log("Yes");
-                init2D(parseInt(requestID), this.resultViz.getConfig());
-                this.resultViz.update3D(parseInt(requestID));
-                //showEnvTable(parseInt(requestID));
-                $("#scanID").val("");
+        let projectDir = document.querySelector("#projectDir");
+        if (!projectDir) {
+            console.error("project directory information cannot be found");
+            return;
+        }
+        const dataGetter = new DataGetter(projectDir.value);
+        let requestButton = document.querySelector('#request');
+        if (requestButton) {
+            requestButton.addEventListener('click', () => {
+                // $( "#spectrum2" ).empty();
+                let requestInputBox = document.querySelector("#scanID");
+                let requestMinBox = document.querySelector("#rangeMin");
+                let requestMaxBox = document.querySelector("#rangeMax");
+                if (requestInputBox && requestMinBox && requestMaxBox) {
+                    let requestID = requestInputBox.value;
+                    let min = requestMinBox.value;
+                    let max = requestMaxBox.value;
+                    if (parseInt(requestID) >= parseInt(min) && parseInt(requestID) <= parseInt(max)) {
+                        init2D(parseInt(requestID), this.resultViz.getConfig());
+                        this.resultViz.update3D(parseInt(requestID));
+                        $("#scanID").val("");
+                    }
+                    else {
+                        alert("Please type in one scanID within range!");
+                    }
+                }
+                else {
+                    console.error(`one of the following is not found on the page. #scanID: ${requestInputBox} #rangeMin: ${requestMinBox} #rangeMaxBox ${requestMaxBox}`);
+                }
+            }, false);
+        }
+        let resetButton = document.querySelector('#resetGraphs');
+        if (resetButton) {
+            resetButton.addEventListener('click', () => {
+                //let min = document.getElementById("rangeMin").value;
+                //init2D(parseInt(min));
+                let scanElem = document.querySelector("#scanID1");
+                if (scanElem) {
+                    let curScan = parseFloat(scanElem.innerHTML);
+                    $("#rtRangeMin").val("");
+                    $("#rtRangeMax").val("1");
+                    $("#mzRangeMin").val("");
+                    $("#mzRangeMax").val("50");
+                    this.resultViz.update3DShowFull(curScan);
+                }
+                else {
+                    console.error("scanID1 <span> element cannot be found");
+                }
+            });
+        }
+        let prev1 = document.querySelector('#prev1');
+        if (prev1) {
+            prev1.addEventListener('click', () => {
+                let scanElem = document.querySelector("#scanID1");
+                if (scanElem) {
+                    let scanID1 = scanElem.innerHTML;
+                    if (scanID1 !== '') {
+                        dataGetter.prev(scanElem.innerHTML)
+                            .then((response) => {
+                            response = response.data;
+                            if (response !== 0) {
+                                return dataGetter.getScanID(response);
+                            }
+                            else {
+                                alert("NULL");
+                            }
+                        }).then((response) => {
+                            response = response.data;
+                            if (response !== 0) {
+                                init2D(response, this.resultViz.getConfig());
+                                this.resultViz.update3D(response);
+                            }
+                            else {
+                                alert("NULL");
+                            }
+                        }).catch((error) => {
+                            console.log(error);
+                        });
+                    }
+                }
+                else {
+                    console.error("scanID1 <span> element cannot be found");
+                }
+            }, false);
+        }
+        let next1 = document.querySelector('#next1');
+        if (next1) {
+            next1.addEventListener('click', () => {
+                let scanElem = document.querySelector("#scanID1");
+                if (scanElem) {
+                    let scanID1 = scanElem.innerHTML;
+                    if (scanID1 !== '') {
+                        dataGetter.next(scanElem.innerHTML)
+                            .then((response) => {
+                            response = response.data;
+                            if (response !== 0) {
+                                return dataGetter.getScanID(response);
+                            }
+                            else {
+                                alert("NULL");
+                            }
+                        })
+                            .then((response) => {
+                            response = response.data;
+                            if (response !== 0) {
+                                init2D(response, this.resultViz.getConfig());
+                                this.resultViz.update3D(response);
+                            }
+                            else {
+                                alert("NULL");
+                            }
+                        })
+                            .catch((error) => {
+                            console.log(error);
+                        });
+                    }
+                    else {
+                        console.error("scanID1 <span> element cannot be found");
+                    }
+                }
+            }, false);
+        }
+        $("#scanID").on("keyup", function (event) {
+            if (event.key === "Enter") {
+                $("#request").trigger("click");
             }
-            else {
-                //console.log("No");
-                alert("Please type in one scanID within range!");
-            }
-        }, false);
-        let resetButton = document.getElementById('resetGraphs');
-        resetButton.addEventListener('click', () => {
-            //let min = document.getElementById("rangeMin").value;
-            //init2D(parseInt(min));
-            let curScan = document.getElementById("scanID1").innerHTML;
-            $("#rtRangeMin").val("");
-            $("#rtRangeMax").val("1");
-            $("#mzRangeMin").val("");
-            $("#mzRangeMax").val("50");
-            this.resultViz.update3DShowFull(curScan);
         });
-        let prev1 = document.getElementById('prev1');
-        prev1.addEventListener('click', () => {
-            let scanID1 = document.getElementById("scanID1").innerHTML;
-            if (scanID1 !== '') {
-                topview_2d.prev(document.getElementById("scanID1").innerHTML)
-                    .then((response) => {
-                    response = response.data;
-                    if (response !== 0) {
-                        return topview_2d.getScanID(response);
-                    }
-                    else {
-                        alert("NULL");
-                    }
-                })
-                    .then((response) => {
-                    response = response.data;
-                    if (response !== 0) {
-                        init2D(response, this.resultViz.getConfig());
-                        this.resultViz.update3D(response);
-                    }
-                    else {
-                        alert("NULL");
-                    }
-                })
-                    .catch((error) => {
-                    console.log(error);
-                });
-            }
-        }, false);
-        let next1 = document.getElementById('next1');
-        next1.addEventListener('click', () => {
-            let scanID1 = document.getElementById("scanID1").innerHTML;
-            if (scanID1 !== '') {
-                topview_2d.next(document.getElementById("scanID1").innerHTML)
-                    .then((response) => {
-                    response = response.data;
-                    if (response !== 0) {
-                        return topview_2d.getScanID(response);
-                    }
-                    else {
-                        alert("NULL");
-                    }
-                })
-                    .then((response) => {
-                    response = response.data;
-                    if (response !== 0) {
-                        init2D(response, this.resultViz.getConfig());
-                        this.resultViz.update3D(response);
-                    }
-                    else {
-                        alert("NULL");
-                    }
-                })
-                    .catch((error) => {
-                    console.log(error);
-                });
-            }
-        }, false);
-        $("#scanID").keyup(function (event) {
-            if (event.keyCode === 13) {
-                $("#request").click();
-            }
-        });
-        $("#hide").click(function () {
+        $("#hide").on("click", function () {
             if ($("#hide").text() === 'Hide') {
                 $("#hide").text('Show');
                 $("#datatable").hide();
@@ -106,7 +141,7 @@ class EventHandler {
                 $("#datatable").show();
             }
         });
-        $("#hideFeatureTable").click(function () {
+        $("#hideFeatureTable").on("click", function () {
             if ($("#hideFeatureTable").text() === 'Hide') {
                 $("#hideFeatureTable").text('Show');
                 $("#featureDataTable").hide();
@@ -116,7 +151,7 @@ class EventHandler {
                 $("#featureDataTable").show();
             }
         });
-        $("#switch").click(function () {
+        $("#switch").on("click", function () {
             if ($("#switch").text() === 'MS1') {
                 showEnvTable($("#scanID1").text());
                 $("#switch").text('MS2');
@@ -126,7 +161,7 @@ class EventHandler {
                 $("#switch").text('MS1');
             }
         });
-        $("#inspect").click(function () {
+        $("#inspect").on("click", function () {
             /*let peaklist;
             let masslistID = $('#envScan').text();
             if($("#switch").text() === 'MS1') {
@@ -168,12 +203,22 @@ class EventHandler {
             let masslistID = $('#envScan').text();
             inspect(masslistID, masslistID);
         });
-        $("#deleteMsalign").click(function () {
+        $("#deleteMsalign").on("click", function () {
             let result = confirm("Are you sure that you want to delete msalign data?");
             if (result) {
+                let projectDir = document.querySelector("#projectDir");
+                let projectCode = document.querySelector("#projectCode");
+                if (!projectCode) {
+                    console.error("project code information cannot be found");
+                    return;
+                }
+                if (!projectDir) {
+                    console.error("project directory information cannot be found");
+                    return;
+                }
                 //Logic to delete the item
                 $.ajax({
-                    url: "deleteMsalign?projectDir=" + document.getElementById("projectDir").value + "&projectCode=" + document.getElementById('projectCode').value,
+                    url: "deleteMsalign?projectDir=" + projectDir.value + "&projectCode=" + projectCode.value,
                     type: "get",
                     // dataType: 'json',
                     success: function (res) {
@@ -183,11 +228,21 @@ class EventHandler {
                 });
             }
         });
-        $("#deleteSeq").click(function () {
+        $("#deleteSeq").on("click", function () {
             let result = confirm("Are you sure that you want to delete sequence data?");
             if (result) {
+                let projectDir = document.querySelector("#projectDir");
+                let projectCode = document.querySelector("#projectCode");
+                if (!projectCode) {
+                    console.error("project code information cannot be found");
+                    return;
+                }
+                if (!projectDir) {
+                    console.error("project directory information cannot be found");
+                    return;
+                }
                 $.ajax({
-                    url: "deleteSeq?projectDir=" + document.getElementById("projectDir").value + "&projectCode=" + document.getElementById('projectCode').value,
+                    url: "deleteSeq?projectDir=" + projectDir.value + "&projectCode=" + projectCode.value,
                     type: "get",
                     // dataType: 'json',
                     success: function (res) {
@@ -197,13 +252,22 @@ class EventHandler {
                 });
             }
         });
-        $('#uploadSequence').click(function () {
-            window.open("seqResults?projectCode=" + document.getElementById("projectCode").value, '_self');
+        $('#uploadSequence').on("click", function () {
+            let projectCode = document.querySelector("#projectCode");
+            if (!projectCode) {
+                console.error("project code information cannot be found");
+                return;
+            }
+            window.open("seqResults?projectCode=" + projectCode.value, '_self');
         });
-        $("#seqUpload").click(function () {
+        $("#seqUpload").on("click", function () {
             let seqFile = document.querySelector('#seqFile');
             let seqProgress = document.querySelector('#seqProgressbar');
             let xhr = new XMLHttpRequest();
+            if (!seqFile || !seqFile.files) {
+                console.error("sequence file information cannot be found");
+                return;
+            }
             if (seqFile.files[0] === undefined) {
                 alert("Please choose a sequence file first!");
                 return;
@@ -212,70 +276,87 @@ class EventHandler {
                 alert('Please upload a tsv file for sequence!');
                 return;
             } /*else if (!seqFile.files[0].name.includes("single")) {
-                alert('Please upload a "*_ms2_toppic_prsm_single.tsv" file for sequence!');
-                return;
+              alert('Please upload a "*_ms2_toppic_prsm_single.tsv" file for sequence!');
+              return;
             }*/
+            let projectDir = document.querySelector("#projectDir");
+            let projectCode = document.querySelector("#projectCode");
+            let projectName = document.querySelector("#projectName");
+            let email = document.querySelector("#email");
+            if (!projectCode) {
+                console.error("project code information cannot be found");
+                return;
+            }
+            if (!projectDir) {
+                console.error("project directory information cannot be found");
+                return;
+            }
+            if (!projectName) {
+                console.error("project name information cannot be found");
+                return;
+            }
+            if (!email) {
+                console.error("email information cannot be found");
+                return;
+            }
             let formData = new FormData();
             formData.append('seqFile', seqFile.files[0]);
-            formData.append('projectDir', document.getElementById('projectDir').value);
-            formData.append('projectCode', document.getElementById("projectCode").value);
-            formData.append('projectName', document.getElementById("projectName").value);
-            formData.append('email', document.getElementById("email").value);
-            xhr.upload.onprogress = seqSetProgress;
-            xhr.onload = seqUploadSuccess;
+            formData.append('projectDir', projectDir.value);
+            formData.append('projectCode', projectCode.value);
+            formData.append('projectName', projectName.value);
+            formData.append('email', email.value);
+            xhr.upload.onprogress = setProgress.bind(null, seqProgress);
+            xhr.onload = uploadSuccess.bind(null, xhr);
             xhr.open('post', '/sequence', true);
             xhr.send(formData);
-            function seqUploadSuccess(event) {
-                if (xhr.readyState === 4) {
-                    alert("Upload successfully!");
-                    window.location.replace("/projects");
+        });
+        let inteAutoAdjust = document.querySelector("#inte-auto-adjust");
+        if (inteAutoAdjust) {
+            //redraw graph if intensity adjustment checkbox gets checked
+            $("#inte-auto-adjust").on("click", function () {
+                if (inteAutoAdjust.checked) {
+                    GraphData.drawNoNewData(true);
                 }
-            }
-            function seqSetProgress(event) {
-                if (event.lengthComputable) {
-                    let complete = Number.parseInt(event.loaded / event.total * 100);
-                    seqProgress.style.width = complete + '%';
-                    seqProgress.innerHTML = complete + '%';
-                    if (complete == 100) {
-                        seqProgress.innerHTML = 'Done!';
-                    }
+            });
+        }
+        let showFeature = document.querySelector("#show-feature-anno");
+        if (showFeature) {
+            //hide feature annotation on 3D graph
+            $("#show-feature-anno").click(function () {
+                if (showFeature.checked) {
+                    GraphFeature.showFeature();
                 }
-            }
-        });
-        //redraw graph if intensity adjustment checkbox gets checked
-        $("#inte-auto-adjust").click(function () {
-            if (document.getElementById("inte-auto-adjust").checked) {
-                GraphData.drawNoNewData(true);
-            }
-        });
-        //hide feature annotation on 3D graph
-        $("#show-feature-anno").click(function () {
-            if (document.getElementById("show-feature-anno").checked) {
-                GraphFeature.showFeature();
-            }
-            else {
-                GraphFeature.hideFeature();
-            }
-        });
+                else {
+                    GraphFeature.hideFeature();
+                }
+            });
+        }
         //show or hide current scan marker
-        $("#highlight-cur-scan").click(() => {
-            let markerGroup = Graph.scene.getObjectByName("markerGroup");
-            if (document.getElementById("highlight-cur-scan").checked) {
-                Graph.isHighlightingCurrentScan = true;
-                markerGroup.children.forEach(function (line) {
-                    line.visible = true;
-                });
-                GraphData.drawNoNewData(false);
-                GraphRender.renderImmediate();
-            }
-            else {
-                Graph.isHighlightingCurrentScan = false;
-                markerGroup.children.forEach(function (line) {
-                    line.visible = false;
-                });
-                GraphData.drawNoNewData(false);
-                GraphRender.renderImmediate();
-            }
-        });
+        let scanHighlight = document.querySelector("#highlight-cur-scan");
+        if (scanHighlight) {
+            $("#highlight-cur-scan").click(() => {
+                let markerGroup = Graph.scene.getObjectByName("markerGroup");
+                if (!markerGroup) {
+                    console.error("there is no group for current scan highlight");
+                    return;
+                }
+                if (scanHighlight.checked) {
+                    Graph.isHighlightingCurrentScan = true;
+                    markerGroup.children.forEach(function (line) {
+                        line.visible = true;
+                    });
+                    GraphData.drawNoNewData(false);
+                    GraphRender.renderImmediate();
+                }
+                else {
+                    Graph.isHighlightingCurrentScan = false;
+                    markerGroup.children.forEach(function (line) {
+                        line.visible = false;
+                    });
+                    GraphData.drawNoNewData(false);
+                    GraphRender.renderImmediate();
+                }
+            });
+        }
     }
 }

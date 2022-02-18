@@ -23,7 +23,7 @@ function uploadSuccess(xhr: XMLHttpRequest): void {
 }
 
 // progress bar
-function setProgress(progress: HTMLDivElement | null, event: ProgressEvent) {
+function setProgress(progress: HTMLDivElement | null, event: ProgressEvent): void {
   if (event.lengthComputable) {
     let complete: number = Math.trunc(event.loaded / event.total * 100);
     if (progress) {
@@ -36,4 +36,15 @@ function setProgress(progress: HTMLDivElement | null, event: ProgressEvent) {
       console.error("no progress bar on the page");
     }
   }
+}
+
+function cleanInfo(): void {
+  $("#scanID2").empty();
+  $("#prec_mz").empty();
+  $("#prec_charge").empty();
+  $("#prec_inte").empty();
+  $("#rt").empty();
+  //$("#tabs").empty();
+  $("#spectrum2").empty();
+  $("#tabList").empty();
 }

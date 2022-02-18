@@ -8,12 +8,11 @@ function toppicOnClick(projectCode) {
     xhttp.onload = () => {
         if (xhttp.status == 200 && xhttp.readyState == 4) {
             let response = JSON.parse(xhttp.response);
-            if (response.allowToppic == 0) {
+            if (response.allowToppic == "0") {
                 alert("Please run TopFD before running TopPIC");
             }
-            else if (response.allowToppic == 1) {
+            else if (response.allowToppic == "1") {
                 let xhttp2 = new XMLHttpRequest();
-                console.log("allowToppic is 1");
                 xhttp2.open("GET", "toppic?projectCode=" + projectCode, true);
                 xhttp2.onload = () => {
                     if (xhttp2.status == 200 && xhttp.readyState == 4) {

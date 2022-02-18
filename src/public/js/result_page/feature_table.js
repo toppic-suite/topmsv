@@ -1,21 +1,15 @@
 "use strict";
-function cleanInfo() {
-    $("#scanID2").empty();
-    $("#prec_mz").empty();
-    $("#prec_charge").empty();
-    $("#prec_inte").empty();
-    $("#rt").empty();
-    //$("#tabs").empty();
-    $("#spectrum2").empty();
-    $("#tabList").empty();
-}
 function showFeatureTable() {
     if ($('#featureStatus').val() === "0") {
         return;
     }
-    let resultViz = new ResultViz;
+    let projectDir = document.querySelector("#projectDir");
+    if (!projectDir) {
+        console.error("project directory information cannot be found");
+        return;
+    }
+    let resultViz = new ResultViz(projectDir.value);
     let format = resultViz.getConfig();
-    let fullDir = (document.getElementById("projectDir").value).split("/");
     $('#featureTable').DataTable({
         destroy: true,
         paging: true,
@@ -23,7 +17,7 @@ function showFeatureTable() {
         deferRender: true,
         searching: true,
         dom: 'Bfrtip',
-        scrollY: 370,
+        scrollY: "370",
         scroller: true,
         altEditor: true,
         select: 'os',
@@ -45,11 +39,16 @@ function showFeatureTable() {
             type: "GET"
         },
         "columns": [
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "id", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true' },
             { "data": "envelope_num", "visible": true },
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "charge", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true' },
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "mass", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true' },
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "mono_mz", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true' },
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "intensity", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true' }
         ],
         "columnDefs": [
@@ -74,8 +73,21 @@ function showFeatureTable() {
     });
     //custom filtering function for search box
     $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-        let min = parseFloat($('#feature-table-search-min').val(), 10);
-        var max = parseFloat($('#feature-table-search-max').val(), 10);
+        let featureMin = $('#feature-table-search-min').val();
+        let featureMax = $('#feature-table-search-max').val();
+        let min;
+        let max;
+        if (typeof featureMin == "number" && typeof featureMax == "number") {
+            min = featureMin;
+            max = featureMax;
+        }
+        else if (typeof featureMin == "string" && typeof featureMax == "string") {
+            min = parseFloat(featureMin);
+            max = parseFloat(featureMax);
+        }
+        else {
+            return true;
+        }
         let mz = parseFloat(data[4]) || 0;
         if ((isNaN(min) && isNaN(max)) ||
             (min <= mz && mz <= max)) {
@@ -85,6 +97,7 @@ function showFeatureTable() {
     });
     $("#featureTable_filter").hide();
     $("#feature-table-search-id").on("keyup", function () {
+        //@ts-ignore //ignoring library-specific compile error
         $('#featureTable').DataTable().columns(0).search(this.value).draw();
     });
 }

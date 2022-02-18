@@ -1,54 +1,96 @@
 "use strict";
 function plus() {
     let inputVal = $('#preview_mono_mass').val();
+    let newMass = -1;
+    if (inputVal == undefined || Array.isArray(inputVal)) {
+        console.error("preview mono mass value is invalid");
+        return;
+    }
     if (inputVal === "") {
         inputVal = 0;
     }
-    inputVal = parseFloat(inputVal) + 1.00235;
-    inputVal = inputVal.toFixed(5);
-    $('#preview_mono_mass').val(inputVal);
+    if (typeof inputVal == "number") {
+        newMass = inputVal + 1.00235;
+    }
+    else if (typeof inputVal == "string") {
+        newMass = parseFloat(inputVal) + 1.00235;
+    }
+    $('#preview_mono_mass').val(newMass.toFixed(5));
     change_mono_mz();
-    updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
+    updatePreview($('#preview_charge').val(), $('#preview_mono_mass').val());
 }
 function minus() {
     let inputVal = $('#preview_mono_mass').val();
+    let newMass = -1;
+    if (inputVal == undefined || Array.isArray(inputVal)) {
+        console.error("preview mono mass value is invalid");
+        return;
+    }
     if (inputVal === "") {
         inputVal = 0;
     }
-    inputVal = parseFloat(inputVal) - 1.00235;
-    inputVal = inputVal.toFixed(5);
-    $('#preview_mono_mass').val(inputVal);
+    if (typeof inputVal == "number") {
+        newMass = inputVal - 1.00235;
+    }
+    else if (typeof inputVal == "string") {
+        newMass = parseFloat(inputVal) - 1.00235;
+    }
+    $('#preview_mono_mass').val(newMass.toFixed(5));
     change_mono_mz();
-    updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
+    updatePreview($('#preview_charge').val(), $('#preview_mono_mass').val());
 }
 function change_mono_mass() {
     let mz = $('#preview_mono_mz').val();
+    let charge = $('#preview_charge').val();
+    if (mz == undefined || Array.isArray(mz)) {
+        console.error("preview mono mass value is invalid");
+        return;
+    }
+    if (charge == undefined || Array.isArray(charge)) {
+        console.error("preview charge value is invalid");
+        return;
+    }
     if (mz === "") {
         mz = 0;
     }
-    mz = parseFloat(mz);
-    let charge = $('#preview_charge').val();
+    if (typeof mz == "string") {
+        mz = parseFloat(mz);
+    }
     if (charge === "") {
         charge = 1;
     }
-    charge = parseInt(charge);
+    if (typeof charge == "string") {
+        charge = parseInt(charge);
+    }
     let result = (mz - 1) * charge;
     if (result < 0)
         result = 0;
     $('#preview_mono_mass').val(result.toFixed(5));
-    updatePreview(preview_scanID_g, $('#preview_envelope_id').val(), $('#preview_charge').val(), $('#preview_mono_mass').val());
+    updatePreview($('#preview_charge').val(), $('#preview_mono_mass').val());
 }
 function change_mono_mz() {
     let mass = $('#preview_mono_mass').val();
+    let charge = $('#preview_charge').val();
+    if (mass == undefined || Array.isArray(mass)) {
+        console.error("preview mono mass value is invalid");
+        return;
+    }
+    if (charge == undefined || Array.isArray(charge)) {
+        console.error("preview charge value is invalid");
+        return;
+    }
     if (mass === "") {
         mass = 0;
     }
-    mass = parseFloat(mass);
-    let charge = $('#preview_charge').val();
+    if (typeof mass == "string") {
+        mass = parseFloat(mass);
+    }
     if (charge === "") {
         charge = 1;
     }
-    charge = parseInt(charge);
+    if (typeof charge == "string") {
+        charge = parseInt(charge);
+    }
     let result = (mass / charge) + 1;
     if (result < 0)
         result = 0;
@@ -65,13 +107,13 @@ function refresh(rowdata) {
     let scanID;
     let scanLevelOneFlag = true;
     if (msType_old === 'MS1') {
-        graphMz1 = graph1_g.getPara().winCenterMz;
+        graphMz1 = graph1_g.getPara().getWinCenterMz();
         scanID = $('#scanID1').text();
         showEnvTable($("#scanID1").text());
         $("#switch").text('MS2');
     }
     else {
-        graphMz2 = graph2_g.getPara().winCenterMz;
+        graphMz2 = graph2_g.getPara().getWinCenterMz();
         scanID = $('#scanID2').text();
         scanLevelOneFlag = false;
     }
@@ -100,10 +142,10 @@ function refresh(rowdata) {
         graph2_g.redraw();
     }
 }
-let peakList_temp;
-let envList_temp;
+//let peakList_temp;
+//let envList_temp;
 let preview_scanID_g;
-let preview_intensitySum_g;
+//let preview_intensitySum_g;
 let graph_preview1_g;
 let graph_preview2_g;
 function preview(dataObj) {
@@ -118,22 +160,23 @@ function preview(dataObj) {
     $('#preview_charge').val(charge);
     $('#preview_mono_mass').val(mono_mass);
     $('#preview_mono_mz').val(mono_mz);
-    updatePreview(scanID, envID, charge, mono_mass);
-    // let previewPeakList;
-    // if ($('#msType').text() === 'MS1') {
-    //     previewPeakList = peakList1_g;
-    //     previewOriginalEnvPeakList = envList1_g;
-    // } else if ($('#msType').text() === 'MS2') {
-    //     previewPeakList = peakList2_g;
-    //     previewOriginalEnvPeakList = envList2_g;
-    // }
-    // let previewNewEnvPeakList = calcDistrubution.getEnvDistribution([{mono_mass: mono_mass, charge: charge}],previewPeakList);
-    // // console.log("preivewNewEnvPeakList:", previewNewEnvPeakList);
-    // graph_preview1_g = new SpectrumGraph('previewSpectrum1', previewPeakList, previewOriginalEnvPeakList,[],null);
-    // graph_preview1_g.redraw(mono_mz);
-    // graph_preview2_g = new SpectrumGraph("previewSpectrum2", previewPeakList, previewNewEnvPeakList,[],null);
-    // graph_preview2_g.redraw(mono_mz);
-    /* $.ajax({
+    updatePreview(charge, mono_mass);
+    /* let previewPeakList;
+    if ($('#msType').text() === 'MS1') {
+         previewPeakList = peakList1_g;
+         previewOriginalEnvPeakList = envList1_g;
+     } else if ($('#msType').text() === 'MS2') {
+         previewPeakList = peakList2_g;
+         previewOriginalEnvPeakList = envList2_g;
+     }
+     let previewNewEnvPeakList = calcDistrubution.getEnvDistribution([{mono_mass: mono_mass, charge: charge}],previewPeakList);
+     // console.log("preivewNewEnvPeakList:", previewNewEnvPeakList);
+     graph_preview1_g = new SpectrumGraph('previewSpectrum1', previewPeakList, previewOriginalEnvPeakList,[],null);
+     graph_preview1_g.redraw(mono_mz);
+     graph_preview2_g = new SpectrumGraph("previewSpectrum2", previewPeakList, previewNewEnvPeakList,[],null);
+     graph_preview2_g.redraw(mono_mz);
+
+     $.ajax({
         url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
             "&scan_id=" + scanID +
             "&envelope_id=" + envID +
@@ -163,8 +206,9 @@ function preview(dataObj) {
     }); */
     $('#previewModal').modal('show');
 }
-function updatePreview(scanID, envID, charge, mono_mass) {
-    let previewPeakList;
+function updatePreview(charge, mono_mass) {
+    let previewPeakList = [];
+    let previewOriginalEnvPeakList = [];
     if ($('#msType').text() === 'MS1') {
         previewPeakList = peakList1_g;
         previewOriginalEnvPeakList = envList1_g;
@@ -173,18 +217,26 @@ function updatePreview(scanID, envID, charge, mono_mass) {
         previewPeakList = peakList2_g;
         previewOriginalEnvPeakList = envList2_g;
     }
-    let previewNewEnvPeakList = calcDistrubution.getEnvDistribution([{ mono_mass: mono_mass, charge: charge }], previewPeakList);
-    graph_preview1_g = new SpectrumGraph('previewSpectrum1', previewPeakList, previewOriginalEnvPeakList, [], null);
+    let peakListConverted = [];
+    let envListConverted = [];
+    previewPeakList.forEach((peak, i) => {
+        peakListConverted.push(new Peak(i.toString(), parseFloat(peak.mz), parseFloat(peak.mz), parseFloat(peak.intensity), mono_mass, charge));
+    });
+    previewOriginalEnvPeakList.forEach((env, i) => {
+        envListConverted.push(new Envelope(mono_mass, charge));
+    });
+    let previewNewEnvPeakList = calcDistrubution.emass(mono_mass, charge, peakListConverted);
+    graph_preview1_g = new SpectrumView('previewSpectrum1', peakListConverted);
     graph_preview1_g.redraw(mono_mass / charge + 1);
-    graph_preview2_g = new SpectrumGraph("previewSpectrum2", previewPeakList, previewNewEnvPeakList, [], null);
+    graph_preview2_g = new SpectrumView("previewSpectrum2", peakListConverted);
     graph_preview2_g.redraw(mono_mass / charge + 1);
-    let intensitySum = 0;
-    if (previewNewEnvPeakList[0].env_peaks) {
-        previewNewEnvPeakList[0].env_peaks.forEach(envPeak => {
-            intensitySum += envPeak.intensity;
-        });
+    //not sure what this code is supposed to do (line 238-243)
+    /*if(previewNewEnvPeakList[0].env_peaks) {
+      previewNewEnvPeakList[0].env_peaks.forEach(envPeak => {
+        intensitySum += envPeak.intensity;
+      })
     }
-    preview_intensitySum_g = intensitySum;
+    preview_intensitySum_g = intensitySum;*/
     /* $.ajax({
         url:"previewEdit?projectDir=" + document.getElementById("projectDir").value +
             "&scan_id=" + scanID +
@@ -218,10 +270,16 @@ $(function () {
         if (result) {
             let envID = $('#preview_envelope_id').val();
             let charge = $('#preview_charge').val();
-            let intensity = preview_intensitySum_g;
+            //let intensity = preview_intensitySum_g;
+            let intensity = -1;
             let mono_mass = $('#preview_mono_mass').val();
+            let projectDir = document.querySelector("#projectDir");
+            if (!projectDir) {
+                console.error("project directory information not available");
+                return;
+            }
             $.ajax({
-                url: "editrow?projectDir=" + document.getElementById("projectDir").value +
+                url: "editrow?projectDir=" + projectDir.value +
                     "&scan_id=" + preview_scanID_g +
                     "&envelope_id=" + envID +
                     "&charge=" + charge +
@@ -231,7 +289,7 @@ $(function () {
                 success: function (res) {
                     alert('Your change has been saved!');
                     $('#previewModal').modal('hide');
-                    refresh();
+                    //refresh();
                     $('#envTable').DataTable().ajax.reload();
                 }
             });

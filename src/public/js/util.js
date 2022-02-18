@@ -37,3 +37,13 @@ function setProgress(progress, event) {
         }
     }
 }
+function cleanInfo() {
+    $("#scanID2").empty();
+    $("#prec_mz").empty();
+    $("#prec_charge").empty();
+    $("#prec_inte").empty();
+    $("#rt").empty();
+    //$("#tabs").empty();
+    $("#spectrum2").empty();
+    $("#tabList").empty();
+}

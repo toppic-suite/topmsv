@@ -1,0 +1,119 @@
+function showFeatureTable(): void {
+  if($('#featureStatus').val() === "0"){
+    return;
+  }
+  let projectDir: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectDir");
+
+  if (!projectDir) {
+    console.error("project directory information cannot be found");
+    return;
+  }
+
+  let resultViz = new ResultViz(projectDir.value);
+  let format = resultViz.getConfig();
+
+  $('#featureTable').DataTable({
+    destroy: true,
+    paging: true,
+    pageLength: 30,
+    deferRender: true,
+    searching: true,
+    dom: 'Bfrtip',
+    scrollY: "370",
+    scroller: true,
+    altEditor: true,
+    select: 'os',
+    responsive: true,
+    buttons: [
+        {
+            extend: 'selected',
+            text: 'Jump to',
+            className: 'btn',
+            name: 'jumpto_feature'
+        }
+    ],
+    "ajax": {
+        url:'loadMzrtData?projectDir=' + Graph.projectDir + 
+        "&minRT=0" + "&maxRT=" + Graph.dataRange.rtmax +
+        "&minMZ=0" + "&maxMZ=" + Graph.dataRange.mzmax + 
+        "&limit=" + "ALL",
+        dataSrc: '',
+        type: "GET"
+    },
+    "columns": [
+        //@ts-ignore //ignoring library-specific compile error
+        { "data": "id", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+        { "data": "envelope_num", "visible": true},
+        //@ts-ignore //ignoring library-specific compile error
+        { "data": "charge", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+        //@ts-ignore //ignoring library-specific compile error
+        { "data": "mass",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+        //@ts-ignore //ignoring library-specific compile error
+        { "data": "mono_mz", pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'},
+        //@ts-ignore //ignoring library-specific compile error
+        { "data": "intensity",pattern:"[+-]?([0-9]*[.])?[0-9]+", required: 'true'}
+    ],
+    "columnDefs": [
+        {
+            targets: 3,
+            render: $.fn.dataTable.render.number('', '.', format.floatDigit, '')
+        },
+        {
+            targets: 4,
+            render: $.fn.dataTable.render.number('', '.', format.floatDigit, '')
+        },
+        {
+            targets: 5,
+            render: function(data) {
+                return data.toExponential(format.scientificDigit);
+            }
+        }
+    ]
+    });
+    $("#feature-table-search-min, #feature-table-search-max").keyup(() => {
+        $('#featureTable').DataTable().draw();
+    })
+    //custom filtering function for search box
+    $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            let featureMin: string | number | string[] | undefined = $('#feature-table-search-min').val();
+            let featureMax: string | number | string[] | undefined = $('#feature-table-search-max').val();
+            let min: number;
+            let max: number;
+
+            if (typeof featureMin == "number" && typeof featureMax == "number") {
+              min = featureMin;
+              max = featureMax;
+            } else if (typeof featureMin == "string" && typeof featureMax == "string") {
+              min = parseFloat(featureMin);
+              max = parseFloat(featureMax);
+            } else {
+              return true;
+            }
+            
+            let mz = parseFloat(data[4])|| 0;
+     
+            if ((isNaN(min) && isNaN(max)) || 
+               (min <= mz && mz <= max)) {
+                return true;
+            }
+            return false;
+        }
+    );
+    $("#featureTable_filter").hide();
+    $("#feature-table-search-id").on("keyup", function() {
+      //@ts-ignore //ignoring library-specific compile error
+      $('#featureTable').DataTable().columns(0).search(this.value).draw();
+    });
+}
+
+function jumpToFeature(data): void {
+  let mzPadding: number = 1;
+  let rtPadding: number = 0.01;
+
+  if (data.rt_low == data.rt_high) {
+    [data.rt_low, data.rt_high] = GraphUtil.addPaddingToFeature(data.rt_low);
+  }
+  GraphData.updateGraph(data.mz_low - mzPadding, data.mz_high + mzPadding, data.rt_low - rtPadding, data.rt_high + rtPadding, Graph.curRT);
+}
+

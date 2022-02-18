@@ -70,7 +70,7 @@ function inspect(scanID, scanNum) {
                                         if (fixedPtmList.length < 1) { //display fixed ptm even when it was not found in the seq
                                             ptmData["fixedPtms"].forEach(fixedPtm => {
                                                 let newPtm = new Mod('', parseFloat(fixedPtm.mass), fixedPtm.name);
-                                                fixedPtmList.push(new MassShift('', '', newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));
+                                                fixedPtmList.push(new MassShift(-1, -1, newPtm.getShift(), "Fixed", newPtm.getName(), newPtm));
                                             });
                                         }
                                         window.localStorage.setItem('sequence', JSON.stringify(sequence));
@@ -78,7 +78,9 @@ function inspect(scanID, scanNum) {
                                         window.localStorage.setItem('protVarPtmsList', JSON.stringify(protVarPtmsList));
                                         window.localStorage.setItem('variablePtmsList', JSON.stringify(variablePtmsList));
                                         window.localStorage.setItem('unknownMassShiftList', JSON.stringify(unknownMassShiftList));
-                                        window.localStorage.setItem('precursorMass', (JSON.parse(rawSeq)).prec_mass);
+                                        if (typeof rawSeq == "string") {
+                                            window.localStorage.setItem('precursorMass', (JSON.parse(rawSeq)).prec_mass);
+                                        }
                                         window.open('/resources/topview/inspect/spectrum_no_nav.html', '_self');
                                     }
                                 });

@@ -4,9 +4,39 @@ $(document).ready(function () {
     let ms2file = document.querySelector('#MS2_msalign');
     let upload = document.querySelector('#modalUpload');
     let progress = document.querySelector('#progressbar');
+    let projectDir = document.querySelector('#projectDir');
+    let projectCode = document.querySelector('#projectCode');
+    let projectName = document.querySelector('#projectName');
+    let email = document.querySelector('#email');
+    if (!projectCode) {
+        console.error("project code text box doesn't exist");
+        return;
+    }
+    if (!projectDir) {
+        console.error("project directory text box doesn't exist");
+        return;
+    }
+    if (!projectName) {
+        console.error("project name text box doesn't exist");
+        return;
+    }
+    if (!email) {
+        console.error("email text box doesn't exist");
+        return;
+    }
     let xhr = new XMLHttpRequest();
-    upload.addEventListener('click', uploadFile, false);
+    if (upload) {
+        upload.addEventListener('click', uploadFile, false);
+    }
     function uploadFile() {
+        if (!ms1file || !ms1file.files) {
+            console.error("ms1 file information not available");
+            return;
+        }
+        if (!ms2file || !ms2file.files) {
+            console.error("ms2 file information not available");
+            return;
+        }
         if (ms1file.files[0] === undefined || ms2file.files[0] === undefined) {
             alert("Please choose msalign files for both ms1 and ms2!");
             return;
@@ -22,29 +52,13 @@ $(document).ready(function () {
         let formData = new FormData();
         formData.append('ms1file', ms1file.files[0]);
         formData.append('ms2file', ms2file.files[0]);
-        formData.append('projectDir', document.getElementById('projectDir').value);
-        formData.append('projectCode', document.getElementById("projectCode").value);
-        formData.append('projectName', document.getElementById("projectName").value);
-        formData.append('email', document.getElementById("email").value);
-        xhr.onload = uploadSuccess;
-        xhr.upload.onprogress = setProgress;
+        formData.append('projectDir', projectDir.value);
+        formData.append('projectCode', projectCode.value);
+        formData.append('projectName', projectName.value);
+        formData.append('email', email.value);
+        xhr.onload = uploadSuccess.bind(null, xhr);
+        xhr.upload.onprogress = setProgress.bind(null, progress);
         xhr.open('post', '/msalign', true);
         xhr.send(formData);
-    }
-    function uploadSuccess(event) {
-        if (xhr.readyState === 4) {
-            alert("Upload successfully! Please wait for data processing, you will receive an email when it's done");
-            window.location.replace("/projects");
-        }
-    }
-    function setProgress(event) {
-        if (event.lengthComputable) {
-            let complete = Number.parseInt(event.loaded / event.total * 100);
-            progress.style.width = complete + '%';
-            progress.innerHTML = complete + '%';
-            if (complete == 100) {
-                progress.innerHTML = 'Done!';
-            }
-        }
     }
 });

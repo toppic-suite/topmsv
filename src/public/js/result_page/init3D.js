@@ -34,37 +34,26 @@ function getMs1Scan(projectDir, scanID){
         }
         xhttp.send();
     })
-}*/
-function checkRelatedScan(projectDir, scanID) {
-    /*input: projectDir = project directory, scanID = number the user provided in the textBox
-    output: a related ms2 scan for given scanID.*/
-    /*it first checks if it has related ms2 scan by calling getMs2Scan.
-    *If result >=0 , related ms2 scan is found, so the result is the return value.
-    *if the result is -1, it means scanID is either a ms1Scan without related scan or ms2scan.
-    *in that case, check if it has related ms1 scan by calling getMs1Scan.
-    *if the result is -1, it means scanID does not have related scan, so return -1.
-    *else, it means scanID was a ms2 scan. Return scanID as the return value. */
-    return new Promise(function (resolve, reject) {
+}
+function checkRelatedScan(projectDir: string, scanID: number): Promise<number> {
+  return new Promise(function(resolve, reject) {
         let promise = getMs2Scan(projectDir, scanID);
-        promise.then((ms2Scan) => {
-            if (ms2Scan >= 0) {
+        promise.then((ms2Scan)=>{
+            if (ms2Scan >= 0){
                 resolve(ms2Scan);
-            }
-            else {
+            }else{
                 let promise = getMs1Scan(projectDir, scanID);
                 promise.then((ms1Scan) => {
-                    if (ms1Scan >= 0) {
+                    if(ms1Scan >= 0){
                         resolve(scanID);
-                    }
-                    else {
+                    }else{
                         resolve(-1);
                     }
-                });
+                })
             }
-        });
-    });
+        })
+    })
 }
-/*
 function getPrecursorMz(projectDir, ms2Scan){
     /*return new Promise(function(resolve, reject){
         let xhttp = new XMLHttpRequest();
@@ -85,7 +74,7 @@ function calcInitRange(precMz) {
     let mzRange = {};
     let specPara = new SpectrumViewParameters();
     if (parseFloat(precMz) > 0) { //if has ms2 scan, calculate m/z range}
-        specPara.updateMzRange(precMz);
+        specPara.updateMzRange(parseFloat(precMz));
         mzRange["mzmin"] = specPara.getWinMinMz();
         mzRange["mzmax"] = specPara.getWinMaxMz();
     }

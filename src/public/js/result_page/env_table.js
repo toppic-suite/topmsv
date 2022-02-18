@@ -1,16 +1,16 @@
 "use strict";
-function cleanInfo() {
-    $("#scanID2").empty();
-    $("#prec_mz").empty();
-    $("#prec_charge").empty();
-    $("#prec_inte").empty();
-    $("#rt").empty();
-    //$("#tabs").empty();
-    $("#spectrum2").empty();
-    $("#tabList").empty();
-}
 function showEnvTable(scan) {
-    let resultViz = new ResultViz;
+    let projectDir = document.querySelector("#projectDir");
+    let projectCode = document.querySelector("#projectCode");
+    if (!projectDir) {
+        console.error("project directory information cannot be found");
+        return;
+    }
+    if (!projectCode) {
+        console.error("project code cannot be found");
+        return;
+    }
+    let resultViz = new ResultViz(projectDir.value);
     let format = resultViz.getConfig();
     $('#envScan').text(scan);
     if (scan == $('#scanID1').text()) {
@@ -26,8 +26,8 @@ function showEnvTable(scan) {
     }
     $("#ms2Info").show();
     $.ajax({
-        url: 'seqQuery?projectDir=' + document.getElementById("projectDir").value + "&scanID=" + $('#envScan').text()
-            + "&projectCode=" + document.getElementById('projectCode').value,
+        url: 'seqQuery?projectDir=' + projectDir.value + "&scanID=" + $('#envScan').text()
+            + "&projectCode=" + projectCode.value,
         type: "get",
         success: function (res) {
             //console.log(res);
@@ -52,7 +52,7 @@ function showEnvTable(scan) {
         paging: false,
         searching: false,
         dom: 'Bfrtip',
-        scrollY: 370,
+        scrollY: "370",
         scroller: true,
         altEditor: true,
         select: 'os',
@@ -83,10 +83,10 @@ function showEnvTable(scan) {
             },
             // refresh button for datatable
             /*             {
-                            text: 'Refresh',
-                            className: 'btn',
-                            name: 'refresh'      // do not change name
-                        }, */
+                    text: 'Refresh',
+                    className: 'btn',
+                    name: 'refresh'      // do not change name
+                }, */
             {
                 extend: 'selected',
                 text: 'Jump to',
@@ -95,7 +95,7 @@ function showEnvTable(scan) {
             }
         ],
         "ajax": {
-            url: "envtable?projectDir=" + document.getElementById("projectDir").value + "&scanID=" + scan,
+            url: "envtable?projectDir=" + projectDir.value + "&scanID=" + scan,
             dataSrc: '',
             type: "GET"
         },
@@ -107,10 +107,14 @@ function showEnvTable(scan) {
                 className: 'select-checkbox',
                 orderable: false
             },*/
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "envelope_id", readonly: 'true' },
             { "data": "scan_id", "visible": true, type: "hidden" },
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "charge", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true' },
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "mono_mass", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true' },
+            //@ts-ignore //ignoring library-specific compile error
             { "data": "intensity", pattern: "[+-]?([0-9]*[.])?[0-9]+", required: 'true', readonly: 'true', "visible": true, type: "hidden" },
             {
                 "data": "mono_mz",
@@ -120,6 +124,7 @@ function showEnvTable(scan) {
                     return mono_mz;
                 }
                 // ,type: "readonly"
+                //@ts-ignore //ignoring library-specific compile error
                 ,
                 required: 'true'
             }
@@ -137,14 +142,14 @@ function showEnvTable(scan) {
             }
         ],
         onAddRow: function (datatable, rowdata, success, error) {
-            console.log(rowdata);
             function customSuccessFunction() {
                 success();
+                //@ts-ignore //function from an external library
                 refresh(rowdata);
             }
             $.ajax({
                 // a tipycal url would be / with type='PUT'
-                url: "/addrow?projectDir=" + document.getElementById("projectDir").value,
+                url: "/addrow?projectDir=" + projectDir.value,
                 type: 'GET',
                 data: rowdata,
                 success: customSuccessFunction,
@@ -156,11 +161,12 @@ function showEnvTable(scan) {
             async function customSuccessFunction(res) {
                 let deletedEnvs = await JSON.parse(res);
                 success();
+                //@ts-ignore //function from an external library
                 refresh(deletedEnvs);
             }
             $.ajax({
                 // a tipycal url would be /{id} with type='DELETE'
-                url: "/deleterow?projectDir=" + document.getElementById("projectDir").value,
+                url: "/deleterow?projectDir=" + projectDir.value,
                 type: 'GET',
                 data: rowdata,
                 success: customSuccessFunction,
@@ -170,7 +176,7 @@ function showEnvTable(scan) {
         onEditRow: function (datatable, rowdata, success, error) {
             $.ajax({
                 // a tipycal url would be /{id} with type='POST'
-                url: "/previewEdit?projectDir=" + document.getElementById("projectDir").value,
+                url: "/previewEdit?projectDir=" + projectDir.value,
                 type: 'GET',
                 data: rowdata,
                 success: success,
@@ -179,6 +185,7 @@ function showEnvTable(scan) {
         }
     });
     if ($('#userType').val() === 'guest') {
+        //@ts-ignore //ignoring library-specific compile error
         let buttonsList = envTableObj.buttons(['.owner_btn']);
         buttonsList.remove();
         // buttonsList.disable();
