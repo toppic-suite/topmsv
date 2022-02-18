@@ -9,6 +9,11 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@types/d3": "^5.16.0",
+    "@types/datatables.net": "^1.10.21",
+    "@types/jqueryui": "^1.12.16",
+    "@types/node": "^17.0.17",
+    "@types/three": "^0.137.0",
     "archiver": "3.1.1",
     "axios": "0.20.0",
     "better-sqlite3": "7.4.1",
@@ -26,14 +31,16 @@
     "nodemailer": "6.6.0",
     "papaparse": "5.3.0",
     "passport": "0.4.1",
-    "passport-google-oauth": "2.0.0",
     "passport-custom": "1.1.1",
+    "passport-google-oauth": "2.0.0",
     "rimraf": "3.0.2",
     "serve-favicon": "2.5.0",
-    "uuid": "3.4.0",
-    "unzipper": "0.10.11"
+    "unzipper": "0.10.11",
+    "uuid": "3.4.0"
   },
   "devDependencies": {
+    "@types/bootstrap": "^5.1.9",
+    "@types/jquery": "^3.5.13",
     "jsdoc": "3.6.6"
   }
 }
