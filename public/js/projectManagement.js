@@ -30,7 +30,7 @@ $(document).ready(function () {
             });
         }*/
         if (result) {
-            let projectCode = document.querySelector('projectCode');
+            let projectCode = document.querySelector('#projectCode');
             if (projectCode) {
                 $.ajax({
                     url: "checkProjectStatusSync?projectCode=" + projectCode.value,
@@ -59,7 +59,7 @@ $(document).ready(function () {
         let result = confirm("Are you sure that you want to edit this project?");
         let publicStatus = $('#public').prop("checked") === true;
         if (result) {
-            let projectCode = document.querySelector('projectCode');
+            let projectCode = document.querySelector('#projectCode');
             if (projectCode) {
                 $.ajax({
                     url: "editProject?projectCode=" + projectCode.value + "&projectName=" + $('#project_Name').val() + '&description=' + $('#project_Description').val() + "&publicStatus=" + publicStatus,

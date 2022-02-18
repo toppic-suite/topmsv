@@ -3,13 +3,13 @@
     let file = document.querySelector('#dbfile');
     let envfile1 = document.querySelector('#envfile1');
     // var envfile2 = document.querySelector('#envfile2');
-    let project = document.querySelector('projectName');
+    let project = document.querySelector('#projectName');
     // var email = document.getElementById('emailAddress');
-    let description = document.querySelector('description');
-    let pub = document.querySelector('public');
+    let description = document.querySelector('#description');
+    let pub = document.querySelector('#public');
     //console.log(pub.checked);
-    let dbfilename = document.querySelector('dbfilename');
-    let envfilename1 = document.querySelector('envfilename1');
+    let dbfilename = document.querySelector('#dbfilename');
+    let envfilename1 = document.querySelector('#envfilename1');
     // var envfilename2 = document.getElementById('envfilename2');
     //var choosename = document.getElementById('dbfilename');
     let upload = document.querySelector('#uploadbutton');

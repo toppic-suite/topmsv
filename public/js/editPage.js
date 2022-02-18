@@ -21,7 +21,7 @@ $(document).ready(function () {
         let result = confirm("Are you sure that you want to edit this project?");
         let publicStatus = $('#public').prop("checked") === true;
         if (result) {
-            let type = document.querySelector('type');
+            let type = document.querySelector('#type');
             if (type) {
                 $.ajax({
                     url: "editManage?type=" + type.value + "&id=" + $('#id').val() + '&name=' + $('#name').val() + '&description=' + $('#description').val() + "&publicStatus=" + publicStatus,

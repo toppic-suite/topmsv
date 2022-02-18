@@ -29,7 +29,7 @@ $( document ).ready(function() {
             });
         }*/
     if (result) {
-      let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>('projectCode');
+      let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#projectCode');
       if (projectCode) {
         $.ajax({
             url:"checkProjectStatusSync?projectCode=" + projectCode.value,
@@ -58,7 +58,7 @@ $( document ).ready(function() {
     let result: boolean = confirm("Are you sure that you want to edit this project?");
     let publicStatus: boolean = $('#public').prop("checked") === true;
     if (result) {
-      let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>('projectCode');
+      let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#projectCode');
       if (projectCode) {
         $.ajax({
           url:"editProject?projectCode=" + projectCode.value + "&projectName=" + $('#project_Name').val() + '&description=' + $('#project_Description').val() + "&publicStatus=" + publicStatus,
@@ -72,3 +72,4 @@ $( document ).ready(function() {
     }
   });
 });
+

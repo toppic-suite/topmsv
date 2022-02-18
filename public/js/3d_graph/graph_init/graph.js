@@ -174,7 +174,7 @@ Graph.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 Graph.camera = new THREE.OrthographicCamera(-50, 50, -10, 10, 1, 100);
 Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 //@ts-ignore
-Graph.graphControls = new THREE.OrbitControls(camera, renderer.domElement);
+Graph.graphControls = new THREE.OrbitControls(Graph.camera, Graph.renderer.domElement);
 /*rounding for grpah axis labels */
 Graph.roundMz = 3;
 Graph.roundRt = 3;

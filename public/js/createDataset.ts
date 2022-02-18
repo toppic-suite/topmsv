@@ -2,13 +2,13 @@
   let file: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#dbfile');
   let envfile1: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#envfile1');
   // var envfile2 = document.querySelector('#envfile2');
-  let project: HTMLInputElement | null = document.querySelector<HTMLInputElement>('projectName');
+  let project: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#projectName');
   // var email = document.getElementById('emailAddress');
-  let description: HTMLTextAreaElement | null = document.querySelector<HTMLTextAreaElement>('description');
-  let pub: HTMLInputElement | null = document.querySelector<HTMLInputElement>('public');
+  let description: HTMLTextAreaElement | null = document.querySelector<HTMLTextAreaElement>('#description');
+  let pub: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#public');
   //console.log(pub.checked);
-  let dbfilename: HTMLSpanElement | null = document.querySelector<HTMLSpanElement>('dbfilename');
-  let envfilename1: HTMLSpanElement | null = document.querySelector<HTMLSpanElement>('envfilename1');
+  let dbfilename: HTMLSpanElement | null = document.querySelector<HTMLSpanElement>('#dbfilename');
+  let envfilename1: HTMLSpanElement | null = document.querySelector<HTMLSpanElement>('#envfilename1');
   // var envfilename2 = document.getElementById('envfilename2');
   //var choosename = document.getElementById('dbfilename');
   let upload: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>('#uploadbutton');

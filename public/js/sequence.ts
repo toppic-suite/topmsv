@@ -1,8 +1,8 @@
 type ptmTemp = {"name": string, "mass": string};//only used in this file
 
 function inspect(scanID: string, scanNum: string): void {
-  let projectDir: HTMLInputElement | null = document.querySelector<HTMLInputElement>("projectDir");
-  let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>("projectCode");
+  let projectDir: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectDir");
+  let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectCode");
   if (!projectDir) {
     console.error("invalid project directory");
     return;
@@ -95,7 +95,7 @@ function inspect(scanID: string, scanNum: string): void {
 }
 
 function jumpBack(scan: string) {
-  let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>("projectCode");
+  let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectCode");
   if (!projectCode) {
     console.error("invalid project code");
     return;

@@ -103,12 +103,9 @@ function init2D(scan, configFromResultViz) {
                             let spectrumDataEnvs = new SpectrumFunction();
                             spectrumDataPeaks.assignLevelPeaks(peaks);
                             spectrumDataEnvs.assignLevelEnvs(envelopes);
-                            //@ts-ignore variable from another file in global namespace
-                            spGraph = new SpectrumView("spectrum1", peaks);
-                            //@ts-ignore variable from another file in global namespace
+                            let spGraph = new SpectrumView("spectrum1", peaks);
                             spGraph.addRawSpectrumAnno(envelopes, ions);
                             //spGraph.para.updateMzRange(prec_mz);
-                            //@ts-ignore variable from another file in global namespace
                             spGraph.redraw();
                         }
                     }
@@ -119,10 +116,8 @@ function init2D(scan, configFromResultViz) {
                         }
                         let spectrumDataPeaks = new SpectrumFunction();
                         spectrumDataPeaks.assignLevelPeaks(peaks);
-                        //@ts-ignore variable from another file in global namespace
-                        spGraph = new SpectrumView("spectrum1", peaks);
+                        let spGraph = new SpectrumView("spectrum1", peaks);
                         //spGraph.para.updateMzRange(prec_mz);
-                        //@ts-ignore variable from another file in global namespace
                         spGraph.redraw();
                     }
                 }).catch(function (error) {
@@ -214,17 +209,11 @@ function loadPeakList1(scanID, prec_mz, mz_low = -1, mz_high = -1) {
                     let spectrumDataEnvs = new SpectrumFunction();
                     spectrumDataPeaks.assignLevelPeaks(spectrum.getPeaks());
                     spectrumDataEnvs.assignLevelEnvs(spectrum.getEnvs());
-                    //@ts-ignore variable from another file in global namespace
-                    spGraph = new SpectrumView("spectrum1", spectrum.getPeaks());
-                    //@ts-ignore variable from another file in global namespace
+                    let spGraph = new SpectrumView("spectrum1", spectrum.getPeaks());
                     spGraph.addRawSpectrumAnno(spectrum.getEnvs(), ions);
-                    //@ts-ignore variable from another file in global namespace
                     spGraph.getPara().updateMzRange(spectrum.getPrecMz());
-                    //@ts-ignore variable from another file in global namespace
                     spGraph.getPara().setHighlight(spectrum);
-                    //@ts-ignore variable from another file in global namespace
                     spGraph.redraw();
-                    //@ts-ignore variable from another file in global namespace
                     graph1_g = spGraph;
                 }
             }
@@ -236,15 +225,10 @@ function loadPeakList1(scanID, prec_mz, mz_low = -1, mz_high = -1) {
                 let spectrum = new Spectrum("0", scanID.toString(), 1, peaks, null, [], [], [], -1, -1, parseFloat(prec_mz), mz_low, mz_high);
                 let spectrumDataPeaks = new SpectrumFunction();
                 spectrumDataPeaks.assignLevelPeaks(spectrum.getPeaks());
-                //@ts-ignore variable from another file in global namespace
-                spGraph = new SpectrumView("spectrum1", spectrum.getPeaks());
-                //@ts-ignore variable from another file in global namespace
+                let spGraph = new SpectrumView("spectrum1", spectrum.getPeaks());
                 spGraph.getPara().updateMzRange(spectrum.getPrecMz());
-                //@ts-ignore variable from another file in global namespace
                 spGraph.getPara().setHighlight(spectrum);
-                //@ts-ignore variable from another file in global namespace
                 spGraph.redraw();
-                //@ts-ignore variable from another file in global namespace
                 graph1_g = spGraph;
             }
         })
@@ -308,14 +292,10 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                     let spectrumDataEnvs = new SpectrumFunction();
                     spectrumDataPeaks.assignLevelPeaks(peaks);
                     spectrumDataEnvs.assignLevelEnvs(envelopes);
-                    //@ts-ignore variable from another file in global namespace
-                    spGraph = new SpectrumView("spectrum2", peaks);
-                    //@ts-ignore variable from another file in global namespace
+                    let spGraph = new SpectrumView("spectrum2", peaks);
                     spGraph.addRawSpectrumAnno(envelopes, ions);
                     //spGraph.para.updateMzRange(prec_mz);
-                    //@ts-ignore variable from another file in global namespace
                     spGraph.redraw();
-                    //@ts-ignore variable from another file in global namespace
                     graph2_g = spGraph;
                 }
             }
@@ -326,12 +306,9 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
                 }
                 let spectrumDataPeaks = new SpectrumFunction();
                 spectrumDataPeaks.assignLevelPeaks(peaks);
-                //@ts-ignore variable from another file in global namespace
-                spGraph = new SpectrumView("spectrum2", peaks);
+                let spGraph = new SpectrumView("spectrum2", peaks);
                 //spGraph.para.updateMzRange(prec_mz);
-                //@ts-ignore variable from another file in global namespace
                 spGraph.redraw();
-                //@ts-ignore variable from another file in global namespace
                 graph2_g = spGraph;
             }
             let scan2Elem = document.getElementById("scanID2");

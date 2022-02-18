@@ -7,8 +7,9 @@ else {
 }
 function callAuthentication(e) {
     e.preventDefault();
+    console.log(getCookie('token'));
     if (getCookie('token') === '') {
-        let authValue = document.querySelector("auth-value");
+        let authValue = document.querySelector("#auth-value");
         if (authValue) {
             let shouldAuthenticate = authValue.textContent;
             if (shouldAuthenticate == "true") {

@@ -10,13 +10,16 @@ class InteRtGraph {
         this.rt_ID_ = rt_ID;
         this.inte_ID_ = inte_ID;
         this.scanNum_ID_ = scanNum_ID;
+        this.padding = padding;
         this.width = width;
         this.height = height;
-        this.padding = padding;
         this.onClickFunc = onClickFunc;
         this.config_ = config;
     }
     ;
+    get inteRtArray() {
+        return this.inteRtArray_;
+    }
     set padding(obj) {
         if (!obj.head || !obj.bottom || !obj.left || !obj.right) {
             console.log("padding should be an object that contanins top, bottom, left and right");
@@ -66,6 +69,15 @@ class InteRtGraph {
         let maxRT = d3.max(this.inteRtArray_, function (d) {
             return d.rt;
         });
+        this.inteRtArray_.forEach((element) => {
+            if (maxInte == undefined) {
+                console.error("ERROR: invalid intensity in inte-rt graph");
+                return;
+            }
+            element.rt = element.rt;
+            element.intePercentage = element.inteSum / maxInte;
+        });
+        this.inteRtArray_.sort((a, b) => { return a.rt > b.rt ? 1 : -1; });
         let min = d3.min(this.inteRtArray_, function (d) {
             return d.intePercentage;
         });
@@ -79,19 +91,11 @@ class InteRtGraph {
             maxRT = 0;
         }
         if (!min || !max || !minRT || !maxRT) {
+            console.log(`min: ${min} max: ${max} minRT ${minRT} maxRT: ${maxRT}`);
             console.error("ERROR: invalid intensity or rt in inte-rt graph");
             return;
         }
         let formatPercent = d3.format(".0%");
-        this.inteRtArray_.forEach((element) => {
-            if (maxInte == undefined) {
-                console.error("ERROR: invalid intensity in inte-rt graph");
-                return;
-            }
-            element.rt = element.rt;
-            element.intePercentage = element.inteSum / maxInte;
-        });
-        this.inteRtArray_.sort((a, b) => { return a.rt > b.rt ? 1 : -1; });
         let xScale = d3.scaleLinear()
             .domain([0, maxRT + 5])
             .range([0, this.width - this.padding.left - this.padding.right]);
@@ -172,12 +176,14 @@ class InteRtGraph {
         let self = this;
         svg
             .on("mouseout", hoverMouseOff)
-            .on("mouseover mousemove touchmove", hoverMouseOn.bind(self))
-            .on("click", mouseClick.bind(self));
+            .on("mouseover mousemove touchmove", hoverMouseOn)
+            .on("click", mouseClick);
         let bisectRT = d3.bisector(function (d) { return d.rt; }).right;
         let selectedDataPoint;
         function mouseClick() {
+            //@ts-ignore allow use of this
             let mouse_x = d3.mouse(this)[0];
+            //@ts-ignore allow use of this
             let mouse_y = d3.mouse(this)[1];
             let maxMouse = xScale(maxRT);
             let mouseRT = xScale.invert(mouse_x - padding.left);
@@ -204,7 +210,9 @@ class InteRtGraph {
             }
         }
         function hoverMouseOn() {
+            //@ts-ignore allow use of this
             let mouse_x = d3.mouse(this)[0];
+            //@ts-ignore allow use of this
             let mouse_y = d3.mouse(this)[1];
             let maxMouse = xScale(maxRT);
             hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);
@@ -252,10 +260,10 @@ class InteRtGraph {
                 }*/
                 //below code makes the previous selected rt data to be displayed when mouse cursor is out of range
                 if (document.getElementById(rt_ID)) {
-                    document.getElementById(rt_ID).innerHTML = (Math.round(selectedDataPoint.rt * 100) / 100).toString();
+                    document.getElementById(rt_ID).innerHTML = (Math.round(selectedDataPoint.rt * 100) / 100).toFixed(config.floatDigit) + " (min)";
                 }
                 if (document.getElementById(inte_ID)) {
-                    document.getElementById(inte_ID).innerHTML = selectedDataPoint.inteSum.toExponential(2);
+                    document.getElementById(inte_ID).innerHTML = selectedDataPoint.inteSum.toExponential(config.scientificDigit);
                 }
                 if (document.getElementById(inte_ID)) {
                     document.getElementById(scanNum_ID).innerHTML = selectedDataPoint.scanNum.toString();

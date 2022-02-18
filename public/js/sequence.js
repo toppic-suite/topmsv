@@ -1,7 +1,7 @@
 "use strict";
 function inspect(scanID, scanNum) {
-    let projectDir = document.querySelector("projectDir");
-    let projectCode = document.querySelector("projectCode");
+    let projectDir = document.querySelector("#projectDir");
+    let projectCode = document.querySelector("#projectCode");
     if (!projectDir) {
         console.error("invalid project directory");
         return;
@@ -93,7 +93,7 @@ function inspect(scanID, scanNum) {
     });
 }
 function jumpBack(scan) {
-    let projectCode = document.querySelector("projectCode");
+    let projectCode = document.querySelector("#projectCode");
     if (!projectCode) {
         console.error("invalid project code");
         return;

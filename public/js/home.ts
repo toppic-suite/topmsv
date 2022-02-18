@@ -5,8 +5,9 @@ if(getCookie('token') ===''){
 }
 function callAuthentication(e: Event) {//when user clicks sign in button
   e.preventDefault();
+  console.log(getCookie('token'));
   if(getCookie('token')=== ''){
-    let authValue: HTMLParagraphElement | null = document.querySelector<HTMLParagraphElement>("auth-value");
+    let authValue: HTMLParagraphElement | null = document.querySelector<HTMLParagraphElement>("#auth-value");
     if (authValue) {
       let shouldAuthenticate = authValue.textContent;
       if (shouldAuthenticate == "true") {
