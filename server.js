@@ -553,6 +553,9 @@ app.use('/', require("./router/getTotalScanCount"));
 app.use('/', require("./router/auth_google"));
 app.use('/', require("./router/auth_skip"));
 
+/**router for 3D graph */
+app.use('/', require("./router/inspect"));
+
 // 404 router
 app.use('/*', function(req, res){
     console.log('404 handler..');
