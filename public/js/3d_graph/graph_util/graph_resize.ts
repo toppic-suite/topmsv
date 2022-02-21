@@ -20,9 +20,8 @@ class GraphResize {
     GraphControl.resizeCameraUserControl();
   }
 
-
   fullScreen = (): void => {
-    let parameterDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#3d-graph-parameter"); 
+    let parameterDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>('[id="3d-graph-parameter"]'); 
     let centerDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#center-div"); 
     let graphDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#graph-container"); 
     let graphEl = Graph.graphEl;
