@@ -151,12 +151,12 @@ function preprocessSeq(seqString, ptmData = {}, fixedPtmList = [], unknownMassSh
     }
     let seq = JSON.parse(seqString).seq;
     let firstIsDot = 1;
+    seq = seq.replace(/\(/g, '');
+    seq = seq.replace(/\)/g, '');
     let firstDotIndex = seq.indexOf('.');
     let lastDotIndex = seq.lastIndexOf('.');
     let firstIndex = seq.indexOf('[');
     let lastIndex = seq.lastIndexOf(']');
-    seq = seq.replace(/\(/g, '');
-    seq = seq.replace(/\)/g, '');
     if (firstDotIndex === -1) {
         firstDotIndex = 0;
         firstIsDot = 0;

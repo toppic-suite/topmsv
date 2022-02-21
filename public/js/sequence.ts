@@ -155,14 +155,14 @@ function preprocessSeq(seqString: string | number, ptmData = {} as {"fixedPtms":
   let seq: string = JSON.parse(seqString).seq;
   let firstIsDot: number = 1;
 
+  seq = seq.replace(/\(/g,'');
+  seq = seq.replace(/\)/g, '');
+
   let firstDotIndex: number = seq.indexOf('.');
   let lastDotIndex: number = seq.lastIndexOf('.');
 
   let firstIndex = seq.indexOf('[');
   let lastIndex = seq.lastIndexOf(']');
-
-  seq = seq.replace(/\(/g,'');
-  seq = seq.replace(/\)/g, '');
 
   if(firstDotIndex === -1) {
     firstDotIndex = 0;
