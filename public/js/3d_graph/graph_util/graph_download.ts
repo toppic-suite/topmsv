@@ -67,10 +67,17 @@ class GraphDownload {
 	formDiv.style.top = (y + 20) + "px";
 
 	btn.onclick = () => {
-	  let imagename = GraphDownload.getImageName();
-	  if( imagename == null || imagename == ""){
-		imagename = "peak3DGraph";
+      let imagename: string = '';
+	  let userInput = document.querySelector<HTMLInputElement>("#input-file-name");
+	  if (userInput && userInput.value != '') {
+	    imagename = userInput.value;
+	  } else {
+		imagename = GraphDownload.getImageName();
+		if( imagename == null || imagename == ""){
+		  imagename = "peak3DGraph";
+		}
 	  }
+	
 	  formDiv!.style.display = "none";
 
 	  const save = (dataBlob, filesize) => {
