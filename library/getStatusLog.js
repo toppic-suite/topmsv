@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Get contents of a log file for given task.
  * @param {string} dir - Project directory
@@ -7,12 +8,12 @@
  */
 const fs = require('fs');
 const path = require('path');
-
 function getStatusLog(fileName, callback) {
-    try{
-        let data = fs.readFileSync(path.join("log", fileName), {encoding:'utf8'});
+    try {
+        let data = fs.readFileSync(path.join("log", fileName), { encoding: 'utf8' });
         callback(null, data);
-    }catch (error) {
+    }
+    catch (error) {
         callback(error, null);
     }
 }

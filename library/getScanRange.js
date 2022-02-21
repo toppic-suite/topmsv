@@ -1,4 +1,5 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
  * Get range of scan.
  * @param {string} dir - Project directory
@@ -12,9 +13,7 @@ function getScanRange(dir, callback) {
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let rows = stmt.get();
-
     db.close();
-
     return callback(null, rows);
 }
 module.exports = getScanRange;

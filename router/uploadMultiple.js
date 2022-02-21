@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Express router for /uploadMultiple
  *
@@ -20,7 +21,6 @@ const formidable = require('formidable');
 const uuidv1 = require('uuid/v1');
 const unzipper = require('unzipper');
 const os = require('os');
-
 const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
     console.log("hello,uploadMultiple");
     let uid = req.session.passport.user.profile.id;
@@ -30,15 +30,16 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
                                 WHERE uid = ?;`);
     let queryResult = stmt.get(uid);
     resultDb.close();
-	let shouldSendEmail = true;
+    let shouldSendEmail = true;
     let email;
     if (!queryResult) {
         console.log("Upload files failed, no corresponding email address!");
         return;
-    } else {
+    }
+    else {
         email = queryResult.email;
     }
-	//skip emailing based on config setting
+    //skip emailing based on config setting
     if (fs.existsSync('config.json')) {
         let configData = fs.readFileSync('config.json');
         configData = JSON.parse(configData);
@@ -67,83 +68,75 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
         let file = files.dbfile;
         let eid = fields.eid;
         let fname = file.name;
-
-        let write_contents = "file.path: " + file.path + " form.uploadDir: " + form.uploadDir
-                fs.writeFile("file_name.txt", write_contents, function (err) {
-                    if (err) return console.log(err);
-                });
-
+        let write_contents = "file.path: " + file.path + " form.uploadDir: " + form.uploadDir;
+        fs.writeFile("file_name.txt", write_contents, function (err) {
+            if (err)
+                return console.log(err);
+        });
         fs.createReadStream(file.path)
-            .pipe(unzipper.Extract({ path: form.uploadDir }).on('close', function(){
-                fs.unlinkSync(file.path);
-                
-                //iterate over files, if mzML file, create a new project folder and move the file
-                //and process the file
-                let fileNames = fs.readdirSync(form.uploadDir);
-                fileNames.forEach(file => {
-                    //exclude .placeholder file
-                    let ext = file.lastIndexOf('.');
-                    if (file.substr(ext) == ".placeholder"){
-                        return;
-                    };
-                    let mzmlFile = form.uploadDir + "/" + file;
-
-                    let folderid = uuidv1();
-                    let des_path = "data/" + folderid + "/";
-                    let des_file = "data/" + folderid + "/" + file;
-
-                    if (!fs.existsSync(des_path)) {
-                        console.log('The path does not exist.');
-                        fs.mkdirSync(des_path);
-                        console.log('Path created: ',des_path);
+            .pipe(unzipper.Extract({ path: form.uploadDir }).on('close', function () {
+            fs.unlinkSync(file.path);
+            //iterate over files, if mzML file, create a new project folder and move the file
+            //and process the file
+            let fileNames = fs.readdirSync(form.uploadDir);
+            fileNames.forEach(file => {
+                //exclude .placeholder file
+                let ext = file.lastIndexOf('.');
+                if (file.substr(ext) == ".placeholder") {
+                    return;
+                }
+                ;
+                let mzmlFile = form.uploadDir + "/" + file;
+                let folderid = uuidv1();
+                let des_path = "data/" + folderid + "/";
+                let des_file = "data/" + folderid + "/" + file;
+                if (!fs.existsSync(des_path)) {
+                    console.log('The path does not exist.');
+                    fs.mkdirSync(des_path);
+                    console.log('Path created: ', des_path);
+                }
+                fs.rename(mzmlFile, des_file, function (err) {
+                    if (err) {
+                        console.log(err);
+                        return res.send({ "error": 403, "message": "Error on saving file!" });
                     }
-
-                    fs.rename(mzmlFile, des_file, function (err) {
-                        if(err) {
+                    let adr = 'https://toppic.soic.iupui.edu/data?id=';
+                    let id = makeid(11);
+                    ifExists(id, function (err, result) {
+                        if (err) {
                             console.log(err);
-                            return res.send({"error": 403, "message": "Error on saving file!"});
                         }
-                        let adr =  'https://toppic.soic.iupui.edu/data?id=';
-                        let id = makeid(11);
-    
-                        ifExists(id, function (err, result) {
-                            if(err) {
-                                console.log(err);
-                            }
-                            while (true) {
-                                if(!result) {
-                                    insertRowSync(id, projectname, file,description,des_file,4, emailtosend,0,0,0,0,uid,publicStatus, "true", 0);
-                                    //create path based on OS type    
-                                    let app = './cpp/bin/mzMLReader';
-
-                                    if (os.platform() == "win32"){
-                                        app = '.\\cpp\\bin\\mzMLReader';
-                                    }
-                                    let parameter = des_file + ' -f';
-                                    submitTask(id, app, parameter, 1);
-                                    break;
+                        while (true) {
+                            if (!result) {
+                                insertRowSync(id, projectname, file, description, des_file, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus, "true", 0);
+                                //create path based on OS type    
+                                let app = './cpp/bin/mzMLReader';
+                                if (os.platform() == "win32") {
+                                    app = '.\\cpp\\bin\\mzMLReader';
                                 }
+                                let parameter = des_file + ' -f';
+                                submitTask(id, app, parameter, 1);
+                                break;
                             }
-                        })
-                    })
-                })    
-				if (shouldSendEmail) {
-					nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
-					nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
-					nodemailerAuth.message.to = emailtosend;
-					nodemailerAuth.transport.sendMail(nodemailerAuth.message, function(err, info) {
-						if (err) {
-							console.log(err)
-						} 
-						else {
-							console.log(info);
-						}
-					});
-				}
-                res.end();  
-            })
-        );
-    })
+                        }
+                    });
+                });
+            });
+            if (shouldSendEmail) {
+                nodemailerAuth.message.text = "Project Name: " + projectname + "\nFile Name: " + fname + "\nStatus: Processing\nOnce data processing is done, you will receive a link to review your result.";
+                nodemailerAuth.message.subject = "Your data has been uploaded, please wait for processing";
+                nodemailerAuth.message.to = emailtosend;
+                nodemailerAuth.transport.sendMail(nodemailerAuth.message, function (err, info) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        console.log(info);
+                    }
+                });
+            }
+            res.end();
+        }));
+    });
 });
-
 module.exports = uploadMultiple;

@@ -1,10 +1,10 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getScanID = require("../library/getScanID");
-
 /**
  * Express.js router for /scanID
- * 
+ *
  * Return scan number of specific scan by given scan ID
  */
 const scanID = router.get('/scanID', function (req, res) {
@@ -20,6 +20,6 @@ const scanID = router.get('/scanID', function (req, res) {
         let scanID = row.scanID.toString();
         res.write(scanID);
         res.end();
-    })
+    });
 });
 module.exports = scanID;

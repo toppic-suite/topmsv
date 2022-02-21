@@ -1,4 +1,5 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
  * Get retention time by given scan.
  * @param {string} dir - Project directory
@@ -14,9 +15,7 @@ function getRTAsync(dir, scanNum, callback) {
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let row = stmt.get(scanNum);
-
     db.close();
-
     return callback(null, row);
 }
 module.exports = getRTAsync;

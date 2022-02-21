@@ -1,5 +1,5 @@
-const BetterDB = require('better-sqlite3'); 
-
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
  * Get project information summary by projectCode. Async Mode.
  * @param {string} id - Project code
@@ -22,10 +22,8 @@ function getProjectSummary(id, callback) {
                     Description AS description
                 FROM Projects
                 WHERE ProjectCode = ?`;
-    
     let stmt = db.prepare(sql);
     let row = stmt.get(id);
-
     db.close();
     return callback(null, row);
 }

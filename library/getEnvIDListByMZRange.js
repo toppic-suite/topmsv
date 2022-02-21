@@ -1,5 +1,5 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
-
 /**
  * Get a list of Envelope ID, whose Mz value is between min and max. Async mode.
  * @param {string} dir - Project directory
@@ -20,5 +20,4 @@ function getEnvIDListByMZRange(dir, min, max, scan) {
     resultDB.close();
     return envIDList;
 }
-
 module.exports = getEnvIDListByMZRange;

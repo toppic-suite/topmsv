@@ -1,4 +1,5 @@
-function getCookie(cname) {
+"use strict";
+/*function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
@@ -128,4 +129,4 @@ $('#deleteButton').click( function () {
 $('#editButton').click(function () {
     window.location.href = "/editRequest?type=" + type_g + "&id=" +id_g;
 })
-
+*/

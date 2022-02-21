@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 /**
  * Get all sequence information of one project. Sync mode.
@@ -9,11 +10,12 @@ function getAllSeq(dir) {
     let resultDb = new BetterDB(dbDir);
     let stmt = resultDb.prepare(`SELECT SPECTRA.SCAN AS scanID, SPECTRA.SCAN AS scan, sequence.protein_accession AS protein_accession, sequence.proteoform AS proteoform, sequence.e_value AS e_value, sequence.q_value AS q_value
                                 FROM sequence INNER JOIN SPECTRA ON sequence.scan_id = SPECTRA.SCAN`);
-    if(stmt.all()) {
+    if (stmt.all()) {
         let seqResult = stmt.all();
         resultDb.close();
         return seqResult;
-    } else {
+    }
+    else {
         resultDb.close();
         return 0;
     }

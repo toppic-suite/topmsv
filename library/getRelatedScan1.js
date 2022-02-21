@@ -1,4 +1,5 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
  * Get the first related scan level two scan by given scan level one scan.
  * @param {string} dir - Project directory
@@ -6,7 +7,6 @@ const BetterDB = require('better-sqlite3');
  * @param {function} callback - Callback function that handles query results
  * @returns {function} Callback function
  */
-
 function getRelatedScan1(dir, scanID, callback) {
     let sql = `SELECT LevelOneScanID
            FROM ScanPairs
@@ -16,7 +16,6 @@ function getRelatedScan1(dir, scanID, callback) {
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let row = stmt.get(scanID);
-
     db.close();
     return callback(null, row);
 }

@@ -1,3 +1,4 @@
+"use strict";
 var BetterDB = require("better-sqlite3");
 /**
  * Update project name by given projectCode. Sync mode.

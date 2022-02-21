@@ -1,13 +1,13 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getExperiment = require("../library/getExperiment");
-
 /**
  * Express.js router for /experimentMangement
- * 
+ *
  * Render experiment management page to users
  */
-let experimentManagement = router.get('/experimentManagement', function (req,res) {
+let experimentManagement = router.get('/experimentManagement', function (req, res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
@@ -28,7 +28,8 @@ let experimentManagement = router.get('/experimentManagement', function (req,res
             res.render('pages/experiments', {
                 experiments: []
             });
-        } else {
+        }
+        else {
             res.render('pages/experiments', {
                 experiments: rows
             });
@@ -67,5 +68,4 @@ let experimentManagement = router.get('/experimentManagement', function (req,res
         // });
     }
 });
-
 module.exports = experimentManagement;

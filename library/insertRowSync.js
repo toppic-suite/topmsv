@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 /**
  * Insert new project information into database. Sync mode.
@@ -16,10 +17,10 @@ const BetterDB = require("better-sqlite3");
  * @param {boolean} doesExpire - if this project should be removed after 30 days
 * @param {number} allowToppic - if Toppic can be run (= TopFD has run)
 */
-function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus, SeqStatus, ms1EnvFile,uid,publicStatus, doesExpire, allowToppic) {
+function insertRowSync(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus, SeqStatus, ms1EnvFile, uid, publicStatus, doesExpire, allowToppic) {
     let resultDb = new BetterDB('./db/projectDB.db');
     let stmt = resultDb.prepare('INSERT INTO Projects(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvelopeStatus, FeatureStatus, SequenceStatus, MS1_envelope_file, uid, public, doesExpire, allowToppic) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
-    let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus,SeqStatus, ms1EnvFile,uid, publicStatus, doesExpire, allowToppic);
+    let info = stmt.run(ProjectCode, ProjectName, FileName, Description, ProjectDir, ProjectStatus, Email, EnvStatus, FeatureStatus, SeqStatus, ms1EnvFile, uid, publicStatus, doesExpire, allowToppic);
     //console.log("insertRowSync info", info);
     resultDb.close();
 }

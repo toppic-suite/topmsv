@@ -1,7 +1,7 @@
+"use strict";
 // const express = require("express");
 // const router = express.Router();
 // const checkFileStatusLib = require("../library/checkFileStatus");
-
 // /**
 //  * Express.js router for /checkFileStatus
 //  * Return contents of a log file for each task

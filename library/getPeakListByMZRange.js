@@ -1,5 +1,5 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
-
 /**
  * Get one given scan's peak mz and intensity where peaks' mz are between min and max. Sync mode.
  * @param {string} dir - Project directory
@@ -18,5 +18,4 @@ function getPeakListByMZRange(dir, min, max, scan) {
     resultDB.close();
     return peakList;
 }
-
 module.exports = getPeakListByMZRange;

@@ -1,13 +1,13 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const BetterDB = require("better-sqlite3");
-
 /**
  * Express.js router for /getInfo
- * 
+ *
  * Return information of project, experiment or dataset with given type and ID
  */
-let getInfo = router.get('/getInfo', function (req,res) {
+let getInfo = router.get('/getInfo', function (req, res) {
     console.log("Hello, getInfo!");
     // const uid = req.session.passport.user.profile.id;
     const type = req.query.type;
@@ -41,5 +41,4 @@ let getInfo = router.get('/getInfo', function (req,res) {
     }
     res.end();
 });
-
 module.exports = getInfo;

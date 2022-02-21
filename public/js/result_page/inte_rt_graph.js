@@ -1,4 +1,5 @@
-class InteRtGraph {
+"use strict";
+/*class InteRtGraph {
     xScale_g;
     fixedLine_g;
 
@@ -269,28 +270,28 @@ class InteRtGraph {
                 }
                 if (document.getElementById(inte_ID)) {
                     document.getElementById(scanNum_ID).innerHTML = 0;
-                }*/
-                //below code makes the previous selected rt data to be displayed when mouse cursor is out of range
-                if(document.getElementById(rt_ID)) {
-                    document.getElementById(rt_ID).innerHTML = Math.round(selectedDataPoint.rt * 100)/100;
-                }
-                if (document.getElementById(inte_ID)) {
-                    document.getElementById(inte_ID).innerHTML = selectedDataPoint.inteSum.toExponential(2);
-                }
-                if (document.getElementById(inte_ID)) {
-                    document.getElementById(scanNum_ID).innerHTML = selectedDataPoint.scanNum;
-                }
-                hoverLine.style("opacity", 0);
-            }
-        }
-        function hoverMouseOff() {
-            hoverLine.style("opacity", 1e-6);
-        }
-    }
-
-    moveLine(rt) {
-        let newX = this.xScale_g(rt) + this.padding.left;
-        this.fixedLine_g.attr("x1", newX).attr("x2", newX);
-        this.fixedLine_g.style("opacity", 1);
-    }
+                }*/ /*
+//below code makes the previous selected rt data to be displayed when mouse cursor is out of range
+if(document.getElementById(rt_ID)) {
+    document.getElementById(rt_ID).innerHTML = Math.round(selectedDataPoint.rt * 100)/100;
 }
+if (document.getElementById(inte_ID)) {
+    document.getElementById(inte_ID).innerHTML = selectedDataPoint.inteSum.toExponential(2);
+}
+if (document.getElementById(inte_ID)) {
+    document.getElementById(scanNum_ID).innerHTML = selectedDataPoint.scanNum;
+}
+hoverLine.style("opacity", 0);
+}
+}
+function hoverMouseOff() {
+hoverLine.style("opacity", 1e-6);
+}
+}
+
+moveLine(rt) {
+let newX = this.xScale_g(rt) + this.padding.left;
+this.fixedLine_g.attr("x1", newX).attr("x2", newX);
+this.fixedLine_g.style("opacity", 1);
+}
+}*/ 

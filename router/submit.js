@@ -1,3 +1,4 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const path = require("path");
@@ -16,7 +17,7 @@ const submit = router.get('/submit', function (req, res) {
     else {
         let uid = req.session.passport.user.profile.id;
         let userInfo = checkUser(uid);
-        if(!userInfo) {
+        if (!userInfo) {
             res.write("User does not exist in the system! Please log in first!");
             res.end();
             return;
@@ -26,10 +27,9 @@ const submit = router.get('/submit', function (req, res) {
             loginMsg = "[Logged in as " + req.session.passport.user.profile.displayName + "]";
         }
         res.render('pages/submit', {
-            loginMessage:loginMsg
+            loginMessage: loginMsg
         });
         //res.sendFile( path.resolve(__dirname + "/../public/submit.html") );
     }
 });
-
 module.exports = submit;

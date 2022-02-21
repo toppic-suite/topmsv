@@ -1,8 +1,8 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getProjectSummary = require("../library/getProjectSummary");
 const deleteProject = require("../library/deleteProject");
-
 /**
  * Express router for /removeProject
  *
@@ -14,5 +14,4 @@ const removeProject = router.post('/removeProject', function (req, res) {
     deleteProject(projectCode);
     res.end();
 });
-
 module.exports = removeProject;

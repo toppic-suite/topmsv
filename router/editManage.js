@@ -1,13 +1,13 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const BetterDB = require("better-sqlite3");
-
 /**
  * Express.js router for /editManage
- * 
+ *
  * Update name, description and public status code for project, experiment or dataset.
  */
-let editManage = router.post('/editManage', function (req,res) {
+let editManage = router.post('/editManage', function (req, res) {
     console.log("Hello, editManage!");
     const type = req.query.type;
     const id = req.query.id;
@@ -38,5 +38,4 @@ let editManage = router.post('/editManage', function (req,res) {
     resultDb.close();
     res.end();
 });
-
 module.exports = editManage;

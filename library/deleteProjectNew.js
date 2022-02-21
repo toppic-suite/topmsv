@@ -1,5 +1,5 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
-
 /**
  * Delete project info from database by given project ID. Sync mode.
  * @param {number} pid - Project ID
@@ -10,5 +10,4 @@ function deleteProject(pid) {
     let info = stmt.run(pid);
     resultDb.close();
 }
-
 module.exports = deleteProject;

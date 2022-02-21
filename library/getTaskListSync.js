@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 /**
  * Get a list which contains all the tasks that finish = 0 and projectStatus = 4. Sync mode.

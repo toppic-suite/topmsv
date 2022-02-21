@@ -1,5 +1,5 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
-
 /**
  * Get all datasets under specific envelope.
  * @param {number} eid - Envelope ID
@@ -14,5 +14,4 @@ function getDataset(eid) {
     resultDb.close();
     return queryResult;
 }
-
 module.exports = getDataset;

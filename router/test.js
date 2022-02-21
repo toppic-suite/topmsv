@@ -1,11 +1,11 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const buildTreeview = require("../library/buildTreeview");
-
 /**
  * Express.js router for /test
  */
-const test = router.get('/test', function (req,res) {
+const test = router.get('/test', function (req, res) {
     console.log("hello test");
     if (req.session.passport === undefined)
         console.log("undefined passport");
@@ -18,5 +18,4 @@ const test = router.get('/test', function (req,res) {
     }
     res.end();
 });
-
 module.exports = test;

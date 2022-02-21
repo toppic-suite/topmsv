@@ -1,7 +1,7 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 const getExperimentByPid = require("./getExperimentByPid");
 const getDataset = require("./getDataset");
-
 /**
  * Build tree view for projects
  * @param {number} pid - Project ID
@@ -33,5 +33,4 @@ function buildProjectView(pid) {
     console.log("result: ", JSON.stringify(result));
     return JSON.stringify(result);*/
 }
-
 module.exports = buildProjectView;

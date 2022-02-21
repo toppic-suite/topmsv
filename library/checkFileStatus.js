@@ -1,3 +1,4 @@
+"use strict";
 // /**
 //  * Check if file has been modified.
 //  * @param {string} dir - Project directory
@@ -7,7 +8,6 @@
 //  */
 // const fs = require('fs');
 // const path = require('path');
-
 // function checkFileStatus(fileName, callback) {
 //     let isFileModified = "false";
 //     let fileNames = fileName.split(",");

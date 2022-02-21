@@ -1,3 +1,4 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const deleteSeq = require("../library/deleteSeqSync");
@@ -15,7 +16,7 @@ const path = require('path');
  * Handle request to upload sequence file, delete current sequence information in database
  * then submit task to process sequence file
  */
-let sequence = router.post('/sequence', function (req,res) {
+let sequence = router.post('/sequence', function (req, res) {
     console.log('Hello, sequence!');
     let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit
@@ -29,14 +30,12 @@ let sequence = router.post('/sequence', function (req,res) {
         let projectName = fields.projectName;
         let projectCode = fields.projectCode;
         let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + '.db';
-
         if (!dbDir) {
             res.send("Cannot find db file!");
             res.end();
             return;
         }
-        deleteSeqFile(projectDir);//delete previous seq file
-
+        deleteSeqFile(projectDir); //delete previous seq file
         let des_seq = dbDir.substr(0, projectDir.lastIndexOf(path.sep)) + path.sep + seqFile.name;
         //console.log("dbDir", dbDir);
         //console.log("des_seq", des_seq);
@@ -48,16 +47,15 @@ let sequence = router.post('/sequence', function (req,res) {
         fs.rename(seqFile.path, des_seq, function (err) {
             if (err) {
                 console.log(err);
-                return res.send({"error": 403, "message": "Error on saving file!"});
+                return res.send({ "error": 403, "message": "Error on saving file!" });
             }
             deleteSeq(projectDir, projectCode);
-            updateSeqStatusSync(0,projectCode);
+            updateSeqStatusSync(0, projectCode);
             let parameter = path.join(__dirname, '..', 'utilities', 'sequenceParse.js') + ' ' + dbDir + ' ' + des_seq + ' ' + projectCode;
             submitTask(projectCode, 'node', parameter, 1);
             updateSeqStatusSync(1, projectCode);
             res.end();
-        })
-    })
+        });
+    });
 });
-
 module.exports = sequence;

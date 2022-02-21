@@ -1,9 +1,9 @@
+"use strict";
 // Swagger UI config js file. Unused currently
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const express = require("express");
 const router = express.Router();
-
 // Swagger set up
 const options = {
     swaggerDefinition: {
@@ -22,11 +22,7 @@ const options = {
 };
 const specs = swaggerJsdoc(options);
 router.use("/docs", swaggerUi.serve);
-const swaggerDoc = router.get(
-    "/docs",
-    swaggerUi.setup(specs, {
-        explorer: true
-    })
-);
-
+const swaggerDoc = router.get("/docs", swaggerUi.setup(specs, {
+    explorer: true
+}));
 module.exports = swaggerDoc;

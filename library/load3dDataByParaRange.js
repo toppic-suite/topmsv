@@ -1,6 +1,7 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
- * Get scan of next level one. 
+ * Get scan of next level one.
  * @param {string} dir - Project directory
  * @param {number} tableNum - database table number to get peaks from
  * @param {number} minrt - minimum retention time
@@ -13,19 +14,18 @@ const BetterDB = require('better-sqlite3');
  */
 function load3dDataByParaRange(dir, tableNum, minrt, maxrt, minmz, maxmz, maxPeaks, cutoff, callback) {
     let sql = `SELECT *
-                FROM PEAKS` + tableNum +  
-                ` WHERE RETENTIONTIME <= ? 
+                FROM PEAKS` + tableNum +
+        ` WHERE RETENTIONTIME <= ? 
                 AND RETENTIONTIME >= ?
                 AND MZ <= ?
                 AND MZ >= ?
                 AND INTENSITY > ?
                 ORDER BY INTENSITY DESC
-                LIMIT ?;`;           
+                LIMIT ?;`;
     let dbDir = dir;
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let rows = stmt.all(maxrt, minrt, maxmz, minmz, cutoff, maxPeaks);
-
     db.close();
     return callback(null, rows);
 }

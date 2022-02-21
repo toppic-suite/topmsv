@@ -1,3 +1,4 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getProjects = require("../library/getProjects");
@@ -5,13 +6,12 @@ const getTasksPerUser = require("../library/getTasksPerUser");
 const checkUser = require("../library/checkUser");
 const path = require("path");
 const fs = require("fs");
-
 /**
  * Express.js router for /tasks
- * 
+ *
  * Render task list page for user by given user ID
  */
-const tasks = router.get('/tasks', async (req,res) => {
+const tasks = router.get('/tasks', async (req, res) => {
     console.log("hello tasks");
     if (req.session.passport === undefined) {
         res.write("User does not exist in the system! Please log in first!");
@@ -23,7 +23,7 @@ const tasks = router.get('/tasks', async (req,res) => {
         let uid = req.session.passport.user.profile.id;
         let userInfo = checkUser(uid);
         let totalTaskData = [];
-        if(!userInfo) {
+        if (!userInfo) {
             res.write("User does not exist in the system! Please log in first!");
             res.end();
             return;
@@ -35,11 +35,11 @@ const tasks = router.get('/tasks', async (req,res) => {
         // console.log(uid);
         let projectData = loadProjectData(uid);
         projectData.then(function (rows) {
-            return loadTaskData(rows, totalTaskData);
-        }).then(function(taskData) {
+            return loadTaskData(rows);
+        }).then(function (taskData) {
             res.render('pages/tasks', {
                 taskData: taskData,
-                loginMessage:loginMsg
+                loginMessage: loginMsg
             });
         }).catch(function () {
             console.log("error loading task data for tasks page");
@@ -52,31 +52,35 @@ let loadProjectData = (uid) => {
             if (rows) {
                 resolve(rows);
             }
-            else{
+            else {
                 reject();
             }
-        })
-    })
-}
+        });
+    });
+};
 let readOneTask = (project) => {
     return new Promise((resolve, reject) => {
         let data = [];
-        getTasksPerUser(project.projectCode, function(taskData) {
+        getTasksPerUser(project.projectCode, function (taskData) {
             if (!taskData) {
                 reject();
             }
-            taskData.forEach(task =>{
+            taskData.forEach(task => {
                 if (task.app != "node") {
                     let appName = path.basename(task.app);
-                    if(task.status === 0) {
+                    if (task.status === 0) {
                         task.status = 'Processing';
-                    } else if(task.status === 1) {
+                    }
+                    else if (task.status === 1) {
                         task.status = 'Finished';
-                    } else if(task.status === 2) {
+                    }
+                    else if (task.status === 2) {
                         task.status = 'Failed';
-                    } else if(task.status === 3) {
+                    }
+                    else if (task.status === 3) {
                         task.status = 'Project removed';
-                    } else if(task.status ===4) {
+                    }
+                    else if (task.status === 4) {
                         task.status = 'Waiting';
                     }
                     task.appName = appName;
@@ -91,8 +95,8 @@ let readOneTask = (project) => {
             });
             resolve(data);
         });
-    })
-}
+    });
+};
 let loadTaskData = async (projectData) => {
     let totalTask = [];
     for (let i = 0; i < projectData.length; i++) {
@@ -100,6 +104,5 @@ let loadTaskData = async (projectData) => {
         totalTask = totalTask.concat(await readOneTask(project));
     }
     return totalTask;
-}
-
+};
 module.exports = tasks;

@@ -1,7 +1,7 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const load3dDataByParaRangeLib = require("../library/load3dDataByParaRange");
-
 /**
  * Express.js router for /load3dDataByParaRange
  */
@@ -18,7 +18,6 @@ const load3dDataByParaRange = router.get('/load3dDataByParaRange', function (req
     load3dDataByParaRangeLib(projectDir, tableNum, minRT, maxRT, minMZ, maxMZ, maxPeaks, cutoff, function (err, rows) {
         res.write(JSON.stringify(rows));
         res.end();
-   });
+    });
 });
-
 module.exports = load3dDataByParaRange;

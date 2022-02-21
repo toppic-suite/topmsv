@@ -1,12 +1,12 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
- * Get precurser m/z by given scan. 
+ * Get precurser m/z by given scan.
  * @param {string} dir - Project directory
  * @param {number} scan - Scan number
  * @param {function} callback - Callback function that handles query results
  * @returns {function} Callback function
  */
-
 function getPrecMZ(dir, scan, callback) {
     let sql = `SELECT PREC_MZ AS precMZ
            FROM SPECTRA

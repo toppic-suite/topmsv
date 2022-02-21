@@ -1,7 +1,7 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getPeaksPerTableLib = require("../library/getPeaksPerTable");
-
 /**
  * Express.js router for /getPeaksPerTable
  */
@@ -17,9 +17,8 @@ const getPeaksPerTable = router.get('/getPeaksPerTable', function (req, res) {
             res.end();
         } else {
             res.write(JSON.stringify(row));
-            res.end();    
+            res.end();
         }
     })*/
 });
-
 module.exports = getPeaksPerTable;

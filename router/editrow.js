@@ -1,3 +1,4 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 /*const getPeakListByScanID = require("../library/getPeakListByScanID");
@@ -10,8 +11,8 @@ const calcDistribution = new molecularFormulae();
 /**
  * NEED TO UPDATE DIST CALC FUNCTION
  * Expree.js router for /editrow
- * 
- * Edit envelope information and then calculate envelope peaks again based on the new 
+ *
+ * Edit envelope information and then calculate envelope peaks again based on the new
  * evenlope information. In the end, save new envelope peaks into database.
  */
 let editrow = router.get("/editrow", function (req, res) {
@@ -29,6 +30,5 @@ let editrow = router.get("/editrow", function (req, res) {
             res.end();
         })
     })*/
-})
-
+});
 module.exports = editrow;

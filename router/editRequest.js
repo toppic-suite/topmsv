@@ -1,21 +1,20 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const BetterDB = require("better-sqlite3");
-
 /**
  * Express.js router for /edietRequest
- * 
+ *
  * Render edit page for user to edit their project, experiment or dataset.
  */
-let editRequest = router.get('/editRequest', function (req,res) {
+let editRequest = router.get('/editRequest', function (req, res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
     //console.log(req.session);
     //let uid = req.session.passport.user.profile.uid;
     console.log("hello editRequest");
-    if (req.session.passport === undefined)
-    {
+    if (req.session.passport === undefined) {
         console.log("no passport!");
         res.end();
     }
@@ -36,7 +35,7 @@ let editRequest = router.get('/editRequest', function (req,res) {
             resultDb.close();
             if (queryResult != null && queryResult != undefined) {
                 name = queryResult.projectName;
-                description = queryResult.description;    
+                description = queryResult.description;
             }
         }
         if (type === 'eid') {
@@ -48,7 +47,7 @@ let editRequest = router.get('/editRequest', function (req,res) {
             resultDb.close();
             if (queryResult != null && queryResult != undefined) {
                 name = queryResult.ename;
-                description = queryResult.description;    
+                description = queryResult.description;
             }
         }
         if (type === 'datasetID') {
@@ -60,7 +59,7 @@ let editRequest = router.get('/editRequest', function (req,res) {
             resultDb.close();
             if (queryResult != null && queryResult != undefined) {
                 name = queryResult.dname;
-                description = queryResult.description;     
+                description = queryResult.description;
             }
         }
         res.render('pages/editPage', {
@@ -71,5 +70,4 @@ let editRequest = router.get('/editRequest', function (req,res) {
         });
     }
 });
-
 module.exports = editRequest;

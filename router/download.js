@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Express router for /download
  *
@@ -10,11 +11,10 @@ const archiver = require("archiver");
 const getProjectSummary = require("../library/getProjectSummary");
 const fs = require("fs");
 const path = require("path");
-
-let download = router.get('/download', function (req,res) {
+let download = router.get('/download', function (req, res) {
     let projectCode = req.query.id;
     console.log("projectCode", projectCode);
-    getProjectSummary(projectCode, function (err,row) {
+    getProjectSummary(projectCode, function (err, row) {
         if (err || row == undefined) {
             console.log("Invalid project ID ", projectCode, "! Please check again if this project exists.");
             res.redirect('../public/404.html');
@@ -24,59 +24,49 @@ let download = router.get('/download', function (req,res) {
         let projectName = row.projectName;
         let fileName = row.fileName;
         let envStatus = row.envelopeStatus;
-        let seqStatus = row.sequenceStatus; 
+        let seqStatus = row.sequenceStatus;
         if (envStatus !== 1) {
             res.download(projectDir);
-        } else {
+        }
+        else {
             let fName = fileName.substr(0, fileName.lastIndexOf("."));
             let dbDir = projectDir.substr(0, projectDir.lastIndexOf(path.sep));
-
-            let zipName = path.sep +projectName+'.zip';
+            let zipName = path.sep + projectName + '.zip';
             let output = fs.createWriteStream(dbDir + zipName);
-
             let archive = archiver('zip', {
                 zlib: { level: 9 } // Sets the compression level.
             });
-
-            output.on('close', function() {
+            output.on('close', function () {
                 console.log(archive.pointer() + ' total bytes');
                 console.log('archiver has been finalized and the output file descriptor has closed.');
                 res.download(dbDir + zipName);
             });
-
-            archive.on('error', function(err) {
+            archive.on('error', function (err) {
                 throw err;
             });
-
             archive.pipe(output);
-
-            let topfdFiles = ['_ms2.feature', '_ms1.msalign','_ms2.msalign', '_ms1.feature', '_feature.xml'];
-            let toppicFiles = ['_ms2_toppic_proteoform.tsv', '_ms2_toppic_proteoform.xml', '_ms2_toppic_prsm.tsv', '_ms2_toppic_prsm_single.tsv','.mzid'];
-
+            let topfdFiles = ['_ms2.feature', '_ms1.msalign', '_ms2.msalign', '_ms1.feature', '_feature.xml'];
+            let toppicFiles = ['_ms2_toppic_proteoform.tsv', '_ms2_toppic_proteoform.xml', '_ms2_toppic_prsm.tsv', '_ms2_toppic_prsm_single.tsv', '.mzid'];
             topfdFiles.forEach(fileName => {
                 let filePath = dbDir + path.sep + fName + fileName;
                 if (fs.existsSync(filePath)) {
                     archive.append(fs.createReadStream(filePath), { name: fName + fileName });
                 }
-            })
-
+            });
             let dirName = dbDir + path.sep + fName + '_file';
             //topfd _file folder
             if (fs.existsSync(dirName)) {
-                archive.directory(dirName, fName + '_file')
+                archive.directory(dirName, fName + '_file');
             }
-
             if (seqStatus == 1) {
                 toppicFiles.forEach(fileName => {
                     let filePath = dbDir + path.sep + fName + fileName;
                     if (fs.existsSync(filePath)) {
                         archive.append(fs.createReadStream(filePath), { name: fName + fileName });
                     }
-                })
+                });
             }
-
             archive.finalize();
-
             /*//topfd files
             let file1 = dbDir + '/' + fName + '_ms2.feature';
             let file2 = dbDir + '/' + fName + '_ms2.msalign';
@@ -89,7 +79,7 @@ let download = router.get('/download', function (req,res) {
             let file6 = dbDir + '/' + fName + '_ms2_toppic_proteoform.xml';
             let file7 = dbDir + '/' + fName + '_ms2_toppic_prsm.tsv';
 
-            //add error handling for when some files are missing 
+            //add error handling for when some files are missing
             //because they were manually uploaded
 
             archive
@@ -100,6 +90,6 @@ let download = router.get('/download', function (req,res) {
                 .directory(dir5, fName + '_file')
                 .finalize();*/
         }
-    })
+    });
 });
 module.exports = download;

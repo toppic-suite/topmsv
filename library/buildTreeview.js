@@ -1,8 +1,8 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 const getProjectNew = require("./getProjectNew");
 const getExperiment = require("./getExperiment");
 const getDataset = require("./getDataset");
-
 /**
  * Build tree view for a specific user, it contains projects, experiments, datasets.
  * @param {number} uid - User ID
@@ -42,8 +42,5 @@ function buildTreeview(uid) {
     }
     console.log("result: ", JSON.stringify(result));
     return JSON.stringify(result);*/
-
-
 }
-
 module.exports = buildTreeview;

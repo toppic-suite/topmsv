@@ -1,4 +1,5 @@
-$( document ).ready(function() {
+"use strict";
+/*$( document ).ready(function() {
     console.log( "ready!" );
 
     $('#createButton').click(function () {
@@ -32,4 +33,4 @@ $( document ).ready(function() {
             $('#password2').val('');
         }
     })
-});
+});*/ 

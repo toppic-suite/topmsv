@@ -1,58 +1,81 @@
+"use strict";
 /*expand/reduce graph div size when a button is clicked */
-class GraphResize{
-    oriWidth;
-    oriHeight;
-    oriViewSize;
-    viewSize = Graph.viewSize;
-    viewAdjust = 3;
-    isFullScreen = false;
-
-    constructor(){};
-    /*graph div resizing*/
-    expandGraph = () => {
-        Graph.viewSize = Graph.viewSize - this.viewAdjust; 
-        GraphControl.resizeCameraUserControl(this.viewAdjust);
+class GraphResize {
+    constructor() {
+        this.oriWidth = '';
+        this.oriHeight = '';
+        this.oriViewSize = 0;
+        this.viewSize = Graph.viewSize;
+        this.viewAdjust = 3;
+        this.isFullScreen = false;
+        /*graph div resizing*/
+        this.expandGraph = () => {
+            Graph.viewSize = Graph.viewSize - this.viewAdjust;
+            GraphControl.resizeCameraUserControl();
+        };
+        this.shrinkGraph = () => {
+            Graph.viewSize = Graph.viewSize + this.viewAdjust;
+            GraphControl.resizeCameraUserControl();
+        };
+        this.fullScreen = () => {
+            let parameterDiv = document.querySelector('[id="3d-graph-parameter"]');
+            let centerDiv = document.querySelector("#center-div");
+            let graphDiv = document.querySelector("#graph-container");
+            let graphEl = Graph.graphEl;
+            if (!parameterDiv || !centerDiv || !graphDiv) {
+                console.error(`cannot find graph div! #3d-graph-parameter: ${parameterDiv} #center-div: ${centerDiv} #graph-container: ${graphDiv}`);
+                return;
+            }
+            if (!graphEl) {
+                console.error("there is no div container for graph");
+                return;
+            }
+            if (this.isFullScreen) { //shrink back
+                document.body.style.width = this.oriWidth;
+                centerDiv.style.paddingLeft = "60px";
+                centerDiv.style.paddingRight = "60px";
+                graphDiv.style.height = this.oriHeight;
+                parameterDiv.scrollIntoView();
+                parameterDiv.scrollIntoView(false);
+                parameterDiv.scrollIntoView({ block: "end" });
+                Graph.renderer.setSize(graphEl.clientWidth, parseFloat(this.oriHeight), true);
+                this.isFullScreen = false;
+            }
+            else { //expand to full screen
+                this.oriWidth = centerDiv.style.width;
+                this.oriHeight = graphEl.clientHeight.toString();
+                centerDiv.style.padding = "0px";
+                document.body.style.width = "100%";
+                parameterDiv.scrollIntoView();
+                parameterDiv.scrollIntoView(false);
+                parameterDiv.scrollIntoView({ block: "start" });
+                this.isFullScreen = true;
+                Graph.renderer.setSize(window.innerWidth, window.innerHeight, true);
+            }
+        };
+        this.main = () => {
+            let graphExpand = document.querySelector("#graph-expand");
+            let graphShrink = document.querySelector("#graph-shrink");
+            let graphFull = document.querySelector("#graph-full-screen");
+            if (graphExpand) {
+                graphExpand.addEventListener("click", this.expandGraph, false);
+            }
+            else {
+                console.error("no button exists to expand the 3d view");
+            }
+            if (graphShrink) {
+                graphShrink.addEventListener("click", this.shrinkGraph, false);
+            }
+            else {
+                console.error("no button exists to shrink the 3d view");
+            }
+            if (graphFull) {
+                graphFull.addEventListener("click", this.fullScreen, false);
+            }
+            else {
+                console.error("no button exists to show the 3d view in full screen");
+            }
+        };
     }
-    shrinkGraph = () => {
-        Graph.viewSize = Graph.viewSize + this.viewAdjust; 
-        GraphControl.resizeCameraUserControl(1/this.viewAdjust);
-    }
-    fullScreen = () => {
-        let graphDiv = document.getElementById("3d-graph-parameter"); 
-
-        if (this.isFullScreen){//shrink back
-            document.body.style.width = this.oriWidth;
-            document.getElementById("center-div").style.paddingLeft = "60px";
-            document.getElementById("center-div").style.paddingRight = "60px";
-
-            document.getElementById("graph-container").style.height = this.oriHeight;
-
-            graphDiv.scrollIntoView();
-            graphDiv.scrollIntoView(false);
-            graphDiv.scrollIntoView({block: "end"});
-
-            Graph.renderer.setSize(Graph.graphEl.clientWidth, this.oriHeight, true);
-
-            this.isFullScreen = false;
-        }else{//expand to full screen
-            this.oriWidth = document.getElementById("center-div").style.width;
-            this.oriHeight = Graph.graphEl.clientHeight;
-            
-            document.getElementById("center-div").style.padding = "0px";
-            document.body.style.width = "100%";
-            
-            graphDiv.scrollIntoView();
-            graphDiv.scrollIntoView(false);
-            graphDiv.scrollIntoView({block: "start"});
-
-            this.isFullScreen = true;
-
-            Graph.renderer.setSize(window.innerWidth, window.innerHeight, true);
-        }
-    }
-    main = () => {
-        document.getElementById("graph-expand").addEventListener("click", this.expandGraph, false);
-        document.getElementById("graph-shrink").addEventListener("click", this.shrinkGraph, false);
-        document.getElementById("graph-full-screen").addEventListener("click", this.fullScreen, false);
-    }
+    ;
 }

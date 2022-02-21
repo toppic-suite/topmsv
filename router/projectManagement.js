@@ -1,14 +1,14 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getProjectSummary = require("../library/getProjectSummary");
-
 /**
  * Express router for /projectManagement
  *
  * Render project management page to user
  */
 const projectManagement = router.get('/projectManagement', function (req, res) {
-    if (req.session.passport === undefined){
+    if (req.session.passport === undefined) {
         res.write("Please log in first!");
         res.end();
         return;
@@ -27,7 +27,7 @@ const projectManagement = router.get('/projectManagement', function (req, res) {
             let projectPublic = row.public;
             let projectDescription = row.description;
             let projectUid = row.uid;
-            if(projectUid !== uid) {
+            if (projectUid !== uid) {
                 res.write("Please log in first!");
                 res.end();
                 return;
@@ -37,7 +37,7 @@ const projectManagement = router.get('/projectManagement', function (req, res) {
                 projectName: projectName,
                 publicValue: projectPublic,
                 description: projectDescription
-            })
+            });
         });
     }
 });

@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require('better-sqlite3');
 /**
  * Get project status by Tasks.projectCode. Sync mode.

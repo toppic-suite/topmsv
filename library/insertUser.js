@@ -1,4 +1,5 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
  * Insert new user into database.
  * @param {number} uid - User ID
@@ -7,12 +8,11 @@ const BetterDB = require('better-sqlite3');
  * @param {string} lastname - Last name
  * @param {string} fullname - Full name
  */
-function insertUser(uid, email, firstname, lastname, fullname){
+function insertUser(uid, email, firstname, lastname, fullname) {
     let db = new BetterDB('./db/projectDB.db');
     let sql = 'INSERT INTO Users(uid, email, firstname, lastname, fullname) VALUES(?,?,?,?,?)';
     let stmt = db.prepare(sql);
     let rows = stmt.run(uid, email, firstname, lastname, fullname);
-
     db.close();
     console.log(`A row has been inserted with rowid ${this.lastInsertRowid}`);
 }

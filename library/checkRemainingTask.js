@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require('better-sqlite3');
 /**
  * Check if one project has remaining tasks to do. Sync mode.
@@ -11,12 +12,11 @@ function checkRemainingTask(projectCode) {
                                 WHERE Tasks.projectCode = ? AND Tasks.finish = 0;`);
     let queryResult = stmt.get(projectCode);
     resultDb.close();
-
     if (queryResult === undefined) {
         return 0;
-    } else {
+    }
+    else {
         return 1;
     }
 }
-
 module.exports = checkRemainingTask;

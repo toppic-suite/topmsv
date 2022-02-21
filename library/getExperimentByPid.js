@@ -1,5 +1,5 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
-
 /**
  * Get all experiments of one project
  * @param {number} pid - Project ID
@@ -14,5 +14,4 @@ function getExperimentByPid(pid) {
     resultDb.close();
     return queryResult;
 }
-
 module.exports = getExperimentByPid;

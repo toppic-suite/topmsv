@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 /**
  * Update project status code by projectCode. Sync mode.
@@ -13,5 +14,4 @@ function updateProjectStatusSync(status, projectCode) {
     console.log('info', info);
     resultDb.close();
 }
-
 module.exports = updateProjectStatusSync;

@@ -1,10 +1,10 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getScanLevel = require("../library/getScanLevel");
-
 /**
  * Express.js router for /scanlevel
- * 
+ *
  * Return scan level of specific scan.
  */
 const scanlevel = router.get('/scanlevel', function (req, res) {
@@ -20,6 +20,6 @@ const scanlevel = router.get('/scanlevel', function (req, res) {
         let scanLevel = row.scanLevel.toString();
         res.write(scanLevel);
         res.end();
-    })
+    });
 });
 module.exports = scanlevel;

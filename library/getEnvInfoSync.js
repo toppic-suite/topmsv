@@ -1,5 +1,5 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
-
 /**
  * Get envelope's mono_mass and charge by given envelope ID. Sync mode.
  * @param {string} dir - Project directory
@@ -16,5 +16,4 @@ function getEnvInfoSync(dir, envID) {
     resultDb.close();
     return queryResult;
 }
-
 module.exports = getEnvInfoSync;

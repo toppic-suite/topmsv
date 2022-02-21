@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Express router for /deleterow
  *
@@ -6,15 +7,13 @@
 const express = require("express");
 const router = express.Router();
 const deleteMultiEnvs = require("../library/deleteMultiEnvs");
-
-let deleterow = router.get('/deleterow', function (req,res) {
+let deleterow = router.get('/deleterow', function (req, res) {
     console.log("Hello, deleterow!");
     let projectDir = req.query.projectDir;
     let envelopeIDs = req.query.envList;
-    deleteMultiEnvs(projectDir,envelopeIDs,function () {
+    deleteMultiEnvs(projectDir, envelopeIDs, function () {
         res.write(JSON.stringify(envelopeIDs));
         res.end();
     });
 });
-
 module.exports = deleterow;

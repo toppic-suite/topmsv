@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Express router for /editProject
  *
@@ -8,9 +9,7 @@ const router = express.Router();
 const updateProjectNameSync = require("../library/updateProjectNameSync");
 const updateDescriptionSync = require("../library/updateDescriptionSync");
 const updatePublicStatusSync = require("../library/updatePublicStatusSync");
-
-
-let editProject = router.post('/editProject', function (req,res) {
+let editProject = router.post('/editProject', function (req, res) {
     console.log("Hello, editProject!");
     const projectCode = req.query.projectCode;
     const projectName = req.query.projectName;
@@ -21,5 +20,4 @@ let editProject = router.post('/editProject', function (req,res) {
     updatePublicStatusSync(publicStatus, projectCode);
     res.end();
 });
-
 module.exports = editProject;

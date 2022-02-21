@@ -1,5 +1,5 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
-
 /**
  * Get all projects under specific user.
  * @param {number} uid - User ID
@@ -14,5 +14,4 @@ function getProjectNew(uid) {
     resultDb.close();
     return queryResult;
 }
-
 module.exports = getProjectNew;

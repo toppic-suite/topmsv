@@ -1,7 +1,7 @@
+"use strict";
 class Topview2D {
     constructor() {
     }
-
     findNextLevelOneScan(scan) {
         return axios.get('/findNextLevelOneScan', {
             params: {
@@ -10,8 +10,7 @@ class Topview2D {
             }
         });
     }
-
-    getRelatedScan2 (scanID) {
+    getRelatedScan2(scanID) {
         // console.log("scanID:",scanID);
         return axios.get('/relatedScan2', {
             params: {
@@ -20,7 +19,7 @@ class Topview2D {
             }
         });
     }
-    getRelatedScan1 (scanID) {
+    getRelatedScan1(scanID) {
         // console.log("scanID:",scanID);
         return axios.get('/relatedScan1', {
             params: {
@@ -31,13 +30,12 @@ class Topview2D {
     }
     getScanLevel(scanID) {
         return axios.get('/scanlevel', {
-                params: {
-                    projectDir: document.getElementById("projectDir").value,
-                    scanID: scanID
-                }
+            params: {
+                projectDir: document.getElementById("projectDir").value,
+                scanID: scanID
+            }
         });
     }
-
     getScanID(ID) {
         return axios.get('/scanID', {
             params: {
@@ -46,7 +44,6 @@ class Topview2D {
             }
         });
     }
-
     getPeakList(scanId) {
         if (scanId !== '0') {
             return axios.get('/peaklist', {
@@ -55,11 +52,11 @@ class Topview2D {
                     scanID: scanId
                 }
             });
-        }else{
+        }
+        else {
             alert("NULL");
         }
     }
-
     getEnvList(scan) {
         return axios.get('/envlist', {
             params: {
@@ -67,51 +64,48 @@ class Topview2D {
                 scanID: scan,
                 projectCode: document.getElementById("projectCode").value
             }
-        })
+        });
     }
-
     getEnvTable(scan) {
         return axios.get('/envtable', {
             params: {
                 projectDir: document.getElementById("projectDir").value,
                 scanID: scan // scan number actually
             }
-        })
+        });
     }
-
-/*     loadPeakList1(scanID) {
-        if (scanID !== '0') {
-            return axios.get('/peaklist', {
-                params: {
-                    projectDir: document.getElementById("projectDir").value,
-                    scanID: scanID
-                }
-            }).then(function(response){
-                getRT(scanID);
-                peakList1_g = JSON.parse(response);
-                document.getElementById("scanID1").innerText = scanID;
-                return axios.get('/envlist', {
+    /*     loadPeakList1(scanID) {
+            if (scanID !== '0') {
+                return axios.get('/peaklist', {
                     params: {
                         projectDir: document.getElementById("projectDir").value,
-                        scanID: scanID,
-                        projectCode: document.getElementById("projectCode").value
+                        scanID: scanID
                     }
-                });
-            }).catch(function(error) {
-                console.log(error);
-            })
-        }else{
-            alert("NULL");
-        }
-    } */
-
+                }).then(function(response){
+                    getRT(scanID);
+                    peakList1_g = JSON.parse(response);
+                    document.getElementById("scanID1").innerText = scanID;
+                    return axios.get('/envlist', {
+                        params: {
+                            projectDir: document.getElementById("projectDir").value,
+                            scanID: scanID,
+                            projectCode: document.getElementById("projectCode").value
+                        }
+                    });
+                }).catch(function(error) {
+                    console.log(error);
+                })
+            }else{
+                alert("NULL");
+            }
+        } */
     getRT(scanNum, rtInteGraph) {
         axios.get('/getRT', {
             params: {
                 projectDir: document.getElementById("projectDir").value,
                 scanID: scanNum
             }
-        }).then(function(response){
+        }).then(function (response) {
             let rt = parseFloat(response.data);
             // console.log(rtInteGraph);
             if (rtInteGraph) {
@@ -120,57 +114,55 @@ class Topview2D {
             document.getElementById("scan1RT").innerText = rt.toFixed(4);
             Graph.resultViz.getRtInteGraph().moveLine(rt);
             document.getElementById("scan1RT").innerText = rt.toFixed(Graph.resultViz.getConfig().floatDigit) + " (min)";
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error);
         });
     }
-/*
-    findNextLevelOneScan(scan) {
-        return axios.get('/findNextLevelOneScan', {
-            params: {
-                projectDir: document.getElementById("projectDir").value,
-                scanID: scan
-            }
-        });
-    }
-
-     loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
-        if(scanID !== '0') {
-            const graphFeatures = new GraphFeatures();
-            // show envelope table for MS2
-            showEnvTable(scanID);
-            $("#switch").text('MS1');
-    
-            axios.get('/peaklist',{
-                params:{
+    /*
+        findNextLevelOneScan(scan) {
+            return axios.get('/findNextLevelOneScan', {
+                params: {
                     projectDir: document.getElementById("projectDir").value,
-                    scanID: scanID
+                    scanID: scan
                 }
-            }).then(function(response) {
-                peakList2_g = JSON.parse(response);
-                return axios.get('/envlist', {
-                    params: {
-                        projectDir: document.getElementById("projectDir").value,
-                        scanID: scanID,
-                        projectCode: document.getElementById("projectCode").value
-                    }
-                })
-            }).catch(function(error) {
-                console.log(error);
-            })
-        }else{
-            alert("NULL");
+            });
         }
-    } */
-
+    
+         loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan) {
+            if(scanID !== '0') {
+                const graphFeatures = new GraphFeatures();
+                // show envelope table for MS2
+                showEnvTable(scanID);
+                $("#switch").text('MS1');
+        
+                axios.get('/peaklist',{
+                    params:{
+                        projectDir: document.getElementById("projectDir").value,
+                        scanID: scanID
+                    }
+                }).then(function(response) {
+                    peakList2_g = JSON.parse(response);
+                    return axios.get('/envlist', {
+                        params: {
+                            projectDir: document.getElementById("projectDir").value,
+                            scanID: scanID,
+                            projectCode: document.getElementById("projectCode").value
+                        }
+                    })
+                }).catch(function(error) {
+                    console.log(error);
+                })
+            }else{
+                alert("NULL");
+            }
+        } */
     getInteSumList() {
         return axios.get('/getInteSumList', {
             params: {
                 projectDir: document.getElementById("projectDir").value
             }
-        })
+        });
     }
-
     prev(scanID) {
         return axios.get('/prev', {
             params: {
@@ -179,7 +171,6 @@ class Topview2D {
             }
         });
     }
-
     next(scanID) {
         return axios.get('/next', {
             params: {
@@ -188,7 +179,6 @@ class Topview2D {
             }
         });
     }
-
     getScanLevelTwoList(scanID) {
         return axios.get('/scanTwoList', {
             params: {
@@ -203,6 +193,6 @@ class Topview2D {
                 projectDir: document.getElementById("projectDir").value,
                 ms2Scan: ms2Scan
             }
-        })
+        });
     }
 }

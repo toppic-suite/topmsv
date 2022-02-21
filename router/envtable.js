@@ -1,10 +1,10 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getEnvTable = require("../library/getEnvTable");
-
 /**
  * Express.js Router for /envtable
- * 
+ *
  * Return array of envelope information for users with given scan number
  */
 let envtable = router.get('/envtable', function (req, res) {
@@ -25,7 +25,8 @@ let envtable = router.get('/envtable', function (req, res) {
             res.json(rows);
             //res.write(JSON.stringify(rows));
             res.end();
-        }else {
+        }
+        else {
             res.write("0");
             res.end();
         }

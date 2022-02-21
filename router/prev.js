@@ -1,12 +1,12 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getPrev = require("../library/getPrev");
-
 /**
  * Express.js router for /prev
  * Return previous scan number of given scan
  */
-const prev = router.get('/prev', function(req, res) {
+const prev = router.get('/prev', function (req, res) {
     console.log("Hello, prev!");
     const projectDir = req.query.projectDir;
     const scanID = req.query.scanID;
@@ -19,6 +19,6 @@ const prev = router.get('/prev', function(req, res) {
         let prevID = row.prev.toString();
         res.write(prevID);
         res.end();
-    })
+    });
 });
 module.exports = prev;

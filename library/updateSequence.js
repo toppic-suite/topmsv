@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 /**
  * Update proteoform of sequence table by scan. Sync Mode.
@@ -15,5 +16,4 @@ function updateSequence(projectDir, proteoform, scan) {
     console.log("updateSeq info", info.changes);
     resultDb.close();
 }
-
 module.exports = updateSequence;

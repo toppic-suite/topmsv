@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require('better-sqlite3');
 const updateEnvStatusSync = require('./updateEnvStatusSync');
 /**
@@ -8,7 +9,6 @@ const updateEnvStatusSync = require('./updateEnvStatusSync');
 function deleteEnvPeak(projectDir, projectCode) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);
-
     let stmt = resultDb.prepare(`DROP TABLE IF EXISTS env_peak;`);
     stmt.run();
     stmt = resultDb.prepare(`DROP TABLE IF EXISTS envelope;`);

@@ -1,3 +1,4 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 /*const getPeakListByScanID = require("../library/getPeakListByScanID");
@@ -11,10 +12,9 @@ const calcDistribution = new molecularFormulae();
 /**
  * NEED TO UPDATE DIST CALC FUNCTION
  * Express.js router for /previewEdit
- * 
+ *
  * Return a json object for preview specific enevelope
  */
-
 const previewEdit = router.get("/previewEdit", function (req, res) {
     /*console.log("Hello, previewEdit!");
     let projectDir = req.query.projectDir;
@@ -90,6 +90,5 @@ const previewEdit = router.get("/previewEdit", function (req, res) {
             res.end();
         }
     });*/
-})
-
+});
 module.exports = previewEdit;

@@ -1,7 +1,7 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const loadMzrtDataLib = require("../library/loadMzrtData");
-
 /**
  * Express.js router for /loadMzrtData
  */
@@ -16,7 +16,6 @@ const loadMzrtData = router.get('/loadMzrtData', function (req, res) {
     loadMzrtDataLib(projectDir, minRT, maxRT, minMZ, maxMZ, limit, function (err, rows) {
         res.write(JSON.stringify(rows));
         res.end();
-   });
+    });
 });
-
 module.exports = loadMzrtData;

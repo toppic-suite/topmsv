@@ -27,36 +27,30 @@ const stmtCreatePeaksTable = betterDB.prepare('CREATE TABLE IF NOT EXISTS `PEAKS
     ');');
 stmtCreatePeaksTable.run();
 fs.readFile(myArgs[1], ((err, data) => {
-    if (err) throw err;
-    insertMany(betterDB,data.toString());
+    if (err)
+        throw err;
+    insertMany(betterDB, data.toString());
     betterDB.close();
 }));
-
 const insertMany = betterDB.transaction(importData);
-
-function importData(database,data) {
+function importData(database, data) {
     const stmtInsertPeaks = database.prepare('INSERT INTO PEAKS(id,mz,intensity) VALUES(?,?,?)');
     const stmtMaxID = database.prepare('SELECT MAX(id) AS maxPeakID FROM PEAKS');
     const stmtCurrentSum = database.prepare('SELECT PEAKSINTESUM AS inteSum FROM SPECTRA WHERE ID = ?');
-
     // const stmtInsertSpectra = database.prepare('INSERT INTO SPECTRA(ID,SCAN,RETENTIONTIME,SCANLEVEL,PREC_MZ,PREC_CHARGE,PREC_INTE,PEAKSINTESUM,NEXT,PREV) VALUES(?,?,?,?,?,?,?,?,?,?)');
     // stmtInsertSpectra.run(1,1,0,1,0,1,0,0,0,0);
-
     let curInteSum = stmtCurrentSum.get(1).inteSum;
-    let id = stmtMaxID.get().maxPeakID + 1;
-
-    let intensitySum = curInteSum;
+    let id = parseInt(stmtMaxID.get().maxPeakID) + 1;
+    let intensitySum = parseFloat(curInteSum);
     let lines = data.split("\n");
-
-    lines.forEach(element => {
+    lines.forEach((element) => {
         // console.log("id", id);
         let mz = parseFloat(element.split(" ")[0]);
         let inte = parseFloat(element.split(" ")[1]);
         intensitySum += inte;
         stmtInsertPeaks.run(id, mz, inte);
         id++;
-    })
-
-    const stmtUpdateInteSum = database.prepare('UPDATE SPECTRA SET PEAKSINTESUM = ? WHERE ID = ?;')
-    stmtUpdateInteSum.run(intensitySum,1);
+    });
+    const stmtUpdateInteSum = database.prepare('UPDATE SPECTRA SET PEAKSINTESUM = ? WHERE ID = ?;');
+    stmtUpdateInteSum.run(intensitySum, 1);
 }

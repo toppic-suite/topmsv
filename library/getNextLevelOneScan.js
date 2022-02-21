@@ -1,6 +1,7 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
- * Get scan of next level one. 
+ * Get scan of next level one.
  * @param {string} dir - Project directory
  * @param {number} scanNum - Scan number
  * @param {function} callback - Callback function that handles query results
@@ -15,9 +16,7 @@ function getNextLevelOneScan(dir, scanNum, callback) {
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let row = stmt.get(scanNum);
-
     db.close();
-
     return callback(null, row);
 }
 module.exports = getNextLevelOneScan;

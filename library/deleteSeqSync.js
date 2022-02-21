@@ -1,3 +1,4 @@
+"use strict";
 const BetterDB = require("better-sqlite3");
 /**
  * Delete all sequence data by projectCode. Sync Mode.
@@ -8,7 +9,6 @@ const BetterDB = require("better-sqlite3");
 function deleteSeqSync(projectDir, projectCode) {
     let dbDir = projectDir.substr(0, projectDir.lastIndexOf(".")) + ".db";
     let resultDb = new BetterDB(dbDir);
-
     let stmt = resultDb.prepare(`DROP TABLE IF EXISTS sequence;`);
     stmt.run();
     resultDb.close();

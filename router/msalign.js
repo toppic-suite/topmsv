@@ -1,3 +1,4 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const deleteEnvPeak = require("../library/deleteEnvPeak");
@@ -9,7 +10,6 @@ const formidable = require('formidable');
 const fs = require("fs");
 const os = require('os');
 const path = require('path');
-
 /**
  * Express router for /msalign
  *
@@ -31,7 +31,6 @@ let msalign = router.post('/msalign', function (req, res) {
         let projectCode = fields.projectCode;
         deleteEnvPeak(dbDir, projectCode);
         deleteEnvFile(dbDir);
-        
         console.log('Deleted previous Envelope Peaks!');
         let email = fields.email;
         if (!dbDir) {
@@ -54,23 +53,23 @@ let msalign = router.post('/msalign', function (req, res) {
         fs.rename(ms1.path, des_ms1, function (err) {
             if (err) {
                 console.log(err);
-                return res.send({"error": 403, "message": "Error on saving file!"});
+                return res.send({ "error": 403, "message": "Error on saving file!" });
             }
             fs.rename(ms2.path, des_ms2, function (err) {
                 if (err) {
                     console.log(err);
-                    return res.send({"error": 403, "message": "Error on saving file!"});
+                    return res.send({ "error": 403, "message": "Error on saving file!" });
                 }
                 res.end();
-                let parameterTask1 = path.join(__dirname, '..', 'utilities', 'convertMS1Msalign.js') + ' ' + dbDir + ' ' + des_ms1 + ' ' + projectCode;;
+                let parameterTask1 = path.join(__dirname, '..', 'utilities', 'convertMS1Msalign.js') + ' ' + dbDir + ' ' + des_ms1 + ' ' + projectCode;
+                ;
                 submitTask(projectCode, 'node', parameterTask1, 1);
-
-                let parameterTask2 = path.join(__dirname, '..', 'utilities', 'convertMS2Msalign.js') + ' ' + dbDir + ' ' + des_ms2 + ' ' + projectCode;;
+                let parameterTask2 = path.join(__dirname, '..', 'utilities', 'convertMS2Msalign.js') + ' ' + dbDir + ' ' + des_ms2 + ' ' + projectCode;
+                ;
                 submitTask(projectCode, 'node', parameterTask2, 1);
                 updateEnvStatusSync(1, projectCode);
-            })
-        })
-    })
+            });
+        });
+    });
 });
-
 module.exports = msalign;

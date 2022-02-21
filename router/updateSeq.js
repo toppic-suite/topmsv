@@ -1,8 +1,8 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getProjectSummary = require("../library/getProjectSummary");
 const updateSequence = require("../library/updateSequence");
-
 /**
  * Express router for /updateSeq
  *
@@ -52,5 +52,4 @@ const updateSeq = router.post('/updateSeq', function (req, res) {
         }
     })*/
 });
-
 module.exports = updateSeq;

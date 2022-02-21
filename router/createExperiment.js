@@ -1,12 +1,12 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getProjectNew = require("../library/getProjectNew");
-
 /**
  * Express router for /createExperiment
  * Render createExperiment page to users
  */
-let createExperiment = router.get('/createExperiment', function (req,res) {
+let createExperiment = router.get('/createExperiment', function (req, res) {
     //console.log('Cookies: ', req.cookies);
     //console.log('Session:', req.session);
     //console.log(req.session.passport.user.profile);
@@ -30,5 +30,4 @@ let createExperiment = router.get('/createExperiment', function (req,res) {
         });
     }
 });
-
 module.exports = createExperiment;

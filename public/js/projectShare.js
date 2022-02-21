@@ -1,3 +1,4 @@
+"use strict";
 /*function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -21,11 +22,10 @@ if(getCookie('token')===''){
     $('#signIn').text('Log out');
     $('#signIn').attr('href', '/logout');
 }*/
-
 // let pid = 0;
 // let eid = 0;
 // let datasetID = 0;
-$('#infoPanel').hide();
+/*$('#infoPanel').hide();
 let treeviewNode = $('#treeviewNode').val();
 let password = $('#projectPassword').val();
 let node = JSON.parse(treeviewNode);
@@ -184,7 +184,7 @@ $.ajax({
         $('#tree').treeview('selectNode', [0]);
     }
 });
-*/
+*/ /*
 
 
 $('#deleteButton').click( function () {
@@ -204,4 +204,4 @@ $('#deleteButton').click( function () {
 $('#editButton').click(function () {
     window.location.href = "/editRequest?type=" + type_g + "&id=" +id_g;
 })
-
+*/

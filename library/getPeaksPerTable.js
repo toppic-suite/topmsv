@@ -1,4 +1,5 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
  * Get maximum and minimum mz and rt for this mzML file.
  * @param {string} dir
@@ -8,7 +9,7 @@ const BetterDB = require('better-sqlite3');
 //don't seem to be used 
 function getPeaksPerTable(dir, layerCount, callback) {
     /*let i = 0;
-    let result = []; 
+    let result = [];
     let sql = 'SELECT ';
     if (isNaN(parseInt(layerCount))) {
         return callback("ERROR: invalid table number", null);
@@ -29,7 +30,7 @@ function getPeaksPerTable(dir, layerCount, callback) {
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let rows = stmt.get();
-    db.close();    
+    db.close();
     return callback(null, rows);*/
 }
 module.exports = getPeaksPerTable;

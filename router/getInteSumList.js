@@ -1,10 +1,10 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getSumList = require("../library/getSumList");
-
 /**
  * Express.js router for /getInteSumList
- * 
+ *
  * Return array of {intensity, retention time, scan number}
  */
 let getInteSumList = router.get('/getInteSumList', function (req, res) {
@@ -14,7 +14,6 @@ let getInteSumList = router.get('/getInteSumList', function (req, res) {
         res.write(JSON.stringify(rows));
         // console.log(rows);
         res.end();
-    })
+    });
 });
-
 module.exports = getInteSumList;

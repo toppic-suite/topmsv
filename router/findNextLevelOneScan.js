@@ -1,7 +1,7 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 const getNextLevelOneScan = require("../library/getNextLevelOneScan");
-
 /**
  * Express.js router for /findNextLevelOneScan
  * Return scan number of next level one scan with given scan number.
@@ -14,11 +14,11 @@ let findNextLevelOneScan = router.get('/findNextLevelOneScan', function (req, re
         if (row !== undefined) {
             res.write(row.scan.toString());
             res.end();
-        }else {
+        }
+        else {
             res.write("0");
             res.end();
         }
     });
 });
-
 module.exports = findNextLevelOneScan;

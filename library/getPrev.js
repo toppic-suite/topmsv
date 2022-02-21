@@ -1,4 +1,5 @@
-const BetterDB = require('better-sqlite3'); 
+"use strict";
+const BetterDB = require('better-sqlite3');
 /**
  * Get prev scan by given scan.
  * @param {string} dir - Project directory
@@ -14,7 +15,6 @@ function getPrev(dir, scanID, callback) {
     let db = new BetterDB(dbDir);
     let stmt = db.prepare(sql);
     let row = stmt.get(scanID);
-
     db.close();
     return callback(null, row);
 }
