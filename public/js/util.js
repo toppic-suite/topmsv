@@ -17,8 +17,7 @@ function getCookie(cname) {
 // Upload success
 function uploadSuccess(xhr) {
     if (xhr.readyState === 4) {
-        alert("success");
-        //alert("Data uploaded successfully!\nPlease wait for processing!");
+        alert("Data uploaded successfully!\nPlease wait for processing!");
         //setTimeout(function(){window.location.reload();}, 100)
         window.location.replace("/projects");
     }
