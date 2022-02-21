@@ -45,7 +45,7 @@ class GraphInit{
 
     redrawRequestButton.addEventListener('click', function() {
       let centerRtBox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#rtRangeMin");
-      let rangeRTBox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#rtRangeMin");
+      let rangeRTBox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#rtRangeMax");
       let centerMZBox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#mzRangeMin");
       let rangeMZBox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#mzRangeMax");
       let inteCutoffBox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#cutoff-threshold");
@@ -67,42 +67,76 @@ class GraphInit{
       let rangeRT: number = parseFloat(rangeRTBox.value);
       let centerMZ: number = parseFloat(centerMZBox.value);
       let rangeMZ: number = parseFloat(rangeMZBox.value);
-      let inteCutoff: number = parseFloat(inteCutoffBox.value);
 
       let minRT: number = Graph.viewRange.rtmin;
       let maxRT: number = Graph.viewRange.rtmax;
       let minMZ: number = Graph.viewRange.mzmin;
       let maxMZ: number = Graph.viewRange.mzmax;
 
-      if (isNaN(centerMZ) && isNaN(centerRT)) {
-        //if both mz and rt range are not given
-        alert("Please enter at least one of the ranges, m/z range or retention time range");
-        return;
-      }
-      if (isNaN(centerRT)) {
-        centerRT = (Graph.viewRange.rtmin + Graph.viewRange.rtmax) / 2;
-      }
-      if (isNaN(centerMZ)) {
-        centerMZ = (Graph.viewRange.mzmin + Graph.viewRange.mzmax) / 2;
-      }
-      if (!isNaN(rangeRT)) {
+      if (!isNaN(centerRT) && !isNaN(rangeRT)) {
         minRT = centerRT - rangeRT;
         maxRT = centerRT + rangeRT;
       }
-      if (!isNaN(rangeMZ)) {
+      if (!isNaN(centerMZ) && !isNaN(rangeMZ)) {
         minMZ = centerMZ - rangeMZ;
         maxMZ = centerMZ + rangeMZ;
       }
-      if (isNaN(inteCutoff)) {
-        inteCutoffBox.value = "0";
-      } else {
-        inteCutoffBox.value = inteCutoff.toString();
+      /*if (!isNaN(centerRT) || !isNaN(rangeRT)) {//if at least one value is given for RT
+        if (!isNaN(centerRT) && !isNaN(rangeRT)) {
+          minRT = centerRT - rangeRT;
+          maxRT = centerRT + rangeRT;
+        } else if (!isNaN(centerRT)) {
+          let prevRange = (maxRT - minRT) / 2 - minRT
+          minRT = centerRT - prevRange;
+          maxRT = centerRT + prevRange;
+        } else if (!isNaN(rangeRT)) {
+          let prevCenter = (maxRT - minRT) / 2;
+          minRT = prevCenter - rangeRT;
+          maxRT = prevCenter + rangeRT;
+        }
       }
+
+      if (!isNaN(centerMZ) || !isNaN(rangeMZ)) {//if at least one value is given for RT
+        if (!isNaN(centerMZ) && !isNaN(rangeMZ)) {
+          minMZ = centerMZ - rangeMZ;
+          maxMZ = centerMZ + rangeMZ;
+        } else if (!isNaN(centerMZ)) {
+          let prevRange = (maxMZ - minMZ) / 2 - minMZ
+          minMZ = centerMZ - prevRange;
+          maxMZ = centerMZ + prevRange;
+        } else if (!isNaN(rangeMZ)) {
+          let prevCenter = (maxMZ - minMZ) / 2;
+          minMZ = prevCenter - rangeMZ;
+          maxMZ = prevCenter + rangeMZ;
+        }
+      }*/
+
+      
+      /*if (isNaN(centerMZ) && isNaN(centerRT)) {}//don't change current range
+      else {
+        if (isNaN(centerRT)) {//center not given, then whether range data is given or not, keep the current view range
+          centerRT = (Graph.viewRange.rtmin + Graph.viewRange.rtmax) / 2;
+          minRT = Graph.viewRange.mzmin;
+          maxRT = Graph.viewRange.mzmax;
+        } else {
+          if (!isNaN(rangeRT)) {//center given, range given.
+            minRT = centerRT - rangeRT;
+            maxRT = centerRT + rangeRT;
+          } else {//center not given, range given
+            centerRT = (Graph.viewRange.rtmin + Graph.viewRange.rtmax) / 2;
+            minRT = centerRT - rangeRT;
+            maxRT = centerRT + rangeRT;
+          }
+        }
+      }*/
+
       //error handing
       if (minRT > maxRT){
         alert("Invalid Range : Minimum retention time is bigger than maximum.");
       } else if (minMZ > maxMZ){
         alert("Invalid Range : Minimum m/z is bigger than maximum");
+      } else if (isNaN(+inteCutoffBox.value)) {
+        alert("Invalid Cutoff Value: Enter a valid number");
       } else{
         GraphData.updateGraph(minMZ, maxMZ, minRT, maxRT, Graph.curRT);
       }
