@@ -1,4 +1,4 @@
-(function () {
+/*(function () {
   let file: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#dbfile');
   let envfile1: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#envfile1');
   // var envfile2 = document.querySelector('#envfile2');
@@ -64,7 +64,7 @@
       }
   }*/
   // 点击上传
-  function uploadFile() {
+  /*function uploadFile() {
     if (!project) {
       console.error("cannot read project information");
       return;
@@ -83,7 +83,7 @@
         }else if(envfile2.files[0] !== undefined && !envfile2.files[0].name.match(/.(env)$/i)){
         alert('Please upload an env file for ms2!');*/
         /*}else if (!ValidateEmail(email.value)){
-        alert("You have entered an invalid email address!")*/
+        alert("You have entered an invalid email address!")*//*
     } else {
       let formData: FormData = new FormData();
       formData.append('dbfile', file.files[0]);
@@ -182,4 +182,4 @@ $( document ).ready(function() {
             });
         }
     });
-});
+});*/

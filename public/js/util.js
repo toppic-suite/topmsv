@@ -17,8 +17,10 @@ function getCookie(cname) {
 // Upload success
 function uploadSuccess(xhr) {
     if (xhr.readyState === 4) {
-        alert("Data uploaded successfully!\nPlease wait for processing!");
-        setTimeout(function () { window.location.reload(); }, 100);
+        alert("success");
+        //alert("Data uploaded successfully!\nPlease wait for processing!");
+        //setTimeout(function(){window.location.reload();}, 100)
+        window.location.replace("/projects");
     }
 }
 // progress bar

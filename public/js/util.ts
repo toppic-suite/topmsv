@@ -18,7 +18,8 @@ function getCookie(cname: string): string {
 function uploadSuccess(xhr: XMLHttpRequest): void {
   if (xhr.readyState === 4) {
     alert("Data uploaded successfully!\nPlease wait for processing!");
-    setTimeout(function(){window.location.reload();}, 100)
+    //setTimeout(function(){window.location.reload();}, 100)
+    window.location.replace("/projects");
   }
 }
 
