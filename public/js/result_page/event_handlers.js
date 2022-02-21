@@ -47,6 +47,7 @@ class EventHandler {
                     $("#rtRangeMax").val("1");
                     $("#mzRangeMin").val("");
                     $("#mzRangeMax").val("50");
+                    $("#cutoff-threshold").val("");
                     this.resultViz.update3DShowFull(curScan);
                 }
                 else {

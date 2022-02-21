@@ -102,6 +102,9 @@ LoadData.load3dData = (curViewRange) => {
             return;
         }
         let inteCutoff = inteCutOffBox.value;
+        if (inteCutoff == '') {
+            inteCutoff = '0';
+        }
         xhttp.open("GET", "load3dDataByParaRange?projectDir=" + dir + "&tableNum=" + tableNum + "&minRT=" + curViewRange.rtmin + "&maxRT=" + curViewRange.rtmax + "&minMZ=" + curViewRange.mzmin + "&maxMZ=" + curViewRange.mzmax + "&maxPeaks=" + Graph.maxPeaks + "&cutoff=" + inteCutoff, true);
         xhttp.onload = () => {
             if (xhttp.status == 200 && xhttp.readyState == 4) {

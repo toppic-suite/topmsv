@@ -51,6 +51,8 @@ class EventHandler {
         
           $("#mzRangeMin").val("");
           $("#mzRangeMax").val("50");
+
+          $("#cutoff-threshold").val("");
           this.resultViz.update3DShowFull(curScan);
         } else {
           console.error("scanID1 <span> element cannot be found");
