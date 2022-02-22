@@ -43,6 +43,7 @@ class Graph{
   static maxFeature: number = Graph.maxPeaks / 2;
 
   static intensitySum = 0;
+  static intensitySumTotal = -1;
 
   /*for downloading 3d graph*/
   static imageAddress;

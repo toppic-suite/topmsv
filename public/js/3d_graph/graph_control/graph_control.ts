@@ -173,26 +173,32 @@ class GraphControl{
     // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
     let mz_squish: number = Graph.gridRange / (r.mzmax - r.mzmin);
     let rt_squish: number = - Graph.gridRange / (r.rtmax - r.rtmin);
-    let int_squish: number = (Graph.gridRangeVertical / heightScale) * r.intscale;
+    let int_squish: number = Graph.gridRangeVertical / heightScale;
         
     if (Graph.viewRange.intmax < 1){
       //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
       int_squish = 0;
     }
-    if (heightScale * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {
+    let ratio: number = Graph.intensitySum / Graph.intensitySumTotal;      
+    if (ratio < 0.15 && !Graph.isPan) {//if this region mostly contains low peaks
+      int_squish = (1 - ratio) * 10;
+      if (Graph.peakScale != 0) {
+        //int_squish = int_squish;
+      }
+    } else if (heightScale * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {// when peaks are too high
       let newSquish: number = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
       if (heightScale * newSquish < heightScale * Graph.intSquish) {
         int_squish = newSquish;
       } else{
         int_squish = Graph.intSquish;
       }
-    } else{
+    } else {
       int_squish = Graph.intSquish;
     }
     //if intensity scaling is off, don't adjust intensity;
     let inteCheckbox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#inte-auto-adjust");
     if (inteCheckbox) {
-      if (inteCheckbox.checked || checkIntensity == false) {
+      if (!inteCheckbox.checked || checkIntensity == false) {
         int_squish = Graph.intSquish;
       }
     }

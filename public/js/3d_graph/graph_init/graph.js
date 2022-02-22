@@ -194,6 +194,7 @@ Graph.maxPeakHeight = 8;
 Graph.maxPeaks = 4000;
 Graph.maxFeature = Graph.maxPeaks / 2;
 Graph.intensitySum = 0;
+Graph.intensitySumTotal = -1;
 /*color set for peaks */
 Graph.cutoff = []; //intensity cutoff point for each color in gradient
 Graph.currentScanColor = "#ff5797";
