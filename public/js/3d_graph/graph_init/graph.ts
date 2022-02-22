@@ -121,6 +121,8 @@ class Graph{
 
   static resizedCamera;
 
+  static lowInteScaleFactor = 10;
+
   constructor(projectDir, resultViz) {
     Graph.projectDir = projectDir;
     Graph.resultViz = resultViz;

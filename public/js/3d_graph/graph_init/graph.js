@@ -249,3 +249,4 @@ Graph.axisGroup = new THREE.Group();
 Graph.configData = [];
 Graph.currentData = [];
 Graph.currentFeatureData = [];
+Graph.lowInteScaleFactor = 10;
