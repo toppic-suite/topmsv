@@ -40,6 +40,14 @@ class GraphZoom {
                     }
                     else {
                         await this.onZoomFromEventListener(e, null);
+                        let scaleFactor = 0;
+                        if (e.deltaY > 0) {
+                            scaleFactor = 0.75;
+                        }
+                        else if (e.deltaY < 0) {
+                            scaleFactor = 1.5;
+                        }
+                        this.adjustPeakHeight(scaleFactor);
                     }
                 }
                 else {
@@ -55,16 +63,61 @@ class GraphZoom {
                         }
                     }
                     else {
+                        let scaleFactor = 0;
+                        if (e.deltaY > 0) {
+                            scaleFactor = 0.75;
+                        }
+                        else if (e.deltaY < 0) {
+                            scaleFactor = 1.5;
+                        }
                         if (axis.name == "xAxis") {
                             await this.onZoomFromEventListener(e, "mz");
+                            this.adjustPeakHeight(scaleFactor);
                         }
                         else if (axis.name == "yAxis") {
                             await this.onZoomFromEventListener(e, "rt");
+                            this.adjustPeakHeight(scaleFactor);
                         }
                     }
                 }
                 this.scrollLock = false;
             }
+            /*if (!this.scrollLock) {
+              this.scrollLock = true;
+              let axis: THREE.Object3D<THREE.Event> | null = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
+              if (axis == null){
+                if (e.ctrlKey){//if control key is pressed --> intensity zoom
+                  let scaleFactor: number = 0;
+                  if (e.deltaY > 0) {
+                    scaleFactor = 0.75;
+                    this.adjustPeakHeight(scaleFactor);
+                  } else if (e.deltaY < 0){
+                    scaleFactor = 1.5;
+                    this.adjustPeakHeight(scaleFactor);
+                  }
+                } else{
+                  await this.onZoomFromEventListener(e, null);
+                }
+              } else{
+                if (e.ctrlKey){//if control key is pressed --> intensity zoom
+                  let scaleFactor: number = 0;
+                  if (e.deltaY > 0) {
+                    scaleFactor = 0.75;
+                    this.adjustPeakHeight(scaleFactor);
+                  } else if (e.deltaY < 0){
+                    scaleFactor = 1.5;
+                    this.adjustPeakHeight(scaleFactor);
+                  }
+                } else{
+                  if (axis.name == "xAxis"){
+                    await this.onZoomFromEventListener(e, "mz");
+                  } else if(axis.name == "yAxis"){
+                    await this.onZoomFromEventListener(e, "rt");
+                  }
+                }
+              }
+              this.scrollLock = false;
+            } */
         };
         this.onZoomFromEventListener = async (e, axisName) => {
             //zoom action detected by event listener in each axis

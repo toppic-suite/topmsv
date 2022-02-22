@@ -21,12 +21,30 @@ GraphControl.adjustIntensity = (peaks) => {
         console.error("cannot find plotgroup");
         return;
     }
+    let expectedScale = Graph.intSquish;
+    let maxInt = Graph.viewRange.intmax;
+    let ratio = maxInt / Graph.intensitySumTotal;
+    if (ratio < 0.005) {
+        expectedScale = (1 - ratio) * Graph.lowInteScaleFactor;
+        if (maxInt * expectedScale * Graph.peakScale > Graph.maxPeakHeight) {
+            expectedScale = Graph.intSquish;
+        }
+    }
+    else {
+        if (maxInt * Graph.intSquish > maxInt) {
+            expectedScale = 1;
+        }
+    }
+    if (maxInt * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) { // when peaks are too high
+        let newSquish = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+        expectedScale = newSquish;
+    }
     peaks.forEach((peak) => {
         if (peak.lowPeak) {
-            let resultHeight = peak.int * plotGroup.scale.y;
+            let resultHeight = peak.int * expectedScale;
             if (resultHeight < Graph.minPeakHeight) {
                 //peak y should bce updated so that the resulting height is still 0.05
-                let newY = Graph.minPeakHeight / plotGroup.scale.y;
+                let newY = Graph.minPeakHeight / expectedScale;
                 peak.height = newY;
                 //@ts-ignore
                 peak.geometry.attributes.position.array[4] = newY;
@@ -167,35 +185,34 @@ GraphControl.drawTick = () => {
 };
 /*resizes the renderer and camera, especially in response to a window resize*/
 GraphControl.repositionPlot = (r, checkIntensity) => {
-    let heightScale = Graph.viewRange.intmax;
+    let maxInt = Graph.viewRange.intmax;
     // This step allows points to be plotted at their normal mz,rt locations in plotPoint,
     // but keeping them in the grid. Scaling datagroup transforms the coordinate system
     // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
     let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
     let rt_squish = -Graph.gridRange / (r.rtmax - r.rtmin);
-    let int_squish = Graph.gridRangeVertical / heightScale;
-    if (Graph.viewRange.intmax < 1) {
-        //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
-        int_squish = 0;
-    }
-    let ratio = Graph.intensitySum / Graph.intensitySumTotal;
-    if (ratio < 0.15 && !Graph.isPan) { //if this region mostly contains low peaks
-        int_squish = (1 - ratio) * 10;
-        if (Graph.peakScale != 0) {
-            //int_squish = int_squish;
-        }
-    }
-    else if (heightScale * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) { // when peaks are too high
-        let newSquish = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
-        if (heightScale * newSquish < heightScale * Graph.intSquish) {
-            int_squish = newSquish;
+    let int_squish = Graph.intSquish;
+    /* if (Graph.viewRange.intmax < 1){
+       //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
+       int_squish = 0;
+     }*/
+    if (!Graph.isPan) {
+        let ratio = maxInt / Graph.intensitySumTotal;
+        if (ratio < 0.005) { //if this region mostly contains low peaks
+            int_squish = (1 - ratio) * Graph.lowInteScaleFactor;
+            if (maxInt * int_squish * Graph.peakScale > Graph.maxPeakHeight) {
+                int_squish = Graph.intSquish;
+            }
         }
         else {
-            int_squish = Graph.intSquish;
+            if (maxInt * Graph.intSquish > maxInt) {
+                int_squish = 1;
+            }
         }
-    }
-    else {
-        int_squish = Graph.intSquish;
+        if (maxInt * Graph.peakScale > Graph.maxPeakHeight) { // when peaks are too high
+            let newSquish = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+            int_squish = newSquish;
+        }
     }
     //if intensity scaling is off, don't adjust intensity;
     let inteCheckbox = document.querySelector("#inte-auto-adjust");
