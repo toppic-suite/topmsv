@@ -54,23 +54,6 @@ GraphControl.adjustIntensity = (peaks, isTempScale) => {
         console.error("cannot find plotgroup");
         return;
     }
-    /*let expectedScale = Graph.intSquish;
-    let maxInt: number = Graph.viewRange.intmax;
-    let ratio: number = maxInt / Graph.intensitySumTotal;
-    if (ratio < 0.005) {
-      expectedScale = (1 - ratio) * Graph.lowInteScaleFactor;
-      if (maxInt * expectedScale * Graph.peakScale > Graph.maxPeakHeight) {
-        expectedScale = Graph.intSquish;
-      }
-    } else {
-      if (maxInt * Graph.intSquish > maxInt) {
-        expectedScale = 1;
-      }
-    }
-    if (maxInt * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {// when peaks are too high
-      let newSquish: number = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
-      expectedScale = newSquish;
-    }*/
     peaks.forEach((peak) => {
         if (peak.lowPeak) {
             let resultHeight = peak.int * plotGroup.scale.y;
