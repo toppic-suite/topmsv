@@ -1,5 +1,4 @@
 /*graph_control.js: class for scaling and repositioning objects on the graph*/
-
 class GraphControl{
   static xScale: number = 1;
   
@@ -15,15 +14,51 @@ class GraphControl{
     return { x: mz_norm * Graph.gridRange, z: (1 - rt_norm) * Graph.gridRange };
   }
 
-  /******* DATA RANGE AND VIEWING AREA ****/
-  static adjustIntensity = (peaks: Peak3DView[]): void => {
-    //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
-    //peak.height = adjusted y (current Y), peak.int = original intensity
+  static postProcessLowPeaks = (peaks: Peak3DView[]) => {
     let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
     if (!plotGroup) {
       console.error("cannot find plotgroup");
       return; 
     }
+    let expectedScale = Graph.intSquish;
+    let maxInt: number = Graph.viewRange.intmax;
+    let ratio: number = maxInt / Graph.intensitySumTotal;      
+    if (ratio < 0.005) {
+      expectedScale = (1 - ratio) * Graph.lowInteScaleFactor;
+      if (maxInt * expectedScale * Graph.peakScale > Graph.maxPeakHeight) {
+        expectedScale = Graph.intSquish;
+      }
+    } else {
+      if (maxInt * Graph.intSquish > maxInt) {
+        expectedScale = 1;
+      }
+    } 
+    if (maxInt * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {// when peaks are too high
+      let newSquish: number = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+      expectedScale = newSquish;
+    }
+
+    peaks.forEach((peak: Peak3DView): void => {
+      if (peak.lowPeak){
+        peak.height = peak.int * expectedScale;
+        //@ts-ignore
+        peak.geometry.attributes.position.array[4] = peak.height;
+        peak.geometry.attributes.position.needsUpdate = true;
+      }
+    })
+  }
+
+  /******* DATA RANGE AND VIEWING AREA ****/
+  static adjustIntensity = (peaks: Peak3DView[], isTempScale: boolean): void => {
+    //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
+    //peak.height = adjusted y (current Y), peak.int = original intensity
+  
+    let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    if (!plotGroup) {
+      console.error("cannot find plotgroup");
+      return; 
+    }
+
     peaks.forEach((peak: Peak3DView): void => {
       if (peak.lowPeak){
         let resultHeight: number = peak.int * plotGroup!.scale.y;
@@ -44,6 +79,7 @@ class GraphControl{
       }
     })
   }
+  
   static getTickHeight = (): number => {
     let tempDiff: number = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
     let tickHeight: number = Graph.tickHeightList[0];
@@ -167,32 +203,40 @@ class GraphControl{
   }
   /*resizes the renderer and camera, especially in response to a window resize*/
   static repositionPlot = (r: Range3DView, checkIntensity: boolean): void => {
-    let heightScale: number = Graph.viewRange.intmax;
+    let maxInt: number = Graph.viewRange.intmax;
     // This step allows points to be plotted at their normal mz,rt locations in plotPoint,
     // but keeping them in the grid. Scaling datagroup transforms the coordinate system
     // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
     let mz_squish: number = Graph.gridRange / (r.mzmax - r.mzmin);
     let rt_squish: number = - Graph.gridRange / (r.rtmax - r.rtmin);
-    let int_squish: number = (Graph.gridRangeVertical / heightScale) * r.intscale;
-        
-    if (Graph.viewRange.intmax < 1){
+    let int_squish = Graph.intSquish;
+
+   /* if (Graph.viewRange.intmax < 1){
       //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
       int_squish = 0;
-    }
-    if (heightScale * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {
-      let newSquish: number = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
-      if (heightScale * newSquish < heightScale * Graph.intSquish) {
+    }*/
+    if (!Graph.isPan) {
+      let ratio: number = maxInt / Graph.intensitySumTotal;      
+      if (ratio < 0.005) {//if this region mostly contains low peaks
+        int_squish = (1 - ratio) * Graph.lowInteScaleFactor;
+        if (maxInt * int_squish * Graph.peakScale > Graph.maxPeakHeight) {
+          int_squish = Graph.intSquish;
+        }
+      } else {
+        if (maxInt * Graph.intSquish > maxInt) {
+         int_squish = 1;
+        }
+      } 
+      if (maxInt * Graph.peakScale > Graph.maxPeakHeight) {// when peaks are too high
+        let newSquish: number = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
         int_squish = newSquish;
-      } else{
-        int_squish = Graph.intSquish;
       }
-    } else{
-      int_squish = Graph.intSquish;
     }
+
     //if intensity scaling is off, don't adjust intensity;
     let inteCheckbox: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#inte-auto-adjust");
     if (inteCheckbox) {
-      if (inteCheckbox.checked || checkIntensity == false) {
+      if (!inteCheckbox.checked || checkIntensity == false) {
         int_squish = Graph.intSquish;
       }
     }

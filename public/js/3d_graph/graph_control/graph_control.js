@@ -12,8 +12,41 @@ GraphControl.mzRtToGridSpace = (mz, rt) => {
     let rt_norm = (rt - vr.rtmin) / vr.rtrange;
     return { x: mz_norm * Graph.gridRange, z: (1 - rt_norm) * Graph.gridRange };
 };
+GraphControl.postProcessLowPeaks = (peaks) => {
+    let plotGroup = Graph.scene.getObjectByName("plotGroup");
+    if (!plotGroup) {
+        console.error("cannot find plotgroup");
+        return;
+    }
+    let expectedScale = Graph.intSquish;
+    let maxInt = Graph.viewRange.intmax;
+    let ratio = maxInt / Graph.intensitySumTotal;
+    if (ratio < 0.005) {
+        expectedScale = (1 - ratio) * Graph.lowInteScaleFactor;
+        if (maxInt * expectedScale * Graph.peakScale > Graph.maxPeakHeight) {
+            expectedScale = Graph.intSquish;
+        }
+    }
+    else {
+        if (maxInt * Graph.intSquish > maxInt) {
+            expectedScale = 1;
+        }
+    }
+    if (maxInt * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) { // when peaks are too high
+        let newSquish = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+        expectedScale = newSquish;
+    }
+    peaks.forEach((peak) => {
+        if (peak.lowPeak) {
+            peak.height = peak.int * expectedScale;
+            //@ts-ignore
+            peak.geometry.attributes.position.array[4] = peak.height;
+            peak.geometry.attributes.position.needsUpdate = true;
+        }
+    });
+};
 /******* DATA RANGE AND VIEWING AREA ****/
-GraphControl.adjustIntensity = (peaks) => {
+GraphControl.adjustIntensity = (peaks, isTempScale) => {
     //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
     //peak.height = adjusted y (current Y), peak.int = original intensity
     let plotGroup = Graph.scene.getObjectByName("plotGroup");
@@ -21,6 +54,23 @@ GraphControl.adjustIntensity = (peaks) => {
         console.error("cannot find plotgroup");
         return;
     }
+    /*let expectedScale = Graph.intSquish;
+    let maxInt: number = Graph.viewRange.intmax;
+    let ratio: number = maxInt / Graph.intensitySumTotal;
+    if (ratio < 0.005) {
+      expectedScale = (1 - ratio) * Graph.lowInteScaleFactor;
+      if (maxInt * expectedScale * Graph.peakScale > Graph.maxPeakHeight) {
+        expectedScale = Graph.intSquish;
+      }
+    } else {
+      if (maxInt * Graph.intSquish > maxInt) {
+        expectedScale = 1;
+      }
+    }
+    if (maxInt * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {// when peaks are too high
+      let newSquish: number = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+      expectedScale = newSquish;
+    }*/
     peaks.forEach((peak) => {
         if (peak.lowPeak) {
             let resultHeight = peak.int * plotGroup.scale.y;
@@ -167,33 +217,39 @@ GraphControl.drawTick = () => {
 };
 /*resizes the renderer and camera, especially in response to a window resize*/
 GraphControl.repositionPlot = (r, checkIntensity) => {
-    let heightScale = Graph.viewRange.intmax;
+    let maxInt = Graph.viewRange.intmax;
     // This step allows points to be plotted at their normal mz,rt locations in plotPoint,
     // but keeping them in the grid. Scaling datagroup transforms the coordinate system
     // from mz,rt to GRID_RANGE. RT is also mirrored because the axis runs in the "wrong" direction.
     let mz_squish = Graph.gridRange / (r.mzmax - r.mzmin);
     let rt_squish = -Graph.gridRange / (r.rtmax - r.rtmin);
-    let int_squish = (Graph.gridRangeVertical / heightScale) * r.intscale;
-    if (Graph.viewRange.intmax < 1) {
-        //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
-        int_squish = 0;
-    }
-    if (heightScale * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {
-        let newSquish = Graph.maxPeakHeight / (heightScale * Graph.peakScale);
-        if (heightScale * newSquish < heightScale * Graph.intSquish) {
-            int_squish = newSquish;
+    let int_squish = Graph.intSquish;
+    /* if (Graph.viewRange.intmax < 1){
+       //there is a problem when there is no peak --> this.dataRange.intmax becomes 0 and inte_squish is a result of dividing by zero
+       int_squish = 0;
+     }*/
+    if (!Graph.isPan) {
+        let ratio = maxInt / Graph.intensitySumTotal;
+        if (ratio < 0.005) { //if this region mostly contains low peaks
+            int_squish = (1 - ratio) * Graph.lowInteScaleFactor;
+            if (maxInt * int_squish * Graph.peakScale > Graph.maxPeakHeight) {
+                int_squish = Graph.intSquish;
+            }
         }
         else {
-            int_squish = Graph.intSquish;
+            if (maxInt * Graph.intSquish > maxInt) {
+                int_squish = 1;
+            }
         }
-    }
-    else {
-        int_squish = Graph.intSquish;
+        if (maxInt * Graph.peakScale > Graph.maxPeakHeight) { // when peaks are too high
+            let newSquish = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+            int_squish = newSquish;
+        }
     }
     //if intensity scaling is off, don't adjust intensity;
     let inteCheckbox = document.querySelector("#inte-auto-adjust");
     if (inteCheckbox) {
-        if (inteCheckbox.checked || checkIntensity == false) {
+        if (!inteCheckbox.checked || checkIntensity == false) {
             int_squish = Graph.intSquish;
         }
     }

@@ -8,59 +8,69 @@ class GraphZoom {
   scrollLock = false;
   constructor(){}
     
-  adjustPeakHeight = (scaleFactor: number): void => {
+  adjustPeakHeight = (scaleFactor: number, isTempScale: boolean): void => {
     let peaks: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
     if (!peaks) {
       console.error("plotGroup cannot be found");
       return;
     }
-    let oriScale: number = peaks.scale.y;
 
-    peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
-    if (scaleFactor > 1){
-      //@ts-ignore "peaks" contain a group of Peak3DView
-      GraphControl.adjustIntensity(peaks.children);
+    if (!isTempScale) {
+      let oriScale: number = peaks.scale.y;
+  
+      peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
+
+      Graph.peakScale = oriScale * scaleFactor;
     }
-    Graph.peakScale = oriScale * scaleFactor;
-    GraphRender.renderImmediate();
+    //if (scaleFactor > 1){}
+    //@ts-ignore "peaks" contain a group of Peak3DView
+    GraphControl.adjustIntensity(peaks.children, isTempScale);
+    if (isTempScale) {
+      //@ts-ignore "peaks" contain a group of Peak3DView
+      GraphControl.postProcessLowPeaks(peaks.children);
+    }
+    GraphRender.renderImmediate();  
   }
 
 
   onZoom = async(e: WheelEvent): Promise<void> => {
     e.preventDefault();//disable scroll of browser
-
     if (!this.scrollLock) {
       this.scrollLock = true;
       let axis: THREE.Object3D<THREE.Event> | null = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
       if (axis == null){
+        let scaleFactor: number = 0;
+
+        if (e.deltaY > 0) {
+          scaleFactor = 0.75;
+        } else if (e.deltaY < 0){
+          scaleFactor = 1.5;
+        }
+
         if (e.ctrlKey){//if control key is pressed --> intensity zoom
-          let scaleFactor: number = 0;
-          if (e.deltaY > 0) {
-            scaleFactor = 0.75;
-            this.adjustPeakHeight(scaleFactor);
-          } else if (e.deltaY < 0){
-            scaleFactor = 1.5;
-            this.adjustPeakHeight(scaleFactor);
-          }
-        } else{
+          this.adjustPeakHeight(scaleFactor, false);
+        } else {
           await this.onZoomFromEventListener(e, null);
+          this.adjustPeakHeight(scaleFactor, true);
         }
       } else{
+        let scaleFactor: number = 0;
+
+        if (e.deltaY > 0) {
+          scaleFactor = 0.75;
+        } else if (e.deltaY < 0){
+          scaleFactor = 1.5;
+        }
+
         if (e.ctrlKey){//if control key is pressed --> intensity zoom
-          let scaleFactor: number = 0;
-          if (e.deltaY > 0) {
-            scaleFactor = 0.75;
-            this.adjustPeakHeight(scaleFactor);
-          } else if (e.deltaY < 0){
-            scaleFactor = 1.5;
-            this.adjustPeakHeight(scaleFactor);
-          }
+          this.adjustPeakHeight(scaleFactor, false);
         } else{
           if (axis.name == "xAxis"){
             await this.onZoomFromEventListener(e, "mz");
           } else if(axis.name == "yAxis"){
             await this.onZoomFromEventListener(e, "rt");
           }
+          this.adjustPeakHeight(scaleFactor, true);
         }
       }
       this.scrollLock = false;

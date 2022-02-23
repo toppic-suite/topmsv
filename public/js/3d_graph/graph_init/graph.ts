@@ -43,6 +43,7 @@ class Graph{
   static maxFeature: number = Graph.maxPeaks / 2;
 
   static intensitySum = 0;
+  static intensitySumTotal = -1;
 
   /*for downloading 3d graph*/
   static imageAddress;
@@ -119,6 +120,8 @@ class Graph{
   static currentFeatureData: FeatureDataDB[] = [];
 
   static resizedCamera;
+
+  static lowInteScaleFactor = 10;
 
   constructor(projectDir, resultViz) {
     Graph.projectDir = projectDir;
