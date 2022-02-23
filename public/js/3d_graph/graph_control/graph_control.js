@@ -12,10 +12,7 @@ GraphControl.mzRtToGridSpace = (mz, rt) => {
     let rt_norm = (rt - vr.rtmin) / vr.rtrange;
     return { x: mz_norm * Graph.gridRange, z: (1 - rt_norm) * Graph.gridRange };
 };
-/******* DATA RANGE AND VIEWING AREA ****/
-GraphControl.adjustIntensity = (peaks) => {
-    //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
-    //peak.height = adjusted y (current Y), peak.int = original intensity
+GraphControl.postProcessLowPeaks = (peaks) => {
     let plotGroup = Graph.scene.getObjectByName("plotGroup");
     if (!plotGroup) {
         console.error("cannot find plotgroup");
@@ -41,10 +38,45 @@ GraphControl.adjustIntensity = (peaks) => {
     }
     peaks.forEach((peak) => {
         if (peak.lowPeak) {
-            let resultHeight = peak.int * expectedScale;
+            peak.height = peak.int * expectedScale;
+            //@ts-ignore
+            peak.geometry.attributes.position.array[4] = peak.height;
+            peak.geometry.attributes.position.needsUpdate = true;
+        }
+    });
+};
+/******* DATA RANGE AND VIEWING AREA ****/
+GraphControl.adjustIntensity = (peaks, isTempScale) => {
+    //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
+    //peak.height = adjusted y (current Y), peak.int = original intensity
+    let plotGroup = Graph.scene.getObjectByName("plotGroup");
+    if (!plotGroup) {
+        console.error("cannot find plotgroup");
+        return;
+    }
+    /*let expectedScale = Graph.intSquish;
+    let maxInt: number = Graph.viewRange.intmax;
+    let ratio: number = maxInt / Graph.intensitySumTotal;
+    if (ratio < 0.005) {
+      expectedScale = (1 - ratio) * Graph.lowInteScaleFactor;
+      if (maxInt * expectedScale * Graph.peakScale > Graph.maxPeakHeight) {
+        expectedScale = Graph.intSquish;
+      }
+    } else {
+      if (maxInt * Graph.intSquish > maxInt) {
+        expectedScale = 1;
+      }
+    }
+    if (maxInt * Graph.peakScale > Graph.maxPeakHeight && !Graph.isPan) {// when peaks are too high
+      let newSquish: number = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+      expectedScale = newSquish;
+    }*/
+    peaks.forEach((peak) => {
+        if (peak.lowPeak) {
+            let resultHeight = peak.int * plotGroup.scale.y;
             if (resultHeight < Graph.minPeakHeight) {
                 //peak y should bce updated so that the resulting height is still 0.05
-                let newY = Graph.minPeakHeight / expectedScale;
+                let newY = Graph.minPeakHeight / plotGroup.scale.y;
                 peak.height = newY;
                 //@ts-ignore
                 peak.geometry.attributes.position.array[4] = newY;

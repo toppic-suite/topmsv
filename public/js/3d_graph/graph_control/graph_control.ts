@@ -14,10 +14,7 @@ class GraphControl{
     return { x: mz_norm * Graph.gridRange, z: (1 - rt_norm) * Graph.gridRange };
   }
 
-  /******* DATA RANGE AND VIEWING AREA ****/
-  static adjustIntensity = (peaks: Peak3DView[]): void => {
-    //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
-    //peak.height = adjusted y (current Y), peak.int = original intensity
+  static postProcessLowPeaks = (peaks: Peak3DView[]) => {
     let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
     if (!plotGroup) {
       console.error("cannot find plotgroup");
@@ -43,10 +40,31 @@ class GraphControl{
 
     peaks.forEach((peak: Peak3DView): void => {
       if (peak.lowPeak){
-        let resultHeight: number = peak.int * expectedScale;
+        peak.height = peak.int * expectedScale;
+        //@ts-ignore
+        peak.geometry.attributes.position.array[4] = peak.height;
+        peak.geometry.attributes.position.needsUpdate = true;
+      }
+    })
+  }
+
+  /******* DATA RANGE AND VIEWING AREA ****/
+  static adjustIntensity = (peaks: Peak3DView[], isTempScale: boolean): void => {
+    //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
+    //peak.height = adjusted y (current Y), peak.int = original intensity
+  
+    let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    if (!plotGroup) {
+      console.error("cannot find plotgroup");
+      return; 
+    }
+
+    peaks.forEach((peak: Peak3DView): void => {
+      if (peak.lowPeak){
+        let resultHeight: number = peak.int * plotGroup!.scale.y;
         if (resultHeight < Graph.minPeakHeight){
           //peak y should bce updated so that the resulting height is still 0.05
-          let newY:number = Graph.minPeakHeight/expectedScale;
+          let newY:number = Graph.minPeakHeight/plotGroup!.scale.y;
           peak.height = newY;
           //@ts-ignore
           peak.geometry.attributes.position.array[4] = newY;
@@ -61,6 +79,7 @@ class GraphControl{
       }
     })
   }
+  
   static getTickHeight = (): number => {
     let tempDiff: number = Graph.viewRange.rtmax - Graph.viewRange.rtmin;
     let tickHeight: number = Graph.tickHeightList[0];

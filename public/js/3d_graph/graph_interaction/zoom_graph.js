@@ -6,19 +6,24 @@ peak intensity is also adjusted by ctrl + mouse wheel
 class GraphZoom {
     constructor() {
         this.scrollLock = false;
-        this.adjustPeakHeight = (scaleFactor) => {
+        this.adjustPeakHeight = (scaleFactor, isTempScale) => {
             let peaks = Graph.scene.getObjectByName("plotGroup");
             if (!peaks) {
                 console.error("plotGroup cannot be found");
                 return;
             }
-            let oriScale = peaks.scale.y;
-            peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
-            if (scaleFactor > 1) {
-                //@ts-ignore "peaks" contain a group of Peak3DView
-                GraphControl.adjustIntensity(peaks.children);
+            if (!isTempScale) {
+                let oriScale = peaks.scale.y;
+                peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
+                Graph.peakScale = oriScale * scaleFactor;
             }
-            Graph.peakScale = oriScale * scaleFactor;
+            //if (scaleFactor > 1){}
+            //@ts-ignore "peaks" contain a group of Peak3DView
+            GraphControl.adjustIntensity(peaks.children, isTempScale);
+            if (isTempScale) {
+                //@ts-ignore "peaks" contain a group of Peak3DView
+                GraphControl.postProcessLowPeaks(peaks.children);
+            }
             GraphRender.renderImmediate();
         };
         this.onZoom = async (e) => {
@@ -27,32 +32,31 @@ class GraphZoom {
                 this.scrollLock = true;
                 let axis = GraphUtil.findObjectHover(e, Graph.axisGroup); //axis is null if cursor is not on axis
                 if (axis == null) {
+                    let scaleFactor = 0;
+                    if (e.deltaY > 0) {
+                        scaleFactor = 0.75;
+                    }
+                    else if (e.deltaY < 0) {
+                        scaleFactor = 1.5;
+                    }
                     if (e.ctrlKey) { //if control key is pressed --> intensity zoom
-                        let scaleFactor = 0;
-                        if (e.deltaY > 0) {
-                            scaleFactor = 0.75;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
-                        else if (e.deltaY < 0) {
-                            scaleFactor = 1.5;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
+                        this.adjustPeakHeight(scaleFactor, false);
                     }
                     else {
                         await this.onZoomFromEventListener(e, null);
+                        this.adjustPeakHeight(scaleFactor, true);
                     }
                 }
                 else {
+                    let scaleFactor = 0;
+                    if (e.deltaY > 0) {
+                        scaleFactor = 0.75;
+                    }
+                    else if (e.deltaY < 0) {
+                        scaleFactor = 1.5;
+                    }
                     if (e.ctrlKey) { //if control key is pressed --> intensity zoom
-                        let scaleFactor = 0;
-                        if (e.deltaY > 0) {
-                            scaleFactor = 0.75;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
-                        else if (e.deltaY < 0) {
-                            scaleFactor = 1.5;
-                            this.adjustPeakHeight(scaleFactor);
-                        }
+                        this.adjustPeakHeight(scaleFactor, false);
                     }
                     else {
                         if (axis.name == "xAxis") {
@@ -61,6 +65,7 @@ class GraphZoom {
                         else if (axis.name == "yAxis") {
                             await this.onZoomFromEventListener(e, "rt");
                         }
+                        this.adjustPeakHeight(scaleFactor, true);
                     }
                 }
                 this.scrollLock = false;
