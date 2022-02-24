@@ -154,7 +154,7 @@ class GraphData{
     })
   }
   /******** PLOT PEAKS ******/
-  static draw = async(curRT: number): Promise<any> => {   
+  static draw = async(curRT: number = Graph.curRT): Promise<any> => {   
     const curViewRange: Range3DView = Graph.viewRange;
     Graph.curRT = curRT;
     Graph.currentData = await LoadData.load3dData(curViewRange);
@@ -324,19 +324,19 @@ class GraphData{
         let rt: number = parseFloat(point.RETENTIONTIME);
         let inten: number = parseFloat(point.INTENSITY);
         let lineColor = Graph.peakColor[point.COLOR];
+        let intScale = GraphControl.calcIntScale();
 
         if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
           rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
           let lowPeak: boolean = false;
           let currt: string = Graph.curRT.toFixed(4);
           let y: number = inten;    
-          let minHeight: number = Graph.minPeakHeight;
           //if y is much smaller than the highest intensity peak in the view range
-          if (y * plotGroup!.scale.y < minHeight){
+          if (y * plotGroup!.scale.y * intScale < Graph.minPeakHeight) {
               //increase y so that later y is at least minHeight when scaled
-              y = minHeight/plotGroup!.scale.y;
+              y = Graph.minPeakHeight/(plotGroup!.scale.y * intScale);
               lowPeak = true;
-          }
+          } 
           //@ts-ignore to allow overwrite
           line.geometry.attributes.position.array[4] = y;
           line.geometry.attributes.position.needsUpdate = true; 

@@ -6,23 +6,27 @@ peak intensity is also adjusted by ctrl + mouse wheel
 class GraphZoom {
     constructor() {
         this.scrollLock = false;
-        this.adjustPeakHeight = (scaleFactor, isTempScale) => {
+        this.adjustPeakHeight = (scaleFactor, isCtrlPressed) => {
             let peaks = Graph.scene.getObjectByName("plotGroup");
+            let inteAutoAdjust = document.querySelector("#inte-auto-adjust");
             if (!peaks) {
                 console.error("plotGroup cannot be found");
                 return;
             }
-            if (!isTempScale) {
-                let oriScale = peaks.scale.y;
-                peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
-                Graph.peakScale = oriScale * scaleFactor;
+            if (!isCtrlPressed && scaleFactor < 1) {
+                return;
+            } //or peak intensity will be decreased
+            if (inteAutoAdjust) {
+                if (!isCtrlPressed && !inteAutoAdjust.checked) {
+                    return;
+                }
             }
-            //if (scaleFactor > 1){}
-            //@ts-ignore "peaks" contain a group of Peak3DView
-            GraphControl.adjustIntensity(peaks.children, isTempScale);
-            if (isTempScale) {
+            let oriScale = peaks.scale.y;
+            peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
+            Graph.peakScale = oriScale * scaleFactor;
+            if (isCtrlPressed && scaleFactor > 1) {
                 //@ts-ignore "peaks" contain a group of Peak3DView
-                GraphControl.postProcessLowPeaks(peaks.children);
+                GraphControl.adjustIntensity(peaks.children);
             }
             GraphRender.renderImmediate();
         };
@@ -40,11 +44,11 @@ class GraphZoom {
                         scaleFactor = 1.5;
                     }
                     if (e.ctrlKey) { //if control key is pressed --> intensity zoom
-                        this.adjustPeakHeight(scaleFactor, false);
+                        this.adjustPeakHeight(scaleFactor, true);
                     }
                     else {
                         await this.onZoomFromEventListener(e, null);
-                        this.adjustPeakHeight(scaleFactor, true);
+                        this.adjustPeakHeight(scaleFactor, false);
                     }
                 }
                 else {
@@ -56,7 +60,7 @@ class GraphZoom {
                         scaleFactor = 1.5;
                     }
                     if (e.ctrlKey) { //if control key is pressed --> intensity zoom
-                        this.adjustPeakHeight(scaleFactor, false);
+                        this.adjustPeakHeight(scaleFactor, true);
                     }
                     else {
                         if (axis.name == "xAxis") {
@@ -65,7 +69,7 @@ class GraphZoom {
                         else if (axis.name == "yAxis") {
                             await this.onZoomFromEventListener(e, "rt");
                         }
-                        this.adjustPeakHeight(scaleFactor, true);
+                        this.adjustPeakHeight(scaleFactor, false);
                     }
                 }
                 this.scrollLock = false;
