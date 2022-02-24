@@ -315,9 +315,7 @@ class EventHandler {
         if (inteAutoAdjust) {
             //redraw graph if intensity adjustment checkbox gets checked
             $("#inte-auto-adjust").on("click", function () {
-                if (inteAutoAdjust.checked) {
-                    GraphData.drawNoNewData(true);
-                }
+                GraphData.draw();
             });
         }
         let showFeature = document.querySelector("#show-feature-anno");

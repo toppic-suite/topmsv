@@ -150,7 +150,7 @@ GraphData.updateGraphForNewScan = (scanID) => {
     });
 };
 /******** PLOT PEAKS ******/
-GraphData.draw = async (curRT) => {
+GraphData.draw = async (curRT = Graph.curRT) => {
     const curViewRange = Graph.viewRange;
     Graph.curRT = curRT;
     Graph.currentData = await LoadData.load3dData(curViewRange);
@@ -303,16 +303,16 @@ GraphData.updatePeaks = (data) => {
             let rt = parseFloat(point.RETENTIONTIME);
             let inten = parseFloat(point.INTENSITY);
             let lineColor = Graph.peakColor[point.COLOR];
+            let intScale = GraphControl.calcIntScale();
             if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
                 rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
                 let lowPeak = false;
                 let currt = Graph.curRT.toFixed(4);
                 let y = inten;
-                let minHeight = Graph.minPeakHeight;
                 //if y is much smaller than the highest intensity peak in the view range
-                if (y * plotGroup.scale.y < minHeight) {
+                if (y * plotGroup.scale.y * intScale < Graph.minPeakHeight) {
                     //increase y so that later y is at least minHeight when scaled
-                    y = minHeight / plotGroup.scale.y;
+                    y = Graph.minPeakHeight / (plotGroup.scale.y * intScale);
                     lowPeak = true;
                 }
                 //@ts-ignore to allow overwrite
