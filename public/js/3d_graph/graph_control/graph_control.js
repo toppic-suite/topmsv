@@ -307,7 +307,7 @@ GraphControl.repositionPlot = (r) => {
 /*update labels and legend to reflect a new view range*/
 GraphControl.updateViewRange = (newViewRange, checkIntensity = true) => {
     Graph.viewRange = newViewRange;
-    GraphControl.repositionPlot(newViewRange, checkIntensity);
+    GraphControl.repositionPlot(newViewRange);
     //GraphLabel.drawDataLabels();
 };
 /*prevent user from going outside the data range or zooming in so far that math breaks down*/

@@ -16,7 +16,6 @@ class GraphControl{
 
   /******* DATA RANGE AND VIEWING AREA ****/
   static calcIntScale = (): number => {
-
     let intScale = Graph.intSquish;
     let maxInt: number = Graph.viewRange.intmax;
 
@@ -320,7 +319,7 @@ class GraphControl{
   /*update labels and legend to reflect a new view range*/
   static updateViewRange = (newViewRange: Range3DView, checkIntensity: boolean = true): void => {
     Graph.viewRange = newViewRange;
-    GraphControl.repositionPlot(newViewRange, checkIntensity);
+    GraphControl.repositionPlot(newViewRange);
     //GraphLabel.drawDataLabels();
   }
   /*prevent user from going outside the data range or zooming in so far that math breaks down*/
