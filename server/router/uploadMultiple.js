@@ -40,8 +40,8 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
         email = queryResult.email;
     }
     //skip emailing based on config setting
-    if (fs.existsSync('config.json')) {
-        let configData = fs.readFileSync('config.json');
+    if (fs.existsSync('config/config.json')) {
+        let configData = fs.readFileSync('config/config.json');
         configData = JSON.parse(configData);
         if (!configData.sendEmail) {
             shouldSendEmail = false;
@@ -110,9 +110,10 @@ const uploadMultiple = router.post('/uploadMultiple', function (req, res) {
                             if (!result) {
                                 insertRowSync(id, projectname, file, description, des_file, 4, emailtosend, 0, 0, 0, 0, uid, publicStatus, "true", 0);
                                 //create path based on OS type    
-                                let app = './cpp/bin/mzMLReader';
+                                //let app = './cpp/bin/mzMLReader';
+                                let app = './bin/mzMLReader';
                                 if (os.platform() == "win32") {
-                                    app = '.\\cpp\\bin\\mzMLReader';
+                                    app = '.\\bin\\mzMLReader';
                                 }
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter, 1);

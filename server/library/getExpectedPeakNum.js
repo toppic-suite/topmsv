@@ -1,12 +1,15 @@
 "use strict";
 const fs = require('fs');
+const path = require('path');
+
 /**
  * Read init.ini and return the value set as the expected peak number
  * @returns {function} Callback
  * @async
  */
 function getExpectedPeakNum(callback) {
-    fs.readFile('init.ini', 'utf8', (err, data) => {
+    let configFileName=path.join("config", "init.ini");
+    fs.readFile(configFileName, 'utf8', (err, data) => {
         if (err) {
             console.error(err);
             return;

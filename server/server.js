@@ -34,8 +34,8 @@ app.use(cookieSession({
 app.use(cookieParser());
 
 //skip authentication based on config setting
-if (fs.existsSync('config.json')) {
-    let configData = fs.readFileSync('config.json');
+if (fs.existsSync('config/config.json')) {
+    let configData = fs.readFileSync('config/config.json');
     configData = JSON.parse(configData);
     if (!configData.authentication) {
         shouldAuthenticate = false;
@@ -166,7 +166,7 @@ const checkWaitTasks = new CronJob("* * * * * *", function() {
                         avaiResourse = avaiResourse - threadNum;
                         updateProjectStatusSync(0, projectCode);
                         exec(app+' '+parameter, {maxBuffer: 1024 * 5000000}, (err, stdout, stderr) => {
-                            // console.log(stdout);
+                            console.log(stdout);
                             console.log(stderr);
                             if(err) {
                                 fs.appendFileSync(logPath, "[Error] Task failed! Please try again.\n");

@@ -40,8 +40,8 @@ const upload = router.post('/upload', function (req, res) {
         email = queryResult.email;
     }
     //skip emailing based on config setting
-    if (fs.existsSync('config.json')) {
-        let configData = fs.readFileSync('config.json');
+    if (fs.existsSync('config/config.json')) {
+        let configData = fs.readFileSync('config/config.json');
         configData = JSON.parse(configData);
         if (!configData.sendEmail) {
             shouldSendEmail = false;
@@ -217,7 +217,8 @@ const upload = router.post('/upload', function (req, res) {
                                         });
                                     }
                                     //let app = './cpp/bin/mzMLReader';
-                                    let app = path.join("cpp", "bin", "mzMLReader");
+                                    //let app = path.join("cpp", "bin", "mzMLReader");
+                                    let app = path.join("bin", "mzMLReader");
                                     let parameter = des_file + ' -f';
                                     submitTask(id, app, parameter, 1);
                                     app = 'node';
@@ -276,7 +277,8 @@ const upload = router.post('/upload', function (req, res) {
                                         }
                                     });
                                 }
-                                let app = path.join("cpp", "bin", "mzMLReader");
+                                //let app = path.join("cpp", "bin", "mzMLReader");
+                                let app = path.join("bin", "mzMLReader");
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter, 1);
                                 break;

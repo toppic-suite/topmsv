@@ -1,7 +1,7 @@
 #!/bin/sh
+cd ../../
 curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 sudo apt-get install -y nodejs
-mv node_modules node_modules_win
 npm install
 echo .
 echo . 

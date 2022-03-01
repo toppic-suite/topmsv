@@ -5,8 +5,8 @@ let sendEmail = true;
 let transport = null;
 let message = null;
 	
-if (fs.existsSync('config.json')) {
-    let configData = fs.readFileSync('config.json');
+if (fs.existsSync('config/config.json')) {
+    let configData = fs.readFileSync('config/config.json');
     configData = JSON.parse(configData);
     if (!configData.sendEmail) {
 		sendEmail = false;

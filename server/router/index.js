@@ -64,8 +64,8 @@ const index = router.get('/', function (req, res) {
                 }
                 row.projectLink = '/data?id=' + row.projectCode;
             });
-            if (fs.existsSync('config.json')) {
-                let configData = fs.readFileSync('config.json');
+            if (fs.existsSync('config/config.json')) {
+                let configData = fs.readFileSync('config/config.json');
                 configData = JSON.parse(configData);
                 if (!configData.authentication) {
                     shouldAuthenticate = false;
