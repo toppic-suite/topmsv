@@ -1,6 +1,6 @@
 "use strict";
 const nodemailer = require('nodemailer');
-const nodemailerAuth = require('../nodemailer-auth');
+const nodemailerAuth = require('../library/auth/nodemailer-auth');
 /**
  * Class representing a email sender
  */

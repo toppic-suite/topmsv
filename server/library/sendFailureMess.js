@@ -1,7 +1,7 @@
 "use strict";
 const processFailure = require("./processFailure");
 var nodemailer = require('nodemailer');
-var nodemailerAuth = require('../nodemailer-auth');
+var nodemailerAuth = require('../library/auth/nodemailer-auth');
 /**
  * Send failure message to user. Async mode.
  * @param {string} projectName - Project name

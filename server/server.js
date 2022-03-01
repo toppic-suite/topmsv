@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const nodemailerAuth = require('./nodemailer-auth');
+const nodemailerAuth = require('./library/auth/nodemailer-auth');
 const EmailSender = require('./library/email_sender');
 const favicon = require('serve-favicon');
 const betterDB = require('better-sqlite3');
@@ -10,8 +10,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
-const auth = require('./auth');
-const skipAuth = require('./skipAuth');
+const auth = require('./library/auth/auth');
+const skipAuth = require('./library/auth/skipAuth');
 const os = require('os');
 const cpuCount = os.cpus().length;
 const app = express();
