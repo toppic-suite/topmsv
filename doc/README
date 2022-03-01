@@ -1,0 +1,3 @@
+To generate js_lib document files, run 
+
+jsdoc ../server/library -d=js_lib
