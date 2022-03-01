@@ -1,0 +1,12 @@
+{
+  "source": {
+    "include": ["../server/library"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "destination": "./js_lib/",
+    "recurse": true,
+    "readme": "library/README.md"
+  }
+}
