@@ -25,7 +25,6 @@ $( document ).ready(function(): void {
     return;
   }
   let xhr: XMLHttpRequest = new XMLHttpRequest();
-
   if (upload) {
     upload.addEventListener('click', uploadFile, false);
   }

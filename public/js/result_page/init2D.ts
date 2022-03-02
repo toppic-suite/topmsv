@@ -57,7 +57,6 @@ export function init2D(scan: number, configFromResultViz: {"floatDigit": number,
             });
             $( "#tabs" ).tabs();
             let nextScanTab: HTMLElement | null = document.getElementById(nextScan.toString());
-            console.log(nextScanTab);
             if (nextScanTab) {
               nextScanTab.click(); // show next scan which is the first scan of scan level 2    
             }

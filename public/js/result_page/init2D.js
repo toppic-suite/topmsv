@@ -45,7 +45,6 @@ export function init2D(scan, configFromResultViz) {
                     response.data.forEach(function (item) {
                         let scanTwoNum = item.scanID;
                         let rt = item.rt;
-                        //$("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
                         $("#tabs ul").append('<li><a href="#spectrum2"' + ' id=' + scanTwoNum + '>' + item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
                         $(`#${scanTwoNum.toString()}`).on("click", () => {
                             loadPeakList2(scanTwoNum, item.prec_mz, item.prec_charge, item.prec_inte, rt, scan.toString());
@@ -53,7 +52,6 @@ export function init2D(scan, configFromResultViz) {
                     });
                     $("#tabs").tabs();
                     let nextScanTab = document.getElementById(nextScan.toString());
-                    console.log(nextScanTab);
                     if (nextScanTab) {
                         nextScanTab.click(); // show next scan which is the first scan of scan level 2    
                     }

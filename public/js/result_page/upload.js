@@ -25,10 +25,12 @@ $(document).ready(function () {
         return;
     }
     let xhr = new XMLHttpRequest();
+    console.log(upload);
     if (upload) {
         upload.addEventListener('click', uploadFile, false);
     }
     function uploadFile() {
+        alert("upload");
         if (!ms1file || !ms1file.files) {
             console.error("ms1 file information not available");
             return;
