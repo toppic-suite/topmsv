@@ -406,16 +406,16 @@ class SeqOfExecution {
             if (i != 1) {
                 type = { "type": "num" };
             }
-            columnTypes.push(type);
+            if (type) {
+                columnTypes.push(type);
+            }
         }
-        //@ts-ignore
         $("#selectedIonTableContainer").DataTable({
             "scrollY": Constants.TABLEHEIGHT,
             "scrollCollapse": true,
             "paging": false,
-            "bSortClasses": false,
             "searching": false,
-            "bInfo": false,
+            //"bInfo": false,
             "columns": columnTypes
         });
     }

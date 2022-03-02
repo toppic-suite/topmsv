@@ -110,7 +110,7 @@ class DrawPrsm {
                     .attr("y", yPos)
                     .style("fill", color)
                     .text(letter)
-                    .on("click", function (d) {
+                    .on("click", function () {
                     addShift.handleOnClick(letter, pos);
                 });
             }

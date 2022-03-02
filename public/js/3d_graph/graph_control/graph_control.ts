@@ -327,7 +327,7 @@ export class GraphControl{
         }*/
   };
   /*update labels and legend to reflect a new view range*/
-  static updateViewRange = (newViewRange: Range3DView, checkIntensity: boolean = true): void => {
+  static updateViewRange = (newViewRange: Range3DView): void => {
     Graph.viewRange = newViewRange;
     GraphControl.repositionPlot(newViewRange);
     //GraphLabel.drawDataLabels();

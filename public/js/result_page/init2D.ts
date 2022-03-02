@@ -1,9 +1,12 @@
+declare const axios: any;
+
 import {DataGetter} from "../result_page/dataGetter.js";
 import {showEnvTable} from "../result_page/env_table.js";
 
 export let peakList1_g: {"mz": string, "intensity": string}[];
 export let envList1_g: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}[];
 export let graph1_g: SpectrumView;
+
 let temp_peakList1_g: {"mz": string, "intensity": string}[];
 
 export let peakList2_g: {"mz": string, "intensity": string}[];

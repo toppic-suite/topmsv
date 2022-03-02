@@ -219,7 +219,7 @@ GraphData.drawNoNewData = async (checkIntensity) => {
     }
     GraphLabel.displayGraphData(Graph.currentData.length); //display metadata about the graph
     await GraphFeature.drawFeatureNoDataLoad(Graph.viewRange);
-    GraphControl.updateViewRange(Graph.viewRange, checkIntensity);
+    GraphControl.updateViewRange(Graph.viewRange);
     GraphRender.renderImmediate();
 };
 GraphData.plotPoint2D = () => {
