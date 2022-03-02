@@ -1,7 +1,13 @@
 // graph.js: set properties of 3D graph which are referenced and updated from other classes throughout the application
 //and call to initialize empty 3D graph
+import * as THREE from '../../../lib/js/three.module.js';
+import {OrbitControls} from '../../../lib/js/OrbitControls.js';
+import {GraphInit} from './graph_init.js';
+import {GraphUtil} from '../graph_util/graph_util.js';
+import {LoadData} from '../graph_data/load_data.js';
+import {showFeatureTable} from '../../result_page/feature_table.js';
 
-class Graph{
+export class Graph{
   /*default m/z range when scan changes*/
   static defaultMinMz: number = 550;
   static defaultMaxMz: number = 1000;
@@ -17,7 +23,7 @@ class Graph{
   static camera: THREE.OrthographicCamera = new THREE.OrthographicCamera( -50, 50, -10, 10, 1, 100 );
   static graphPlane: THREE.Plane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
   //@ts-ignore
-  static graphControls = new THREE.OrbitControls(Graph.camera, Graph.renderer.domElement );
+  static graphControls = new OrbitControls(Graph.camera, Graph.renderer.domElement );
 
   /*rounding for grpah axis labels */
   static roundMz: number = 3;

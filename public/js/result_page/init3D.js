@@ -1,4 +1,3 @@
-"use strict";
 /*function getMs2Scan(projectDir, scanID, dataGetter){
     let res = await dataGetter.getRelatedScan2(scanID);
 
@@ -70,7 +69,7 @@ function getPrecursorMz(projectDir, ms2Scan){
         xhttp.send();
     })
 }*/
-function calcInitRange(precMz) {
+export function calcInitRange(precMz) {
     let mzRange = {};
     let specPara = new SpectrumViewParameters();
     if (parseFloat(precMz) > 0) { //if has ms2 scan, calculate m/z range}

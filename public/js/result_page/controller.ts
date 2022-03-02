@@ -1,4 +1,4 @@
-function toppicOnClick(projectCode: string): void {
+export function toppicOnClick(projectCode: string): void {
   //if a user clicks toppic button, check if topfd already ran
   //if not, display alert
   let xhttp: XMLHttpRequest = new XMLHttpRequest();

@@ -1,5 +1,6 @@
-"use strict";
-class GraphRender {
+import { Graph } from '../graph_init/graph.js';
+import { GraphData } from '../graph_data/graph_data.js';
+export class GraphRender {
     constructor() { }
 }
 GraphRender.checkAndRender = () => {

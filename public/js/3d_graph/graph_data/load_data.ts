@@ -1,6 +1,7 @@
 /*load_data.js: calculate which table to use, query database for data, and return result*/
+import {Graph} from '../graph_init/graph.js';
 
-class LoadData{
+export class LoadData{
   constructor(){}
   static getExpectedPeakNum = (): Promise<string> => {
     /*get expected peak number from init.ini file*/

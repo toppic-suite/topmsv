@@ -1,6 +1,10 @@
-"use strict";
 /*pan_graph.js: on click and drag, move the peaks based on the rt mz range*/
-class GraphPan {
+import { Graph } from '../graph_init/graph.js';
+import { GraphData } from '../graph_data/graph_data.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+import { GraphControl } from '../graph_control/graph_control.js';
+import { Vector3 } from '../../../lib/js/three.module.js';
+export class GraphPan {
     constructor() {
         this.panView = (x, z) => {
             Graph.isPan = true;
@@ -26,8 +30,8 @@ class GraphPan {
                 if (mousePoint === null) {
                     return;
                 }
-                this.mstart = new THREE.Vector3();
-                this.mstart.copy(mousePoint);
+                this.mstart = new Vector3();
+                this.mstart.copy(mousePoint); //can't be null
             }
         };
         this.onMouseMove = (e) => {
@@ -63,7 +67,7 @@ class GraphPan {
         };
         this.mouseDown = false;
         this.mstart = null;
-        this.mend = new THREE.Vector3();
-        this.mdelta = new THREE.Vector3();
+        this.mend = new Vector3();
+        this.mdelta = new Vector3();
     }
 }

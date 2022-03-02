@@ -1,5 +1,13 @@
 /*graph_data.js : draws and manages the peaks on the screen*/
-class GraphData{
+import {Graph} from '../graph_init/graph.js';
+import {GraphControl} from '../graph_control/graph_control.js';
+import {GraphRender} from '../graph_control/graph_render.js';
+import {GraphFeature} from '../graph_data/graph_feature.js';
+import {GraphLabel} from '../graph_util/graph_label.js';
+import {GraphUtil} from '../graph_util/graph_util.js';
+import {LoadData} from '../graph_data/load_data.js';
+
+export class GraphData{
   constructor(){}
   /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
   static drawCurrentScanMarker = (): void => {

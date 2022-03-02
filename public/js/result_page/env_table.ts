@@ -1,4 +1,7 @@
-function showEnvTable(scan: string): void {
+import {ResultViz} from '../result_page/resultViz.js';
+import {graph1_g, graph2_g} from '../result_page/init2D.js';
+
+export function showEnvTable(scan: string): void {
   let projectDir: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectDir");
   let projectCode: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectCode");
 

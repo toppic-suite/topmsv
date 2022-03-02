@@ -1,4 +1,5 @@
-"use strict";
+import { graph1_g, graph2_g, envList1_g, envList2_g, peakList1_g, peakList2_g } from "../result_page/init2D.js";
+import { showEnvTable } from "../result_page/env_table.js";
 function plus() {
     let inputVal = $('#preview_mono_mass').val();
     let newMass = -1;
@@ -225,6 +226,7 @@ function updatePreview(charge, mono_mass) {
     previewOriginalEnvPeakList.forEach((env, i) => {
         envListConverted.push(new Envelope(mono_mass, charge));
     });
+    let calcDistrubution = new MolecularFormulae();
     let previewNewEnvPeakList = calcDistrubution.emass(mono_mass, charge, peakListConverted);
     graph_preview1_g = new SpectrumView('previewSpectrum1', peakListConverted);
     graph_preview1_g.redraw(mono_mass / charge + 1);

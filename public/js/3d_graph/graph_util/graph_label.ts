@@ -1,6 +1,9 @@
 /*graph_label.js: class for creating tick labels and data labels for 3d graph*/
+import {Sprite, SpriteMaterial, LinearFilter, Texture} from '../../../lib/js/three.module.js';
+import {Graph} from '../graph_init/graph.js';
+import {GraphUtil} from '../graph_util/graph_util.js';
 
-class GraphLabel{
+export class GraphLabel{
   constructor(){}
   /******** CREATE LABELS ******/
   static makeTextSprite = (msg: string, textColor: {"r": number, "g": number, "b": number}, fontsize: number): THREE.Sprite => {
@@ -9,7 +12,7 @@ class GraphLabel{
 
     if (!context) {
       console.error("cannot get context from canvas");
-      return new THREE.Sprite();
+      return new Sprite();
     }
 
     let fontwidth: number = context.measureText(msg).width;
@@ -17,12 +20,12 @@ class GraphLabel{
     context.fillStyle = "rgba("+textColor.r+", "+textColor.g+", "+textColor.b+", 1.0)";
     context.fillText(msg, ((canvas.width/2) - (fontwidth/2)), ((canvas.height/2) - (fontsize/2)));
 
-    let texture: THREE.Texture = new THREE.Texture(canvas);
+    let texture: THREE.Texture = new Texture(canvas);
     texture.needsUpdate = true;
-    texture.minFilter = THREE.LinearFilter;
+    texture.minFilter = LinearFilter;
 
-    let spriteMaterial: THREE.SpriteMaterial = new THREE.SpriteMaterial( { map: texture } );
-    let sprite: THREE.Sprite = new THREE.Sprite( spriteMaterial );
+    let spriteMaterial: THREE.SpriteMaterial = new SpriteMaterial( { map: texture } );
+    let sprite: THREE.Sprite = new Sprite( spriteMaterial );
     sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
 
     return sprite;

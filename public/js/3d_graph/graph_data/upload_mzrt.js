@@ -1,5 +1,4 @@
-"use strict";
-class UploadMzrt {
+export class UploadMzrt {
     constructor() { }
     static deleteFile() {
         let result = confirm("Are you sure that you want to delete mzrt data?");

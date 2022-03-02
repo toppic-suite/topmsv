@@ -1,5 +1,6 @@
-"use strict";
-function showEnvTable(scan) {
+import { ResultViz } from '../result_page/resultViz.js';
+import { graph1_g, graph2_g } from '../result_page/init2D.js';
+export function showEnvTable(scan) {
     let projectDir = document.querySelector("#projectDir");
     let projectCode = document.querySelector("#projectCode");
     if (!projectDir) {

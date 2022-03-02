@@ -1,5 +1,8 @@
 /*hover_feature.js: on hover, highlught and display feature information (scan ID, intensity, rt, mz)*/
-class HoverFeature{
+import {Graph} from '../graph_init/graph.js';
+import {GraphUtil} from '../graph_util/graph_util.js';
+
+export class HoverFeature{
   constructor(){};
   static findFeatureOnHover = (event, objGroup): Feature3DView | null => {
     let [mz, rt]: number[] = GraphUtil.getMzRtCoordinate(event);

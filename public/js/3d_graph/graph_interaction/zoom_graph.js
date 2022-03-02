@@ -1,9 +1,13 @@
-"use strict";
 /*zoomGraph.js : class defining zoom behavior on the graph
 zoom in and zoom out on x and y axis by scrolling mouse wheel
 peak intensity is also adjusted by ctrl + mouse wheel
 */
-class GraphZoom {
+import { Graph } from '../graph_init/graph.js';
+import { GraphRender } from '../graph_control/graph_render.js';
+import { GraphControl } from '../graph_control/graph_control.js';
+import { GraphData } from '../graph_data/graph_data.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+export class GraphZoom {
     constructor() {
         this.scrollLock = false;
         this.adjustPeakHeight = (scaleFactor, isCtrlPressed) => {

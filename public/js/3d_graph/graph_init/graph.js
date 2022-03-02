@@ -1,7 +1,12 @@
-"use strict";
 // graph.js: set properties of 3D graph which are referenced and updated from other classes throughout the application
 //and call to initialize empty 3D graph
-class Graph {
+import * as THREE from '../../../lib/js/three.module.js';
+import { OrbitControls } from '../../../lib/js/OrbitControls.js';
+import { GraphInit } from './graph_init.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+import { LoadData } from '../graph_data/load_data.js';
+import { showFeatureTable } from '../../result_page/feature_table.js';
+export class Graph {
     constructor(projectDir, resultViz) {
         this.initGroups = () => {
             Graph.gridGroup.name = "gridGroup";
@@ -174,7 +179,7 @@ Graph.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 Graph.camera = new THREE.OrthographicCamera(-50, 50, -10, 10, 1, 100);
 Graph.graphPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 //@ts-ignore
-Graph.graphControls = new THREE.OrbitControls(Graph.camera, Graph.renderer.domElement);
+Graph.graphControls = new OrbitControls(Graph.camera, Graph.renderer.domElement);
 /*rounding for grpah axis labels */
 Graph.roundMz = 3;
 Graph.roundRt = 3;

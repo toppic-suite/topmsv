@@ -1,5 +1,11 @@
 /*graph_control.js: class for scaling and repositioning objects on the graph*/
-class GraphControl{
+import * as THREE from '../../../lib/js/three.module.js';
+import {Graph} from '../graph_init/graph.js';
+import {GraphUtil} from '../graph_util/graph_util.js';
+import {GraphLabel} from '../graph_util/graph_label.js';
+import {GraphRender} from '../graph_control/graph_render.js';
+
+export class GraphControl{
   static xScale: number = 1;
   
   constructor(){}
@@ -136,10 +142,14 @@ class GraphControl{
   static makeTick = (startMz: number, endMz: number, startRt: number, endRt: number): void => {
     let ticksGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("ticksGroup");
     let markMaterial: THREE.LineBasicMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
-    //@ts-ignore //it can't find Geometry from Three.js types
-    let markGeo: any = new THREE.Geometry();
-    markGeo.vertices.push(new THREE.Vector3(startMz, 0, startRt));
-    markGeo.vertices.push(new THREE.Vector3(endMz, 0, endRt));
+    let markGeoPoints: THREE.Vector3 = [];
+    let markGeo: any = new THREE.BufferGeometry();
+
+    markGeoPoints.push(new THREE.Vector3(startMz, 0, startRt));
+    markGeoPoints.push(new THREE.Vector3(endMz, 0, endRt));
+
+    markGeo.setFromPoints(markGeoPoints);
+
     let markLine: THREE.Line<any, THREE.LineBasicMaterial> = new THREE.Line(markGeo, markMaterial);
 
     if (ticksGroup) {

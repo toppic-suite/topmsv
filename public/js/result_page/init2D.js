@@ -1,16 +1,17 @@
-"use strict";
-let peakList1_g;
-let envList1_g;
-let graph1_g;
+import { DataGetter } from "../result_page/dataGetter.js";
+import { showEnvTable } from "../result_page/env_table.js";
+export let peakList1_g;
+export let envList1_g;
+export let graph1_g;
 let temp_peakList1_g;
-let peakList2_g;
-let envList2_g;
-let graph2_g;
+export let peakList2_g;
+export let envList2_g;
+export let graph2_g;
 let temp_peakList2_g;
 let rtInteGraph;
 let config;
 const calcDistrubution = new MolecularFormulae();
-function init2D(scan, configFromResultViz) {
+export function init2D(scan, configFromResultViz) {
     let projectDir = document.querySelector("#projectDir");
     if (!projectDir) {
         console.error("project directory information cannot be found");
@@ -44,10 +45,15 @@ function init2D(scan, configFromResultViz) {
                     response.data.forEach(function (item) {
                         let scanTwoNum = item.scanID;
                         let rt = item.rt;
-                        $("#tabs ul").append('<li><a href="#spectrum2"' + ' id=' + scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">' + item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
+                        //$("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
+                        $("#tabs ul").append('<li><a href="#spectrum2"' + ' id=' + scanTwoNum + '>' + item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
+                        $(`#${scanTwoNum.toString()}`).on("click", () => {
+                            loadPeakList2(scanTwoNum, item.prec_mz, item.prec_charge, item.prec_inte, rt, scan.toString());
+                        });
                     });
                     $("#tabs").tabs();
                     let nextScanTab = document.getElementById(nextScan.toString());
+                    console.log(nextScanTab);
                     if (nextScanTab) {
                         nextScanTab.click(); // show next scan which is the first scan of scan level 2    
                     }
@@ -240,7 +246,7 @@ function loadPeakList1(scanID, prec_mz, mz_low = -1, mz_high = -1) {
         alert("NULL");
     }
 }
-function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan, mz_low = -1, mz_high = -1) {
+export function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan, mz_low = -1, mz_high = -1) {
     if (scanID !== '0') {
         let projectDir = document.querySelector("#projectDir");
         if (!projectDir) {
@@ -251,6 +257,7 @@ function loadPeakList2(scanID, prec_mz, prec_charge, prec_inte, rt, levelOneScan
         // show envelope table for MS2
         showEnvTable(scanID);
         $("#switch").text('MS1');
+        //@ts-ignore //axios is added as a script
         axios.get('/peaklist', {
             params: {
                 projectDir: projectDir.value,

@@ -1,7 +1,7 @@
-"use strict";
-//@ts-nocheck // all errors on this page are about "axios" not found, which becomes available
 //in the external library axios.min.js
-class DataGetter {
+//@ts-nocheck //otherwise it won't find axios, which is added as a script
+import { Graph } from "../3d_graph/graph_init/graph.js";
+export class DataGetter {
     constructor(projectDir) {
         this.projectDir = projectDir;
     }
@@ -58,13 +58,14 @@ class DataGetter {
         }
         else {
             alert("NULL");
+            return Promise.reject();
         }
     }
     getEnvList(scan) {
         let projectCode = document.querySelector("#projectCode");
         if (!projectCode) {
             console.error("project code cannot be found");
-            return;
+            return Promise.reject();
         }
         return axios.get('/envlist', {
             params: {

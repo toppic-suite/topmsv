@@ -1,6 +1,7 @@
-"use strict";
 /*graph_util.js: class for utility functions used throughout the 3d graph*/
-class GraphUtil {
+import * as THREE from '../../../lib/js/three.module.js';
+import { Graph } from '../graph_init/graph.js';
+export class GraphUtil {
     constructor() { }
 }
 GraphUtil.disposeObject = (obj) => {
