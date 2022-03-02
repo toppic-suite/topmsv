@@ -1,3 +1,5 @@
+declare const axios: any;
+
 let peakList1_g: {"mz": string, "intensity": string}[];
 let envList1_g: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}[];
 let graph1_g: SpectrumView;
@@ -260,7 +262,6 @@ function loadPeakList2(scanID: string, prec_mz: string, prec_charge: string, pre
     // show envelope table for MS2
     showEnvTable(scanID);
     $("#switch").text('MS1');
-    const axios = require('axios').default;
     axios.get('/peaklist',{
       params:{
         projectDir: projectDir.value,

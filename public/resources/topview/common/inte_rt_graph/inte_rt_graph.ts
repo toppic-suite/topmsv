@@ -120,12 +120,12 @@ class InteRtGraph {
       }
       let formatPercent: Function = d3.format(".0%");
   
-      let xScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
+      let xScale: d3.ScaleLinear<number, number, never> = d3.scaleLinear()
           .domain([0, maxRT+5])
           .range([0, this.width - this.padding.left - this.padding.right]);
       this.xScale_g_ = xScale;
   
-      let yScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
+      let yScale: d3.ScaleLinear<number, number, never> = d3.scaleLinear()
           .domain([0, max])
           .range([this.height - this.padding.head - this.padding.bottom, 0]);
   
@@ -223,10 +223,7 @@ class InteRtGraph {
           let mouse_x: number = d3.mouse(this)[0];
           //@ts-ignore allow use of this
           let mouse_y: number = d3.mouse(this)[1];
-          let xScaled = xScale(maxRT!);
-          let maxMouse: number = -1;
-          if (xScaled) {maxMouse = xScaled;}
-          
+          let maxMouse: number = xScale(maxRT!);
           let mouseRT: number = xScale.invert(mouse_x-padding.left);
           let i: number = bisectRT(inteRtArray, mouseRT); // returns the index to the current data item
   
@@ -256,66 +253,64 @@ class InteRtGraph {
           let mouse_x: number = d3.mouse(this)[0];
           //@ts-ignore allow use of this
           let mouse_y: number = d3.mouse(this)[1];
-          let xScaled = xScale(maxRT!);
-          let maxMouse: number = -1;
-          if (xScaled) {maxMouse = xScaled;}
-
+          let maxMouse: number = xScale(maxRT!);
           hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);
           hoverLine.style("opacity", 1);
   
           let mouseRT: number = xScale.invert(mouse_x-padding.left);
           let i: number = bisectRT(inteRtArray, mouseRT); // returns the index to the current data item
-          if(i>0 && i < inteRtArray.length && mouse_y < height-padding.bottom && mouse_y > padding.head) {
-              let d0 = inteRtArray[i - 1];
-              let d1 = inteRtArray[i];
-              // work out which date value is closest to the mouse
-              let d: {rt: number, inteSum: number, scanNum: number, ionTime: number, intePercentage: number} = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
-              if(document.getElementById(rt_ID)) {
-                  document.getElementById(rt_ID)!.innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(inte_ID)!.innerHTML = d.inteSum.toExponential(config.scientificDigit);
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(scanNum_ID)!.innerHTML = d.scanNum.toString();
-              }
-  
-              hoverLine.style("opacity", 1);
+          if (i > 0 && i < inteRtArray.length && mouse_y < height-padding.bottom && mouse_y > padding.head) {
+            let d0 = inteRtArray[i - 1];
+            let d1 = inteRtArray[i];
+            // work out which date value is closest to the mouse
+            let d: {rt: number, inteSum: number, scanNum: number, ionTime: number, intePercentage: number} = mouseRT - d0.rt > d1.rt - mouseRT ? d1 : d0;
+            if(document.getElementById(rt_ID)) {
+              document.getElementById(rt_ID)!.innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
+            }
+            if (document.getElementById(inte_ID)) {
+              document.getElementById(inte_ID)!.innerHTML = d.inteSum.toExponential(config.scientificDigit);
+            }
+            if (document.getElementById(inte_ID)) {
+              document.getElementById(scanNum_ID)!.innerHTML = d.scanNum.toString();
+            }
+            hoverLine.style("opacity", 1);
           } else if (i === inteRtArray.length&& mouse_x-padding.left <= maxMouse+1 && mouse_y < height-padding.bottom && mouse_y > padding.head)
           {
-              let d: {rt: number, inteSum: number, scanNum: number, ionTime: number, intePercentage: number} = inteRtArray[i-1];
-              if(document.getElementById(rt_ID)) {
-                  document.getElementById(rt_ID)!.innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(inte_ID)!.innerHTML = d.inteSum.toExponential(config.scientificDigit);
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(scanNum_ID)!.innerHTML = d.scanNum.toString();
-              }
-  
-              hoverLine.style("opacity", 1);
+            let d: {rt: number, inteSum: number, scanNum: number, ionTime: number, intePercentage: number} = inteRtArray[i-1];
+            if(document.getElementById(rt_ID)) {
+              document.getElementById(rt_ID)!.innerHTML = (Math.round(d.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
+            }
+            if (document.getElementById(inte_ID)) {
+              document.getElementById(inte_ID)!.innerHTML = d.inteSum.toExponential(config.scientificDigit);
+            }
+            if (document.getElementById(inte_ID)) {
+              document.getElementById(scanNum_ID)!.innerHTML = d.scanNum.toString();
+            }
+
+            hoverLine.style("opacity", 1);
           } else {
-              /*if(document.getElementById(rt_ID)) {
-                  document.getElementById(rt_ID).innerHTML = 0;
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(inte_ID).innerHTML = 0;
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(scanNum_ID).innerHTML = 0;
-              }*/
-              //below code makes the previous selected rt data to be displayed when mouse cursor is out of range
+            if (selectedDataPoint) {
               if(document.getElementById(rt_ID)) {
-                  document.getElementById(rt_ID)!.innerHTML = (Math.round(selectedDataPoint.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
+                document.getElementById(rt_ID)!.innerHTML = (Math.round(selectedDataPoint.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
               }
               if (document.getElementById(inte_ID)) {
-                  document.getElementById(inte_ID)!.innerHTML = selectedDataPoint.inteSum.toExponential(config.scientificDigit);
+                document.getElementById(inte_ID)!.innerHTML = selectedDataPoint.inteSum.toExponential(config.scientificDigit);
               }
               if (document.getElementById(inte_ID)) {
-                  document.getElementById(scanNum_ID)!.innerHTML = selectedDataPoint.scanNum.toString();
+                document.getElementById(scanNum_ID)!.innerHTML = selectedDataPoint.scanNum.toString();
               }
-              hoverLine.style("opacity", 0);
+            } else {
+              if(document.getElementById(rt_ID)) {
+                document.getElementById(rt_ID)!.innerHTML = "0";
+              }
+              if (document.getElementById(inte_ID)) {
+                document.getElementById(inte_ID)!.innerHTML = "0";
+              }
+              if (document.getElementById(inte_ID)) {
+                document.getElementById(scanNum_ID)!.innerHTML = "0";
+              }
+            }
+            hoverLine.style("opacity", 0);
           }
       }
       function hoverMouseOff(): void {
