@@ -1,3 +1,5 @@
+declare const axios: any;
+
 let peakList1_g: {"mz": string, "intensity": string}[];
 let envList1_g: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}[];
 let graph1_g: SpectrumView;

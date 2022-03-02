@@ -318,9 +318,9 @@ class GraphControl{
         }*/
   };
   /*update labels and legend to reflect a new view range*/
-  static updateViewRange = (newViewRange: Range3DView, checkIntensity: boolean = true): void => {
+  static updateViewRange = (newViewRange: Range3DView): void => {
     Graph.viewRange = newViewRange;
-    GraphControl.repositionPlot(newViewRange, checkIntensity);
+    GraphControl.repositionPlot(newViewRange);
     //GraphLabel.drawDataLabels();
   }
   /*prevent user from going outside the data range or zooming in so far that math breaks down*/

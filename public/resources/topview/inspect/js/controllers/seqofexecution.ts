@@ -294,7 +294,7 @@ class SeqOfExecution {
         }
         $("#monoMasstitle").show();
         let ions: MatchedIon[] | null = getIonsMassGraph(matchedPeakList);
-        let monoMassPeakList = [];
+        let monoMassPeakList: Peak[] = [];
         for (let i = 0; i < monoMassList.length; i++) {
             let monoMass = monoMassList[i].getMonoMass();
             if (monoMass) {
@@ -400,7 +400,7 @@ class SeqOfExecution {
         //to be correctly sorted, column type should be num for each ion column
         //this code will work regardless of number of ions selected
         let columnCnt: number = 0;
-        let columnTypes: ({"type": string} | null)[] = [];
+        let columnTypes: ({"type": string})[] = [];
         $("#selectedIonTableContainer .th-sm").each(function () {
             columnCnt++;
         });
@@ -409,16 +409,17 @@ class SeqOfExecution {
             if (i != 1) {
                 type = { "type": "num" };
             }
-            columnTypes.push(type);
+            if (type) {
+                columnTypes.push(type);
+            }
         }
-        //@ts-ignore
+
         $("#selectedIonTableContainer").DataTable({
             "scrollY": Constants.TABLEHEIGHT,
             "scrollCollapse": true,
             "paging": false,
-            "bSortClasses": false,
             "searching": false,
-            "bInfo": false,
+            //"bInfo": false,
             "columns": columnTypes
         });
     }
