@@ -185,7 +185,11 @@ class InteRtGraph {
             let mouse_x = d3.mouse(this)[0];
             //@ts-ignore allow use of this
             let mouse_y = d3.mouse(this)[1];
-            let maxMouse = xScale(maxRT);
+            let xScaled = xScale(maxRT);
+            let maxMouse = -1;
+            if (xScaled) {
+                maxMouse = xScaled;
+            }
             let mouseRT = xScale.invert(mouse_x - padding.left);
             let i = bisectRT(inteRtArray, mouseRT); // returns the index to the current data item
             if (i > 0 && i < inteRtArray.length && mouse_y < height - padding.bottom && mouse_y > padding.head) {
@@ -214,7 +218,11 @@ class InteRtGraph {
             let mouse_x = d3.mouse(this)[0];
             //@ts-ignore allow use of this
             let mouse_y = d3.mouse(this)[1];
-            let maxMouse = xScale(maxRT);
+            let xScaled = xScale(maxRT);
+            let maxMouse = -1;
+            if (xScaled) {
+                maxMouse = xScaled;
+            }
             hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);
             hoverLine.style("opacity", 1);
             let mouseRT = xScale.invert(mouse_x - padding.left);
@@ -249,27 +257,24 @@ class InteRtGraph {
                 hoverLine.style("opacity", 1);
             }
             else {
-                if (selectedDataPoint) {
-                    if (document.getElementById(rt_ID)) {
-                        document.getElementById(rt_ID).innerHTML = (Math.round(selectedDataPoint.rt * 100) / 100).toFixed(config.floatDigit) + " (min)";
-                    }
-                    if (document.getElementById(inte_ID)) {
-                        document.getElementById(inte_ID).innerHTML = selectedDataPoint.inteSum.toExponential(config.scientificDigit);
-                    }
-                    if (document.getElementById(inte_ID)) {
-                        document.getElementById(scanNum_ID).innerHTML = selectedDataPoint.scanNum.toString();
-                    }
+                /*if(document.getElementById(rt_ID)) {
+                    document.getElementById(rt_ID).innerHTML = 0;
                 }
-                else {
-                    if (document.getElementById(rt_ID)) {
-                        document.getElementById(rt_ID).innerHTML = "0";
-                    }
-                    if (document.getElementById(inte_ID)) {
-                        document.getElementById(inte_ID).innerHTML = "0";
-                    }
-                    if (document.getElementById(inte_ID)) {
-                        document.getElementById(scanNum_ID).innerHTML = "0";
-                    }
+                if (document.getElementById(inte_ID)) {
+                    document.getElementById(inte_ID).innerHTML = 0;
+                }
+                if (document.getElementById(inte_ID)) {
+                    document.getElementById(scanNum_ID).innerHTML = 0;
+                }*/
+                //below code makes the previous selected rt data to be displayed when mouse cursor is out of range
+                if (document.getElementById(rt_ID)) {
+                    document.getElementById(rt_ID).innerHTML = (Math.round(selectedDataPoint.rt * 100) / 100).toFixed(config.floatDigit) + " (min)";
+                }
+                if (document.getElementById(inte_ID)) {
+                    document.getElementById(inte_ID).innerHTML = selectedDataPoint.inteSum.toExponential(config.scientificDigit);
+                }
+                if (document.getElementById(inte_ID)) {
+                    document.getElementById(scanNum_ID).innerHTML = selectedDataPoint.scanNum.toString();
                 }
                 hoverLine.style("opacity", 0);
             }

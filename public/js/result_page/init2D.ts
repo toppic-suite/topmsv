@@ -260,6 +260,7 @@ function loadPeakList2(scanID: string, prec_mz: string, prec_charge: string, pre
     // show envelope table for MS2
     showEnvTable(scanID);
     $("#switch").text('MS1');
+    const axios = require('axios').default;
     axios.get('/peaklist',{
       params:{
         projectDir: projectDir.value,

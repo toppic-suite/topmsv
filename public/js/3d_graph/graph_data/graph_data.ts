@@ -221,7 +221,7 @@ class GraphData{
 
     await GraphFeature.drawFeatureNoDataLoad(Graph.viewRange);
 
-    GraphControl.updateViewRange(Graph.viewRange, checkIntensity);
+    GraphControl.updateViewRange(Graph.viewRange);
     GraphRender.renderImmediate();
   }
   static plotPoint2D = (): void => {

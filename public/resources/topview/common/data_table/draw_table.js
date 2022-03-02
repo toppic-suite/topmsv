@@ -133,22 +133,22 @@ class DataTable {
     }
     addTable() {
         if (this.showScanNum_) {
-            //@ts-ignore
             $('#spectrum').DataTable({
                 "scrollY": "400px",
                 "scrollCollapse": true,
                 "paging": false,
                 "order": [[1, "asc"]],
+                //@ts-ignore // this property isn't part of v1.10 but it is still affecting UI 
                 "bSortClasses": false,
                 "columns": [
                     { "type": "num" },
                     { "type": "num" },
                     { "type": "num" },
-                    null,
+                    {},
                     { "type": "num" },
                     { "type": "num" },
                     { "type": "num" },
-                    null,
+                    {},
                     { "type": "num" },
                     { "type": "num" },
                     { "type": "num" }
@@ -156,23 +156,23 @@ class DataTable {
             });
         }
         else {
-            //@ts-ignore
             $('#spectrum').DataTable({
                 "scrollY": "400px",
                 "scrollCollapse": true,
                 "paging": false,
                 "destroy": true,
                 "order": [[1, "asc"]],
+                //@ts-ignore // this property isn't part of v1.10 but it is still affecting UI 
                 "bSortClasses": false,
                 "columns": [
                     { "type": "num", "visible": false },
                     { "type": "num" },
                     { "type": "num" },
-                    null,
+                    {},
                     { "type": "num" },
                     { "type": "num" },
                     { "type": "num" },
-                    null,
+                    {},
                     { "type": "num" },
                     { "type": "num" },
                     { "type": "num" }
