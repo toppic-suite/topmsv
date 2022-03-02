@@ -14,6 +14,6 @@ function insertUser(uid, email, firstname, lastname, fullname) {
     let stmt = db.prepare(sql);
     let rows = stmt.run(uid, email, firstname, lastname, fullname);
     db.close();
-    console.log(`A row has been inserted with rowid ${this.lastInsertRowid}`);
+    console.log(`A row has been inserted with rowid ${rows.lastInsertRowid}`);
 }
 module.exports = insertUser;
