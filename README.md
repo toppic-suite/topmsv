@@ -100,6 +100,7 @@ move toppic-windows-* bin
 2. Node.js and node packages installation: <br/>
 a. Download and install the latest <a href="https://nodejs.org/en/">Node.js</a> if it is not installed already. Then run the following command in the root directory of TopMSV (at the directory <code>topmsv-[version_num]</code>)
 ```sh
+cd server
 npm install
 ```
 ## Start/Stop TopMSV 
