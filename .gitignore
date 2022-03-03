@@ -34,9 +34,15 @@ build/Release
 
 # Dependency directories
 jspm_packages/
-cpp/build
-data/
-db/
+
+#external apps
+src/proteomics_cpp
+src/ms_converter/build
+src/ms_converter/bin
+
+#user data
+server/data/
+server/db/
 # TypeScript v1 declaration files
 typings/
 
@@ -79,7 +85,7 @@ Thumbs.db
 
 # ignore database file and log files
 *.db
-log/*.txt
+server/log/*.txt
 
 #ignore tmp folder files
 tmp/*.fasta
@@ -90,3 +96,6 @@ tmp/*.mzML
 
 #ignore examples
 public/resources/topview/common/*/example
+
+#ignore node_modules
+server/node_modules

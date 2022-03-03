@@ -218,7 +218,7 @@ const upload = router.post('/upload', function (req, res) {
                                     }
                                     //let app = './cpp/bin/mzMLReader';
                                     //let app = path.join("cpp", "bin", "mzMLReader");
-                                    let app = path.join("bin", "mzMLReader");
+                                    let app = path.join("../", "src", "ms_converter", "bin", "mzMLReader");
                                     let parameter = des_file + ' -f';
                                     submitTask(id, app, parameter, 1);
                                     app = 'node';
@@ -278,7 +278,7 @@ const upload = router.post('/upload', function (req, res) {
                                     });
                                 }
                                 //let app = path.join("cpp", "bin", "mzMLReader");
-                                let app = path.join("bin", "mzMLReader");
+                                let app = path.join("../", "src", "ms_converter", "bin", "mzMLReader");
                                 let parameter = des_file + ' -f';
                                 submitTask(id, app, parameter, 1);
                                 break;

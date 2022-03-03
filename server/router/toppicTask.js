@@ -15,7 +15,7 @@ const path = require("path");
  */
 const toppicTask = router.post('/toppicTask', function (req, res) {
     console.log("Hello, toppicTask");
-    const app = path.join('proteomics_cpp', 'bin', 'toppic');
+    const app = path.join('../', 'src', 'proteomics_cpp', 'bin', 'toppic');
     let commandArr = '';
     let form = new formidable.IncomingForm();
     form.maxFileSize = 5000 * 1024 * 1024; // 5gb file size limit

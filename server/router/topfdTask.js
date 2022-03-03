@@ -14,7 +14,7 @@ const path = require("path");
  * Handle request to create a topFD task, generate parameter for task and delete previous envelope peaks
  */
 const topfdTask = router.get('/topfdTask', function (req, res) {
-    const app = path.join('proteomics_cpp', 'bin', 'topfd');
+    const app = path.join('../', 'src', 'proteomics_cpp', 'bin', 'topfd');
     let commandArr = '';
     let projectCode = req.query.projectCode;
     // console.log(req.query);
