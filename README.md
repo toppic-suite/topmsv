@@ -15,7 +15,7 @@ d. Type the following commands to build TopPIC Suite: <br/>
 # unzip the TopPic Suite release from the TopPIC Suite repository
 unzip toppic-suite-*.zip                            
 rm toppic-suite-*.zip
-mv toppic-suite-* proteomics_cpp
+mv toppic-suite-* src/proteomics_cpp
 
 # install compiling tools
 sudo apt-get install build-essential cmake
@@ -33,7 +33,7 @@ sudo apt-get install zlib1g-dev \
                      nlohmann-json3-dev
 
 # building TopFD and TopPIC
-cd proteomics_cpp
+cd src/proteomics_cpp
 mkdir build
 cd build
 cmake ..
@@ -41,14 +41,14 @@ cmake ..
 #Using "make" to build all apps will result in error.
 make topfd -j$(nproc) && make toppic -j$(nproc) 
 cd ../bin
-ln -s ../toppic_resources .
+ln -s ../resources .
 ```
 2. mzMLReader Compilation: <br/>
 a. This step compiles mzMLReader, which parses spectra data from uploaded mzML files.<br/>
 b. Enter the commands below after finishing the step 1 TopPIC Suite Compilation
 ```sh
 cd ../../
-cd cpp
+cd ms_converter
 mkdir build
 cd build
 cmake ..
@@ -58,7 +58,7 @@ make -j$(nproc)
 1. Installation of Node.js and node packages: <br/>
 a. After finishing both steps in Compilation, type the following commands: 
 ```sh
-cd ../../
+cd ../../../server/scripts/linux
 ./installServer.sh
 ```
 
@@ -77,7 +77,7 @@ pacman -S mingw-w64-x86_64-boost
 &emsp;&emsp;d. In the root directory of TopMSV, run the following commands in a <strong> Windows Command Prompt</strong>.
 
 ```sh
-cd cpp
+cd src\ms_converter
 mkdir build
 cd build
 cmake -G "MinGW Makefiles" ..
@@ -89,10 +89,10 @@ a. Visit <a href="https://www.toppic.org/software/toppic/register.html">TopPIC S
 b. Put the downloaded zip file in the directory where the TopMSV source files are unzipped. For instance, if you unzipped the TopMSV source zip file in <code>C:\Documents</code>, the source files are in <code>C:\Documents\topmsv-[version-number]</code>. Put the TopPIC Suite zip file inside the folder.<br/>
 c. Use the commands below to unzip files in a folder:<br/>
 ```sh
-mkdir proteomics_cpp 
-move toppic-windows-*.zip proteomics_cpp
-cd proteomics_cpp 
-#at this point, you should be in C:\Documents\topmsv-[version_num]\proteomics_cpp, if unzipped the TopMSV zip file at C:\Documents
+mkdir src\proteomics_cpp 
+move toppic-windows-*.zip src\proteomics_cpp
+cd src\proteomics_cpp 
+#at this point, you should be in C:\Documents\topmsv-[version_num]\src\proteomics_cpp, if unzipped the TopMSV zip file at C:\Documents
 tar -xf toppic-windows-*.zip
 del toppic-windows-*.zip
 move toppic-windows-* bin
@@ -103,7 +103,8 @@ a. Download and install the latest <a href="https://nodejs.org/en/">Node.js</a> 
 npm install
 ```
 ## Start/Stop TopMSV 
-At the root directory of TopMSV (<code>topmsv-[version_num]</code>), use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. Or, run "startServer.bat" and "stopServer.bat" for Windows and "startServer.sh" and "stopServer.sh" for Linux, to start and close TopMSV.
+At the root directory of TopMSV (<code>topmsv-[version_num]</code>), use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. 
+<br/><br/>Or, you can run scripts to start/stop TopMSV. For Linux, go to the <code>topmsv-[version_num]/scripts/linux</code> folder and run "startServer.sh" and "stopServer.sh" to start and close TopMSV. For Windows, go to the <code>topmsv-[version_num]/scripts/windows</code> folder run "startServer.bat" and "stopServer.bat" to start and close TopMSV. 
 
 
 ## (optional) Run TopMSV Server with pm2
