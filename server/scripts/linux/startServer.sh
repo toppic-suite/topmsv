@@ -1,11 +1,12 @@
 #!/bin/sh
 if pgrep -x TopMSV > /dev/null
   then
-	kill $(pgrep npm) > /dev/null
 	kill $(pgrep TopMSV) > /dev/null
-	npm start > /dev/null &
+	cd ../../
+	node server > /dev/null &
   else
-	npm start > /dev/null &
+	cd ../../
+	node server > /dev/null &
 fi
 echo Please wait.... Chrome browser will open when the server is ready. It may take a few minutes.
 echo .
