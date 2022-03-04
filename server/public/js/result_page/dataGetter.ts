@@ -1,12 +1,14 @@
-//@ts-nocheck // all errors on this page are about "axios" not found, which becomes available
 //in the external library axios.min.js
-class DataGetter {
+//@ts-nocheck //otherwise it won't find axios, which is added as a script
+import {Graph} from "../3d_graph/graph_init/graph.js";
+
+export class DataGetter {
   projectDir: string;
   constructor(projectDir: string) {
     this.projectDir = projectDir;
   }
 
-  findNextLevelOneScan(scan) {
+  findNextLevelOneScan(scan): Promise<AxiosResponse<any>> {
     return axios.get('/findNextLevelOneScan', {
       params: {
         projectDir: this.projectDir,
@@ -15,7 +17,7 @@ class DataGetter {
     });
   }
 
-  getRelatedScan2 (scanID) {
+  getRelatedScan2 (scanID): Promise<AxiosResponse<any>> {
     // console.log("scanID:",scanID);
     return axios.get('/relatedScan2', {
       params: {
@@ -25,7 +27,7 @@ class DataGetter {
     });
   }
 
-  getRelatedScan1 (scanID) {
+  getRelatedScan1 (scanID): Promise<AxiosResponse<any>> {
     // console.log("scanID:",scanID);
     return axios.get('/relatedScan1', {
       params: {
@@ -35,7 +37,7 @@ class DataGetter {
     });
   }
 
-  getScanLevel(scanID) {
+  getScanLevel(scanID): Promise<AxiosResponse<any>> {
     return axios.get('/scanlevel', {
       params: {
         projectDir: this.projectDir,
@@ -44,7 +46,7 @@ class DataGetter {
     });
   }
 
-  getScanID(ID) {
+  getScanID(ID): Promise<AxiosResponse<any>> {
     return axios.get('/scanID', {
       params: {
         projectDir: this.projectDir,
@@ -53,7 +55,7 @@ class DataGetter {
     });
   }
 
-  getPeakList(scanId) {
+  getPeakList(scanId): Promise<AxiosResponse<any>> {
     if (scanId !== '0') {
       return axios.get('/peaklist', {
         params: {
@@ -63,15 +65,16 @@ class DataGetter {
       });
     } else{
       alert("NULL");
+      return Promise.reject();
     }
   }
 
-  getEnvList(scan) {
+  getEnvList(scan): Promise<AxiosResponse<any>> {
     let projectCode = document.querySelector<HTMLInputElement>("#projectCode");
 
     if (!projectCode) {
       console.error("project code cannot be found");
-      return;
+      return Promise.reject();
     }
     return axios.get('/envlist', {
       params: {
@@ -82,7 +85,7 @@ class DataGetter {
     })
   }
 
-  getEnvTable(scan) {
+  getEnvTable(scan): Promise<AxiosResponse<any>> {
     return axios.get('/envtable', {
       params: {
         projectDir: this.projectDir,
@@ -117,7 +120,7 @@ class DataGetter {
     }
 } */
 
-  getRT(scanNum, rtInteGraph) {
+  getRT(scanNum, rtInteGraph): void {
     axios.get('/getRT', {
       params: {
         projectDir: this.projectDir,
@@ -180,7 +183,7 @@ findNextLevelOneScan(scan) {
     }
 } */
 
-  getInteSumList() {
+  getInteSumList(): Promise<AxiosResponse<any>> {
     return axios.get('/getInteSumList', {
       params: {
         projectDir: this.projectDir
@@ -188,7 +191,7 @@ findNextLevelOneScan(scan) {
     })
   }
 
-  prev(scanID) {
+  prev(scanID): Promise<AxiosResponse<any>> {
     return axios.get('/prev', {
       params: {
         projectDir: this.projectDir,
@@ -197,7 +200,7 @@ findNextLevelOneScan(scan) {
     });
   }
 
-  next(scanID) {
+  next(scanID): Promise<AxiosResponse<any>> {
     return axios.get('/next', {
       params: {
         projectDir: this.projectDir,
@@ -206,7 +209,7 @@ findNextLevelOneScan(scan) {
     });
   }
 
-  getScanLevelTwoList(scanID) {
+  getScanLevelTwoList(scanID): Promise<AxiosResponse<any>> {
     return axios.get('/scanTwoList', {
       params: {
         projectDir: this.projectDir,
@@ -215,7 +218,7 @@ findNextLevelOneScan(scan) {
     });
   }
 
-  getPrecursorMz(ms2Scan) {
+  getPrecursorMz(ms2Scan): Promise<AxiosResponse<any>> {
     return axios.get('/precMZ', {
       params: {
         projectDir: this.projectDir,

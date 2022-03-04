@@ -1,9 +1,18 @@
 /*graph_data.js : draws and manages the peaks on the screen*/
-class GraphData{
+import {Graph} from '../graph_init/graph.js';
+import {GraphControl} from '../graph_control/graph_control.js';
+import {GraphRender} from '../graph_control/graph_render.js';
+import {GraphFeature} from '../graph_data/graph_feature.js';
+import {GraphLabel} from '../graph_util/graph_label.js';
+import {GraphUtil} from '../graph_util/graph_util.js';
+import {LoadData} from '../graph_data/load_data.js';
+import { Object3D, Group, Line } from '../../../lib/js/three.module.js';
+
+export class GraphData{
   constructor(){}
   /******** ADD HORIZONTAL MARKER FOR WHERE CURRENT SCANS ARE ******/
   static drawCurrentScanMarker = (): void => {
-    let markerGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("markerGroup");
+    let markerGroup: Object3D | undefined = Graph.scene.getObjectByName("markerGroup");
     if (markerGroup) {
       markerGroup.children.forEach(function(line) {
         line.position.set(0, 0.01, Graph.curRT);
@@ -175,9 +184,9 @@ class GraphData{
       }
     }
     else{
-      let markerGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("markerGroup");
+      let markerGroup: Object3D | undefined = Graph.scene.getObjectByName("markerGroup");
       if (markerGroup) {
-        markerGroup.children.forEach(function(line: THREE.Object3D<THREE.Event>): void {
+        markerGroup.children.forEach(function(line: Object3D): void {
           line.visible = false;
         })
       } else {
@@ -207,10 +216,10 @@ class GraphData{
         GraphData.drawCurrentScanMarker();
       }
     } else{
-      let markerGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("markerGroup");
+      let markerGroup: Object3D | undefined = Graph.scene.getObjectByName("markerGroup");
 
       if (markerGroup) {
-        markerGroup.children.forEach(function(line: THREE.Object3D<THREE.Event>): void {
+        markerGroup.children.forEach(function(line: Line): void {
           line.visible = false;
         })
       } else {
@@ -231,8 +240,8 @@ class GraphData{
     let curRt: number = parseFloat(Graph.curRT.toFixed(4));
     //let rt = document.getElementById("scan1RT").innerText;
     
-    let dataGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("dataGroup");
-    let peak2DGroup: THREE.Group = Graph.peak2DGroup;
+    let dataGroup: Object3D | undefined = Graph.scene.getObjectByName("dataGroup");
+    let peak2DGroup: Group = Graph.peak2DGroup;
 
     if (!dataGroup) {
       console.error("datagroup doesn't exist");
@@ -245,7 +254,6 @@ class GraphData{
     if (Graph.currentData.length > 0){
       prevPeakRT = parseFloat(Graph.currentData[Graph.currentData.length - 1].RETENTIONTIME);
     }
-    //@ts-ignore //peak2D group contains objects in the type Peak3DView
     peak2DGroup.children.forEach(function(line: Peak3DView, index: number) {
       if (index < Graph.currentData.length) {
         let point: PeakDataDB = Graph.currentData[Graph.currentData.length - 1 - index];
@@ -280,10 +288,10 @@ class GraphData{
           //@ts-ignore //allow overwrite
           line.geometry.attributes.position.array[5] = ySize;
           line.geometry.attributes.position.needsUpdate = true; 
-          line.material.color.setStyle(lineColor);
+          line.material["color"].setStyle(lineColor);
         
         if (parseFloat(rt.toFixed(4)) == curRt && Graph.isHighlightingCurrentScan){
-            line.material.color.setStyle(Graph.currentScanColor);
+            line.material["color"].setStyle(Graph.currentScanColor);
         }
 
         line.position.set(mz, 0, rt);
@@ -308,14 +316,13 @@ class GraphData{
     })
   }
   static updatePeaks = (data: PeakDataDB[]) => {
-    let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    let plotGroup: Object3D | undefined = Graph.scene.getObjectByName("plotGroup");
     if (!plotGroup) {
       console.error("plotgroup doesn't exist");
       return;
     }
     //iterate through peask in plot group while < data.length;
     //for the rest of peaks, turn off visibility
-    //@ts-ignore //peak2D group contains objects in the type Peak3DView
     plotGroup.children.forEach(function(line: Peak3DView, index: number) {
       if (index < data.length) {
         let point: PeakDataDB = data[index];
@@ -332,17 +339,17 @@ class GraphData{
           let currt: string = Graph.curRT.toFixed(4);
           let y: number = inten;    
           //if y is much smaller than the highest intensity peak in the view range
-          if (y * plotGroup!.scale.y * intScale < Graph.minPeakHeight) {
+          if (y * plotGroup!["scale"]["y"] * intScale < Graph.minPeakHeight) {
               //increase y so that later y is at least minHeight when scaled
-              y = Graph.minPeakHeight/(plotGroup!.scale.y * intScale);
+              y = Graph.minPeakHeight/(plotGroup!["scale"]["y"] * intScale);
               lowPeak = true;
           } 
           //@ts-ignore to allow overwrite
           line.geometry.attributes.position.array[4] = y;
           line.geometry.attributes.position.needsUpdate = true; 
-          line.material.color.setStyle(lineColor);
+          line.material["color"].setStyle(lineColor);
           if (rt.toFixed(4) == currt && Graph.isHighlightingCurrentScan){
-              line.material.color.setStyle(Graph.currentScanColor);
+              line.material["color"].setStyle(Graph.currentScanColor);
           }
           line.position.set(mz, 0, rt);
           line.pointid = id;

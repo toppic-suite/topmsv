@@ -1,9 +1,13 @@
-"use strict";
 /* *ResultViz: a class containing:
 * 1. parameters to be used by all visual elements on the page
 * 2. methods for initializing and redrawing views
 */
-class ResultViz {
+import { Graph } from '../3d_graph/graph_init/graph.js';
+import { GraphData } from '../3d_graph/graph_data/graph_data.js';
+import { DataGetter } from './dataGetter.js';
+import { EventHandler } from './event_handlers.js';
+import { init2D } from "../result_page/init2D.js";
+export class ResultViz {
     constructor(projectDir) {
         this.config = {
             floatDigit: 3,

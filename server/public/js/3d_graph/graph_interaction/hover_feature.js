@@ -1,6 +1,7 @@
-"use strict";
 /*hover_feature.js: on hover, highlught and display feature information (scan ID, intensity, rt, mz)*/
-class HoverFeature {
+import { Graph } from '../graph_init/graph.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+export class HoverFeature {
     constructor() {
         this.onMouseOver = (event) => {
             let tooltip = document.querySelector("#tooltip");

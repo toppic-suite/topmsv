@@ -1,6 +1,7 @@
-"use strict";
 /*graph_download.js: add event handler for button downloading graph as image*/
-class GraphDownload {
+import { Graph } from '../graph_init/graph.js';
+import { GraphRender } from '../graph_control/graph_render.js';
+export class GraphDownload {
     constructor() { }
 }
 GraphDownload.createImage = (callback) => {

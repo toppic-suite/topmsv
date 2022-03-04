@@ -1,6 +1,6 @@
-"use strict";
 /*load_data.js: calculate which table to use, query database for data, and return result*/
-class LoadData {
+import { Graph } from '../graph_init/graph.js';
+export class LoadData {
     constructor() { }
 }
 LoadData.getExpectedPeakNum = () => {

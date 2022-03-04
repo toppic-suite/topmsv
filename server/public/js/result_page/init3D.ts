@@ -69,7 +69,7 @@ function getPrecursorMz(projectDir, ms2Scan){
         xhttp.send();
     })
 }*/
-function calcInitRange(precMz: string){
+export function calcInitRange(precMz: string){
   let mzRange = {} as {"mzmin": number, "mzmax": number};
   let specPara: SpectrumViewParameters = new SpectrumViewParameters();
   if (parseFloat(precMz) > 0){//if has ms2 scan, calculate m/z range}

@@ -1,6 +1,18 @@
-"use strict";
 /*graph_init.js: class for initializing 3d graph*/
-class GraphInit {
+import { BufferGeometry, DoubleSide, LineBasicMaterial, Vector3, LineSegments, PlaneGeometry, Mesh, MeshBasicMaterial, MOUSE } from '../../../lib/js/three.module.js';
+import { Graph } from './graph.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+import { GraphData } from '../graph_data/graph_data.js';
+import { GraphRender } from '../graph_control/graph_render.js';
+import { GraphControl } from '../graph_control/graph_control.js';
+import { GraphDownload } from '../graph_util/graph_download.js';
+import { GraphZoom } from '../graph_interaction/zoom_graph.js';
+import { GraphPan } from '../graph_interaction/pan_graph.js';
+import { HoverFeature } from '../graph_interaction/hover_feature.js';
+import { HoverPosition } from '../graph_interaction/hover_position.js';
+import { GraphResize } from '../graph_util/graph_resize.js';
+import { UploadMzrt } from '../graph_data/upload_mzrt.js';
+export class GraphInit {
     constructor() { }
 }
 /******** GRAPH EVENTS******/
@@ -141,27 +153,31 @@ GraphInit.createEventHandlers = () => {
 /******** CREATE GRAPH ELEMENTS ******/
 // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
 GraphInit.createAxis = () => {
-    //@ts-ignore //Three.Geometry does exists
-    let xAxisGeo = new THREE.Geometry();
-    //@ts-ignore //Three.Geometry does exists
-    let yAxisGeo = new THREE.Geometry();
-    //@ts-ignore //Three.Geometry does exists
-    let xAxisSubGeo = new THREE.Geometry(); //these two axes are not the main axes -- for zoom purpose only
-    //@ts-ignore //Three.Geometry does exists
-    let yAxisSubGeo = new THREE.Geometry();
-    let axisMaterial = new THREE.LineBasicMaterial({ color: Graph.gridColor });
-    yAxisGeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
-    yAxisGeo.vertices.push(new THREE.Vector3(0, 0, 0));
-    yAxisSubGeo.vertices.push(new THREE.Vector3(Graph.gridRange, 0, Graph.gridRange));
-    yAxisSubGeo.vertices.push(new THREE.Vector3(Graph.gridRange, 0, 0));
-    xAxisGeo.vertices.push(new THREE.Vector3(Graph.gridRange, 0, Graph.gridRange));
-    xAxisGeo.vertices.push(new THREE.Vector3(0, 0, Graph.gridRange));
-    xAxisSubGeo.vertices.push(new THREE.Vector3(Graph.gridRange, 0, 0));
-    xAxisSubGeo.vertices.push(new THREE.Vector3(0, 0, 0));
-    let xAxis = new THREE.LineSegments(xAxisGeo, axisMaterial);
-    let yAxis = new THREE.LineSegments(yAxisGeo, axisMaterial);
-    let xAxisSub = new THREE.LineSegments(xAxisSubGeo, axisMaterial);
-    let yAxisSub = new THREE.LineSegments(yAxisSubGeo, axisMaterial);
+    let xAxisGeo = new BufferGeometry();
+    let yAxisGeo = new BufferGeometry();
+    let xAxisSubGeo = new BufferGeometry(); //these two axes are not the main axes -- for zoom purpose only
+    let yAxisSubGeo = new BufferGeometry();
+    let axisMaterial = new LineBasicMaterial({ color: Graph.gridColor });
+    let xAxisGeoPoints = [];
+    let xAxisSubGeoPoints = [];
+    let yAxisGeoPoints = [];
+    let yAxisSubGeoPoints = [];
+    yAxisGeoPoints.push(new Vector3(0, 0, Graph.gridRange));
+    yAxisGeoPoints.push(new Vector3(0, 0, 0));
+    yAxisSubGeoPoints.push(new Vector3(Graph.gridRange, 0, Graph.gridRange));
+    yAxisSubGeoPoints.push(new Vector3(Graph.gridRange, 0, 0));
+    xAxisGeoPoints.push(new Vector3(Graph.gridRange, 0, Graph.gridRange));
+    xAxisGeoPoints.push(new Vector3(0, 0, Graph.gridRange));
+    xAxisSubGeoPoints.push(new Vector3(Graph.gridRange, 0, 0));
+    xAxisSubGeoPoints.push(new Vector3(0, 0, 0));
+    xAxisGeo.setFromPoints(yAxisGeoPoints);
+    xAxisSubGeo.setFromPoints(yAxisGeoPoints);
+    yAxisGeo.setFromPoints(yAxisGeoPoints);
+    yAxisSubGeo.setFromPoints(yAxisGeoPoints);
+    let xAxis = new LineSegments(xAxisGeo, axisMaterial);
+    let yAxis = new LineSegments(yAxisGeo, axisMaterial);
+    let xAxisSub = new LineSegments(xAxisSubGeo, axisMaterial);
+    let yAxisSub = new LineSegments(yAxisSubGeo, axisMaterial);
     xAxis.name = "xAxis";
     yAxis.name = "yAxis";
     xAxisSub.name = "xAxis";
@@ -173,23 +189,23 @@ GraphInit.createAxis = () => {
 };
 GraphInit.createGrid = () => {
     let y = 0;
-    let gridmaterial = new THREE.LineBasicMaterial({ color: Graph.gridColor });
+    let gridmaterial = new LineBasicMaterial({ color: Graph.gridColor });
     for (let i = 0; i <= Graph.gridRange; i++) {
         let points = [];
-        points.push(new THREE.Vector3(i, y, 0));
-        points.push(new THREE.Vector3(i, y, Graph.gridRange));
-        points.push(new THREE.Vector3(0, y, i));
-        points.push(new THREE.Vector3(Graph.gridRange, y, i));
-        let gridgeo = new THREE.BufferGeometry().setFromPoints(points);
-        Graph.gridGroup.add(new THREE.LineSegments(gridgeo, gridmaterial));
+        points.push(new Vector3(i, y, 0));
+        points.push(new Vector3(i, y, Graph.gridRange));
+        points.push(new Vector3(0, y, i));
+        points.push(new Vector3(Graph.gridRange, y, i));
+        let gridgeo = new BufferGeometry().setFromPoints(points);
+        Graph.gridGroup.add(new LineSegments(gridgeo, gridmaterial));
     }
 };
 GraphInit.createPlane = () => {
-    let surfaceGeo = new THREE.PlaneGeometry(Graph.gridRange, Graph.gridRange);
-    let surfaceMat = new THREE.MeshBasicMaterial({ color: Graph.surfaceColor, side: THREE.DoubleSide });
-    let surface = new THREE.Mesh(surfaceGeo, surfaceMat);
+    let surfaceGeo = new PlaneGeometry(Graph.gridRange, Graph.gridRange);
+    let surfaceMat = new MeshBasicMaterial({ color: Graph.surfaceColor, side: DoubleSide });
+    let surface = new Mesh(surfaceGeo, surfaceMat);
     surface.rotateX(Math.PI / 2);
-    surface.position.set(Graph.gridRange / 2, -0.05, Graph.gridRange / 2);
+    surface["position"].set(Graph.gridRange / 2, -0.05, Graph.gridRange / 2);
     Graph.gridGroup.add(surface);
     GraphInit.createGrid();
 };
@@ -214,7 +230,7 @@ GraphInit.initRenderer = () => {
     Graph.graphEl.appendChild(Graph.renderer.domElement);
 };
 GraphInit.initCamera = () => {
-    Graph.camera.position.set(15, 15, 30);
+    Graph.camera["position"].set(15, 15, 30);
 };
 GraphInit.initGraphControl = () => {
     /*initiate graph interactions*/
@@ -231,7 +247,9 @@ GraphInit.initGraphControl = () => {
     //let camera: THREE.OrthographicCamera = Graph.camera;
     //let renderer: THREE.WebGLRenderer = Graph.renderer;
     /*right-click rotation controls*/
-    Graph.graphControls.mouseButtons = { ORBIT: THREE.MOUSE.RIGHT };
+    //Graph.graphControls.mouseButtons = { ORBIT: MOUSE.RIGHT };
+    //@ts-ignore type assumption is wrong for this variable
+    Graph.graphControls.mouseButtons = { RIGHT: MOUSE.ROTATE };
     Graph.graphControls.addEventListener('change', GraphRender.checkAndRender.bind(Graph));
     Graph.graphControls.target.set(Graph.gridRange / 2, 0, Graph.gridRange / 2); // focus on the center of the grid
     Graph.graphControls.enablePan = false;

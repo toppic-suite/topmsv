@@ -1,13 +1,17 @@
 declare const axios: any;
 
-let peakList1_g: {"mz": string, "intensity": string}[];
-let envList1_g: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}[];
-let graph1_g: SpectrumView;
+import {DataGetter} from "../result_page/dataGetter.js";
+import {showEnvTable} from "../result_page/env_table.js";
+
+export let peakList1_g: {"mz": string, "intensity": string}[];
+export let envList1_g: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}[];
+export let graph1_g: SpectrumView;
+
 let temp_peakList1_g: {"mz": string, "intensity": string}[];
 
-let peakList2_g: {"mz": string, "intensity": string}[];
-let envList2_g: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}[];
-let graph2_g: SpectrumView;
+export let peakList2_g: {"mz": string, "intensity": string}[];
+export let envList2_g: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}[];
+export let graph2_g: SpectrumView;
 let temp_peakList2_g: {"mz": string, "intensity": string}[];
 
 let rtInteGraph: InteRtGraph;
@@ -15,7 +19,7 @@ let config: {"floatDigit": number, "scientificDigit": number};
 
 const calcDistrubution = new MolecularFormulae();
 
-function init2D(scan: number, configFromResultViz: {"floatDigit": number, "scientificDigit": number}): void {
+export function init2D(scan: number, configFromResultViz: {"floatDigit": number, "scientificDigit": number}): void {
   let projectDir: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectDir");
   if (!projectDir) {
     console.error("project directory information cannot be found");
@@ -24,7 +28,6 @@ function init2D(scan: number, configFromResultViz: {"floatDigit": number, "scien
   const topview_2d = new DataGetter(projectDir.value);
   let nextScan: number;
   config = configFromResultViz;
-    
   topview_2d.findNextLevelOneScan(scan)
     .then(function(response) {
       nextScan = parseInt(response.data); // next scan level one
@@ -46,10 +49,14 @@ function init2D(scan: number, configFromResultViz: {"floatDigit": number, "scien
             $( "#tabs" ).tabs();
             $("#tabs li").remove();
             $( "#tabs" ).tabs("destroy");
+
             response.data.forEach(function (item) {
               let scanTwoNum: string = item.scanID;
               let rt: string = item.rt;
-              $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scan + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
+              $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + '>'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
+              $(`#${scanTwoNum.toString()}`).on("click", () => {
+                loadPeakList2(scanTwoNum, item.prec_mz, item.prec_charge, item.prec_inte, rt, scan.toString());
+              })
             });
             $( "#tabs" ).tabs();
             let nextScanTab: HTMLElement | null = document.getElementById(nextScan.toString());
@@ -250,7 +257,7 @@ function loadPeakList1(scanID: string, prec_mz: string, mz_low: number = -1, mz_
   }
 }
 
-function loadPeakList2(scanID: string, prec_mz: string, prec_charge: string, prec_inte: string, rt: string, levelOneScan: string, mz_low: number = -1, mz_high: number = -1): void {
+export function loadPeakList2(scanID: string, prec_mz: string, prec_charge: string, prec_inte: string, rt: string, levelOneScan: string, mz_low: number = -1, mz_high: number = -1): void {
   if(scanID !== '0') {
     let projectDir: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectDir");
     if (!projectDir) {
@@ -262,6 +269,7 @@ function loadPeakList2(scanID: string, prec_mz: string, prec_charge: string, pre
     // show envelope table for MS2
     showEnvTable(scanID);
     $("#switch").text('MS1');
+    //@ts-ignore //axios is added as a script
     axios.get('/peaklist',{
       params:{
         projectDir: projectDir.value,

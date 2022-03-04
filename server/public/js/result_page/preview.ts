@@ -1,3 +1,6 @@
+import {graph1_g, graph2_g, envList1_g, envList2_g, peakList1_g, peakList2_g} from "../result_page/init2D.js";
+import {showEnvTable} from "../result_page/env_table.js";
+
 function plus(): void {
   let inputVal: string | number | string[] | undefined = $('#preview_mono_mass').val();
   let newMass: number = -1;
@@ -227,7 +230,7 @@ function updatePreview(charge, mono_mass): void {
   previewOriginalEnvPeakList.forEach((env: {"envelope_id": string, "scan_id": string, "charge": string, "mono_mass": string, "intensity": string}, i: number) => {
     envListConverted.push(new Envelope(mono_mass, charge));
   })
-
+  let calcDistrubution = new MolecularFormulae();
   let previewNewEnvPeakList: Peak[] = calcDistrubution.emass(mono_mass, charge, peakListConverted);
   graph_preview1_g = new SpectrumView('previewSpectrum1', peakListConverted);
   graph_preview1_g.redraw(mono_mass/charge + 1);
