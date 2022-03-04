@@ -262,7 +262,7 @@ void msReader::createDtabase() { //stmt
   std::string root = (boost::filesystem::current_path().parent_path().parent_path()).string();
   std::string init_file_path = root + sep + "init.ini";
 
-  ifstream initFile(init_file_path);
+  std::ifstream initFile(init_file_path);
   if (initFile.is_open()){
     std::getline(initFile, line);
 

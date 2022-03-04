@@ -9,8 +9,17 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/../bin)
 
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../lib)
 
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -O3 -DWITHOUT_MZ5 -fPIC")
 #SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -O2 -pg -fPIC")
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -O3 -DWITHOUT_MZ5 -fPIC -fpermissive")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas -std=c++14 -O3 -DWITHOUT_MZ5 -fPIC -fpermissive")
+
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
 message(STATUS "system name " ${CMAKE_SYSTEM_NAME})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -32,6 +41,8 @@ file(GLOB PWIZ_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/pwiz/utility/minimxml/*.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/src/pwiz/utility/misc/*.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/src/pwiz/data/common/*.cpp
                    ${CMAKE_CURRENT_SOURCE_DIR}/src/pwiz/data/msdata/*.cpp)
+# nowide
+file(GLOB NOWIDE_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/boost/nowide/*.cpp)
 
 # mzMLReader
 file(GLOB MZMLREADER_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
@@ -40,7 +51,7 @@ file(GLOB MZMLREADER_MAIN_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 file(GLOB MSREADER_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/msReader.cpp
                        ${CMAKE_CURRENT_SOURCE_DIR}/src/mzMLReader.cpp)
 
-add_executable(mzMLReader ${MZMLREADER_MAIN_SRCS} ${MSREADER_SRC} ${PWIZ_SRC} ${SQLITE3})
+add_executable(mzMLReader ${MZMLREADER_MAIN_SRCS} ${MSREADER_SRC} ${PWIZ_SRC} ${SQLITE3} ${NOWIDE_SRCS})
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_link_libraries(mzMLReader dl boost_filesystem boost_chrono boost_thread boost_iostreams pthread z)
@@ -48,5 +59,5 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries(mzMLReader boost_filesystem-mt boost_chrono-mt boost_iostreams-mt boost_thread-mt pthread z)
+  target_link_libraries(mzMLReader boost_filesystem-mt boost_chrono-mt boost_iostreams-mt boost_thread-mt pthread z psapi)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows") 
