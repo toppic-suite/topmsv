@@ -10,7 +10,7 @@ GraphRender.checkAndRender = () => {
         return;
     }
     if (Graph.currentData.length > 0) {
-        if (Graph.camera.position.y > 25.495) { //if switching to 2D view
+        if (Graph.camera["position"]["y"] > 25.495) { //if switching to 2D view
             Graph.isPerpendicular = true;
             //if camera is perpendicular to view, switch to 2D
             GraphData.plotPoint2D();

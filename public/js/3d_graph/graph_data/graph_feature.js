@@ -13,7 +13,6 @@ GraphFeature.updateFeature = (minmz, maxmz, minrt, maxrt) => {
         console.error("feature group does not exist");
         return;
     }
-    //@ts-ignore //featureGroup contains the type of FeatureDataDB
     featureGroup.children.forEach(function (featureRect, index) {
         if (index < data.length) {
             let feature = data[index];

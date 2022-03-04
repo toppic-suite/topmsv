@@ -25,11 +25,10 @@ export class GraphZoom {
                     return;
                 }
             }
-            let oriScale = peaks.scale.y;
-            peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
+            let oriScale = peaks["scale"]["y"];
+            peaks["scale"].set(peaks["scale"]["x"], oriScale * scaleFactor, peaks["scale"]["z"]);
             Graph.peakScale = oriScale * scaleFactor;
             if (isCtrlPressed && scaleFactor > 1) {
-                //@ts-ignore "peaks" contain a group of Peak3DView
                 GraphControl.adjustIntensity(peaks.children);
             }
             GraphRender.renderImmediate();

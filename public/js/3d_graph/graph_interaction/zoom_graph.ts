@@ -7,6 +7,7 @@ import {GraphRender} from '../graph_control/graph_render.js';
 import {GraphControl} from '../graph_control/graph_control.js';
 import {GraphData} from '../graph_data/graph_data.js';
 import {GraphUtil} from '../graph_util/graph_util.js';
+import {Object3D, Group, Vector3} from '../../../lib/js/three.module.js';
 
 export class GraphZoom {   
   scrollTimer;//detect if scroll has ended or not
@@ -14,7 +15,7 @@ export class GraphZoom {
   constructor(){}
     
   adjustPeakHeight = (scaleFactor: number, isCtrlPressed: boolean): void => {
-    let peaks: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    let peaks: Group | undefined = Graph.scene.getObjectByName("plotGroup");
     let inteAutoAdjust: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#inte-auto-adjust");
 
     if (!peaks) {
@@ -27,12 +28,11 @@ export class GraphZoom {
       if (!isCtrlPressed && !inteAutoAdjust.checked) {return;}
     }
 
-    let oriScale: number = peaks.scale.y;
-    peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
+    let oriScale: number = peaks["scale"]["y"];
+    peaks["scale"].set(peaks["scale"]["x"], oriScale * scaleFactor, peaks["scale"]["z"]);
     Graph.peakScale = oriScale * scaleFactor;
 
     if (isCtrlPressed && scaleFactor > 1) {
-      //@ts-ignore "peaks" contain a group of Peak3DView
       GraphControl.adjustIntensity(peaks.children);
     } 
     GraphRender.renderImmediate();  
@@ -43,7 +43,7 @@ export class GraphZoom {
     e.preventDefault();//disable scroll of browser
     if (!this.scrollLock) {
       this.scrollLock = true;
-      let axis: THREE.Object3D<THREE.Event> | null = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
+      let axis: Object3D | null = GraphUtil.findObjectHover(e, Graph.axisGroup);//axis is null if cursor is not on axis
       if (axis == null){
         let scaleFactor: number = 0;
 
@@ -87,7 +87,7 @@ export class GraphZoom {
   onZoomFromEventListener = async(e: WheelEvent, axisName: string | null) => {        
     //zoom action detected by event listener in each axis
     let scaleFactor: number = 0;
-    let mousePos: THREE.Vector3 = GraphUtil.getMousePosition(e);
+    let mousePos: Vector3 = GraphUtil.getMousePosition(e);
     
     let newmzrange: number = Graph.viewRange.mzrange;
     let newrtrange: number = Graph.viewRange.rtrange;

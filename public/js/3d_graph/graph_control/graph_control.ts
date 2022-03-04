@@ -1,5 +1,5 @@
 /*graph_control.js: class for scaling and repositioning objects on the graph*/
-import * as THREE from '../../../lib/js/three.module.js';
+import {Group, Line, Object3D, LineBasicMaterial, Vector3, BufferGeometry, Sprite, Vector2} from '../../../lib/js/three.module.js';
 import {Graph} from '../graph_init/graph.js';
 import {GraphUtil} from '../graph_util/graph_util.js';
 import {GraphLabel} from '../graph_util/graph_label.js';
@@ -56,18 +56,21 @@ export class GraphControl{
     //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
     //peak.height = adjusted y (current Y), peak.int = original intensity
   
-    let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    //let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    //let plotGroup: Group | undefined = Graph.scene.getObjectByName("plotGroup");
+    let plotGroup: Object3D | undefined = Graph.scene.getObjectByName("plotGroup");
+
     if (!plotGroup) {
       console.error("cannot find plotgroup");
       return; 
     }
-
+    
     peaks.forEach((peak: Peak3DView): void => {
       if (peak.lowPeak) {
-        let resultHeight: number = peak.int * plotGroup!.scale.y * Graph.intSquish;
+        let resultHeight: number = peak.int * plotGroup!["scale"]["y"] * Graph.intSquish;
         if (resultHeight < Graph.minPeakHeight) {
           //peak y should bce updated so that the resulting height is still 0.05
-          let newY:number = Graph.minPeakHeight/plotGroup!.scale.y;
+          let newY:number = Graph.minPeakHeight/plotGroup!["scale"]["y"];
           peak.height = newY;
           //@ts-ignore
           peak.geometry.attributes.position.array[4] = newY;
@@ -140,17 +143,17 @@ export class GraphControl{
     return posList;
   }
   static makeTick = (startMz: number, endMz: number, startRt: number, endRt: number): void => {
-    let ticksGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("ticksGroup");
-    let markMaterial: THREE.LineBasicMaterial = new THREE.LineBasicMaterial({ color: 0x000000});
-    let markGeoPoints: THREE.Vector3 = [];
-    let markGeo: any = new THREE.BufferGeometry();
+    let ticksGroup: Group | undefined = Graph.scene.getObjectByName("ticksGroup");
+    let markMaterial: LineBasicMaterial = new LineBasicMaterial({ color: 0x000000});
+    let markGeoPoints: Vector3[] = [];
+    let markGeo: any = new BufferGeometry();
 
-    markGeoPoints.push(new THREE.Vector3(startMz, 0, startRt));
-    markGeoPoints.push(new THREE.Vector3(endMz, 0, endRt));
+    markGeoPoints.push(new Vector3(startMz, 0, startRt));
+    markGeoPoints.push(new Vector3(endMz, 0, endRt));
 
     markGeo.setFromPoints(markGeoPoints);
 
-    let markLine: THREE.Line<any, THREE.LineBasicMaterial> = new THREE.Line(markGeo, markMaterial);
+    let markLine: Line = new Line(markGeo, markMaterial);
 
     if (ticksGroup) {
       ticksGroup.add(markLine);    
@@ -159,7 +162,7 @@ export class GraphControl{
     }
   }
   static makeTickLabel = (which: string, mz: number, rt: number): void => {
-    let tickLabelGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("tickLabelGroup");
+    let tickLabelGroup: Group | undefined = Graph.scene.getObjectByName("tickLabelGroup");
     let text: string = '';
     let xoffset: number = 0;
     let zoffset: number = 0;
@@ -172,9 +175,9 @@ export class GraphControl{
       xoffset = -1.5;
       zoffset = 0.2;
     }
-    let label: THREE.Sprite = GraphLabel.makeTextSprite(text, {r:0, g:0, b:0}, 15);
+    let label: Sprite = GraphLabel.makeTextSprite(text, {r:0, g:0, b:0}, 15);
     let gridsp: {x: number, z: number} = GraphControl.mzRtToGridSpace(mz, rt);
-    label.position.set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
+    label["position"].set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
 
     if (tickLabelGroup) {
         tickLabelGroup.add(label);
@@ -220,25 +223,25 @@ export class GraphControl{
     Graph.intSquish = int_squish;
     Graph.isPan = false;//reset the boolean determining whether to apply automatic intensity scaling
 
-    let dataGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("dataGroup");
-    let markerGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("markerGroup");
-    let featureGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("featureGroup");
-    let tickLabelGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("tickLabelGroup");
-    let ticksGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("ticksGroup");
+    let dataGroup: Group | undefined = Graph.scene.getObjectByName("dataGroup");
+    let markerGroup: Group | undefined = Graph.scene.getObjectByName("markerGroup");
+    let featureGroup: Group | undefined = Graph.scene.getObjectByName("featureGroup");
+    let tickLabelGroup: Group | undefined = Graph.scene.getObjectByName("tickLabelGroup");
+    let ticksGroup: Group | undefined = Graph.scene.getObjectByName("ticksGroup");
 
     if (dataGroup) {
-      dataGroup.scale.set(mz_squish, int_squish, rt_squish);
-      dataGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
+      dataGroup["scale"].set(mz_squish, int_squish, rt_squish);
+      dataGroup["position"].set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
     }
 
     if (featureGroup) {
-      featureGroup.scale.set(mz_squish, 1, rt_squish);
-      featureGroup.position.set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
+      featureGroup["scale"].set(mz_squish, 1, rt_squish);
+      featureGroup["position"].set(-r.mzmin*mz_squish, 0, Graph.gridRange - r.rtmin*rt_squish);
     }
 
     if (markerGroup) {
-      markerGroup.scale.set(1,1,rt_squish);
-      markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
+      markerGroup["scale"].set(1,1,rt_squish);
+      markerGroup["position"].set(0, 0, Graph.gridRange - r.rtmin*rt_squish);
     }
     // update tick marks
     if (tickLabelGroup) {
@@ -400,7 +403,7 @@ export class GraphControl{
     }*/
   }
   static resizeCameraUserControl = (): void => {
-    let size: THREE.Vector2 = new THREE.Vector2();
+    let size: Vector2 = new Vector2();
     Graph.renderer.getSize(size);
     let aspectRatio: number = size.x / size.y;
 
@@ -430,7 +433,7 @@ export class GraphControl{
       return;
     }
     Graph.renderer.setSize(graphEl.clientWidth, graphEl.clientHeight, true);
-    let size: THREE.Vector2 = new THREE.Vector2();
+    let size: Vector2 = new Vector2();
     Graph.renderer.getSize(size);
     let aspectRatio: number = size.x / size.y;
     let vs: number = Graph.viewSize;

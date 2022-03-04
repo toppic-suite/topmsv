@@ -1,6 +1,7 @@
 /*hover_feature.js: on hover, highlught and display feature information (scan ID, intensity, rt, mz)*/
 import {Graph} from '../graph_init/graph.js';
 import {GraphUtil} from '../graph_util/graph_util.js';
+import {Group} from '../../../lib/js/three.module.js';
 
 export class HoverFeature{
   constructor(){};
@@ -31,7 +32,7 @@ export class HoverFeature{
     let tooltipText: HTMLSpanElement | null = document.querySelector<HTMLSpanElement>("#tooltiptext");
 
     if (event.ctrlKey) {
-      let objGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("featureGroup");
+      let objGroup: Group | undefined = Graph.scene.getObjectByName("featureGroup");
       let obj: Feature3DView | null = HoverFeature.findFeatureOnHover(event, objGroup);
 
       if (obj != null){

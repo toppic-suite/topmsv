@@ -2,19 +2,19 @@
 import {Graph} from '../graph_init/graph.js';
 import {GraphRender} from '../graph_control/graph_render.js';
 import {GraphUtil} from '../graph_util/graph_util.js';
+import {Object3D} from '../../../lib/js/three.module.js';
 
 export class GraphFeature{
   constructor(){}
   /******** ADD FEAUTRE ANNOTATION ******/
   static updateFeature = (minmz: number, maxmz: number, minrt: number, maxrt: number) => {
-    let featureGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("featureGroup");
+    let featureGroup: Object3D | undefined = Graph.scene.getObjectByName("featureGroup");
     let data: FeatureDataDB[] = Graph.currentFeatureData;
 
     if (!featureGroup) {
       console.error("feature group does not exist");
       return;  
     }
-    //@ts-ignore //featureGroup contains the type of FeatureDataDB
     featureGroup.children.forEach(function(featureRect: Feature3DView, index: number) {
       if (index < data.length) {
         let feature: FeatureDataDB = data[index];
@@ -132,7 +132,7 @@ export class GraphFeature{
 
 
   static hideFeature = (): void => {
-    let featureGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("featureGroup");
+    let featureGroup: Object3D | undefined = Graph.scene.getObjectByName("featureGroup");
     if (!featureGroup) {
       console.error("feature group doesn't exist");
       return;
@@ -143,7 +143,7 @@ export class GraphFeature{
 
 
   static showFeature = (): void => {
-    let featureGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("featureGroup");
+    let featureGroup: Object3D | undefined = Graph.scene.getObjectByName("featureGroup");
     if (!featureGroup) {
         console.error("feature group doesn't exist");
         return;

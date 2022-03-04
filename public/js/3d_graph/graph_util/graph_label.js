@@ -22,7 +22,7 @@ GraphLabel.makeTextSprite = (msg, textColor, fontsize) => {
     texture.minFilter = LinearFilter;
     let spriteMaterial = new SpriteMaterial({ map: texture });
     let sprite = new Sprite(spriteMaterial);
-    sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
+    sprite["scale"].set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
     return sprite;
 };
 /*updates status text labels and the outer graph axis labels*/
@@ -49,12 +49,12 @@ GraphLabel.drawDataLabels = () => {
     let lblRtMax = GraphLabel.makeTextSprite(rtmaxtext.toString(), { r: 0, g: 0, b: 0 }, 16);
     let lblMz = GraphLabel.makeTextSprite(mztext, { r: 0, g: 0, b: 0 }, 16);
     let lblRt = GraphLabel.makeTextSprite(rttext, { r: 0, g: 0, b: 0 }, 16);
-    lblMz.position.set(0.5, 0, Graph.gridRange + 1);
-    lblMzMin.position.set(0.5, -0.5, Graph.gridRange + 1.5);
-    lblMzMax.position.set(Graph.gridRange, -0.5, Graph.gridRange + 1.5);
-    lblRt.position.set(-1.8, 0.5, Graph.gridRange + 0.5);
-    lblRtMin.position.set(-1.5, -0.5, Graph.gridRange);
-    lblRtMax.position.set(-1.5, -0.5, 0.5);
+    lblMz["position"].set(0.5, 0, Graph.gridRange + 1);
+    lblMzMin["position"].set(0.5, -0.5, Graph.gridRange + 1.5);
+    lblMzMax["position"].set(Graph.gridRange, -0.5, Graph.gridRange + 1.5);
+    lblRt["position"].set(-1.8, 0.5, Graph.gridRange + 0.5);
+    lblRtMin["position"].set(-1.5, -0.5, Graph.gridRange);
+    lblRtMax["position"].set(-1.5, -0.5, 0.5);
     Graph.labelGroup.add(lblMzMin, lblMzMax, lblRtMin, lblRtMax, lblMz, lblRt);
 };
 /*display details about the current peaks on the graph*/

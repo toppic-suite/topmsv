@@ -7,9 +7,9 @@ import {Vector3} from '../../../lib/js/three.module.js';
 
 export class GraphPan{
   mouseDown: boolean;
-  mstart: THREE.Vector3 | null;
-  mend: THREE.Vector3;
-  mdelta: THREE.Vector3;
+  mstart: Vector3 | null;
+  mend: Vector3;
+  mdelta: Vector3;
 
   constructor() {
     this.mouseDown = false;
@@ -45,7 +45,7 @@ export class GraphPan{
     this.mouseDown = true;
     Graph.isZoom = false;
     if (e.button === 0) {
-      let mousePoint: THREE.Vector3 = GraphUtil.getMousePosition(e);
+      let mousePoint: Vector3 = GraphUtil.getMousePosition(e);
       if (mousePoint === null) {
         return;
       }
@@ -56,7 +56,7 @@ export class GraphPan{
 
 
   onMouseMove = (e: MouseEvent): void => {
-    let mousePoint: THREE.Vector3 = GraphUtil.getMousePosition(e);
+    let mousePoint: Vector3 = GraphUtil.getMousePosition(e);
     if (mousePoint === null) {
       return;
     }
@@ -71,7 +71,7 @@ export class GraphPan{
 
 
   onMouseUp = (e: MouseEvent): void => {
-    let mousePoint: THREE.Vector3 = GraphUtil.getMousePosition(e);
+    let mousePoint: Vector3 = GraphUtil.getMousePosition(e);
     if (mousePoint === null) {
       return;
     }

@@ -1,6 +1,6 @@
 // graph.js: set properties of 3D graph which are referenced and updated from other classes throughout the application
 //and call to initialize empty 3D graph
-import * as THREE from '../../../lib/js/three.module.js';
+import {Scene, WebGLRenderer, DoubleSide, OrthographicCamera, Plane, Vector3, Group, BufferGeometry, BufferAttribute, Line, LineBasicMaterial, LineDashedMaterial} from '../../../lib/js/three.module.js';
 import {OrbitControls} from '../../../lib/js/OrbitControls.js';
 import {GraphInit} from './graph_init.js';
 import {GraphUtil} from '../graph_util/graph_util.js';
@@ -18,19 +18,18 @@ export class Graph{
   static viewSize: number = 25; // in world units; large enough to fit the graph and labels at reasonable angles
 
   /*initialize graph components*/
-  static scene: THREE.Scene = new THREE.Scene();
-  static renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer( { antialias: true, alpha:true} );
-  static camera: THREE.OrthographicCamera = new THREE.OrthographicCamera( -50, 50, -10, 10, 1, 100 );
-  static graphPlane: THREE.Plane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
-  //@ts-ignore
-  static graphControls = new OrbitControls(Graph.camera, Graph.renderer.domElement );
+  static scene: Scene = new Scene();
+  static renderer: WebGLRenderer = new WebGLRenderer( { antialias: true, alpha:true} );
+  static camera: OrthographicCamera = new OrthographicCamera( -50, 50, -10, 10, 1, 100 );
+  static graphPlane: Plane = new Plane(new Vector3(0,1,0), 0);
+  static graphControls: OrbitControls = new OrbitControls(Graph.camera, Graph.renderer.domElement );
 
   /*rounding for grpah axis labels */
   static roundMz: number = 3;
   static roundRt: number = 3;
 
   /*on scaling and repositioning objects*/
-  static rangeTransform: THREE.Vector3 = new THREE.Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
+  static rangeTransform: Vector3 = new Vector3(1/Graph.gridRange, 1/Graph.gridRangeVertical, 1/Graph.gridRange);
   static peakScale: number = 0;
   static intSquish: number = 1;//store previous int_squish
         
@@ -109,17 +108,17 @@ export class Graph{
   static resultViz;
 
   /*groups to hold different graph elements */
-  static gridGroup = new THREE.Group();
-  static dataGroup = new THREE.Group();
-  static markerGroup = new THREE.Group();
-  static labelGroup = new THREE.Group();
-  static ticksGroup = new THREE.Group();
-  static ticklabelGroup = new THREE.Group();
-  static lineMeshGroup = new THREE.Group();//contains line * max peak number
-  static plotGroup = new THREE.Group();// lines that are going to be plotted
-  static peak2DGroup = new THREE.Group(); 
-  static featureGroup = new THREE.Group();
-  static axisGroup = new THREE.Group();
+  static gridGroup = new Group();
+  static dataGroup = new Group();
+  static markerGroup = new Group();
+  static labelGroup = new Group();
+  static ticksGroup = new Group();
+  static ticklabelGroup = new Group();
+  static lineMeshGroup = new Group();//contains line * max peak number
+  static plotGroup = new Group();// lines that are going to be plotted
+  static peak2DGroup = new Group(); 
+  static featureGroup = new Group();
+  static axisGroup = new Group();
 
   static configData: ConfigData[] = [];
   static currentData: PeakDataDB[] = [];
@@ -159,30 +158,33 @@ export class Graph{
     Graph.scene.add(Graph.axisGroup);
   }
 
+
   initMarkerGroup = (): void => {
-    let linegeo: THREE.BufferGeometry = new THREE.BufferGeometry();
-    linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+    let linegeo: BufferGeometry = new BufferGeometry();
+    linegeo.setAttribute("position", new BufferAttribute(new Float32Array([
         0, 0, 0,
         Graph.gridRange, 0, 0,
     ]), 3));
 
-    let linemat: THREE.LineBasicMaterial = new THREE.LineBasicMaterial({color: Graph.currentScanColor});
+    let linemat: LineBasicMaterial = new LineBasicMaterial({color: Graph.currentScanColor});
     //linemat.polygonOffset = true;
     //linemat.polygonOffsetFactor = -0.1;
 
-    let line: THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial> = new THREE.Line(linegeo, linemat);
+    let line: Line = new Line(linegeo, linemat);
 
-    line.position.set(0, 0, 0);
+    line["position"].set(0, 0, 0);
     line.visible = false;
 
     line.name = "currentScanMarker";
 
     Graph.markerGroup.add(line);
   }
+
+
   initFeatureGroup = (): void => {
     for (let i: number = 0; i < Graph.maxFeature; i++) {
-      let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
-      geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+      let geometry: BufferGeometry = new BufferGeometry();
+      geometry.setAttribute("position", new BufferAttribute(new Float32Array([
             0, 0, 0,
             0, 0, 0,
             0, 0, 0,
@@ -190,28 +192,30 @@ export class Graph{
             0, 0, 0,
         ]), 3));
 
-      let linemat: THREE.LineDashedMaterial = new THREE.LineDashedMaterial( { side: THREE.DoubleSide, color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
-      let feature: THREE.Line<THREE.BufferGeometry, THREE.LineDashedMaterial> = new THREE.Line( geometry, linemat );
+      let linemat: LineDashedMaterial = new LineDashedMaterial( { side: DoubleSide, color: Graph.featureColor, dashSize: 0.01, gapSize: 0.005 } )
+      let feature: Line = new Line( geometry, linemat );
 
-      feature.position.set(0, 0, 0);
+      feature["position"].set(0, 0, 0);
       feature.name = "featureAnnotation";
       feature.visible = false;
 
       Graph.featureGroup.add(feature);
     }
   }
+
+
   init2DPlotGroup = (): void => {
     for (let i: number = 0; i < Graph.maxPeaks; i++) {
-      let linegeo: THREE.BufferGeometry = new THREE.BufferGeometry();
-      linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+      let linegeo: BufferGeometry = new BufferGeometry();
+      linegeo.setAttribute("position", new BufferAttribute(new Float32Array([
         0, 0, 0,
         0, 0, 0,
       ]), 3));
         
-      let linemat = new THREE.LineBasicMaterial({color: "white", linewidth:0.8});
-      let line: Peak3DView = new THREE.Line(linegeo, linemat) as Peak3DView;
+      let linemat = new LineBasicMaterial({color: "white", linewidth:0.8});
+      let line: Line = new Line(linegeo, linemat);
 
-      line.position.set(0, 0, 0);
+      line["position"].set(0, 0, 0);
       line["mz"] = 0;
       line["rt"] = 0;
       line["int"] = 0;
@@ -223,18 +227,20 @@ export class Graph{
       Graph.peak2DGroup.add(line);
     }
   }
+
+
   initPlotGroup = (): void => {
     for (let i: number = 0; i < Graph.maxPeaks; i++) {
-      let linegeo: THREE.BufferGeometry = new THREE.BufferGeometry();
-      linegeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+      let linegeo: BufferGeometry = new BufferGeometry();
+      linegeo.setAttribute("position", new BufferAttribute(new Float32Array([
         0, 0, 0,
         0, 0.1, 0,
       ]), 3));
         
-      let linemat: THREE.LineBasicMaterial = new THREE.LineBasicMaterial({color: "white"});
-      let line: Peak3DView = new THREE.Line(linegeo, linemat) as Peak3DView;
+      let linemat: LineBasicMaterial = new LineBasicMaterial({color: "white"});
+      let line: Line = new Line(linegeo, linemat);
 
-      line.position.set(0, 0, 0);
+      line["position"].set(0, 0, 0);
       line["mz"] = 0;
       line["rt"] = 0;
       line["int"] = 0;
@@ -246,6 +252,8 @@ export class Graph{
       Graph.plotGroup.add(line);
     }
   }
+
+
   initDataRange = (): Promise<void> => {
     return new Promise(function(resolve, reject){
       let promise: Promise<any> = LoadData.getConfigData();
@@ -276,21 +284,24 @@ export class Graph{
     })
   }
 
+
   setInitScale = (): void => {
-    let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    let plotGroup: Group | undefined = Graph.scene.getObjectByName("plotGroup");
     let scale: number = Graph.maxPeakHeight / Graph.dataRange.intmax;
 
     if (plotGroup) {
-      plotGroup.scale.set(plotGroup.scale.x, scale, plotGroup.scale.z);
+      plotGroup["scale"].set(plotGroup["scale"]["x"], scale, plotGroup["scale"]["z"]);
     } else {
       console.error("plotGroup does not exist");
     }
   }
 
-  getScene = (): THREE.Scene => {
+  
+  getScene = (): Scene => {
     return Graph.scene;
   }
     
+
   main = async (scanNum: number) => {
     this.initGroups();
     this.initPlotGroup();

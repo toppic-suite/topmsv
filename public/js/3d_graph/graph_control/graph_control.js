@@ -1,5 +1,5 @@
 /*graph_control.js: class for scaling and repositioning objects on the graph*/
-import * as THREE from '../../../lib/js/three.module.js';
+import { Line, LineBasicMaterial, Vector3, BufferGeometry, Vector2 } from '../../../lib/js/three.module.js';
 import { Graph } from '../graph_init/graph.js';
 import { GraphUtil } from '../graph_util/graph_util.js';
 import { GraphLabel } from '../graph_util/graph_label.js';
@@ -49,6 +49,8 @@ GraphControl.calcIntScale = () => {
 GraphControl.adjustIntensity = (peaks) => {
     //low peak height stays the same as 0.05 until the scaled value becomes > 0.05
     //peak.height = adjusted y (current Y), peak.int = original intensity
+    //let plotGroup: THREE.Object3D<THREE.Event> | undefined = Graph.scene.getObjectByName("plotGroup");
+    //let plotGroup: Group | undefined = Graph.scene.getObjectByName("plotGroup");
     let plotGroup = Graph.scene.getObjectByName("plotGroup");
     if (!plotGroup) {
         console.error("cannot find plotgroup");
@@ -56,10 +58,10 @@ GraphControl.adjustIntensity = (peaks) => {
     }
     peaks.forEach((peak) => {
         if (peak.lowPeak) {
-            let resultHeight = peak.int * plotGroup.scale.y * Graph.intSquish;
+            let resultHeight = peak.int * plotGroup["scale"]["y"] * Graph.intSquish;
             if (resultHeight < Graph.minPeakHeight) {
                 //peak y should bce updated so that the resulting height is still 0.05
-                let newY = Graph.minPeakHeight / plotGroup.scale.y;
+                let newY = Graph.minPeakHeight / plotGroup["scale"]["y"];
                 peak.height = newY;
                 //@ts-ignore
                 peak.geometry.attributes.position.array[4] = newY;
@@ -135,13 +137,13 @@ GraphControl.getYTickPosList = () => {
 };
 GraphControl.makeTick = (startMz, endMz, startRt, endRt) => {
     let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
-    let markMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
+    let markMaterial = new LineBasicMaterial({ color: 0x000000 });
     let markGeoPoints = [];
-    let markGeo = new THREE.BufferGeometry();
-    markGeoPoints.push(new THREE.Vector3(startMz, 0, startRt));
-    markGeoPoints.push(new THREE.Vector3(endMz, 0, endRt));
+    let markGeo = new BufferGeometry();
+    markGeoPoints.push(new Vector3(startMz, 0, startRt));
+    markGeoPoints.push(new Vector3(endMz, 0, endRt));
     markGeo.setFromPoints(markGeoPoints);
-    let markLine = new THREE.Line(markGeo, markMaterial);
+    let markLine = new Line(markGeo, markMaterial);
     if (ticksGroup) {
         ticksGroup.add(markLine);
     }
@@ -165,7 +167,7 @@ GraphControl.makeTickLabel = (which, mz, rt) => {
     }
     let label = GraphLabel.makeTextSprite(text, { r: 0, g: 0, b: 0 }, 15);
     let gridsp = GraphControl.mzRtToGridSpace(mz, rt);
-    label.position.set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
+    label["position"].set(gridsp.x + xoffset, 0, gridsp.z + zoffset);
     if (tickLabelGroup) {
         tickLabelGroup.add(label);
     }
@@ -215,16 +217,16 @@ GraphControl.repositionPlot = (r) => {
     let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
     let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
     if (dataGroup) {
-        dataGroup.scale.set(mz_squish, int_squish, rt_squish);
-        dataGroup.position.set(-r.mzmin * mz_squish, 0, Graph.gridRange - r.rtmin * rt_squish);
+        dataGroup["scale"].set(mz_squish, int_squish, rt_squish);
+        dataGroup["position"].set(-r.mzmin * mz_squish, 0, Graph.gridRange - r.rtmin * rt_squish);
     }
     if (featureGroup) {
-        featureGroup.scale.set(mz_squish, 1, rt_squish);
-        featureGroup.position.set(-r.mzmin * mz_squish, 0, Graph.gridRange - r.rtmin * rt_squish);
+        featureGroup["scale"].set(mz_squish, 1, rt_squish);
+        featureGroup["position"].set(-r.mzmin * mz_squish, 0, Graph.gridRange - r.rtmin * rt_squish);
     }
     if (markerGroup) {
-        markerGroup.scale.set(1, 1, rt_squish);
-        markerGroup.position.set(0, 0, Graph.gridRange - r.rtmin * rt_squish);
+        markerGroup["scale"].set(1, 1, rt_squish);
+        markerGroup["position"].set(0, 0, Graph.gridRange - r.rtmin * rt_squish);
     }
     // update tick marks
     if (tickLabelGroup) {
@@ -382,7 +384,7 @@ GraphControl.constrainBoundsPan = (newmzmin, newmzrange, newrtmin, newrtrange) =
     }*/
 };
 GraphControl.resizeCameraUserControl = () => {
-    let size = new THREE.Vector2();
+    let size = new Vector2();
     Graph.renderer.getSize(size);
     let aspectRatio = size.x / size.y;
     let vs = Graph.viewSize;
@@ -412,7 +414,7 @@ GraphControl.resizeCamera = () => {
         return;
     }
     Graph.renderer.setSize(graphEl.clientWidth, graphEl.clientHeight, true);
-    let size = new THREE.Vector2();
+    let size = new Vector2();
     Graph.renderer.getSize(size);
     let aspectRatio = size.x / size.y;
     let vs = Graph.viewSize;

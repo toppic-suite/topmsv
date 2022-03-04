@@ -238,7 +238,6 @@ GraphData.plotPoint2D = () => {
     if (Graph.currentData.length > 0) {
         prevPeakRT = parseFloat(Graph.currentData[Graph.currentData.length - 1].RETENTIONTIME);
     }
-    //@ts-ignore //peak2D group contains objects in the type Peak3DView
     peak2DGroup.children.forEach(function (line, index) {
         if (index < Graph.currentData.length) {
             let point = Graph.currentData[Graph.currentData.length - 1 - index];
@@ -268,9 +267,9 @@ GraphData.plotPoint2D = () => {
                 //@ts-ignore //allow overwrite
                 line.geometry.attributes.position.array[5] = ySize;
                 line.geometry.attributes.position.needsUpdate = true;
-                line.material.color.setStyle(lineColor);
+                line.material["color"].setStyle(lineColor);
                 if (parseFloat(rt.toFixed(4)) == curRt && Graph.isHighlightingCurrentScan) {
-                    line.material.color.setStyle(Graph.currentScanColor);
+                    line.material["color"].setStyle(Graph.currentScanColor);
                 }
                 line.position.set(mz, 0, rt);
                 line.pointid = point.ID;
@@ -300,7 +299,6 @@ GraphData.updatePeaks = (data) => {
     }
     //iterate through peask in plot group while < data.length;
     //for the rest of peaks, turn off visibility
-    //@ts-ignore //peak2D group contains objects in the type Peak3DView
     plotGroup.children.forEach(function (line, index) {
         if (index < data.length) {
             let point = data[index];
@@ -316,17 +314,17 @@ GraphData.updatePeaks = (data) => {
                 let currt = Graph.curRT.toFixed(4);
                 let y = inten;
                 //if y is much smaller than the highest intensity peak in the view range
-                if (y * plotGroup.scale.y * intScale < Graph.minPeakHeight) {
+                if (y * plotGroup["scale"]["y"] * intScale < Graph.minPeakHeight) {
                     //increase y so that later y is at least minHeight when scaled
-                    y = Graph.minPeakHeight / (plotGroup.scale.y * intScale);
+                    y = Graph.minPeakHeight / (plotGroup["scale"]["y"] * intScale);
                     lowPeak = true;
                 }
                 //@ts-ignore to allow overwrite
                 line.geometry.attributes.position.array[4] = y;
                 line.geometry.attributes.position.needsUpdate = true;
-                line.material.color.setStyle(lineColor);
+                line.material["color"].setStyle(lineColor);
                 if (rt.toFixed(4) == currt && Graph.isHighlightingCurrentScan) {
-                    line.material.color.setStyle(Graph.currentScanColor);
+                    line.material["color"].setStyle(Graph.currentScanColor);
                 }
                 line.position.set(mz, 0, rt);
                 line.pointid = id;

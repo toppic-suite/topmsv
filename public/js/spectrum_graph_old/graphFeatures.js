@@ -1,5 +1,6 @@
-class GraphFeatures{
-    constructor(){
+"use strict";
+class GraphFeatures {
+    constructor() {
         this.showCircles = true;
         this.showIons = true;
         this.showSequene = false;
@@ -15,7 +16,7 @@ class GraphFeatures{
         this.adjustableIonPosition = 4;
         this.svgWidth = 910;
         this.svgHeight = 220;
-        this.padding = {left:70, right:20, head:10, bottom:50};
+        this.padding = { left: 70, right: 20, head: 10, bottom: 50 };
         this.adjustableHeightVal = 60;
         this.fixedHeightOfIonAboveThePeak = 10;
         this.specWidth = this.svgWidth - this.padding.left - this.padding.right;

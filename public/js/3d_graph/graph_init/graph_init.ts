@@ -1,5 +1,5 @@
 /*graph_init.js: class for initializing 3d graph*/
-import * as THREE from '../../../lib/js/three.module.js';
+import {BufferGeometry, DoubleSide, LineBasicMaterial, Vector3, LineSegments, PlaneGeometry, Mesh, MeshBasicMaterial, MOUSE} from '../../../lib/js/three.module.js';
 import {Graph} from './graph.js';
 import {GraphUtil} from '../graph_util/graph_util.js';
 import {GraphData} from '../graph_data/graph_data.js';
@@ -167,30 +167,30 @@ export class GraphInit{
   /******** CREATE GRAPH ELEMENTS ******/
   // returns a 1x1 unit grid, GRID_RANGE units long in the x and z dimension
   static createAxis = (): void => {
-    let xAxisGeo = new THREE.BufferGeometry();
-    let yAxisGeo = new THREE.BufferGeometry();
-    let xAxisSubGeo = new THREE.BufferGeometry();//these two axes are not the main axes -- for zoom purpose only
-    let yAxisSubGeo = new THREE.BufferGeometry();
+    let xAxisGeo = new BufferGeometry();
+    let yAxisGeo = new BufferGeometry();
+    let xAxisSubGeo = new BufferGeometry();//these two axes are not the main axes -- for zoom purpose only
+    let yAxisSubGeo = new BufferGeometry();
 
-    let axisMaterial: THREE.LineBasicMaterial = new THREE.LineBasicMaterial({ color:Graph.gridColor });
+    let axisMaterial: LineBasicMaterial = new LineBasicMaterial({ color:Graph.gridColor });
 
-    let xAxisGeoPoints: THREE.Vector3 = [];
-    let xAxisSubGeoPoints: THREE.Vector3 = [];
+    let xAxisGeoPoints: Vector3[] = [];
+    let xAxisSubGeoPoints: Vector3[] = [];
 
-    let yAxisGeoPoints: THREE.Vector3 = [];
-    let yAxisSubGeoPoints: THREE.Vector3 = [];
+    let yAxisGeoPoints: Vector3[] = [];
+    let yAxisSubGeoPoints: Vector3[] = [];
 
-    yAxisGeoPoints.push(new THREE.Vector3(0, 0, Graph.gridRange));
-    yAxisGeoPoints.push(new THREE.Vector3(0, 0, 0));
+    yAxisGeoPoints.push(new Vector3(0, 0, Graph.gridRange));
+    yAxisGeoPoints.push(new Vector3(0, 0, 0));
 
-    yAxisSubGeoPoints.push(new THREE.Vector3(Graph.gridRange, 0, Graph.gridRange));
-    yAxisSubGeoPoints.push(new THREE.Vector3(Graph.gridRange, 0, 0));
+    yAxisSubGeoPoints.push(new Vector3(Graph.gridRange, 0, Graph.gridRange));
+    yAxisSubGeoPoints.push(new Vector3(Graph.gridRange, 0, 0));
         
-    xAxisGeoPoints.push(new THREE.Vector3(Graph.gridRange,0, Graph.gridRange));
-    xAxisGeoPoints.push(new THREE.Vector3(0, 0, Graph.gridRange));
+    xAxisGeoPoints.push(new Vector3(Graph.gridRange,0, Graph.gridRange));
+    xAxisGeoPoints.push(new Vector3(0, 0, Graph.gridRange));
 
-    xAxisSubGeoPoints.push(new THREE.Vector3(Graph.gridRange,0, 0));
-    xAxisSubGeoPoints.push(new THREE.Vector3(0, 0, 0));
+    xAxisSubGeoPoints.push(new Vector3(Graph.gridRange,0, 0));
+    xAxisSubGeoPoints.push(new Vector3(0, 0, 0));
 
     xAxisGeo.setFromPoints(yAxisGeoPoints);
     xAxisSubGeo.setFromPoints(yAxisGeoPoints);
@@ -198,10 +198,10 @@ export class GraphInit{
     yAxisGeo.setFromPoints(yAxisGeoPoints);
     yAxisSubGeo.setFromPoints(yAxisGeoPoints);
 
-    let xAxis: THREE.LineSegments<any, THREE.LineBasicMaterial> = new THREE.LineSegments(xAxisGeo, axisMaterial);
-    let yAxis: THREE.LineSegments<any, THREE.LineBasicMaterial> = new THREE.LineSegments(yAxisGeo, axisMaterial);
-    let xAxisSub: THREE.LineSegments<any, THREE.LineBasicMaterial> = new THREE.LineSegments(xAxisSubGeo, axisMaterial);
-    let yAxisSub: THREE.LineSegments<any, THREE.LineBasicMaterial> = new THREE.LineSegments(yAxisSubGeo, axisMaterial);
+    let xAxis: LineSegments = new LineSegments(xAxisGeo, axisMaterial);
+    let yAxis: LineSegments = new LineSegments(yAxisGeo, axisMaterial);
+    let xAxisSub: LineSegments = new LineSegments(xAxisSubGeo, axisMaterial);
+    let yAxisSub: LineSegments = new LineSegments(yAxisSubGeo, axisMaterial);
 
     xAxis.name = "xAxis";
     yAxis.name = "yAxis";
@@ -218,28 +218,28 @@ export class GraphInit{
   static createGrid = (): void => {
     let y: number = 0;
         
-    let gridmaterial: THREE.LineBasicMaterial = new THREE.LineBasicMaterial({ color:Graph.gridColor });
+    let gridmaterial: LineBasicMaterial = new LineBasicMaterial({ color:Graph.gridColor });
         
     for (let i: number = 0; i <= Graph.gridRange; i++) {           
-      let points: THREE.Vector3[] = [];
-      points.push(new THREE.Vector3(i, y, 0));
-      points.push(new THREE.Vector3(i, y, Graph.gridRange));
-      points.push(new THREE.Vector3(0, y, i));
-      points.push(new THREE.Vector3(Graph.gridRange, y, i));
+      let points: Vector3[] = [];
+      points.push(new Vector3(i, y, 0));
+      points.push(new Vector3(i, y, Graph.gridRange));
+      points.push(new Vector3(0, y, i));
+      points.push(new Vector3(Graph.gridRange, y, i));
 
-      let gridgeo: THREE.BufferGeometry = new THREE.BufferGeometry().setFromPoints(points);
-      Graph.gridGroup.add(new THREE.LineSegments(gridgeo, gridmaterial));
+      let gridgeo: BufferGeometry = new BufferGeometry().setFromPoints(points);
+      Graph.gridGroup.add(new LineSegments(gridgeo, gridmaterial));
     }
   }
     
   
   static createPlane = (): void => {
-    let surfaceGeo: THREE.PlaneGeometry = new THREE.PlaneGeometry(Graph.gridRange, Graph.gridRange);
-    let surfaceMat: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({ color: Graph.surfaceColor, side: THREE.DoubleSide });
-    let surface: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial> = new THREE.Mesh(surfaceGeo, surfaceMat);
+    let surfaceGeo: PlaneGeometry = new PlaneGeometry(Graph.gridRange, Graph.gridRange);
+    let surfaceMat: MeshBasicMaterial = new MeshBasicMaterial({ color: Graph.surfaceColor, side: DoubleSide });
+    let surface: Mesh = new Mesh(surfaceGeo, surfaceMat);
 
     surface.rotateX(Math.PI/2);
-    surface.position.set(Graph.gridRange / 2, -0.05, Graph.gridRange / 2);
+    surface["position"].set(Graph.gridRange / 2, -0.05, Graph.gridRange / 2);
 
     Graph.gridGroup.add(surface);
     GraphInit.createGrid();
@@ -271,7 +271,7 @@ export class GraphInit{
 
 
   static initCamera = (): void => {
-    Graph.camera.position.set(15, 15, 30);
+    Graph.camera["position"].set(15, 15, 30);
   }
 
 
@@ -296,7 +296,9 @@ export class GraphInit{
     //let renderer: THREE.WebGLRenderer = Graph.renderer;
 
     /*right-click rotation controls*/
-    Graph.graphControls.mouseButtons = { ORBIT: THREE.MOUSE.RIGHT };
+    //Graph.graphControls.mouseButtons = { ORBIT: MOUSE.RIGHT };
+    //@ts-ignore type assumption is wrong for this variable
+    Graph.graphControls.mouseButtons = { RIGHT: MOUSE.ROTATE};
     Graph.graphControls.addEventListener( 'change', GraphRender.checkAndRender.bind(Graph));
     Graph.graphControls.target.set(Graph.gridRange/2, 0, Graph.gridRange/2); // focus on the center of the grid
     Graph.graphControls.enablePan = false;

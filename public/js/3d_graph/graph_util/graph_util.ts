@@ -1,5 +1,5 @@
 /*graph_util.js: class for utility functions used throughout the 3d graph*/
-import * as THREE from '../../../lib/js/three.module.js';
+import {Group, Raycaster, Vector3, Object3D} from '../../../lib/js/three.module.js';
 import {Graph} from '../graph_init/graph.js';
 
 export class GraphUtil{
@@ -21,7 +21,7 @@ export class GraphUtil{
   }
 
 
-  static emptyGroup = (g: THREE.Object3D<THREE.Event>) => {
+  static emptyGroup = (g: Group) => {
     while (g.children.length > 0) {
       let obj = g.children.pop();
       GraphUtil.disposeObject(obj);
@@ -98,7 +98,7 @@ export class GraphUtil{
 
 
   /*related to mouse interaction*/
-  static findObjectHover = (event: WheelEvent, objGroup: THREE.Object3D<THREE.Event>): THREE.Object3D<THREE.Event> | null => {
+  static findObjectHover = (event: WheelEvent, objGroup: Group): Object3D | null => {
     let el: HTMLCanvasElement = Graph.renderer.domElement;
     let canvasPosition: DOMRect = Graph.renderer.domElement.getBoundingClientRect();
 
@@ -107,10 +107,10 @@ export class GraphUtil{
       x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
       y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
     };
-    let raycaster: THREE.Raycaster = new THREE.Raycaster();
+    let raycaster: Raycaster = new Raycaster();
     raycaster.setFromCamera(coord, Graph.camera);
 
-    let intersects: THREE.Intersection<THREE.Object3D<THREE.Event>>[] = raycaster.intersectObjects( objGroup.children );
+    let intersects: {distance: number, point: number, face: number, faceIndex: number, object: Object3D}[] = raycaster.intersectObjects( objGroup.children );
     if (intersects.length > 0){
       return intersects[0].object;
     } else{
@@ -119,7 +119,7 @@ export class GraphUtil{
   }
 
 
-  static getMousePosition = (event: MouseEvent | WheelEvent): THREE.Vector3 => {
+  static getMousePosition = (event: MouseEvent | WheelEvent): Vector3 => {
     let el: HTMLCanvasElement = Graph.renderer.domElement;
     let canvasPosition: DOMRect = Graph.renderer.domElement.getBoundingClientRect();
 
@@ -128,10 +128,10 @@ export class GraphUtil{
         x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
         y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
     };
-    let raycaster: THREE.Raycaster = new THREE.Raycaster();
+    let raycaster: Raycaster = new Raycaster();
     raycaster.setFromCamera(coord, Graph.camera);
 
-    let pos: THREE.Vector3 = new THREE.Vector3( 0, 1, 0 );
+    let pos: Vector3 = new Vector3( 0, 1, 0 );
     raycaster.ray.intersectPlane(Graph.graphPlane, pos);
     if (pos) {
       //convert world coordinates to graph-fractional coordinates
@@ -143,7 +143,7 @@ export class GraphUtil{
 
 
   static getMzRtCoordinate = (event: MouseEvent): number[] => {
-    let mousePos: THREE.Vector3 = GraphUtil.getMousePosition(event);
+    let mousePos: Vector3 = GraphUtil.getMousePosition(event);
     let mz: number = mousePos.x * Graph.viewRange.mzrange + Graph.viewRange.mzmin;//current mz and rt that has a cursor pointed to
     let rt: number = mousePos.z * Graph.viewRange.rtrange + Graph.viewRange.rtmin;
 
