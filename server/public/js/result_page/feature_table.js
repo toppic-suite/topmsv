@@ -1,5 +1,8 @@
-"use strict";
-function showFeatureTable() {
+import { Graph } from '../3d_graph/graph_init/graph.js';
+import { GraphUtil } from '../3d_graph/graph_util/graph_util.js';
+import { GraphData } from '../3d_graph/graph_data/graph_data.js';
+import { ResultViz } from './resultViz.js';
+export function showFeatureTable() {
     if ($('#featureStatus').val() === "0") {
         return;
     }
@@ -27,7 +30,13 @@ function showFeatureTable() {
                 extend: 'selected',
                 text: 'Jump to',
                 className: 'btn',
-                name: 'jumpto_feature'
+                name: 'jumpto_feature',
+                action: function (e, dt, node, config) {
+                    var adata = dt.rows({
+                        selected: true
+                    });
+                    jumpToFeature(adata.data()[0]);
+                }
             }
         ],
         "ajax": {
@@ -101,7 +110,7 @@ function showFeatureTable() {
         $('#featureTable').DataTable().columns(0).search(this.value).draw();
     });
 }
-function jumpToFeature(data) {
+export function jumpToFeature(data) {
     let mzPadding = 1;
     let rtPadding = 0.01;
     if (data.rt_low == data.rt_high) {

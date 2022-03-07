@@ -1,4 +1,9 @@
-function showFeatureTable(): void {
+import {Graph} from '../3d_graph/graph_init/graph.js';
+import {GraphUtil} from '../3d_graph/graph_util/graph_util.js';
+import {GraphData} from '../3d_graph/graph_data/graph_data.js';
+import { ResultViz } from './resultViz.js';
+
+export function showFeatureTable(): void {
   if($('#featureStatus').val() === "0"){
     return;
   }
@@ -29,7 +34,13 @@ function showFeatureTable(): void {
             extend: 'selected',
             text: 'Jump to',
             className: 'btn',
-            name: 'jumpto_feature'
+            name: 'jumpto_feature', 
+            action: function ( e, dt, node, config) {
+              var adata = dt.rows({
+                selected: true
+              });
+              jumpToFeature(adata.data()[0]);
+          }
         }
     ],
     "ajax": {
@@ -107,7 +118,7 @@ function showFeatureTable(): void {
     });
 }
 
-function jumpToFeature(data): void {
+export function jumpToFeature(data): void {
   let mzPadding: number = 1;
   let rtPadding: number = 0.01;
 

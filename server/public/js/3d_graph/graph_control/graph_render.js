@@ -1,5 +1,6 @@
-"use strict";
-class GraphRender {
+import { Graph } from '../graph_init/graph.js';
+import { GraphData } from '../graph_data/graph_data.js';
+export class GraphRender {
     constructor() { }
 }
 GraphRender.checkAndRender = () => {
@@ -9,7 +10,7 @@ GraphRender.checkAndRender = () => {
         return;
     }
     if (Graph.currentData.length > 0) {
-        if (Graph.camera.position.y > 25.495) { //if switching to 2D view
+        if (Graph.camera["position"]["y"] > 25.495) { //if switching to 2D view
             Graph.isPerpendicular = true;
             //if camera is perpendicular to view, switch to 2D
             GraphData.plotPoint2D();

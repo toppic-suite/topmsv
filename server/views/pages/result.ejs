@@ -53,22 +53,14 @@
 	<script src="resources/topview/common/sequence/massShift.js"></script>
 	<script src="resources/topview/common/util/types.js"></script>
 	
-	<script src="js/result_page/resultViz.js"></script>
-	<!--<script src="js/result_page/inte_rt_graph.js"></script>-->
-	<script src="js/result_page/dataGetter.js"></script>
+	<script type="module" src="js/result_page/resultViz.js"></script>
 	<script src="js/result_page/controller.js"></script>
-	<script src="js/result_page/env_table.js"></script>
-	<script src="js/result_page/feature_table.js"></script>
-	<script src="js/result_page/event_handlers.js"></script>
-	<script src="js/result_page/init2D.js"></script>
-	<script src="js/result_page/init3D.js"></script>
-	<script src="js/result_page/preview.js"></script>
-	<script src="js/result_page/upload.js"></script>
 	<script src="js/ptmAnnoData.js"></script>
 	<script src="js/sequence.js"></script>
 	<script src="js/util.js"></script>
+	<script src="js/result_page/upload.js"></script>
 </head>
-<body class="container">
+<body class="container" onload="">
 	<main>
 		<!-- Modal -->
 		<div id="msalignModal" class="modal fade" role="dialog">
@@ -675,28 +667,6 @@
 	</main>
 	<!-- <script type="text/javascript" src="js/result.js"></script> -->
 	<script src="lib/js/dataTables.altEditor.free.js"></script>
-
-	<!--library needed for 3d graph-->
-	<script type="text/javascript" src ="lib/js/three.js" crossorigin="anonymous"></script>
-	<script type="text/javascript" src ="lib/js/OrbitControls.js" crossorigin="anonymous"></script>
-
-	<!--js files related to 3d graph-->
-	<script src="js/3d_graph/graph_init/graph.js"></script>
-	<script src="js/3d_graph/graph_interaction/pan_graph.js"></script>
-	<script src="js/3d_graph/graph_interaction/zoom_graph.js"></script>
-	<script src="js/3d_graph/graph_interaction/hover_feature.js"></script>
-	<script src="js/3d_graph/graph_interaction/hover_position.js"></script>
-	<script src="js/3d_graph/graph_init/graph_init.js"></script>
-	<script src="js/3d_graph/graph_control/graph_render.js"></script>
-	<script src="js/3d_graph/graph_control/graph_control.js"></script>
-	<script src="js/3d_graph/graph_util/graph_util.js"></script>
-	<script src="js/3d_graph/graph_util/graph_label.js"></script>
-	<script src="js/3d_graph/graph_util/graph_download.js"></script>
-	<script src="js/3d_graph/graph_util/graph_resize.js"></script>
-	<script src="js/3d_graph/graph_data/load_data.js"></script>
-	<script src="js/3d_graph/graph_data/graph_data.js"></script>
-	<script src="js/3d_graph/graph_data/graph_feature.js"></script>
-	<script src="js/3d_graph/graph_data/upload_mzrt.js"></script>
 
 	<!--library related to image download-->
 	<script src="lib/js/FileSaver.js"></script>

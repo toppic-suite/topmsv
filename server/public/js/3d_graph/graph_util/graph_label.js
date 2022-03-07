@@ -1,6 +1,8 @@
-"use strict";
 /*graph_label.js: class for creating tick labels and data labels for 3d graph*/
-class GraphLabel {
+import { Sprite, SpriteMaterial, LinearFilter, Texture } from '../../../lib/js/three.module.js';
+import { Graph } from '../graph_init/graph.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+export class GraphLabel {
     constructor() { }
 }
 /******** CREATE LABELS ******/
@@ -9,18 +11,18 @@ GraphLabel.makeTextSprite = (msg, textColor, fontsize) => {
     let context = canvas.getContext('2d');
     if (!context) {
         console.error("cannot get context from canvas");
-        return new THREE.Sprite();
+        return new Sprite();
     }
     let fontwidth = context.measureText(msg).width;
     context.font = fontsize + "px Arial";
     context.fillStyle = "rgba(" + textColor.r + ", " + textColor.g + ", " + textColor.b + ", 1.0)";
     context.fillText(msg, ((canvas.width / 2) - (fontwidth / 2)), ((canvas.height / 2) - (fontsize / 2)));
-    let texture = new THREE.Texture(canvas);
+    let texture = new Texture(canvas);
     texture.needsUpdate = true;
-    texture.minFilter = THREE.LinearFilter;
-    let spriteMaterial = new THREE.SpriteMaterial({ map: texture });
-    let sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
+    texture.minFilter = LinearFilter;
+    let spriteMaterial = new SpriteMaterial({ map: texture });
+    let sprite = new Sprite(spriteMaterial);
+    sprite["scale"].set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
     return sprite;
 };
 /*updates status text labels and the outer graph axis labels*/
@@ -47,12 +49,12 @@ GraphLabel.drawDataLabels = () => {
     let lblRtMax = GraphLabel.makeTextSprite(rtmaxtext.toString(), { r: 0, g: 0, b: 0 }, 16);
     let lblMz = GraphLabel.makeTextSprite(mztext, { r: 0, g: 0, b: 0 }, 16);
     let lblRt = GraphLabel.makeTextSprite(rttext, { r: 0, g: 0, b: 0 }, 16);
-    lblMz.position.set(0.5, 0, Graph.gridRange + 1);
-    lblMzMin.position.set(0.5, -0.5, Graph.gridRange + 1.5);
-    lblMzMax.position.set(Graph.gridRange, -0.5, Graph.gridRange + 1.5);
-    lblRt.position.set(-1.8, 0.5, Graph.gridRange + 0.5);
-    lblRtMin.position.set(-1.5, -0.5, Graph.gridRange);
-    lblRtMax.position.set(-1.5, -0.5, 0.5);
+    lblMz["position"].set(0.5, 0, Graph.gridRange + 1);
+    lblMzMin["position"].set(0.5, -0.5, Graph.gridRange + 1.5);
+    lblMzMax["position"].set(Graph.gridRange, -0.5, Graph.gridRange + 1.5);
+    lblRt["position"].set(-1.8, 0.5, Graph.gridRange + 0.5);
+    lblRtMin["position"].set(-1.5, -0.5, Graph.gridRange);
+    lblRtMax["position"].set(-1.5, -0.5, 0.5);
     Graph.labelGroup.add(lblMzMin, lblMzMax, lblRtMin, lblRtMax, lblMz, lblRt);
 };
 /*display details about the current peaks on the graph*/

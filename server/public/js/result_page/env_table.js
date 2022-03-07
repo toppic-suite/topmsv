@@ -1,5 +1,7 @@
-"use strict";
-function showEnvTable(scan) {
+import { ResultViz } from '../result_page/resultViz.js';
+import { graph1_g, graph2_g } from '../result_page/init2D.js';
+import { refresh } from '../result_page/preview.js';
+export function showEnvTable(scan) {
     let projectDir = document.querySelector("#projectDir");
     let projectCode = document.querySelector("#projectCode");
     if (!projectDir) {
@@ -91,7 +93,13 @@ function showEnvTable(scan) {
                 extend: 'selected',
                 text: 'Jump to',
                 className: 'btn',
-                name: 'jumpto_env'
+                name: 'jumpto_env',
+                action: function (e, dt, node, config) {
+                    var adata = dt.rows({
+                        selected: true
+                    });
+                    jumpToEnv(adata.data()[0]);
+                }
             }
         ],
         "ajax": {
@@ -144,7 +152,6 @@ function showEnvTable(scan) {
         onAddRow: function (datatable, rowdata, success, error) {
             function customSuccessFunction() {
                 success();
-                //@ts-ignore //function from an external library
                 refresh(rowdata);
             }
             $.ajax({
@@ -161,7 +168,6 @@ function showEnvTable(scan) {
             async function customSuccessFunction(res) {
                 let deletedEnvs = await JSON.parse(res);
                 success();
-                //@ts-ignore //function from an external library
                 refresh(deletedEnvs);
             }
             $.ajax({

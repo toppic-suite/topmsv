@@ -95,7 +95,14 @@ tmp/*.csv
 tmp/*.mzML
 
 #ignore examples
-public/resources/topview/common/*/example
+server/public/resources/topview/common/*/example
 
 #ignore node_modules
 server/node_modules
+
+#ingore topmsv doc and library
+server/public/resources/topview/doc
+server/public/resources/topview/lib
+
+#ignore folder for js build
+server/dist

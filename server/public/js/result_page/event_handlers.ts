@@ -1,4 +1,14 @@
-class EventHandler {
+import { ResultViz } from "./resultViz.js";
+import {Graph} from '../3d_graph/graph_init/graph.js';
+import {GraphData} from '../3d_graph/graph_data/graph_data.js';
+import {GraphFeature} from '../3d_graph/graph_data/graph_feature.js';
+import {GraphRender} from '../3d_graph/graph_control/graph_render.js';
+
+import {DataGetter} from '../result_page/dataGetter.js';
+import {init2D} from '../result_page/init2D.js';
+import { showEnvTable } from "./env_table.js";
+
+export class EventHandler {
   resultViz: ResultViz;
 
   constructor(resultViz: ResultViz) {
@@ -68,20 +78,27 @@ class EventHandler {
           let scanID1: string = scanElem.innerHTML;
           if (scanID1 !== '') {
             dataGetter.prev(scanElem.innerHTML)
-              .then((response) => {
-                response = response.data;
+              .then((res) => {
+                let response = res.data;
                 if(response !== 0){
                   return dataGetter.getScanID(response);
                 } else {
                   alert("NULL");
                 }
-              }).then((response) => {
-                response = response.data;
-                if(response !== 0){
-                  init2D(response, this.resultViz.getConfig());
-                  this.resultViz.update3D(response);
+              }).then((res) => {
+                if (res == undefined) {
+                  throw new Error("response is undefined");
                 } else {
-                  alert("NULL");
+                  let response = res.data;
+                  if (response == undefined) {
+                    throw new Error("response is undefined");
+                  }
+                  if(response !== 0){
+                    init2D(response, this.resultViz.getConfig());
+                    this.resultViz.update3D(response);
+                  } else {
+                    alert("NULL");
+                  }
                 }
               }).catch((error) => {
                 console.log(error);
@@ -101,16 +118,19 @@ class EventHandler {
           let scanID1: string = scanElem.innerHTML;
           if (scanID1 !== '') {
             dataGetter.next(scanElem.innerHTML)
-              .then((response) => {
-                response = response.data;
+              .then((res) => {
+                let response = res.data;
                 if(response !== 0){
                   return dataGetter.getScanID(response);
                 } else {
                   alert("NULL");
                 }
               })
-              .then((response) => {
-                response = response.data;
+              .then((res) => {
+                if (res == undefined) {
+                  throw new Error("response is undefined");
+                }
+                let response = res.data;
                 if(response !== 0) {
                   init2D(response, this.resultViz.getConfig());
                   this.resultViz.update3D(response);

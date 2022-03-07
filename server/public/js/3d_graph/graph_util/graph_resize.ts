@@ -1,5 +1,8 @@
 /*expand/reduce graph div size when a button is clicked */
-class GraphResize {
+import {Graph} from '../graph_init/graph.js';
+import {GraphControl} from '../graph_control/graph_control.js';
+
+export class GraphResize {
   oriWidth: string = '';
   oriHeight: string = '';
   oriViewSize: number = 0;

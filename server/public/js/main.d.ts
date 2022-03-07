@@ -21,7 +21,7 @@ type Range3DView = {
     "COUNT": number
   }
   
-  interface Peak3DView extends THREE.Line<THREE.BufferGeometry, THREE.LineBasicMaterial> {
+  interface Peak3DView extends THREE.Line {
     "mz": number,
     "rt": number, 
     "int": number, 
@@ -40,7 +40,7 @@ type Range3DView = {
     "COLOR": string
   }
   
-  interface Feature3DView extends THREE.Line<THREE.BufferGeometry, THREE.LineDashedMaterial> {
+  interface Feature3DView extends THREE.Line {
     "featureId": number, 
     "mz_low": number,
     "mz_high": number,

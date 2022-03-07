@@ -203,7 +203,7 @@
                 });
             }
             // add Jump To Button
-            if (dt.button('jumpto_feature:name')) {
+            /*if (dt.button('jumpto_feature:name')) {
                 dt.button('jumpto_feature:name').action(function (e, dt, node, config) {
                     var adata = that.s.dt.rows({
                         selected: true
@@ -216,11 +216,11 @@
                     }
                     // console.log(adata.data()[0].mono_mz);
                     //jumpTo(adata.data()[0].mono_mz)
-                    jumpToFeature(adata.data()[0]);
+                    //jumpToFeature(adata.data()[0]);
                 });
-            }
+            }*/
             // add Jump To Button
-            if (dt.button('jumpto_env:name')) {
+            /*if (dt.button('jumpto_env:name')) {
                 dt.button('jumpto_env:name').action(function (e, dt, node, config) {
                     var adata = that.s.dt.rows({
                         selected: true
@@ -235,7 +235,7 @@
                     //jumpTo(adata.data()[0].mono_mz)
                     jumpToEnv(adata.data()[0]);
                 });
-            }
+            }*/
             // bind 'unique' error messages
             $(this.modal_selector).bind('input', '[data-unique]', function (elm) {
                 if ($(elm.target).attr('data-unique') == null || $(elm.target).attr('data-unique') === 'false') {

@@ -1,6 +1,7 @@
-"use strict";
 /*graph_util.js: class for utility functions used throughout the 3d graph*/
-class GraphUtil {
+import { Raycaster, Vector3 } from '../../../lib/js/three.module.js';
+import { Graph } from '../graph_init/graph.js';
+export class GraphUtil {
     constructor() { }
 }
 GraphUtil.disposeObject = (obj) => {
@@ -89,7 +90,7 @@ GraphUtil.findObjectHover = (event, objGroup) => {
         x: ((event.clientX - canvasPosition.left) / el.offsetWidth) * 2 - 1,
         y: -((event.clientY - canvasPosition.top) / el.offsetHeight) * 2 + 1
     };
-    let raycaster = new THREE.Raycaster();
+    let raycaster = new Raycaster();
     raycaster.setFromCamera(coord, Graph.camera);
     let intersects = raycaster.intersectObjects(objGroup.children);
     if (intersects.length > 0) {
@@ -107,9 +108,9 @@ GraphUtil.getMousePosition = (event) => {
         x: ((event.clientX - canvasPosition.left) / el.offsetWidth) * 2 - 1,
         y: -((event.clientY - canvasPosition.top) / el.offsetHeight) * 2 + 1
     };
-    let raycaster = new THREE.Raycaster();
+    let raycaster = new Raycaster();
     raycaster.setFromCamera(coord, Graph.camera);
-    let pos = new THREE.Vector3(0, 1, 0);
+    let pos = new Vector3(0, 1, 0);
     raycaster.ray.intersectPlane(Graph.graphPlane, pos);
     if (pos) {
         //convert world coordinates to graph-fractional coordinates

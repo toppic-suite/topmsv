@@ -1,4 +1,4 @@
-class UploadMzrt{
+export class UploadMzrt{
   constructor(){}
   static deleteFile(): void {
     let result: boolean = confirm("Are you sure that you want to delete mzrt data?");

@@ -1,9 +1,13 @@
-"use strict";
 /*zoomGraph.js : class defining zoom behavior on the graph
 zoom in and zoom out on x and y axis by scrolling mouse wheel
 peak intensity is also adjusted by ctrl + mouse wheel
 */
-class GraphZoom {
+import { Graph } from '../graph_init/graph.js';
+import { GraphRender } from '../graph_control/graph_render.js';
+import { GraphControl } from '../graph_control/graph_control.js';
+import { GraphData } from '../graph_data/graph_data.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+export class GraphZoom {
     constructor() {
         this.scrollLock = false;
         this.adjustPeakHeight = (scaleFactor, isCtrlPressed) => {
@@ -21,11 +25,10 @@ class GraphZoom {
                     return;
                 }
             }
-            let oriScale = peaks.scale.y;
-            peaks.scale.set(peaks.scale.x, oriScale * scaleFactor, peaks.scale.z);
+            let oriScale = peaks["scale"]["y"];
+            peaks["scale"].set(peaks["scale"]["x"], oriScale * scaleFactor, peaks["scale"]["z"]);
             Graph.peakScale = oriScale * scaleFactor;
             if (isCtrlPressed && scaleFactor > 1) {
-                //@ts-ignore "peaks" contain a group of Peak3DView
                 GraphControl.adjustIntensity(peaks.children);
             }
             GraphRender.renderImmediate();

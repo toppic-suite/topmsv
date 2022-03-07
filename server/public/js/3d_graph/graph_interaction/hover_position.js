@@ -1,6 +1,7 @@
-"use strict";
 /*hover_positon.js: display m/z and rt information of the point the mouse cursor is on */
-class HoverPosition {
+import { Graph } from '../graph_init/graph.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+export class HoverPosition {
     constructor() {
         this.showHighlight = (mz, rt, event) => {
             //disdlay a line and a scan information in tooltip

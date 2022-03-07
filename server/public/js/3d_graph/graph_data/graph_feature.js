@@ -1,6 +1,8 @@
-"use strict";
 /*graph_feature.js : draws and manages the peaks on the screen*/
-class GraphFeature {
+import { Graph } from '../graph_init/graph.js';
+import { GraphRender } from '../graph_control/graph_render.js';
+import { GraphUtil } from '../graph_util/graph_util.js';
+export class GraphFeature {
     constructor() { }
 }
 /******** ADD FEAUTRE ANNOTATION ******/
@@ -11,7 +13,6 @@ GraphFeature.updateFeature = (minmz, maxmz, minrt, maxrt) => {
         console.error("feature group does not exist");
         return;
     }
-    //@ts-ignore //featureGroup contains the type of FeatureDataDB
     featureGroup.children.forEach(function (featureRect, index) {
         if (index < data.length) {
             let feature = data[index];
