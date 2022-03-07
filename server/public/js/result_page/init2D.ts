@@ -153,7 +153,10 @@ export function init2D(scan: number, configFromResultViz: {"floatDigit": number,
               response.data.forEach(function (item) {
                 let scanTwoNum: string = item.scanID;
                 let rt: string = item.rt;
-                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + ' onclick="loadPeakList2(' + scanTwoNum + ', ' + item.prec_mz + ', ' + item.prec_charge + ', ' + item.prec_inte + ', ' + rt + ', ' + scanLevelOne + ')">'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
+                $("#tabs ul").append('<li><a href="#spectrum2"' + ' id='+ scanTwoNum + '>'+ item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
+                $(`#${scanTwoNum.toString()}`).on("click", () => {
+                  loadPeakList2(scanTwoNum, item.prec_mz, item.prec_charge, item.prec_inte, rt, scan.toString());
+                })
               });
               $( "#tabs" ).tabs();
               let scanTab: HTMLElement | null = document.getElementById(scan.toString());

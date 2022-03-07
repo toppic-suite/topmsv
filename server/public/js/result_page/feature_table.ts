@@ -34,7 +34,13 @@ export function showFeatureTable(): void {
             extend: 'selected',
             text: 'Jump to',
             className: 'btn',
-            name: 'jumpto_feature'
+            name: 'jumpto_feature', 
+            action: function ( e, dt, node, config) {
+              var adata = dt.rows({
+                selected: true
+              });
+              jumpToFeature(adata.data()[0]);
+          }
         }
     ],
     "ajax": {

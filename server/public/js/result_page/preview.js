@@ -103,7 +103,7 @@ function change_mono_mz() {
 // let lockPara2 = false;
 let graphMz1;
 let graphMz2;
-function refresh(rowdata) {
+export function refresh(rowdata) {
     let msType_old = $('#msType').text();
     let scanID;
     let scanLevelOneFlag = true;

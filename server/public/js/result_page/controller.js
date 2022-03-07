@@ -1,4 +1,5 @@
-export function toppicOnClick(projectCode) {
+"use strict";
+function toppicOnClick(projectCode) {
     //if a user clicks toppic button, check if topfd already ran
     //if not, display alert
     let xhttp = new XMLHttpRequest();

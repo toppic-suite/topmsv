@@ -1,5 +1,6 @@
 import {ResultViz} from '../result_page/resultViz.js';
 import {graph1_g, graph2_g} from '../result_page/init2D.js';
+import {refresh} from '../result_page/preview.js';
 
 export function showEnvTable(scan: string): void {
   let projectDir: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#projectDir");
@@ -96,7 +97,13 @@ export function showEnvTable(scan: string): void {
         extend: 'selected',
         text: 'Jump to',
         className: 'btn',
-        name: 'jumpto_env'
+        name: 'jumpto_env', 
+        action: function ( e, dt, node, config ) {
+            var adata = dt.rows({
+                selected: true
+            });
+            jumpToEnv(adata.data()[0]);
+        }
     }
     ],
     "ajax": {
@@ -148,7 +155,6 @@ export function showEnvTable(scan: string): void {
         onAddRow: function(datatable, rowdata, success, error) {
             function customSuccessFunction() {
                 success();
-                //@ts-ignore //function from an external library
                 refresh(rowdata);
             }
 
@@ -166,7 +172,6 @@ export function showEnvTable(scan: string): void {
             async function customSuccessFunction(res) {
                 let deletedEnvs = await JSON.parse(res);
                 success();
-                //@ts-ignore //function from an external library
                 refresh(deletedEnvs);
             }
             $.ajax({
