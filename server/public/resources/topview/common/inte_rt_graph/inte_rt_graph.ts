@@ -296,27 +296,29 @@ class InteRtGraph {
   
               hoverLine.style("opacity", 1);
           } else {
-              /*if(document.getElementById(rt_ID)) {
-                  document.getElementById(rt_ID).innerHTML = 0;
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(inte_ID).innerHTML = 0;
-              }
-              if (document.getElementById(inte_ID)) {
-                  document.getElementById(scanNum_ID).innerHTML = 0;
-              }*/
-              //below code makes the previous selected rt data to be displayed when mouse cursor is out of range
-              if(document.getElementById(rt_ID)) {
+              if (selectedDataPoint) {
+                if(document.getElementById(rt_ID)) {
                   document.getElementById(rt_ID)!.innerHTML = (Math.round(selectedDataPoint.rt * 100)/100).toFixed(config.floatDigit) + " (min)";
-              }
-              if (document.getElementById(inte_ID)) {
+                }
+                if (document.getElementById(inte_ID)) {
                   document.getElementById(inte_ID)!.innerHTML = selectedDataPoint.inteSum.toExponential(config.scientificDigit);
-              }
-              if (document.getElementById(inte_ID)) {
+                }
+                if (document.getElementById(inte_ID)) {
                   document.getElementById(scanNum_ID)!.innerHTML = selectedDataPoint.scanNum.toString();
+                }
+              } else {
+                if(document.getElementById(rt_ID)) {
+                  document.getElementById(rt_ID)!.innerHTML = "0";
+                }
+                if (document.getElementById(inte_ID)) {
+                  document.getElementById(inte_ID)!.innerHTML = "0";
+                }
+                if (document.getElementById(inte_ID)) {
+                  document.getElementById(scanNum_ID)!.innerHTML = "0";
+                }
               }
               hoverLine.style("opacity", 0);
-          }
+            }
       }
       function hoverMouseOff(): void {
           hoverLine.style("opacity", 1e-6);

@@ -183,6 +183,10 @@ class DataTable {
     drawTable() {
         var _a;
         let self = this;
+        //run the following only if a prsm exists
+        if (Object.keys(this.prsmObj_).length < 1) {
+            return;
+        }
         let ms2Spectrum = this.prsmObj_.getMs2Spectra();
         let seqLength = this.prsmObj_.getProteoform().getLastPos() - this.prsmObj_.getProteoform().getFirstPos() + 1;
         if (!ms2Spectrum) {

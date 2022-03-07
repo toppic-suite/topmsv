@@ -149,11 +149,12 @@ class SeqOfExecution {
             }
         });
         spectrum.setDeconvPeaks(decovPeaksList);
+        let breakPoints: BreakPoints[] = formBreakPoints(matchedPeakList);
+        prsmObj = new Prsm("", proteoformObj, null, [spectrum], breakPoints, matchedPeakPairList);
+        
         /*Do the below function when Sequence entered is not empty*/
         if (seq.length !== 0) {
             /*Draw SVG of Sequence*/
-            let breakPoints: BreakPoints[] = formBreakPoints(matchedPeakList);
-            prsmObj = new Prsm("", proteoformObj, null, [spectrum], breakPoints, matchedPeakPairList);
             let prsmViewObj = new PrsmView(Constants.SEQSVGID, prsmObj, null, true);
             prsmViewObj.getPara().setRowLength(40);
             prsmViewObj.getPara().setLetterWidth(25);
@@ -289,7 +290,7 @@ class SeqOfExecution {
         });
         // console.log("completeListofMasswithMatchedInd:", completeListofMasswithMatchedInd);
         // console.log("monomasslist:", monoMassList);
-        if (completeListofMasswithMatchedInd.length !== 0) {
+        if (completeListofMasswithMatchedInd.length !== 0 && sequence != "") {
             $("#" + Constants.H_FRAGMENTEDTABLE).show();
         }
         $("#monoMasstitle").show();
@@ -364,8 +365,10 @@ class SeqOfExecution {
         /**
          * Disply the table of masses for all the fragmented ions
          */
-        createTableForSelectedFragmentIons(sequence, completeListofMasswithMatchedInd, monoMassGraphObj);
-        this.setBootStarpropertiesforFragmentIons();
+        if (sequence != "") {
+            createTableForSelectedFragmentIons(sequence, completeListofMasswithMatchedInd, monoMassGraphObj);
+            this.setBootStarpropertiesforFragmentIons();    
+        }
     }
     /**
      * Sets the properties of bootstrap table
@@ -396,30 +399,29 @@ class SeqOfExecution {
     /**
      * Sets the properties of bootstrap table
      */
-    setBootStarpropertiesforFragmentIons() {
+     setBootStarpropertiesforFragmentIons() {
         //to be correctly sorted, column type should be num for each ion column
         //this code will work regardless of number of ions selected
         let columnCnt: number = 0;
-        let columnTypes: ({"type": string})[] = [];
+        let columnTypes: {"type": string}[] = [];
         $("#selectedIonTableContainer .th-sm").each(function () {
             columnCnt++;
         });
         for (let i: number = 0; i < columnCnt; i++) {
-            let type: {"type": string} | null = null;
+            let type = {} as {"type": string};
             if (i != 1) {
                 type = { "type": "num" };
             }
-            if (type) {
-                columnTypes.push(type);
-            }
+            columnTypes.push(type);
         }
-
         $("#selectedIonTableContainer").DataTable({
             "scrollY": Constants.TABLEHEIGHT,
             "scrollCollapse": true,
             "paging": false,
+            //@ts-ignore // this property isn't part of v1.10 but it is still affecting UI
+            "bSortClasses": false,
             "searching": false,
-            //"bInfo": false,
+            "bInfo": false,
             "columns": columnTypes
         });
     }
