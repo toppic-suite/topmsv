@@ -37,48 +37,24 @@ export class GraphZoom {
             e.preventDefault(); //disable scroll of browser
             if (!this.scrollLock) {
                 this.scrollLock = true;
-                let axis = GraphUtil.findObjectHover(e, Graph.axisGroup); //axis is null if cursor is not on axis
-                if (axis == null) {
-                    let scaleFactor = 0;
-                    if (e.deltaY > 0) {
-                        scaleFactor = 0.75;
-                    }
-                    else if (e.deltaY < 0) {
-                        scaleFactor = 1.5;
-                    }
-                    if (e.ctrlKey) { //if control key is pressed --> intensity zoom
-                        this.adjustPeakHeight(scaleFactor, true);
-                    }
-                    else {
-                        await this.onZoomFromEventListener(e, null);
-                        this.adjustPeakHeight(scaleFactor, false);
-                    }
+                let scaleFactor = 0;
+                if (e.deltaY > 0) {
+                    scaleFactor = 0.75;
+                }
+                else if (e.deltaY < 0) {
+                    scaleFactor = 1.5;
+                }
+                if (e.ctrlKey) { //if control key is pressed --> intensity zoom
+                    this.adjustPeakHeight(scaleFactor, true);
                 }
                 else {
-                    let scaleFactor = 0;
-                    if (e.deltaY > 0) {
-                        scaleFactor = 0.75;
-                    }
-                    else if (e.deltaY < 0) {
-                        scaleFactor = 1.5;
-                    }
-                    if (e.ctrlKey) { //if control key is pressed --> intensity zoom
-                        this.adjustPeakHeight(scaleFactor, true);
-                    }
-                    else {
-                        if (axis.name == "xAxis") {
-                            await this.onZoomFromEventListener(e, "mz");
-                        }
-                        else if (axis.name == "yAxis") {
-                            await this.onZoomFromEventListener(e, "rt");
-                        }
-                        this.adjustPeakHeight(scaleFactor, false);
-                    }
+                    await this.onZoomFromEventListener(e);
+                    this.adjustPeakHeight(scaleFactor, false);
                 }
                 this.scrollLock = false;
             }
         };
-        this.onZoomFromEventListener = async (e, axisName) => {
+        this.onZoomFromEventListener = async (e) => {
             //zoom action detected by event listener in each axis
             let scaleFactor = 0;
             let mousePos = GraphUtil.getMousePosition(e);
@@ -86,6 +62,7 @@ export class GraphZoom {
             let newrtrange = Graph.viewRange.rtrange;
             let curmz = mousePos.x * Graph.viewRange.mzrange + Graph.viewRange.mzmin; //current mz and rt that has a cursor pointed to
             let currt = mousePos.z * Graph.viewRange.rtrange + Graph.viewRange.rtmin;
+            let axisName = '';
             //reset view range based on scroll up or down
             if (e.deltaY < 0) {
                 scaleFactor = 0.8;
@@ -93,22 +70,20 @@ export class GraphZoom {
             else {
                 scaleFactor = 1.2;
             }
-            if (axisName == null) {
-                if (curmz >= Graph.viewRange.mzmin && curmz <= Graph.viewRange.mzmax) {
-                    if (currt >= Graph.viewRange.rtmin && currt <= Graph.viewRange.rtmax) {
-                        axisName = "both";
-                    }
-                    else {
-                        axisName = "mz";
-                    }
+            if (curmz >= Graph.viewRange.mzmin && curmz <= Graph.viewRange.mzmax) {
+                if (currt >= Graph.viewRange.rtmin && currt <= Graph.viewRange.rtmax) {
+                    axisName = "both";
                 }
-                else if (currt >= Graph.viewRange.rtmin && currt <= Graph.viewRange.rtmax) {
-                    if (curmz <= Graph.viewRange.mzmin && curmz >= Graph.viewRange.mzmin) {
-                        axisName = "both";
-                    }
-                    else {
-                        axisName = "rt";
-                    }
+                else {
+                    axisName = "mz";
+                }
+            }
+            else if (currt >= Graph.viewRange.rtmin && currt <= Graph.viewRange.rtmax) {
+                if (curmz <= Graph.viewRange.mzmin && curmz >= Graph.viewRange.mzmin) {
+                    axisName = "both";
+                }
+                else {
+                    axisName = "rt";
                 }
             }
             //figure out where the cursor is (near x axis, y axis)
