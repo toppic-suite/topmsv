@@ -141,7 +141,7 @@ export class Graph {
         this.getScene = () => {
             return Graph.scene;
         };
-        this.main = async (scanNum) => {
+        this.main = async (scanNum, isFullRange) => {
             this.initGroups();
             this.initPlotGroup();
             this.init2DPlotGroup();
@@ -150,7 +150,7 @@ export class Graph {
             await this.initDataRange();
             await this.setInitScale();
             Graph.ms1ScanCount = parseFloat(await GraphUtil.getTotalScanCount());
-            GraphInit.main(scanNum);
+            GraphInit.main(scanNum, isFullRange);
             if ($('#featureStatus').val() !== "0") {
                 let featureInfo = document.querySelector("#featureInfo");
                 if (featureInfo) {

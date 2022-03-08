@@ -55,7 +55,7 @@ export class ResultViz {
         }
         this.initInteRt();
         init2D(parseFloat(min), this.config);
-        this.init3D(parseInt(min));
+        this.init3D(parseInt(min), scanRef);
         /*let fileName: string | number | string[] | undefined = $('#fileName').val();
         if (typeof fileName != "string") {
           console.error("invalid input file name");
@@ -104,9 +104,15 @@ export class ResultViz {
             });
         }*/
     }
-    init3D(scanID) {
+    init3D(minScanID, selectedScan) {
+        let scanId = minScanID;
+        let isFullRange = true;
+        if (selectedScan) {
+            scanId = parseInt(selectedScan);
+            isFullRange = false;
+        }
         this.view3d = new Graph(this.dbPath, this);
-        this.view3d.main(scanID);
+        this.view3d.main(scanId, isFullRange);
         /*this.dataGetter.getRelatedScan2(scanID)
           .then((ms2Scan) => {
             let scan: number = parseInt(ms2Scan.data);

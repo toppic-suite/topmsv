@@ -316,7 +316,7 @@ export class GraphInit{
   }
 
 
-  static main = (scanId: number) => {
+  static main = (scanId: number, isFullRange: boolean) => {
     GraphInit.initScene();
     GraphInit.initGraphControl();
 
@@ -327,7 +327,11 @@ export class GraphInit{
         
     UploadMzrt.main();
         
-    GraphData.drawFullRangeGraph(scanId);
+    if (isFullRange) {
+      GraphData.drawFullRangeGraph(scanId);
+    } else {
+      GraphData.updateGraphForNewScan(scanId);
+    }
         
     Graph.renderer.setAnimationLoop(function() {
       Graph.graphControls.update();

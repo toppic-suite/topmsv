@@ -263,7 +263,7 @@ GraphInit.initScene = () => {
     window.addEventListener("resize", GraphControl.resizeCamera);
     GraphControl.resizeCamera();
 };
-GraphInit.main = (scanId) => {
+GraphInit.main = (scanId, isFullRange) => {
     GraphInit.initScene();
     GraphInit.initGraphControl();
     GraphInit.createPlane();
@@ -271,7 +271,12 @@ GraphInit.main = (scanId) => {
     GraphInit.createEventHandlers();
     GraphInit.createSwitchCurrentScan();
     UploadMzrt.main();
-    GraphData.drawFullRangeGraph(scanId);
+    if (isFullRange) {
+        GraphData.drawFullRangeGraph(scanId);
+    }
+    else {
+        GraphData.updateGraphForNewScan(scanId);
+    }
     Graph.renderer.setAnimationLoop(function () {
         Graph.graphControls.update();
     });
