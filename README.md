@@ -14,7 +14,12 @@ cd server
 npm install --save-dev
 ```
 
-### 1.3 Compiling mzMLReader
+### 1.3 Compile TypeScript files
+```sh
+tsc --build tsconfig.json
+```
+
+### 1.4 Compile mzMLReader
 ```sh
 cd src/ms_converter/
 mkdir build
@@ -26,7 +31,7 @@ mkdir cpp
 cp -r ../src/ms_converter/bin ./cpp
 ```
 
-### 1.4 Compiling TopPIC Suite
+### 1.5 Compile TopPIC Suite
 This step compiles TopFD and TopPIC, two tools in TopPIC Suite. TopFD deconvolutes top-down mass spectra and TopPIC identifies proteoforms by search top-down mass spectra against a protein database.<br/>
 a. Download TopPIC Suite version 1.5.2 from <a href="https://github.com/liuxiaowen/proteomics_cpp/releases">TopPIC Suite Github repository</a> and save the zip file in the folder src. <br/>
 d. Type the following commands to build TopPIC Suite: <br/>
@@ -64,6 +69,12 @@ cd ../../../server
 mkdir proteomics_cpp
 cp -r ../src/proteomics_cpp/bin ./proteomics_cpp
 cp -r ../src/proteomics_cpp/resources ./proteomics_cpp/bin
+```
+
+### 1.6 Start TopMSV server
+```sh
+cd server
+node server.js
 ```
 
 ## Windows setup:
