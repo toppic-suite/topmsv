@@ -1,15 +1,34 @@
 # TopMSV Server
 A web-based platform for mass spectrometry data processing and visualization. 
-## Linux setup (Ubuntu):
+## 1. Linux setup (Ubuntu):
 
-### 1. Install nodejs
-sudo apt-get install nodejs
+### 1.1 Install nodejs
+```sh
+curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
 
-### Compilation
-1. TopPIC Suite Compilation: <br/>
-a. This step compiles TopFD and TopPIC, which perform spectral deconvolution and protein identification using the uploaded spectra data.<br/>
-b. Go to the folder TopMSV source files are unzipped. For example, if you unzipped the source code zip file in <code>/home/alex/Documents</code>, there will be a new directory <code>/home/alex/Documents/topmsv-[version-number]</code>. Go to that directory. <br/>
-c. Download the latest source code zip file from <a href="https://github.com/liuxiaowen/proteomics_cpp/releases">TopPIC Suite Github repository</a> and place the zip file in the same directory as above, the directory that cotains the unzipped TopMSV source files.<br/>
+### 1.2 Install nodejs libraries
+```sh
+cd server
+npm install --save-dev
+```
+
+### 1.3 Compiling mzMLReader
+```sh
+cd src/ms_converter/
+mkdir build
+cd build
+cmake ..
+make -j$(nproc)
+cd ../../../server
+mkdir cpp
+cp -r ../src/ms_converter/bin ./cpp
+```
+
+### 1.4 Compiling TopPIC Suite
+This step compiles TopFD and TopPIC, two tools in TopPIC Suite. TopFD deconvolutes top-down mass spectra and TopPIC identifies proteoforms by search top-down mass spectra against a protein database.<br/>
+a. Download TopPIC Suite version 1.5.2 from <a href="https://github.com/liuxiaowen/proteomics_cpp/releases">TopPIC Suite Github repository</a> and save the zip file in the folder src. <br/>
 d. Type the following commands to build TopPIC Suite: <br/>
 ```sh
 # unzip the TopPic Suite release from the TopPIC Suite repository
@@ -40,26 +59,11 @@ cmake ..
 #Make sure to use the exact command below to build only TopFD and TopPIC. 
 #Using "make" to build all apps will result in error.
 make topfd -j$(nproc) && make toppic -j$(nproc) 
-cd ../bin
-ln -s ../resources .
-```
-2. mzMLReader Compilation: <br/>
-a. This step compiles mzMLReader, which parses spectra data from uploaded mzML files.<br/>
-b. Enter the commands below after finishing the step 1 TopPIC Suite Compilation
-```sh
-cd ../../
-cd ms_converter
-mkdir build
-cd build
-cmake ..
-make -j$(nproc)
-```
-### Installation
-1. Installation of Node.js and node packages: <br/>
-a. After finishing both steps in Compilation, type the following commands: 
-```sh
-cd ../../../server/scripts/linux
-./installServer.sh
+#Copy binary files
+cd ../../../server
+mkdir proteomics_cpp
+cp -r ../src/proteomics_cpp/bin ./proteomics_cpp
+cp -r ../src/proteomics_cpp/resources ./proteomics_cpp/bin
 ```
 
 ## Windows setup:
