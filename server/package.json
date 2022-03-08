@@ -4,7 +4,11 @@
   "main": "server.js",
   "keywords": [],
   "author": "Tianze Jiang and In Kwon Choi",
-  "license": "Apache",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/toppic-suite/topmsv.git"
+  },
   "scripts": {
     "start": "node server.js"
   },
