@@ -97,28 +97,6 @@ export class GraphUtil{
   }
 
 
-  /*related to mouse interaction*/
-  static findObjectHover = (event: WheelEvent, objGroup: Group): Object3D | null => {
-    let el: HTMLCanvasElement = Graph.renderer.domElement;
-    let canvasPosition: DOMRect = Graph.renderer.domElement.getBoundingClientRect();
-
-    //find mouse position, normalized to a [-1,1] in both x/y-axes on screen
-    let coord: {"x": number, "y": number} = {
-      x: ((event.clientX  - canvasPosition.left) / el.offsetWidth)  * 2 - 1,
-      y: - ((event.clientY  - canvasPosition.top) / el.offsetHeight) * 2 + 1
-    };
-    let raycaster: Raycaster = new Raycaster();
-    raycaster.setFromCamera(coord, Graph.camera);
-
-    let intersects: {distance: number, point: number, face: number, faceIndex: number, object: Object3D}[] = raycaster.intersectObjects( objGroup.children );
-    if (intersects.length > 0){
-      return intersects[0].object;
-    } else{
-      return null;
-    }
-  }
-
-
   static getMousePosition = (event: MouseEvent | WheelEvent): Vector3 => {
     let el: HTMLCanvasElement = Graph.renderer.domElement;
     let canvasPosition: DOMRect = Graph.renderer.domElement.getBoundingClientRect();

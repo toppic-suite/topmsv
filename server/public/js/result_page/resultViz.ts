@@ -43,7 +43,7 @@ export class ResultViz {
       console.error("input text box rangeMin does not exist");
       return;
     }    
-    let min = rangeMin.value;
+    let min: string = rangeMin.value;
 
     if ($('#userType').val() === 'guest') {
       $('#topfdtask').prop('disabled',true);
@@ -74,7 +74,7 @@ export class ResultViz {
     }
     this.initInteRt();
     init2D(parseFloat(min), this.config);
-    this.init3D(parseInt(min));
+    this.init3D(parseInt(min), scanRef);
 
     /*let fileName: string | number | string[] | undefined = $('#fileName').val();
     if (typeof fileName != "string") {
@@ -126,9 +126,18 @@ export class ResultViz {
   }
 
 
-  init3D(scanID: number): void {
+  init3D(minScanID: number, selectedScan: string | null): void {
+    let scanId: number = minScanID;
+    let isFullRange: boolean = true;
+
+    if (selectedScan) {
+      scanId = parseInt(selectedScan);
+      isFullRange = false;
+    } 
+
     this.view3d = new Graph(this.dbPath, this);
-    this.view3d.main(scanID);
+    this.view3d.main(scanId, isFullRange);
+
 
     /*this.dataGetter.getRelatedScan2(scanID)
       .then((ms2Scan) => {

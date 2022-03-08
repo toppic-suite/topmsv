@@ -302,7 +302,7 @@ export class Graph{
   }
     
 
-  main = async (scanNum: number) => {
+  main = async (scanNum: number, isFullRange: boolean) => {
     this.initGroups();
     this.initPlotGroup();
     this.init2DPlotGroup();
@@ -312,7 +312,7 @@ export class Graph{
     await this.initDataRange();
     await this.setInitScale();
     Graph.ms1ScanCount = parseFloat(await GraphUtil.getTotalScanCount());
-    GraphInit.main(scanNum);
+    GraphInit.main(scanNum, isFullRange);
 
     if($('#featureStatus').val() !== "0"){
       let featureInfo: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#featureInfo");
