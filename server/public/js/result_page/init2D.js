@@ -148,7 +148,7 @@ export function init2D(scan, configFromResultViz) {
                     let rt = item.rt;
                     $("#tabs ul").append('<li><a href="#spectrum2"' + ' id=' + scanTwoNum + '>' + item.prec_mz.toFixed(config.floatDigit) + '</a></li>');
                     $(`#${scanTwoNum.toString()}`).on("click", () => {
-                        loadPeakList2(scanTwoNum, item.prec_mz, item.prec_charge, item.prec_inte, rt, scan.toString());
+                        loadPeakList2(scanTwoNum, item.prec_mz, item.prec_charge, item.prec_inte, rt, scanLevelOne.toString());
                     });
                 });
                 $("#tabs").tabs();
