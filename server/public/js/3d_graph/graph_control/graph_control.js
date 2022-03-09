@@ -16,10 +16,14 @@ GraphControl.mzRtToGridSpace = (mz, rt) => {
     let rt_norm = (rt - vr.rtmin) / vr.rtrange;
     return { x: mz_norm * Graph.gridRange, z: (1 - rt_norm) * Graph.gridRange };
 };
+GraphControl.scaleRt = (rt) => {
+    return ((rt - Graph.dataRange.intmin) / (Graph.dataRange.intmax - Graph.dataRange.intmin)) * Graph.gridRange;
+};
 /******* DATA RANGE AND VIEWING AREA ****/
 GraphControl.calcIntScale = () => {
     let intScale = Graph.intSquish;
     let maxInt = Graph.viewRange.intmax;
+    let scaledMaxInt = GraphControl.scaleRt(maxInt);
     let inteAutoAdjust = document.querySelector("#inte-auto-adjust");
     if (inteAutoAdjust) {
         if (!inteAutoAdjust.checked) {
@@ -29,18 +33,14 @@ GraphControl.calcIntScale = () => {
     if (!Graph.isPan) {
         let ratio = maxInt / Graph.intensitySumTotal;
         if (ratio < 0.005) { //if this region mostly contains low peaks
-            intScale = (1 - ratio) * Graph.lowInteScaleFactor;
-            if (maxInt * intScale * Graph.peakScale > Graph.maxPeakHeight) {
-                intScale = Graph.intSquish;
-            }
+            let newSquish = (Graph.minPeakHeight * Graph.lowInteScaleFactor) / scaledMaxInt;
+            intScale = newSquish;
         }
         else {
-            if (maxInt * Graph.intSquish > maxInt) {
-                intScale = 1;
-            }
+            intScale = 1;
         }
-        if (maxInt * Graph.peakScale > Graph.maxPeakHeight) { // when peaks are too high
-            let newSquish = Graph.maxPeakHeight / (maxInt * Graph.peakScale);
+        if (GraphControl.scaleRt(maxInt) * intScale > Graph.maxPeakHeight) { // when peaks are too high
+            let newSquish = Graph.maxPeakHeight / (scaledMaxInt * intScale);
             intScale = newSquish;
         }
     }
@@ -57,11 +57,11 @@ GraphControl.adjustIntensity = (peaks) => {
         return;
     }
     peaks.forEach((peak) => {
+        let resultHeight = peak.int * Graph.peakScale;
         if (peak.lowPeak) {
-            let resultHeight = peak.int * plotGroup["scale"]["y"] * Graph.intSquish;
             if (resultHeight < Graph.minPeakHeight) {
                 //peak y should bce updated so that the resulting height is still 0.05
-                let newY = Graph.minPeakHeight / plotGroup["scale"]["y"];
+                let newY = Graph.minPeakHeight / Graph.peakScale;
                 peak.height = newY;
                 //@ts-ignore
                 peak.geometry.attributes.position.array[4] = newY;
@@ -73,6 +73,7 @@ GraphControl.adjustIntensity = (peaks) => {
                 //@ts-ignore
                 peak.geometry.attributes.position.array[4] = peak.height;
                 peak.geometry.attributes.position.needsUpdate = true;
+                peak.lowPeak = false;
             }
         }
     });
@@ -216,6 +217,17 @@ GraphControl.repositionPlot = (r) => {
     let featureGroup = Graph.scene.getObjectByName("featureGroup");
     let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
     let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
+    //if auto scaling is on, plotgroup scale needs to be reset beforehand (because it may have been changed due to manual scaling using ctrl + scroll)
+    let inteAutoAdjust = document.querySelector("#inte-auto-adjust");
+    if (inteAutoAdjust) {
+        if (inteAutoAdjust.checked) {
+            let plotGroup = Graph.scene.getObjectByName("plotGroup");
+            if (plotGroup) {
+                let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
+                plotGroup["scale"].set(plotGroup["scale"]["x"], scale, plotGroup["scale"]["z"]);
+            }
+        }
+    }
     if (dataGroup) {
         dataGroup["scale"].set(mz_squish, int_squish, rt_squish);
         dataGroup["position"].set(-r.mzmin * mz_squish, 0, Graph.gridRange - r.rtmin * rt_squish);

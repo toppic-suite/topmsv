@@ -331,22 +331,15 @@ export class GraphData{
         let rt: number = parseFloat(point.RETENTIONTIME);
         let inten: number = parseFloat(point.INTENSITY);
         let lineColor = Graph.peakColor[point.COLOR];
-        let intScale = GraphControl.calcIntScale();
 
         if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
           rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
-          let lowPeak: boolean = false;
           let currt: string = Graph.curRT.toFixed(4);
-          let y: number = inten;    
-          //if y is much smaller than the highest intensity peak in the view range
-          if (y * plotGroup!["scale"]["y"] * intScale < Graph.minPeakHeight) {
-              //increase y so that later y is at least minHeight when scaled
-              y = Graph.minPeakHeight/(plotGroup!["scale"]["y"] * intScale);
-              lowPeak = true;
-          } 
+
           //@ts-ignore to allow overwrite
-          line.geometry.attributes.position.array[4] = y;
+          line.geometry.attributes.position.array[4] = inten;
           line.geometry.attributes.position.needsUpdate = true; 
+
           line.material["color"].setStyle(lineColor);
           if (rt.toFixed(4) == currt && Graph.isHighlightingCurrentScan){
               line.material["color"].setStyle(Graph.currentScanColor);
@@ -356,21 +349,15 @@ export class GraphData{
           line.mz = mz;
           line.rt = rt;
           line.int = inten;
-          line.height = y;
+          line.height = inten;
           line.name = "peak";
           line.visible = true;
 
-          if (lowPeak){
-            line.lowPeak = true;
-          } else{
-            line.lowPeak = false;
-          }
-        }  else{
+        } else{
           line.visible = false;
         }
       } else{
         line.visible = false;
-        line.lowPeak = false;
       }
     })
   }

@@ -194,7 +194,7 @@ Graph.curRT = -1;
 Graph.scanID = 1;
 /*metadata and data control*/
 Graph.minPeakHeight = 0.05;
-Graph.maxPeakHeight = 8;
+Graph.maxPeakHeight = 15;
 Graph.maxPeaks = 4000;
 Graph.maxFeature = Graph.maxPeaks / 2;
 Graph.intensitySum = 0;
@@ -253,4 +253,4 @@ Graph.axisGroup = new Group();
 Graph.configData = [];
 Graph.currentData = [];
 Graph.currentFeatureData = [];
-Graph.lowInteScaleFactor = 10;
+Graph.lowInteScaleFactor = 100;

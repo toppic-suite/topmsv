@@ -14,25 +14,19 @@ export class GraphZoom {
   scrollLock = false;
   constructor(){}
     
-  adjustPeakHeight = (scaleFactor: number, isCtrlPressed: boolean): void => {
+  adjustPeakHeight = (scaleFactor: number): void => {
     let peaks: Group | undefined = Graph.scene.getObjectByName("plotGroup");
-    let inteAutoAdjust: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#inte-auto-adjust");
 
     if (!peaks) {
       console.error("plotGroup cannot be found");
       return;
     }
-    if (!isCtrlPressed && scaleFactor < 1) {return;}//or peak intensity will be decreased
-    
-    if (inteAutoAdjust) {
-      if (!isCtrlPressed && !inteAutoAdjust.checked) {return;}
-    }
 
     let oriScale: number = peaks["scale"]["y"];
-    peaks["scale"].set(peaks["scale"]["x"], oriScale * scaleFactor, peaks["scale"]["z"]);
-    Graph.peakScale = oriScale * scaleFactor;
 
-    if (isCtrlPressed && scaleFactor > 1) {
+    peaks["scale"].set(peaks["scale"]["x"], oriScale * scaleFactor, peaks["scale"]["z"]);
+
+    if (scaleFactor > 1) {
       GraphControl.adjustIntensity(peaks.children);
     } 
     GraphRender.renderImmediate();  
@@ -53,10 +47,9 @@ export class GraphZoom {
       }
 
       if (e.ctrlKey){//if control key is pressed --> intensity zoom
-        this.adjustPeakHeight(scaleFactor, true);
+        this.adjustPeakHeight(scaleFactor);
       } else {
-        await this.onZoomFromEventListener(e);
-        this.adjustPeakHeight(scaleFactor, false);
+        this.onZoomFromEventListener(e);
       }
       this.scrollLock = false;
     } 
