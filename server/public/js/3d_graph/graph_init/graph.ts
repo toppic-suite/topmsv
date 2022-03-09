@@ -126,7 +126,7 @@ export class Graph{
 
   static resizedCamera;
 
-  static lowInteScaleFactor = 100;
+  static lowInteScaleFactor = 1000;
 
   constructor(projectDir, resultViz) {
     Graph.projectDir = projectDir;

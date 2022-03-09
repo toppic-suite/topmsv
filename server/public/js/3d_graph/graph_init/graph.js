@@ -253,4 +253,4 @@ Graph.axisGroup = new Group();
 Graph.configData = [];
 Graph.currentData = [];
 Graph.currentFeatureData = [];
-Graph.lowInteScaleFactor = 100;
+Graph.lowInteScaleFactor = 1000;
