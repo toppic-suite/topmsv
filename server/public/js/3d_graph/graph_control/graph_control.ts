@@ -21,15 +21,21 @@ export class GraphControl{
   }
 
 
-  static scaleRt = (rt: number): number => {//get the expected height of a peak in the 3d space
-    return ((rt - Graph.dataRange.intmin) / (Graph.dataRange.intmax - Graph.dataRange.intmin)) * Graph.gridRange;
+  static scaleInteToWorldUnit = (inte: number): number => {//get the expected height of a peak in the 3d space
+    return ((inte - Graph.dataRange.intmin) / (Graph.dataRange.intmax - Graph.dataRange.intmin)) * Graph.gridRange;
   }
+
+
+  static scaleWorldUnitToInte = (worldUnit: number): number => {//get the orig intensity
+    return ((worldUnit / Graph.gridRange) * (Graph.dataRange.intmax - Graph.dataRange.intmin)) + Graph.dataRange.intmin;
+  }
+
 
   /******* DATA RANGE AND VIEWING AREA ****/
   static calcIntScale = (): number => {
     let intScale = Graph.intSquish;
     let maxInt: number = Graph.viewRange.intmax;
-    let scaledMaxInt = GraphControl.scaleRt(maxInt);
+    let scaledMaxInt = GraphControl.scaleInteToWorldUnit(maxInt);
 
     let inteAutoAdjust: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#inte-auto-adjust");
     if (inteAutoAdjust) {
@@ -37,7 +43,6 @@ export class GraphControl{
         return intScale;
       }
     }
-
     if (!Graph.isPan) {
       let ratio: number = maxInt / Graph.intensitySumTotal;      
       if (ratio < 0.005) {//if this region mostly contains low peaks
@@ -46,7 +51,7 @@ export class GraphControl{
       } else {
         intScale = 1;
       } 
-      if (GraphControl.scaleRt(maxInt) * intScale > Graph.maxPeakHeight) {// when peaks are too high
+      if (scaledMaxInt * intScale > Graph.maxPeakHeight) {// when peaks are too high
         let newSquish: number = Graph.maxPeakHeight / (scaledMaxInt * intScale);
         intScale = newSquish;
       }
@@ -224,24 +229,11 @@ export class GraphControl{
     let int_squish = GraphControl.calcIntScale();
     Graph.intSquish = int_squish;
     Graph.isPan = false;//reset the boolean determining whether to apply automatic intensity scaling
-
     let dataGroup: Group | undefined = Graph.scene.getObjectByName("dataGroup");
     let markerGroup: Group | undefined = Graph.scene.getObjectByName("markerGroup");
     let featureGroup: Group | undefined = Graph.scene.getObjectByName("featureGroup");
     let tickLabelGroup: Group | undefined = Graph.scene.getObjectByName("tickLabelGroup");
     let ticksGroup: Group | undefined = Graph.scene.getObjectByName("ticksGroup");
-
-    //if auto scaling is on, plotgroup scale needs to be reset beforehand (because it may have been changed due to manual scaling using ctrl + scroll)
-    let inteAutoAdjust: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#inte-auto-adjust");
-    if (inteAutoAdjust) {
-      if (inteAutoAdjust.checked) {
-        let plotGroup: Group | undefined = Graph.scene.getObjectByName("plotGroup");
-        if (plotGroup) {
-          let scale: number = Graph.maxPeakHeight / Graph.dataRange.intmax;
-          plotGroup["scale"].set(plotGroup["scale"]["x"], scale, plotGroup["scale"]["z"]);
-        }
-      }
-    }
 
     if (dataGroup) {
       dataGroup["scale"].set(mz_squish, int_squish, rt_squish);

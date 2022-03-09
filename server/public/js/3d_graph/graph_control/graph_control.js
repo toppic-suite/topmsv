@@ -16,14 +16,17 @@ GraphControl.mzRtToGridSpace = (mz, rt) => {
     let rt_norm = (rt - vr.rtmin) / vr.rtrange;
     return { x: mz_norm * Graph.gridRange, z: (1 - rt_norm) * Graph.gridRange };
 };
-GraphControl.scaleRt = (rt) => {
-    return ((rt - Graph.dataRange.intmin) / (Graph.dataRange.intmax - Graph.dataRange.intmin)) * Graph.gridRange;
+GraphControl.scaleInteToWorldUnit = (inte) => {
+    return ((inte - Graph.dataRange.intmin) / (Graph.dataRange.intmax - Graph.dataRange.intmin)) * Graph.gridRange;
+};
+GraphControl.scaleWorldUnitToInte = (worldUnit) => {
+    return ((worldUnit / Graph.gridRange) * (Graph.dataRange.intmax - Graph.dataRange.intmin)) + Graph.dataRange.intmin;
 };
 /******* DATA RANGE AND VIEWING AREA ****/
 GraphControl.calcIntScale = () => {
     let intScale = Graph.intSquish;
     let maxInt = Graph.viewRange.intmax;
-    let scaledMaxInt = GraphControl.scaleRt(maxInt);
+    let scaledMaxInt = GraphControl.scaleInteToWorldUnit(maxInt);
     let inteAutoAdjust = document.querySelector("#inte-auto-adjust");
     if (inteAutoAdjust) {
         if (!inteAutoAdjust.checked) {
@@ -39,7 +42,7 @@ GraphControl.calcIntScale = () => {
         else {
             intScale = 1;
         }
-        if (GraphControl.scaleRt(maxInt) * intScale > Graph.maxPeakHeight) { // when peaks are too high
+        if (scaledMaxInt * intScale > Graph.maxPeakHeight) { // when peaks are too high
             let newSquish = Graph.maxPeakHeight / (scaledMaxInt * intScale);
             intScale = newSquish;
         }
@@ -217,17 +220,6 @@ GraphControl.repositionPlot = (r) => {
     let featureGroup = Graph.scene.getObjectByName("featureGroup");
     let tickLabelGroup = Graph.scene.getObjectByName("tickLabelGroup");
     let ticksGroup = Graph.scene.getObjectByName("ticksGroup");
-    //if auto scaling is on, plotgroup scale needs to be reset beforehand (because it may have been changed due to manual scaling using ctrl + scroll)
-    let inteAutoAdjust = document.querySelector("#inte-auto-adjust");
-    if (inteAutoAdjust) {
-        if (inteAutoAdjust.checked) {
-            let plotGroup = Graph.scene.getObjectByName("plotGroup");
-            if (plotGroup) {
-                let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
-                plotGroup["scale"].set(plotGroup["scale"]["x"], scale, plotGroup["scale"]["z"]);
-            }
-        }
-    }
     if (dataGroup) {
         dataGroup["scale"].set(mz_squish, int_squish, rt_squish);
         dataGroup["position"].set(-r.mzmin * mz_squish, 0, Graph.gridRange - r.rtmin * rt_squish);

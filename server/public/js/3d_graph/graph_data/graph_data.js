@@ -297,6 +297,15 @@ GraphData.updatePeaks = (data) => {
         console.error("plotgroup doesn't exist");
         return;
     }
+    //if auto scaling is on, plotgroup scale needs to be reset beforehand (because it may have been changed due to manual scaling using ctrl + scroll)
+    let inteAutoAdjust = document.querySelector("#inte-auto-adjust");
+    if (inteAutoAdjust) {
+        if (inteAutoAdjust.checked) {
+            let scale = Graph.maxPeakHeight / Graph.dataRange.intmax;
+            plotGroup["scale"].set(plotGroup["scale"]["x"], scale, plotGroup["scale"]["z"]);
+        }
+    }
+    let intScale = GraphControl.calcIntScale();
     //iterate through peask in plot group while < data.length;
     //for the rest of peaks, turn off visibility
     plotGroup.children.forEach(function (line, index) {
@@ -310,6 +319,14 @@ GraphData.updatePeaks = (data) => {
             if (mz >= Graph.viewRange.mzmin && mz <= Graph.viewRange.mzmax &&
                 rt >= Graph.viewRange.rtmin && rt <= Graph.viewRange.rtmax) {
                 let currt = Graph.curRT.toFixed(4);
+                let lowPeak = false;
+                let y = inten;
+                //if y is much smaller than the highest intensity peak in the view range
+                if (y * plotGroup["scale"]["y"] * intScale < GraphControl.scaleWorldUnitToInte(Graph.minPeakHeight)) {
+                    //increase y so that later y is at least minHeight when scaled
+                    y = GraphControl.scaleWorldUnitToInte(Graph.minPeakHeight) / (plotGroup["scale"]["y"] * intScale);
+                    lowPeak = true;
+                }
                 //@ts-ignore to allow overwrite
                 line.geometry.attributes.position.array[4] = inten;
                 line.geometry.attributes.position.needsUpdate = true;
@@ -322,7 +339,7 @@ GraphData.updatePeaks = (data) => {
                 line.mz = mz;
                 line.rt = rt;
                 line.int = inten;
-                line.height = inten;
+                line.height = y;
                 line.name = "peak";
                 line.visible = true;
             }

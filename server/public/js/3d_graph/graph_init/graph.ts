@@ -42,7 +42,7 @@ export class Graph{
   static scanID: number = 1;
         
   /*metadata and data control*/
-  static minPeakHeight: number = 0.05;
+  static minPeakHeight: number = 0.1;
   static maxPeakHeight: number = 15;
   static maxPeaks: number = 4000;
   static maxFeature: number = Graph.maxPeaks / 2;
