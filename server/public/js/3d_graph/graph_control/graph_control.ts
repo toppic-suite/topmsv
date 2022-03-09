@@ -44,15 +44,18 @@ export class GraphControl{
       }
     }
     if (!Graph.isPan) {
-      let ratio: number = maxInt / Graph.intensitySumTotal;      
-      if (ratio < 0.005) {//if this region mostly contains low peaks
-        let newSquish: number = (Graph.minPeakHeight * Graph.lowInteScaleFactor) / scaledMaxInt;
+      //let ratio: number = maxInt / Graph.intensitySumTotal;      
+      //if (ratio < 0.005) {//if this region mostly contains low peaks
+      let ratio: number = Graph.intensitySum/Graph.intensitySumTotal;
+      if (ratio < 0.15) {
+        //let newSquish: number = (Graph.minPeakHeight * Graph.lowInteScaleFactor) / scaledMaxInt;
+        let newSquish: number = (1 - ratio) * Graph.lowInteScaleFactor;
         intScale = newSquish; 
       } else {
         intScale = 1;
       } 
       if (scaledMaxInt * intScale > Graph.maxPeakHeight) {// when peaks are too high
-        let newSquish: number = Graph.maxPeakHeight / (scaledMaxInt * intScale);
+        let newSquish: number = Graph.maxPeakHeight / (scaledMaxInt);
         intScale = newSquish;
       }
     }
