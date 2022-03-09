@@ -34,12 +34,9 @@ GraphControl.calcIntScale = () => {
         }
     }
     if (!Graph.isPan) {
-        //let ratio: number = maxInt / Graph.intensitySumTotal;      
-        //if (ratio < 0.005) {//if this region mostly contains low peaks
-        let ratio = Graph.intensitySum / Graph.intensitySumTotal;
-        if (ratio < 0.15) {
-            //let newSquish: number = (Graph.minPeakHeight * Graph.lowInteScaleFactor) / scaledMaxInt;
-            let newSquish = (1 - ratio) * Graph.lowInteScaleFactor;
+        let ratio = maxInt / Graph.intensitySumTotal;
+        if (ratio < 0.005) { //if this region mostly contains low peaks
+            let newSquish = (Graph.minPeakHeight * Graph.lowInteScaleFactor) / scaledMaxInt;
             intScale = newSquish;
         }
         else {
