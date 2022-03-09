@@ -42,8 +42,8 @@ export class Graph{
   static scanID: number = 1;
         
   /*metadata and data control*/
-  static minPeakHeight: number = 0.05;
-  static maxPeakHeight: number = 8;
+  static minPeakHeight: number = 0.1;
+  static maxPeakHeight: number = 15;
   static maxPeaks: number = 4000;
   static maxFeature: number = Graph.maxPeaks / 2;
 
@@ -126,7 +126,7 @@ export class Graph{
 
   static resizedCamera;
 
-  static lowInteScaleFactor = 10;
+  static lowInteScaleFactor = 100;
 
   constructor(projectDir, resultViz) {
     Graph.projectDir = projectDir;
