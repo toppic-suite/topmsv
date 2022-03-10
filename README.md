@@ -108,7 +108,7 @@ mkdir src\proteomics_cpp
 move toppic-windows-*.zip src\proteomics_cpp
 cd src\proteomics_cpp 
 #at this point, you should be in C:\Documents\topmsv-[version_num]\src\proteomics_cpp, if unzipped the TopMSV zip file at C:\Documents
-tar -xf toppic-windows-*.zip
+tar -xf toppic-windows-[toppic suite version_num].zip
 del toppic-windows-*.zip
 move toppic-windows-* bin
 ```
