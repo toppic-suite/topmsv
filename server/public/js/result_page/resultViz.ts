@@ -22,6 +22,7 @@ export class ResultViz {
 
   dataGetter: DataGetter;
   eventHandler;
+  inteSum: number = 0;
 
   constructor(projectDir: string) {
     this.projectDir = projectDir;
@@ -36,7 +37,7 @@ export class ResultViz {
   }
 
 
-  initGraph(): void {
+  async initGraph(): Promise<void> {
     let rangeMin: HTMLInputElement | null = document.querySelector<HTMLInputElement>("#rangeMin");
 
     if (!rangeMin) {
@@ -72,7 +73,7 @@ export class ResultViz {
       min = scanRef;
       localStorage.clear();
     }
-    this.initInteRt();
+    await this.initInteRt();
     init2D(parseFloat(min), this.config);
     this.init3D(parseInt(min), scanRef);
 
@@ -134,8 +135,8 @@ export class ResultViz {
       scanId = parseInt(selectedScan);
       isFullRange = false;
     } 
-
-    this.view3d = new Graph(this.dbPath, this);
+    console.log(this.inteSum);
+    this.view3d = new Graph(this.dbPath, this, this.inteSum);
     this.view3d.main(scanId, isFullRange);
 
 
@@ -173,8 +174,8 @@ export class ResultViz {
   }
 
 
-  initInteRt(): void {
-    this.dataGetter.getInteSumList()
+  async initInteRt(): Promise<void> {
+    await this.dataGetter.getInteSumList()
       .then((response) => {
       //rename some keys and remove unused keys
         let rtInteData: InteRtObj[] = [];
@@ -187,6 +188,7 @@ export class ResultViz {
               rtInte.ionTime = data.IONTIME;
             }
             rtInteData.push((rtInte));
+            this.inteSum = this.inteSum + rtInte.inteSum;
           })
           this.rtInteGraph = new InteRtGraph("rt-sum", rtInteData, this.redrawGrph.bind(this), this.config);
           this.rtInteGraph.drawGraph();

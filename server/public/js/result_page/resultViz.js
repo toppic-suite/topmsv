@@ -14,6 +14,7 @@ export class ResultViz {
             scientificDigit: 2
         };
         this.view3d = null;
+        this.inteSum = 0;
         this.projectDir = projectDir;
         this.dbPath = projectDir.substring(0, projectDir.lastIndexOf(".")) + ".db";
         this.dataGetter = new DataGetter(projectDir);
@@ -22,7 +23,7 @@ export class ResultViz {
         this.eventHandler = new EventHandler(this);
         this.eventHandler.initialize();
     }
-    initGraph() {
+    async initGraph() {
         let rangeMin = document.querySelector("#rangeMin");
         if (!rangeMin) {
             console.error("input text box rangeMin does not exist");
@@ -53,7 +54,7 @@ export class ResultViz {
             min = scanRef;
             localStorage.clear();
         }
-        this.initInteRt();
+        await this.initInteRt();
         init2D(parseFloat(min), this.config);
         this.init3D(parseInt(min), scanRef);
         /*let fileName: string | number | string[] | undefined = $('#fileName').val();
@@ -111,7 +112,8 @@ export class ResultViz {
             scanId = parseInt(selectedScan);
             isFullRange = false;
         }
-        this.view3d = new Graph(this.dbPath, this);
+        console.log(this.inteSum);
+        this.view3d = new Graph(this.dbPath, this, this.inteSum);
         this.view3d.main(scanId, isFullRange);
         /*this.dataGetter.getRelatedScan2(scanID)
           .then((ms2Scan) => {
@@ -141,8 +143,8 @@ export class ResultViz {
     update3D(scanID) {
         GraphData.updateGraphForNewScan(scanID);
     }
-    initInteRt() {
-        this.dataGetter.getInteSumList()
+    async initInteRt() {
+        await this.dataGetter.getInteSumList()
             .then((response) => {
             //rename some keys and remove unused keys
             let rtInteData = [];
@@ -155,6 +157,7 @@ export class ResultViz {
                     rtInte.ionTime = data.IONTIME;
                 }
                 rtInteData.push((rtInte));
+                this.inteSum = this.inteSum + rtInte.inteSum;
             });
             this.rtInteGraph = new InteRtGraph("rt-sum", rtInteData, this.redrawGrph.bind(this), this.config);
             this.rtInteGraph.drawGraph();

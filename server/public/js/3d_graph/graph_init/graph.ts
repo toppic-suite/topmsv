@@ -127,11 +127,12 @@ export class Graph{
   static resizedCamera;
 
   static lowInteScaleFactor = 1000;
-  static lowInteThreshold = 0.05;//peaks will scale up if maxInt/intensitySumTotal is less than this number
+  static lowInteThreshold = 0.005;//peaks will scale up if maxInt/intensitySumTotal is less than this number
 
-  constructor(projectDir, resultViz) {
+  constructor(projectDir, resultViz, inteSum) {
     Graph.projectDir = projectDir;
     Graph.resultViz = resultViz;
+    Graph.intensitySumTotal = inteSum;
   }
 
   initGroups = (): void => {

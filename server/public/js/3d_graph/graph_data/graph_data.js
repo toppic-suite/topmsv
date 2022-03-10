@@ -33,9 +33,6 @@ GraphData.getInteRange = (points) => {
         }
         Graph.intensitySum = Graph.intensitySum + points[i].INTENSITY;
     }
-    if (Graph.intensitySumTotal < 0) {
-        Graph.intensitySumTotal = Graph.intensitySum;
-    }
     Graph.viewRange.intmin = intmin;
     Graph.viewRange.intmax = intmax;
     Graph.viewRange.intrange = intmax - intmin;

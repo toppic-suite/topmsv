@@ -7,7 +7,7 @@ import { GraphUtil } from '../graph_util/graph_util.js';
 import { LoadData } from '../graph_data/load_data.js';
 import { showFeatureTable } from '../../result_page/feature_table.js';
 export class Graph {
-    constructor(projectDir, resultViz) {
+    constructor(projectDir, resultViz, inteSum) {
         this.initGroups = () => {
             Graph.gridGroup.name = "gridGroup";
             Graph.dataGroup.name = "dataGroup";
@@ -164,6 +164,7 @@ export class Graph {
         };
         Graph.projectDir = projectDir;
         Graph.resultViz = resultViz;
+        Graph.intensitySumTotal = inteSum;
     }
 }
 /*default m/z range when scan changes*/
@@ -254,4 +255,4 @@ Graph.configData = [];
 Graph.currentData = [];
 Graph.currentFeatureData = [];
 Graph.lowInteScaleFactor = 1000;
-Graph.lowInteThreshold = 0.05; //peaks will scale up if maxInt/intensitySumTotal is less than this number
+Graph.lowInteThreshold = 0.005; //peaks will scale up if maxInt/intensitySumTotal is less than this number
