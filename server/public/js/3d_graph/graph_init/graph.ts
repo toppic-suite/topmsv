@@ -127,6 +127,7 @@ export class Graph{
   static resizedCamera;
 
   static lowInteScaleFactor = 1000;
+  static lowInteThreshold = 0.05;//peaks will scale up if maxInt/intensitySumTotal is less than this number
 
   constructor(projectDir, resultViz) {
     Graph.projectDir = projectDir;

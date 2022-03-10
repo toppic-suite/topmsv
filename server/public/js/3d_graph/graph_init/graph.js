@@ -254,3 +254,4 @@ Graph.configData = [];
 Graph.currentData = [];
 Graph.currentFeatureData = [];
 Graph.lowInteScaleFactor = 1000;
+Graph.lowInteThreshold = 0.05; //peaks will scale up if maxInt/intensitySumTotal is less than this number
