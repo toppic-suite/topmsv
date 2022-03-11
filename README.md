@@ -26,15 +26,12 @@ mkdir build
 cd build
 cmake ..
 make -j$(nproc)
-cd ../../../server
-mkdir cpp
-cp -r ../src/ms_converter/bin ./cpp
 ```
 
 ### 1.5 Compile TopPIC Suite
 This step compiles TopFD and TopPIC, two tools in TopPIC Suite. TopFD deconvolutes top-down mass spectra and TopPIC identifies proteoforms by search top-down mass spectra against a protein database.<br/>
 a. Download TopPIC Suite version 1.5.2 from <a href="https://github.com/liuxiaowen/proteomics_cpp/releases">TopPIC Suite Github repository</a> and save the zip file in the folder src. <br/>
-d. Type the following commands to build TopPIC Suite: <br/>
+b. Type the following commands to build TopPIC Suite: <br/>
 ```sh
 # unzip the TopPic Suite release from the TopPIC Suite repository
 unzip toppic-suite-*.zip                            
@@ -61,14 +58,13 @@ cd src/proteomics_cpp
 mkdir build
 cd build
 cmake ..
+
 #Make sure to use the exact command below to build only TopFD and TopPIC. 
 #Using "make" to build all apps will result in error.
 make topfd -j$(nproc) && make toppic -j$(nproc) 
-#Copy binary files
-cd ../../../server
-mkdir proteomics_cpp
-cp -r ../src/proteomics_cpp/bin ./proteomics_cpp
-cp -r ../src/proteomics_cpp/resources ./proteomics_cpp/bin
+
+cd ../bin
+ln -s ../toppic_resources .
 ```
 
 ### 1.6 Start TopMSV server
@@ -107,8 +103,9 @@ c. Use the commands below to unzip files in a folder:<br/>
 mkdir src\proteomics_cpp 
 move toppic-windows-*.zip src\proteomics_cpp
 cd src\proteomics_cpp 
-#at this point, you should be in C:\Documents\topmsv-[version_num]\src\proteomics_cpp, if unzipped the TopMSV zip file at C:\Documents
-tar -xf toppic-windows-[toppic suite version_num].zip
+#if unzipped the TopMSV zip file at C:\Documents
+#at this point, you should be in C:\Documents\topmsv-[version_num]\src\proteomics_cpp
+tar -xf toppic-windows-[toppic_suite_version_num].zip
 del toppic-windows-*.zip
 move toppic-windows-* bin
 ```
@@ -119,8 +116,8 @@ cd server
 npm install
 ```
 ## Start/Stop TopMSV 
-At the root directory of TopMSV (<code>topmsv-[version_num]</code>), use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. 
-<br/><br/>Or, you can run scripts to start/stop TopMSV. For Linux, go to the <code>topmsv-[version_num]/scripts/linux</code> folder and run "startServer.sh" and "stopServer.sh" to start and close TopMSV. For Windows, go to the <code>topmsv-[version_num]/scripts/windows</code> folder run "startServer.bat" and "stopServer.bat" to start and close TopMSV. 
+At the server directory of TopMSV (<code>topmsv-[version_num]/server</code>), use the command <code>node server</code> to start TopMSV and ctrl+c to close TopMSV. 
+<br/><br/>Or, you can run scripts to start/stop TopMSV. For Linux, go to the <code>topmsv-[version_num]/server/scripts/linux</code> folder and run "startServer.sh" and "stopServer.sh" to start and close TopMSV. For Windows, go to the <code>topmsv-[version_num]/server/scripts/windows</code> folder run "startServer.bat" and "stopServer.bat" to start and close TopMSV. 
 
 
 ## (optional) Run TopMSV Server with pm2
