@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Management</title>
+    <link rel="stylesheet" href="lib/css/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/css/jquery.fileupload.css">
+    <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-154408351-1');
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-11">
+            <h2 style="color: #0099DD;"><strong>TopMSV</strong></h2>
+        </div>
+        <!--<div class="col-sm-1">
+            <a href="/auth/google" id="signIn">Sign In</a>
+        </div>-->
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body" style="padding-top: 0px;">
+            <h3><strong>Project Management</strong></h3>
+            <br>
+            <input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+            <input type="hidden" id="projectName" name="projectName" value="<%= projectName %>">
+            <input type="hidden" id="description" name="description" value="<%= description %>">
+            <input type="hidden" id="publicValue" name="publicValue" value="<%= publicValue %>">
+            <div class="form-group">
+                <label for="project_Name">Project Name</label>
+                <input type="text" class="form-control" id="project_Name" name="project_Name" placeholder="<%= projectName%>">
+            </div>
+
+            <div class="form-group">
+                <label for="project_Description">Project Description</label>
+                <input type="text" class="form-control" id="project_Description" name="project_Description" placeholder="<%= description%>">
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="public" name="public">
+                <label class="form-check-label" for="public">Public</label>
+            </div>
+
+            <button type="button" class="btn btn-danger" id="removeProject">Remove Project</button>
+            <br>
+            <button type="button" class="btn btn-primary" id="editButton" style="margin-top: 8px;">Edit</button>
+        </div>
+    </div>
+</div>
+<script src="lib/js/jquery-3.6.0.min.js"></script>
+<script src="lib/js/jquery-ui.js"></script>
+<script src="lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/projectManagement.js"></script>
+
+</body>
+</html>

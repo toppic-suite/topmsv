@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<% include ../partials/head %>
+	<script src="lib/js/jquery-3.6.0.min.js"></script>
+	<script src="lib/js/jquery-ui.min.js"></script>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="lib/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="lib/css/bootstrap-theme.min.css">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="lib/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="lib/css/jquery-ui.min.css">
+	<link href="css/result.css" type="text/css" rel="stylesheet" />
+	<link rel="stylesheet" href="lib/css/jquery.fileupload.css">
+
+	<!-- For Ajax call -->
+	<script src="lib/js/axios.min.js"></script>
+	<script src="lib/js/d3.v5.min.js"></script>
+
+	<!-- For datatables -->
+	<link rel="stylesheet" type="text/css" href="lib/css/jquery.dataTables.css">
+	<script type="text/javascript" charset="utf8" src="lib/js/jquery.dataTables.js"></script>
+	<script type="text/javascript" charset="utf8" src="lib/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="lib/js/buttons.flash.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="lib/js/jszip.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="lib/js/pdfmake.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="lib/js/vfs_fonts.js"></script>
+	<script type="text/javascript" charset="utf8" src="lib/js/buttons.html5.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="lib/js/buttons.print.min.js"></script>
+	<script type="text/javascript" src="lib/js/dataTables.select.min.js"></script>
+
+	<!-- Result page JavaScript -->
+	<script src="resources/topview/common/distribution_calc/isotopes.js"></script>
+	<script src="resources/topview/common/distribution_calc/molecular_formulae.js"></script>
+
+	<!-- Models -->
+	<script src="resources/topview/common/spectrum_view/spectrum_view.js"></script>
+	<script src="resources/topview/common/spectrum_view/draw_spectrum.js"></script>
+	<script src="resources/topview/common/spectrum_view/spectrum_parameter.js"></script>
+	<script src="resources/topview/common/mass_spectrum/spectrumFunction.js"></script>
+	<script src="resources/topview/common/inte_rt_graph/inte_rt_graph.js"></script>
+
+	<!--data classes-->
+	<script src="resources/topview/common/mass_spectrum/spectrum.js"></script>
+	<script src="resources/topview/common/mass_spectrum/peak.js"></script>
+	<script src="resources/topview/common/mass_spectrum/envelope.js"></script>
+	<script src="resources/topview/common/sequence/mod.js"></script>
+	<script src="resources/topview/common/sequence/massShift.js"></script>
+	<script src="resources/topview/common/util/types.js"></script>
+	
+	<script type="module" src="js/result_page/resultViz.js"></script>
+	<script src="js/result_page/controller.js"></script>
+	<script src="js/ptmAnnoData.js"></script>
+	<script src="js/sequence.js"></script>
+	<script src="js/util.js"></script>
+	<script src="js/result_page/upload.js"></script>
+</head>
+<body class="container" onload="">
+	<main>
+		<!-- Modal -->
+		<div id="msalignModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Upload</h4>
+					</div>
+					<div class="modal-body">
+						<h4 style="margin-top: 0">Msalign files</h4>
+						<p>
+							If you want to delete current existing msalign file for envelope peaks, please click the button below.
+						</p>
+						<button class="btn" id="deleteMsalign">Delete existing msalign file</button>
+						<br>
+						<p>If you want to upload new msalign files for envelope peaks, please upload both MS1 msalign file and MS2 msalign file below.
+							Once you upload files successfully, please wait our server to process data. When everything is done, we will send an email to you.</p>
+						<label for="MS1_msalign">MS1 msalign file</label>
+						<input class="form-control-file" type="file" id="MS1_msalign">
+						<br>
+						<label for="MS2_msalign">MS2 msalign file</label>
+						<input class="form-control-file" type="file" id="MS2_msalign">
+						<br>
+						<table>
+							<tr>
+								<td><button class="btn" id="modalUpload">Upload</button></td>
+								<td width="40pt"></td>
+								<td style="width: 300pt">
+									<div id="dbprogress" class="progress">
+										<div id="progressbar" class="progress-bar progress-bar-striped" role="progressbar"
+											 style="width: 0%">0%</div>
+									</div>
+								</td>
+							</tr>
+						</table>
+						<hr style="margin-bottom: 7px; margin-top: 10px">
+						<div>
+							<h4>mzrt file</h4>
+							<p>
+								If you want to delete current existing mzrt file, please click the button below.
+							</p>
+							<button class="btn defaultBtn" id="deleteMzrt">Delete existing mzrt file</button>
+							<p>If you want to add annotated feature information to this project, please upload a csv file for it below.</p>
+							<label for="mzrtFile">New mzrt file</label>
+							<input class="form-control-file" type="file" id="mzrtFile">
+							<br>
+							<table>
+								<tr>
+									<td><button class="btn defaultBtn" id="mzrtUpload">Upload</button></td>
+									<td width="40pt"></td>
+									<td style="width: 300pt">
+										<div id="mzrtProgress" class="progress">
+											<div id="mzrtProgressbar" class="progress-bar progress-bar-striped" role="progressbar"
+												 style="width: 0%">0%</div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<hr style="margin-bottom: 7px; margin-top: 10px">
+						<div>
+							<h4>PrSM Identification file</h4>
+							<p>
+								If you want to delete current existing PrSM Identification file, please click the button below.
+							</p>
+							<button class="btn" id="deleteSeq">Delete existing PrSM Identification</button>
+							<p>If you want to add PrSM Identification information to this project, please upload a tsv file for it below.</p>
+							<label for="sequenceFile">New PrSM Identification file</label>
+							<input class="form-control-file" type="file" id="seqFile">
+							<br>
+							<table>
+								<tr>
+									<td><button class="btn" id="seqUpload">Upload</button></td>
+									<td width="40pt"></td>
+									<td style="width: 300pt">
+										<div id="seqProgress" class="progress">
+											<div id="seqProgressbar" class="progress-bar progress-bar-striped" role="progressbar"
+												 style="width: 0%">0%</div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Result Modal -->
+		<div id="seqModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Result</h4>
+					</div>
+					<div class="modal-body">
+						<div>
+							<p>
+								Click the button below to check all of your sequence results.
+							</p>
+							<div>
+								<button class="btn bwButton" id="seqResult">Sequence Result</button>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Preview Modal-->
+		<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="previewModalLabel">Preview</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_envelope_id">Envelope:</label>
+							</div>
+							<div class="col-sm-8 col-md-8 col-lg-8">
+								<input type="text" id="preview_envelope_id" name="Envelope ID" placeholder="Envelope ID" readonly class="form-control  form-control-sm">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_charge">Charge:</label>
+							</div>
+							<div class="col-sm-8 col-md-8 col-lg-8">
+								<input type="text" id="preview_charge" name="Charge" pattern="[+-]?([0-9]*[.])?[0-9]+" placeholder="Charge" class="form-control  form-control-sm">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_mono_mass">Mono Mass:</label>
+							</div>
+							<div class="col-sm-6 col-md-6 col-lg-6">
+								<input type="text" id="preview_mono_mass" name="preview_mono_mass" pattern="[+-]?([0-9]*[.])?[0-9]+" oninput="change_mono_mz()" placeholder="Mono Mass" class="form-control  form-control-sm">
+							</div>
+							<div class="col-sm-2 col-md-2 col-lg-2">
+								<div class="row">
+									<div class="col-sm-6 col-md-6 col-lg-6">
+										<button onclick="minus()" id="minusBtn" type="button" class="btn btn-default btn-number" data-type="minus" data-field="mono_mass"><span class="glyphicon glyphicon-minus"></span></button>
+									</div>
+									<div class="col-sm-6 col-md-6 col-lg-6">
+										<button onclick="plus()" id="plusBtn" type="button" class="btn btn-default btn-number" data-type="plus" data-field="mono_mass"><span class="glyphicon glyphicon-plus"></span></button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="row" style="margin-left: initial;margin-right: initial;">
+							<div class="col-sm-3 col-md-3 col-lg-3 text-right">
+								<label for="preview_mono_mz">Mono M/Z:</label>
+							</div>
+							<div class="col-sm-8 col-md-8 col-lg-8">
+								<input type="text" id="preview_mono_mz" name="Mono M/Z" placeholder="Mono M/Z" oninput="change_mono_mass()" class="form-control  form-control-sm">
+							</div>
+						</div>
+						<br>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<p><strong>Before update:</strong></p>
+						</div>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<svg id="previewSpectrum1"></svg>
+						</div>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<p><strong>After update:</strong></p>
+						</div>
+						<div class="row" style="padding-left: 50px;padding-right: 50px">
+							<svg id="previewSpectrum2"></svg>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						<button id="previewSaveBtn" type="button" class="btn btn-primary">Save changes</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--help modal-->
+		<div id="helpModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Key operations</h4>
+					</div>
+					<div class="modal-body">
+						<h4 style="margin-top: 0"></h4>
+						<ul>
+							<li>Mouse Interactions: 
+								<ul class="textList">
+								  <li>Pan: hold down a left button and move the mouse to change the data window.</li>
+								  <li>Zoom: scroll a mouse wheel to change the data window. Zoom affects the axis that is nearest to a mouse cursor. 
+									  For 3D view, when a cursor is inside the graph plane, it will zoom both m/z and retention time axes. 
+									<!--<ul>
+										<li>cursor inside the graph plane: zooms both m/z range and retention time range</li>
+										<li>cursor outside the graph plane, near the top or bottom edge of the graph plane: zooms m/z range</li>
+										<li>cursor outside the graph plane, near the left or right edge of the graph plane: zooms retention time range</li>
+									</ul>-->  
+								  </li>
+								  <li>Operations specific to 3D view
+									<ul>
+										<li>Rotate: hold down a right button and move the mouse to rotate the graph. When the direction of z-axis becomes negative to the viewer, the graph is switched to 2D view.</li>
+										<li>Change Peak Heights: hold down a Ctrl key in the keyboard and scroll a mouse wheel up or down</li>
+									</ul>
+								  </li>
+								  	
+								</ul>
+							  </li>
+						</ul>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="jumbotron" id ="center-div">
+			<div>
+				<span class="projectsummary">
+					<div class="row">
+						<div class="projectName col-sm-7">
+						<strong>Project Name:</strong> <%= summary.ProjectName %>
+						</div>
+						<div class="col-sm-5">
+							<div class="row">
+								<div class="col-sm-3">
+								<button id="home" class="btn" onclick="window.location.href = '/';">Home</button>
+								</div>
+								<div class="col-sm-2">
+								<button id="topfdtask" class="btn" onclick="window.location.href='/topfd?projectCode=<%= projectCode%>'">TopFD</button>
+								</div>
+								<div class="col-sm-2">
+								<button id="toppicTask" class="btn" onclick="toppicOnClick('<%= projectCode%>')">Toppic</button>
+								</div>
+								<div class="col-sm-2">
+									<button id="uploadMsalign" type="button" class="btn" data-toggle="modal" data-target="#msalignModal">Upload</button>
+								</div>
+								<div class="col-sm-3">
+									<!--<button id="uploadSequence" type="button" class="btn" data-toggle="modal" data-target="#seqModal">Result</button>-->
+									<button id="uploadSequence" type="button" class="btn">Identification</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="fileName col-sm-6">
+							<strong>Download :</strong> <a href="/download?id=<%= projectCode %>" download><%= summary.ProjectName %></a>
+						</div>
+						<div class="ms1EnvFile col-sm-6" id="envFileInfo">
+							<strong>Envelope File:</strong> <span id="envelopeFile"><%= summary.MS1_envelope_file %></span>
+						</div>
+					</div>
+				</span>
+			</div>
+
+			<hr>
+
+			<div id="rt-sum_panel">
+				<div id="input">
+					<div class="scanleveltitle row">
+						<div class="col-sm-9">
+							<strong>Scan Range:<%= scanRange.MIN %> - <%= scanRange.MAX %></strong>
+						</div>
+						<div class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-4">
+									<label for="scanID" id="scanRange">Scan:</label>
+								</div>
+								<div class="col-sm-4">
+									<input type="text" id="scanID" name="scanID" min=<%= scanRange.MIN %> max=<%= scanRange.MAX %>>
+								</div>
+								<div class="col-sm-4">
+									<button class="btn" type="submit" id="request">Request</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="scanleveltitle row">
+						<div class="col-sm-8">
+							<div class="row">
+								<div class="col-sm-4">
+									RT:<span id="rt-hover">0</span>
+								</div>
+								<div class="col-sm-5">
+									<div id="shiftRight">
+										Intensity:<span id="intensity-hover">0</span>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									Scan:<span id="scan-hover">0</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+					<input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
+					<input type="hidden" id="rangeMin" value=<%= scanRange.MIN %>>
+					<input type="hidden" id="rangeMax" value=<%= scanRange.MAX %>>
+					<input type="hidden" id="envStatus" value=<%= summary.envStatus %>>
+					<input type="hidden" id="featureStatus" value=<%= summary.featureStatus %>>
+					<input type="hidden" id="projectName" value=<%= summary.ProjectName %>>
+					<input type="hidden" id="email" value=<%= summary.EmailAddress %>>
+					<input type="hidden" id="fileName" value="<%= fileName %>">
+					<input type="hidden" id="userType" value="<%= userType%>"
+				</div>
+				<div class="row">
+					<div id="rt-sum" class="col-sm-12">
+					</div>
+				</div>
+				<hr>
+			</div>
+			<hr>
+			<div class="scanleveltitle row" id ="3d-graph-parameter">
+				<div class="col-sm-3">
+					<div><strong>Graph data:</strong></div>
+					<span id="graph-cursor-data">
+						m/z:    <br>  retention time (min):   <br>  ion injection time (ms):   <br>  scan ID:   <br>
+					</span>
+					<div class="projectName">
+						<span id="graph-metadata"></span>
+					</div>
+				</div>
+				<div class="col-sm-5">
+					<div class="col-sm-10">
+						<div class="row">
+							<div class="col-sm-7">
+								<strong>Retention Time (min):</strong>
+							</div>
+							<div class="col-sm-5" style="display:flex">
+								<input type="text" id="rtRangeMin" class="rangeTextBox" name="rtRange" />
+								<span class ="rangeMarker">&nbsp;±&nbsp;</span>
+								<input type="text" id="rtRangeMax" class="rangeTextBox" name="rtRange" value=1 />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-7">
+								<strong>M/z:</strong>
+							</div>
+							<div class="col-sm-5" style="display:flex">
+								<input type="text" id="mzRangeMin" class="rangeTextBox" name="mzRange" />
+								<span class ="rangeMarker">&nbsp;±&nbsp;</span>
+								<input type="text" id="mzRangeMax" class="rangeTextBox" name="mzRange" value=50 />
+							</div>
+						</div>	
+						<div class="row">
+							<div class="col-sm-7">
+								<strong>Intensity cutoff threshold:</strong>
+							</div>
+							<div class="col-sm-5" style="display:flex">
+								<input type="text" id="cutoff-threshold" class="rangeTextBox" name="cutoff-threshold" />
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-7">
+								<strong>Intensity auto scaling:</strong>
+							</div>
+							<div class="col-sm-5" style="display:flex">
+								<input type="checkbox" id="inte-auto-adjust" name="inte-auto-adjust" value="auto-adjust" checked>							
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-7">
+								<strong>Highlight current scan:</strong>
+							</div>
+							<div class="col-sm-5" style="display:flex">
+								<input type="checkbox" id="highlight-cur-scan" name="highlight-cur-scan" value="highlight-cur">							
+							</div>
+						</div>
+						<div class="row" id="show-feature-anno-div">
+							<div class="col-sm-7">
+								<strong>show feature annotation:</strong>
+							</div>
+							<div class="col-sm-5" style="display:flex">
+								<input type="checkbox" id="show-feature-anno" name="show-feature-anno" value="auto-adjust" checked>							</div>
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<button type="submit" class="btn" id="request3dGraphRedraw">Request</button>
+						<button id="resetGraphs" type="button" class="btn">Reset</button>
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="col-sm-1"></div>
+					<div class="col-sm-4">
+						<button class="btn" type="submit" id="save3dGraph">Save Graph</button>
+					</div>
+					<div class="col-sm-2" style="display:flex">
+						<button class="btn default-btn" type="submit" id="graph-expand"> + </button>
+						<button class="btn default-btn" type="submit" id="graph-shrink"> - </button>
+					</div>
+					<div class="col-sm-2">
+						<button class="btn default-btn" type="submit" id="graph-full-screen"> Full Screen</button>
+					</div>
+					<div class="col-sm-2">
+						<button id="helpBtn" type="button" class="btn" data-toggle="modal" data-target="#helpModal">Help</button>
+					</div>
+					<div class="col-sm-1"></div>
+				</div>
+			</div>
+			<div id ="save-as-image-form">
+				<input type="text" placeholder="Enter File Name" name="fileName" id="input-file-name">
+				<button class="btn" type="submit" id="btn-save-file-name">OK</button>
+			</div>
+			<div class="row">
+				<div class="projectName col-sm-3"></div>
+			</div>
+			<div id="tooltip-scanID">
+				<span id="tooltiptext-scanID"></span>
+			</div>
+			<div id="tooltip">
+				<span id="tooltiptext"></span>
+			</div>
+			<div>
+				<div class="col-md-11 col2" id="graph-container"></div>
+			</div>
+			
+			<div class="hover-label-container">
+				<span id="graph-hover-label"></span>
+			</div>
+			<hr>
+			<div id="featureInfo" style="display:none;width:100%">
+				<div class="row">
+					<div class="col-sm-9" id="featureTableTitle">
+						<b>Feature Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
+					</div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1"></div>
+					<div class="col-sm-1">
+						<button class="btn" id="hideFeatureTable">Hide</button>
+					</div>
+				</div>
+
+				<div id="featureDataTable" style="width:100%">
+					<div id="feature-table-range-search-div" class="dataTables_wrapper dataTables_filter;">
+						<label for="feature-table-search-min">Min m/z: </label>
+						<input type="search" id="feature-table-search-min">
+						<label for="feature-table-search-max">Max m/z: </label>
+						<input type="search" id="feature-table-search-max">
+					</div>
+					<div id="feature-table-id-search-div" class="dataTables_wrapper dataTables_filter;">
+						<label for="feature-table-search-id">Feature ID: </label>
+						<input type="search" id="feature-table-search-id">
+					</div>
+					<table id="featureTable" class="display" style="width:100%">
+						<thead>
+						<tr>
+							<th>Feature ID</th>
+							<th>Envelope ID</th>
+							<th>Charge</th>
+							<th>Mono Mass</th>
+							<th>Mono M/Z</th>
+							<th>Intensity</th>
+						</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+			<hr>
+			<div id="scanLevelOne">
+				<div class="row scanleveltitle">
+					<div class="col-sm-7">
+						<div class="row">
+							<div class="col-sm-3">
+								<b>Scan Level 1</b>
+							</div>
+							<div class="col-sm-2" style="position: relative; right: 1%">
+								Scan: <span id="scanID1"></span>
+							</div>
+							<div class="col-sm-7">
+								Retention Time: <span id="scan1RT"></span>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-2">
+					</div>
+					<div class="col-sm-3">
+						<div class="row">
+							<div class="col-sm-4">
+
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="prev1">Previous</button>
+							</div>
+							<div class="col-sm-4">
+								<button class="btn" type="submit" id="next1">Next</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<svg id="spectrum1"></svg><br />
+				<hr>
+			</div>
+
+			<div id="scanLevelTwo">
+				<div class="scanleveltitle row" id="scanLevelTwoInfo" style="padding-left: 5px; padding-right: 5px">
+					<div class="col-sm-2" style="padding-right: 5px">
+						<b>Scan Level 2</b>
+					</div>
+					<div class="col-sm-1" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+						Scan:<span id="scanID2"></span>
+					</div>
+					<div class="col-sm-9">
+						<div class="row">
+							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px">
+								Precursor MZ:<span id="prec_mz"></span>
+							</div>
+							<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+								Precursor Charge:<span id="prec_charge"></span>
+							</div>
+							<div class="col-sm-4" style="padding-left: 0px; padding-right: 0px; position: relative; left: 2%">
+								Precursor Intensity:<span id="prec_inte"></span>
+							</div>
+							<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px; position: relative; right: 2%">
+								Retention Time:<span id="rt"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="scanleveltitle row">
+					<div class="col-sm-12">
+						<span id = "noScanLevelTwo"><strong>No Scan Level 2</strong></span>
+					</div>
+				</div>
+				<div id="tabs">
+					<ul id="tabList">
+					</ul>
+					<svg id="spectrum2"></svg>
+				</div>
+
+				<br>
+				<hr>
+			</div>
+
+			<div id="ms2Info">
+				<div>
+					<span id="msType"></span> Scan: <span id="envScan"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+					<span class="fdr">Q-value: </span> <span id="spec-fdr-value"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+				</div>
+				<div>
+					Proteoform: <span id="proteoform"></span>
+				</div>
+			</div>
+			<hr>
+			<div id="envInfo">
+				<div class="row">
+					<div class="col-sm-9" id="scanLevelTwoInfo">
+						<b>Envelope Table</b>&nbsp;&nbsp;&nbsp;&nbsp;
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="inspect">Inspect</button>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="switch">MS1</button>
+					</div>
+					<div class="col-sm-1">
+						<button class="btn" id="hide">Hide</button>
+					</div>
+				</div>
+
+				<div id="datatable">
+				<table id="envTable" class="display" style="width:100%">
+					<thead>
+					<tr>
+						<th>Envelope ID</th>
+						<th>Scan</th>
+						<th>Charge</th>
+						<th>Mono Mass</th>
+						<th>Intensity</th>
+						<th>Mono M/Z</th>
+					</tr>
+					</thead>
+					<!--<tfoot>
+					<tr>
+						<th>Scan</th>
+						<th>Charge</th>
+						<th>Theo Mono Mass</th>
+						<th>Mono M/Z</th>
+					</tr>
+					</tfoot>-->
+				</table>
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- <script type="text/javascript" src="js/result.js"></script> -->
+	<script src="lib/js/dataTables.altEditor.free.js"></script>
+
+	<!--library related to image download-->
+	<script src="lib/js/FileSaver.js"></script>
+	<script src="lib/js/canvas-toBlob.js"></script>
+</body>
+
+</html>

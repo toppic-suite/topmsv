@@ -1,0 +1,583 @@
+.projectsummary {
+    font-size: 16px;
+}
+h2 {
+    font-size: 18px;
+}
+body {
+    padding-top:10px;
+    padding-bottom: 2px;
+    font-family: Arial, serif;
+}
+body.container{
+    padding-bottom: 5px;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+div.modal-header {
+    padding-bottom: 10px;
+}
+div#input {
+    font-size: 100%;
+}
+
+.jumbotron p{
+    margin-bottom: 5px;
+}
+.jumbotron {
+    padding-top: 10px;
+    padding-bottom: 5px;
+
+}
+#scanID {
+    width: 120%;
+    position: relative;
+    /*left: 53%;*/
+}
+.rangeTextBox{
+    width: 120%;
+    position: relative;
+}
+hr {
+    margin-bottom: 7px;
+    margin-top: 0px;
+}
+
+span.ms1EnvFile{
+    position: relative;
+    left: 20%;
+}
+#scanRange {
+    position: relative;
+    left: 50%;
+}
+.defaultBtn {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+.defaultBtn:hover{
+    color: white;
+}
+button#modalUpload {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#seqUpload {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#seqResult{
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button.bwButton {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#deleteMsalign {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+button#deleteSeq {
+    position: relative;
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+button#topfdtask {
+    position: relative;
+    left: 0%;
+    /*font-size: 93%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#toppicTask {
+    position: relative;
+    left: 0%;
+    /*font-size: 93%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#home {
+    position: relative;
+    left: 40%;
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+#request {
+    position: relative;
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#request3dGraphRedraw{
+    position: relative;
+    left: -10px;
+    margin: 0px 0px 5px 0px;
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#save3dGraph{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#next1 {
+    position: relative;
+    /*left: 84%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#prev1 {
+    position: relative;
+    /*left: 82%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    float: left;
+}
+button#uploadMsalign {
+    position: relative;
+    left: 0%;
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#uploadSequence {
+    position: relative;
+    left: 4%;
+    /*font-size: 95%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+
+    padding: 2px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#resetGraphs {
+    position: relative;
+    left: -10px;
+    /*font-size: 95%;*/
+    background-color: #555555;;
+    color: white;
+    padding: 2px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#helpBtn {
+    position: relative;
+    left: 115%;
+    /*font-size: 95%;*/;
+    background-color: #555555;;
+    color: white;
+    border: 1px;
+    border-style:solid;
+    border-color:#555555;
+    padding: 2px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#inspect {
+    position: relative;
+    /*left: 82%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#hide{
+    position: relative;
+    /*left: 84%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#hideFeatureTable{
+    position: relative;
+    /*left: 84%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#switch {
+    position: relative;
+    /*left: 83%;*/
+    font-size: 100%;
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#btn-save-file-name{
+    position: relative;
+    /*left: 54.5%;*/
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button.export-button {
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+}
+button.dt-button{
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 15px;
+    text-align: center;
+    text-decoration: none;
+}
+button#close{
+    visibility: hidden !important;
+}
+span#scanid1{
+    font-size: 100%;
+}
+span.select-item{
+    padding-left: 7px;
+}
+#noScanLevelTwo{
+    display: none;
+}
+p#scanid2 {
+    font-size: 100%;
+}
+.scanleveltitle{
+    font-size: 14px;
+}
+div#shiftRight{
+    position: relative;
+    left: 15%;
+}
+svg#spectrum1{
+    padding-left: 5px;
+    width: 99% !important;
+    height: 100% !important;
+}
+svg#spectrum2{
+    padding: 0 !important;
+    padding-top: 10px !important;
+}
+.ui-widget-content {
+    background: #eee !important;
+}
+.ui-state-active {
+    background: #5e5e5e !important;
+    border: #5e5e5e !important;
+}
+
+/*upload progress*/
+.progress {
+    margin-bottom:0px;
+}
+
+.progress .progress-bar {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+.table th {
+    text-align: center;
+}
+/**displaying fdr info in env table*/
+.fdr {
+    display:hidden;
+}
+/*button#plusBtn {
+    position: relative;
+    right: 130%;
+}
+
+button#minusBtn {
+    position: relative;
+    right: 130%;
+}
+/*3d graph tooltip*/
+#tooltip {
+    display:none;
+    position:fixed;
+    border-bottom: 1px dotted black;
+    z-index: 1;
+  }
+  #tooltip-scanID {
+    display:none;
+    position:fixed;
+    border-bottom: 1px dotted black;
+    z-index: 1;
+  }
+  #tooltiptext-scanID {
+    width: 70px;
+    background-color: #555555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 5px;
+    margin: 5px;
+    font-size:10px;
+  
+    /* Position the tooltip */
+    position: absolute;
+  }
+  #tooltiptext {
+    width: 120px;
+    background-color: #555555;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 5px;
+    margin: 5px;
+    font-size:10px;
+  
+    /* Position the tooltip */
+    position: absolute;
+  }
+/*save-as-image popup css*/
+#save-as-image-form{
+    /*padding: 10px;
+    background-color: #555555;*/
+    display:none;
+    position: absolute;
+    border-radius: 5px;
+}
+#input-file-name{
+    width:200px;
+    font-size:10px;
+
+}
+/*3d graph div size*/
+#graph-container{
+    min-width:100%;
+    line-height: 0px;
+    padding:0px;
+    margin:0px;
+}
+/*default css for all buttons*/
+button#graph-expand{
+    position: relative;
+    left: -10px;
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#graph-shrink{
+    position: relative;
+    left: -8px;
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+button#graph-full-screen{
+    position: relative;
+    left: -10px;
+    /*font-size: 100%;*/
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+/*loading div*/
+#loading-div{
+    background-color: #5e5e5e;
+    color:white;
+    font-size:30px;
+    min-height:100%;
+    min-width:100%;
+    opacity:0.8;
+    z-index: 99;
+    margin: 0;
+    padding: 0;
+    left:0;
+    top:0;
+    position: fixed;
+}
+#loading-div-contents{
+    position: absolute;
+    left:45%;
+    top:40%;
+    width: 200px;
+    height: 200px;
+}
+#loading-animation-div{
+    margin: 20px 0px 0px 0px;
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+#loading-msg-div{
+    position: absolute;
+    left:42%;
+    top:35%;
+    width: 200px;
+    height: 200px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+#proteoform{
+    overflow-wrap: break-word;
+}
+#feature-table-range-search-div{
+    float:right; 
+    margin-top: 10px;
+}
+#feature-table-range-search-div input{
+    max-width: 80px;
+}
+#feature-table-id-search-div{
+    float:right;
+    margin-right: 147px;
+}
+#feature-table-id-search-div input{
+    max-width:80px;
+}

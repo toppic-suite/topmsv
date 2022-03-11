@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TopMSV</title>
+	<script src="lib/js/jquery-3.6.0.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="lib/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="lib/css/bootstrap-theme.min.css">
+
+    <!-- For Ajax call -->
+    <script src="lib/js/axios.min.js"></script>
+    
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="lib/js/bootstrap.min.js"></script>
+
+    <link rel='shortcut icon' type='image/x-icon' href='image/favicon.ico' />
+    <link href="css/projects.css" type="text/css" rel="stylesheet" />
+    
+    <!--data classes-->
+    <script src="resources/topview/common/sequence/mod.js"></script>
+    <script src="resources/topview/common/sequence/massShift.js"></script>
+    <script src="resources/topview/common/util/types.js"></script>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154408351-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-154408351-1');
+    </script>
+</head>
+<body class="container">
+
+<main>
+<!--    <div>
+        <h2 style="color: #0099DD;"><strong>TopMSV</strong></h2>
+    </div>-->
+    <div>
+        <h2 style="color: #0099DD;"><strong>Identification Result</strong></h2>
+    </div>
+    <!--<ul class="nav nav-tabs">
+        <li role="presentation"><a href="/">Home</a></li>
+        <li role="presentation"><a href="/submit">Upload</a></li>
+        <li role="presentation" class="active"><a href="/projects">My projects</a></li>
+    </ul>-->
+<!--    <a href="/auth/google" id="signIn">Sign In with Google</a>-->
+    <br>
+    <div>
+        <input type="hidden" id="projectDir" name="projectDir" value="<%= projectDir %>">
+        <input type="hidden" id="projectCode" name="projectCode" value="<%= projectCode %>">
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Scan</th>
+                <th scope="col">Protein Accession</th>
+                <th scope="col">Proteoform</th>
+                <th scope="col">Q-value</th>
+                <th scope="col">E-value</th>
+            </tr>
+            </thead>
+
+            <% for (var i = 0; i < results.length; i++) { %>
+                <tr>
+                    <td scope="row"><%= i+1%></td>
+                    <td><a href="#!" onclick="jumpBack(<%= results[i].scan %>)"><%= results[i].scan %></a> </td>
+                    <td><%= results[i].protein_accession %></td>
+                    <td><a href="#!" onclick="inspect(<%= results[i].scanID %>,<%= results[i].scan %>)"><%= results[i].proteoform %></a></td>
+                    <td><%= results[i].q_value %></td>
+                    <td><%= results[i].e_value %></td>
+                </tr>
+            <% } %>
+
+        </table>
+    </div>
+</main>
+
+<script type="text/javascript" src="js/ptmAnnoData.js"></script>
+<script type="text/javascript" src="js/sequence.js"></script>
+
+</body>
+</html>
