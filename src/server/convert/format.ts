@@ -36,8 +36,10 @@ export function evalueToString(value: number): string {
   return value.toFixed(2);
 }
 
+// The TopMSV viewer's parsers compare these fields with == 0 / == 1, so
+// booleans must be written as "0"/"1" (matching the corrected TopPIC output).
 export function boolToString(value: boolean): string {
-  return value ? 'true' : 'false';
+  return value ? '1' : '0';
 }
 
 /** ion_sort_name: ion type name + display position zero-padded to 5 digits. */
