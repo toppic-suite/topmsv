@@ -144,6 +144,14 @@ class PrsmPara {
   }
 
   getBpCoordinates(pos: number, startPos: number): number[] {
+    if (pos - 1 < startPos) {
+      // Break point before the first displayed residue (e.g. the N-terminal
+      // cleavage at position 0): anchor it just left of that residue instead
+      // of wrapping to a non-existent previous row.
+      let x: number = this.getX(pos, startPos) - this.letterWidth_/2;
+      let y: number = this.getY(pos, startPos);
+      return [x,y];
+    }
     let x: number = this.getX(pos-1, startPos) + this.letterWidth_/2;
     let y: number = this.getY(pos-1, startPos);
     return [x,y];
