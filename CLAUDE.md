@@ -110,8 +110,9 @@ semantically equivalent with a normalizing comparator.
 
 ## Reference material (untracked, gitignored)
 
-`ref_code/` (original Express viewer with its own CLAUDE.md), `ref_data/`
-(example inputs: st_1.sqlite 103MB + TopPIC XMLs), `ref_html/st_1_html/`
-(TopPIC's actual HTML output = ground truth for the converter; `topfd/` alone
-has thousands of files — scope searches). `sqlite3` CLI is not installed;
+`ref_data/` holds example inputs (st_1.sqlite 103MB + TopPIC XMLs). The
+former `ref_code/` (original Express viewer) and `ref_html/st_1_html/`
+(TopPIC's actual HTML output, the byte-level ground truth the converter was
+validated against) have been removed — to re-run the validation loop, obtain
+a TopPIC-generated `*_html` directory again. `sqlite3` CLI is not installed;
 inspect `.sqlite` files with `node:sqlite`.
