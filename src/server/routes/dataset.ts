@@ -6,9 +6,9 @@
 
 import * as express from 'express';
 import * as path from 'path';
-import { datasetDir, getDb, readMeta } from '../datasets';
+import { getDb, readMeta } from '../datasets';
 import { buildSpectrumJs } from '../spectrumJs';
-import { buildPrsmJs } from '../prsmSource';
+import { buildDataJsFile } from '../prsmSource';
 
 const PUBLIC_DIR = path.join(__dirname, '..', '..', '..', 'public');
 
@@ -130,18 +130,17 @@ router.get('/topfd/:msdir(ms1_json|ms2_json)/spectrum:id(\\d+).js', (req, res) =
 
 // ----------------------------------- generated identification data (data_js)
 
-// per-prsm files are generated on the fly (see src/server/prsmSource.ts)
-router.get('/:cutoff(toppic_prsm_cutoff|toppic_proteoform_cutoff)/data_js/prsms/prsm:id(\\d+).js', (req, res) => {
-  const params = req.params as unknown as { ds: string; cutoff: string; id: string };
-  const text = buildPrsmJs(params.ds, params.cutoff, Number(params.id));
-  if (text === null) { res.status(404).send('prsm not found'); return; }
-  res.type('application/javascript').send(text);
-});
-
-router.use('/:cutoff(toppic_prsm_cutoff|toppic_proteoform_cutoff)/data_js', (req, res, next) => {
-  const dir = datasetDir((req.params as unknown as { ds: string }).ds);
-  if (!dir) { res.status(404).send('dataset not found'); return; }
-  express.static(path.join(dir, (req.params as unknown as { cutoff: string }).cutoff, 'data_js'))(req, res, next);
+// All data_js files are generated on the fly (see src/server/prsmSource.ts).
+router.get('/:cutoff(toppic_prsm_cutoff|toppic_proteoform_cutoff)/data_js/*', (req, res) => {
+  const params = req.params as unknown as { ds: string; cutoff: string; 0: string };
+  try {
+    const text = buildDataJsFile(params.ds, params.cutoff, params[0]);
+    if (text === null) { res.status(404).send('not found'); return; }
+    res.type('application/javascript').send(text);
+  } catch (err) {
+    res.status(500).send('failed to generate data file: '
+      + (err instanceof Error ? err.message : String(err)));
+  }
 });
 
 // -------------------------------------------------- shared viewer static files

@@ -326,6 +326,52 @@ export function buildCompatibleProteoform(
   };
 }
 
+// ---------------------------------------------- whole-file payload builders
+// Used by both the conversion CLI (static files for validation) and the
+// server's dynamic data_js endpoints — keep them as the single source of truth.
+
+export function serializeDataJs(payload: unknown): string {
+  return 'prsm_data =\n' + JSON.stringify(payload, null, 4) + '\n';
+}
+
+/** data_js/prsms/prsm<N>.js */
+export function buildPrsmFilePayload(d: PrsmData): { [k: string]: unknown } {
+  return { prsm: buildPrsm(d, true) };
+}
+
+/** data_js/prsms.js */
+export function buildPrsmsIndexPayload(data: PrsmData[]): { [k: string]: unknown } {
+  return { prsms: { prsm: data.map(buildPrsmBrief) } };
+}
+
+/** data_js/proteoforms/proteoform<N>.js (clusterPrsms may span proteins) */
+export function buildProteoformFilePayload(clusterPrsms: PrsmData[]): { [k: string]: unknown } {
+  return { compatible_proteoform: buildCompatibleProteoform(clusterPrsms, true, true) };
+}
+
+/** data_js/proteins/protein<N>.js */
+export function buildProteinFilePayload(protPrsms: PrsmData[], protId: number): { [k: string]: unknown } {
+  return { protein: buildProtein(protPrsms, protId, true, false) };
+}
+
+/** data_js/proteins.js: proteins ordered by their best PrSM (e-value, name) */
+export function buildProteinsIndexPayload(data: PrsmData[]): { [k: string]: unknown } {
+  const protIds = [...new Set(data.map((d) => d.prsm.protId))].sort((a, b) => a - b);
+  const bestByProt = protIds.map((pid) => {
+    const protPrsms = data.filter((d) => d.prsm.protId === pid);
+    const best = [...protPrsms].sort(cmpEValueIncProtInc)[0];
+    return { pid, best, protPrsms };
+  });
+  bestByProt.sort((a, b) => cmpEValueIncProtInc(a.best, b.best));
+  return {
+    protein_list: {
+      proteins: {
+        protein: bestByProt.map((e) => buildProtein(e.protPrsms, e.pid, false, false)),
+      },
+    },
+  };
+}
+
 /** anno_xml_util::writeProteinToXml / geneXmlForProteinList (protein element). */
 export function buildProtein(
   protPrsms: PrsmData[], protId: number, detail: boolean, addMs: boolean,

@@ -8,9 +8,7 @@ import {
   DATA_ROOT, datasetDir, listDatasets, readMeta, deleteDataset, sanitizeId,
   ensureIndexes, countMeta, DatasetMeta,
 } from '../datasets';
-import { convertDataset } from '../convert/convert';
-import { parsePrsmXmlFile } from '../convert/toppicXml';
-import { invalidatePrsmSource } from '../prsmSource';
+import { getDatasetSource, invalidatePrsmSource } from '../prsmSource';
 
 const router = express.Router();
 
@@ -97,22 +95,18 @@ router.post('/datasets', uploadFields, (req, res) => {
 
     try {
       ensureIndexes(path.join(dir, 'ms.sqlite'));
-      convertDataset({
-        sqlitePath: path.join(dir, 'ms.sqlite'),
-        prsmXmlPath: path.join(dir, 'prsm.xml'),
-        proteoformXmlPath: path.join(dir, 'proteoform.xml'),
-        fastaPath: fastaFile ? path.join(dir, 'db.fasta') : null,
-        outDir: dir,
-      });
-      const prsms = parsePrsmXmlFile(fs.readFileSync(path.join(dir, 'prsm.xml'), 'utf8'));
+      // Parse, match and cache the dataset now: this validates the uploaded
+      // files (all data_js files are then served dynamically from this cache).
+      const source = getDatasetSource(id);
+      if (!source) throw new Error('uploaded files could not be read');
       const counts = countMeta(path.join(dir, 'ms.sqlite'));
       const meta: DatasetMeta = {
         id,
         name: requested.replace(/\.(sqlite|db)$/i, ''),
         createdAt: new Date().toISOString(),
-        prsmCount: prsms.length,
-        proteoformCount: new Set(prsms.map((p) => p.proteoClusterId)).size,
-        proteinCount: new Set(prsms.map((p) => p.protId)).size,
+        prsmCount: source.all.length,
+        proteoformCount: new Set(source.all.map((d) => d.prsm.proteoClusterId)).size,
+        proteinCount: new Set(source.all.map((d) => d.prsm.protId)).size,
         ms1Count: counts.ms1Count,
         ms2Count: counts.ms2Count,
         hasFasta: !!fastaFile,
@@ -120,6 +114,7 @@ router.post('/datasets', uploadFields, (req, res) => {
       fs.writeFileSync(path.join(dir, 'meta.json'), JSON.stringify(meta, null, 2));
       res.json(meta);
     } catch (err) {
+      invalidatePrsmSource(id);
       fs.rmSync(dir, { recursive: true, force: true });
       throw err;
     }

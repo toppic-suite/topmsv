@@ -74,6 +74,10 @@ export function deleteDataset(id: string): boolean {
 export function ensureIndexes(sqlitePath: string): void {
   const db = new DatabaseSync(sqlitePath);
   try {
+    // TopFD writes the file in WAL mode; a stale -shm left by an interrupted
+    // process makes later read-only opens fail (SQLITE_CANTOPEN). Rollback
+    // journaling needs no shared memory, so switch our uploaded copy over.
+    db.exec('PRAGMA journal_mode = DELETE;');
     db.exec(`
       CREATE INDEX IF NOT EXISTS ix_ms1_peak_spec ON ms1_peak(spec_id);
       CREATE INDEX IF NOT EXISTS ix_ms1_env_spec ON ms1_env(spec_id);

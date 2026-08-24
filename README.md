@@ -42,8 +42,8 @@ the proteoform end.
 
 ## What the converter does
 
-At upload time the server reproduces TopPIC's own HTML-report generation
-(ported from toppic-suite `src/visual`, `src/prsm`, `src/ms`):
+The server reproduces TopPIC's own HTML-report generation (ported from
+toppic-suite `src/visual`, `src/prsm`, `src/ms`):
 
 - reads deconvoluted MS2 peak lists from the sqlite file (msalign precision),
 - rebuilds theoretical B/Y ion ladders from the proteoform annotation,
@@ -52,8 +52,16 @@ At upload time the server reproduces TopPIC's own HTML-report generation
   ±1.00235 Da isotope variants for masses above 5000 Da) using the same
   two-pointer sweep as TopPIC,
 - recomputes p-values/e-values from the stored extreme-value components, and
-- writes the `toppic_prsm_cutoff/data_js` and `toppic_proteoform_cutoff/data_js`
+- serves the `toppic_prsm_cutoff/data_js` and `toppic_proteoform_cutoff/data_js`
   file trees in TopPIC's exact format.
+
+Nothing is materialized on disk: a dataset directory holds only the uploaded
+input files. All data_js files (`prsms.js`, `proteins.js` and the per-item
+prsm/protein/proteoform files) are generated dynamically from a per-dataset
+in-memory cache of the parsed and matched inputs, and the per-scan spectrum
+files (`topfd/ms{1,2}_json/spectrum<id>.js`) come straight from the sqlite
+file. (`npm run convert` can still write the trees as static files — that is
+the validation path used to byte-compare against TopPIC's own output.)
 
 On the example dataset the generated files are byte-identical to TopPIC's own
 output for the majority of files; the remaining differences are peak-numbering
@@ -61,10 +69,6 @@ permutations of envelopes with near-tied EnvCNN scores (the msalign order is
 not recoverable from the sqlite file) and a few ±0.01 ppm last-digit values —
 all verified semantically equivalent.
 
-Per-scan spectrum files (`topfd/ms{1,2}_json/spectrum<id>.js`) and per-PrSM
-files (`data_js/prsms/prsm<id>.js`) are generated on the fly from the stored
-inputs instead of being materialized (the example dataset would otherwise need
-~275 MB of spectrum files plus hundreds of PrSM files).
 
 ## Pages
 

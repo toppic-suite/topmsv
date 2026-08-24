@@ -8,14 +8,15 @@ import { parsePrsmXmlFile, PrsmRec } from './toppicXml';
 import { parseFasta, resolveProteinSeq, FastaEntry } from './fasta';
 import { buildProteoformContext, matchPrsm } from './annotate';
 import {
-  PrsmData, SpectrumHeaderInfo, buildPrsm, buildPrsmBrief, buildProtein,
-  buildCompatibleProteoform, cmpEValueIncProtInc,
+  PrsmData, SpectrumHeaderInfo, buildPrsmFilePayload, buildPrsmsIndexPayload,
+  buildProteoformFilePayload, buildProteinFilePayload, buildProteinsIndexPayload,
+  serializeDataJs,
 } from './builder';
 import { MsDataDb } from './msdata';
 
 function writeDataJs(filePath: string, payload: unknown): void {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, 'prsm_data =\n' + JSON.stringify(payload, null, 4) + '\n');
+  fs.writeFileSync(filePath, serializeDataJs(payload));
 }
 
 function derivePrecursorCharge(oriPrecMass: number, targetMz: number): number {
@@ -70,7 +71,12 @@ export function assemblePrsmData(
   return out;
 }
 
-/** Generate one data_js tree (e.g. toppic_prsm_cutoff/data_js) from one XML. */
+/**
+ * Generate one data_js tree (e.g. toppic_prsm_cutoff/data_js) from one XML.
+ * Only used by the CLI for validation against TopPIC's own output; at runtime
+ * every one of these files is generated dynamically (src/server/prsmSource.ts)
+ * from the same payload builders.
+ */
 export function generateDataJsTree(
   data: PrsmData[],
   outDir: string,
@@ -78,45 +84,30 @@ export function generateDataJsTree(
 ): void {
   const progress = onProgress ?? (() => undefined);
 
-  // Per-prsm files (data_js/prsms/prsm<N>.js) are not written here: they are
-  // generated dynamically by the server (src/server/prsmSource.ts).
+  for (const d of data) {
+    writeDataJs(path.join(outDir, 'prsms', `prsm${d.prsm.prsmId}.js`), buildPrsmFilePayload(d));
+  }
+  progress(`wrote ${data.length} prsm files`);
 
-  // prsms.js (all prsms, brief, in input order)
-  writeDataJs(path.join(outDir, 'prsms.js'),
-              { prsms: { prsm: data.map(buildPrsmBrief) } });
+  writeDataJs(path.join(outDir, 'prsms.js'), buildPrsmsIndexPayload(data));
 
-  // proteoformN.js: prsms grouped by cluster id (across proteins)
   const clusterIds = [...new Set(data.map((d) => d.prsm.proteoClusterId))].sort((a, b) => a - b);
   for (const cid of clusterIds) {
     const clusterPrsms = data.filter((d) => d.prsm.proteoClusterId === cid);
     writeDataJs(path.join(outDir, 'proteoforms', `proteoform${cid}.js`),
-                { compatible_proteoform: buildCompatibleProteoform(clusterPrsms, true, true) });
+                buildProteoformFilePayload(clusterPrsms));
   }
   progress(`wrote ${clusterIds.length} proteoform files`);
 
-  // proteinN.js: prsms grouped by protein id
   const protIds = [...new Set(data.map((d) => d.prsm.protId))].sort((a, b) => a - b);
   for (const pid of protIds) {
     const protPrsms = data.filter((d) => d.prsm.protId === pid);
     writeDataJs(path.join(outDir, 'proteins', `protein${pid}.js`),
-                { protein: buildProtein(protPrsms, pid, true, false) });
+                buildProteinFilePayload(protPrsms, pid));
   }
   progress(`wrote ${protIds.length} protein files`);
 
-  // proteins.js: proteins ordered by their best PrSM (e-value, then name)
-  const bestByProt = protIds.map((pid) => {
-    const protPrsms = data.filter((d) => d.prsm.protId === pid);
-    const best = [...protPrsms].sort(cmpEValueIncProtInc)[0];
-    return { pid, best, protPrsms };
-  });
-  bestByProt.sort((a, b) => cmpEValueIncProtInc(a.best, b.best));
-  writeDataJs(path.join(outDir, 'proteins.js'), {
-    protein_list: {
-      proteins: {
-        protein: bestByProt.map((e) => buildProtein(e.protPrsms, e.pid, false, false)),
-      },
-    },
-  });
+  writeDataJs(path.join(outDir, 'proteins.js'), buildProteinsIndexPayload(data));
   progress('wrote proteins.js');
 }
 
