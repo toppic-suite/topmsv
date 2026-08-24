@@ -51,5 +51,6 @@ table.datasets th, table.datasets td {
 }
 table.datasets th { color: #556; font-weight: 600; font-size: 13px; }
 table.datasets td.num { text-align: right; }
+table.datasets td.actions { white-space: nowrap; }
 table.datasets a { color: #2980b9; text-decoration: none; margin-right: 10px; }
 table.datasets a:hover { text-decoration: underline; }

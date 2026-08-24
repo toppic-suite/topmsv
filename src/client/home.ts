@@ -43,9 +43,9 @@ function renderDatasets(list: DatasetMeta[]): void {
       <td class="num">${d.proteoformCount}</td>
       <td class="num">${d.prsmCount}</td>
       <td class="num">${d.ms1Count} / ${d.ms2Count}</td>
-      <td>
+      <td class="actions">
         <a href="d/${encodeURIComponent(d.id)}/topmsv/index.html">Identifications</a>
-        <a href="d/${encodeURIComponent(d.id)}/spectra.html">Raw spectra</a>
+        <a href="d/${encodeURIComponent(d.id)}/spectra.html">Raw&nbsp;spectra</a>
       </td>
       <td><button class="danger" data-id="${esc(d.id)}">Delete</button></td>
     </tr>`;
