@@ -93,6 +93,8 @@ src/common/                  TopMSV visualization library (TypeScript, compiled
 src/client/                  home page TypeScript (compiled to public/js)
 public/index.html            home page
 public/spectra.html + js/    raw-spectra browser
+public/vendor/               browser libraries for spectra.html, synced from
+                             node_modules by scripts/sync-vendor.mjs (postinstall)
 public/topmsv/               TopMSV viewer (visual/, inspect/, common/, vendored libs)
 data/                        uploaded datasets (gitignored)
 ```

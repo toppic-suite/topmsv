@@ -8,6 +8,8 @@
     "serve": "ts-node --project tsconfig.server.json server.ts",
     "typecheck:server": "tsc --project tsconfig.server.json",
     "build:client": "tsc && tsc --project tsconfig.home.json",
+    "sync:vendor": "node scripts/sync-vendor.mjs",
+    "postinstall": "node scripts/sync-vendor.mjs",
     "convert": "ts-node --project tsconfig.server.json src/server/convert/cli.ts"
   },
   "keywords": [
@@ -30,10 +32,19 @@
     "ts-node": "^10.9.2"
   },
   "dependencies": {
+    "bootstrap": "^5.3.8",
+    "d3": "5.16.0",
+    "datatables.net": "^1.13.11",
+    "datatables.net-dt": "^1.13.11",
     "express": "^4.19.2",
     "fast-xml-parser": "^5.11.0",
+    "jquery": "^3.7.1",
+    "jquery-ui": "^1.14.2",
     "multer": "^2.1.1",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "d3-color": "^3.1.0"
   },
   "engines": {
     "node": ">=24"

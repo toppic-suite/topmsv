@@ -104,6 +104,12 @@ semantically equivalent with a normalizing comparator.
 - `public/js` + `public/spectra.html` are the raw-spectra browser (from the
   reference Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on load.
+- `public/vendor/` (used only by spectra.html) is synced from node_modules by
+  `scripts/sync-vendor.mjs` (postinstall / `npm run sync:vendor`); versions are
+  managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the drawing code
+  uses the v5-only d3.event/d3.mouse API), jquery ^3 ($.trim etc. removed in
+  4), datatables.net ^1 (2.x breaking). `public/topmsv/node_modules` is NOT
+  synced — it is TopPIC's own frozen viewer bundle.
 - `src/common/` is the shared TypeScript visualization library compiled by the
   root `tsconfig.json` (include is `./src/common/*/*` — exactly one directory
   level; deeper files are silently not compiled).
