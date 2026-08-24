@@ -1,0 +1,282 @@
+/*inspect page layout*/
+.flex-rectangle{
+  width: 100%;
+  background: #E5E5E5;
+  border: 2px solid #cccccc;
+  border-radius: 6px;
+  margin-bottom:0px;
+  padding:6px 1%;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.flex-rectangle p { margin-bottom: 0; }
+.flex-rectangle .row { align-items: center; }
+.container{
+  padding-top: 100px !important;
+}
+/** Below CSS codes are formatting the information box at the top of inspect page
+*/
+  /**
+  * CSS to arrange io fragmentation blocks
+  */
+  .ionfragments td{
+    text-align: left !important;
+    width:10% !important;
+  }
+  .ionfragments {
+    border-radius: 6px !important;
+    border:2px solid white;
+  }
+  .custom-control{
+    position: relative;
+      display: block;
+      min-height: 1.5rem;
+      padding-left: 2rem;
+  }
+  .ionfragments.table-bordered > tbody > tr > td{
+      border:1px solid white;
+  }
+  /**
+  *CSS to set info image size
+  */
+  #sequenceinfo,#fixedptminfo,
+  #ionfragmentinfo,#massintensityinfo,#peakintensityinfo{
+    width: 15px;
+    height: 15px;
+  }
+  /**
+  *Adding padding to textare for mass and intensity, 
+  *peak and intensity blocks.
+  */
+  textarea {
+    padding: relative;
+  }
+  #tableContainer td,th {
+    text-align: center !important;  
+  }
+  #tableContainer thead,th { 
+    border-top: none !important; 
+  }
+  /**
+  *CSS to set td span from left of Ion Fragments
+  */
+  .ionfragments td{
+    padding: .2rem !important;
+  }
+  /**
+  *CCC to set error selection block to the right most 
+  */
+  #errorval{
+    text-align: center!important; 
+    width: 80 !important;
+  }
+  .error_input{
+    vertical-align: bottom !important;
+    position:relative;
+    right:0px;
+    bottom:-22px;
+  }
+/*inspect page modals*/
+.modal-dialog{
+  overflow-y: initial !important
+}
+#help-modal-body{
+  height: 80vh;
+  overflow-y: auto;
+}
+#errorAlertModal{
+	margin-top: 20%;
+}
+/*fixedptm box property*/
+.fixedptmcheckbox{
+	box-shadow: 0px 0px 0px 0px !important;
+  margin-right: 10px !important;
+}
+.fixedptmfooter{
+	padding-right: 1rem !important;
+	padding-bottom: 0rem !important;
+    border-top: 0px !important;
+    border-bottom-right-radius: 0rem;
+    border-bottom-left-radius: .3rem;
+} 
+.fixedptmacid {
+	width:40px !important;
+} 
+.fixedptmmass {
+	width:75px !important;
+} 
+#dropdownMenuLink {
+	width: 75% !important;
+}
+.fa-plus,.fa-remove{
+  font-weight: 900 !important;
+}
+
+/*tooltip css properties -- currently not used*/
+#tooltip_pop #mass_shift{
+	width: 104;
+}
+#tooltip_pop select{
+	width: 70;
+}
+#tooltip_pop option{
+	width: 50;
+	height: 10;
+}
+#tooltip_pop option:hover{ 
+	background-color: #000 !important; 
+}
+
+/*datatable*/
+#divtableContainer{
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+#divtableContainer a{
+  color: #428bca !important ;
+}
+/*for peaks table*/
+.table-borderless{
+  margin-left: 1rem !important;
+}
+.table-borderless td,
+.table-borderless th {
+  border: 0;
+	border-top: none !important;
+}
+.table-borderless tr, .table-borderless td{
+  padding: .20rem !important;
+  margin: 0 !important;
+}
+.table-borderless {
+	margin-bottom: 0.5rem !important;
+}
+.dataTables_filter, .dataTables_info {
+	display: none;
+}
+/*center-align the mass tables (header and body cells)*/
+#mass1Table th,
+#mass1Table td,
+#mass2Table th,
+#mass2Table td {
+	text-align: center !important;
+}
+.table-nonfluid {
+  width: auto;
+}
+/**
+*CSS to set the color of matched fragments in the fragment table
+*/
+.td_fragments{
+  text-align : center !important ;
+}
+.matched_fragments{
+  background-color:hsla(120, 100%, 50%, 0.3);;
+}
+.matched_fragments:hover{
+  cursor: pointer;
+}
+
+/*buttons*/
+.prsmgraphdownload button{
+  margin: 1px !important;
+}
+/*precursor mass text box*/
+#precursormass{
+  width:100px;
+
+}
+
+/* draggable / resizable spectrum panels (MS1 and MS2) */
+#panelArea {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 100px);
+  min-height: 600px;
+  margin-bottom: 10px;
+}
+.spec-panel {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+  min-height: 160px;
+  overflow: hidden;
+  resize: both;   /* native bottom-right grip; resizes width and height */
+}
+/* default 2x2 grid: MS1 top-left, MS2 top-right,
+   MS1 mass list bottom-left, MS2 mass list bottom-right */
+#ms1Panel   { left: 0;   top: 0;   width: 49.5%; height: 49%; }
+#ms2Panel   { left: 50%; top: 0;   width: 50%; height: 49%; }
+#mass1Panel { left: 0;   top: 50%; width: 49.5%; height: 49%; }
+#mass2Panel { left: 50%; top: 50%; width: 50%; height: 49%; }
+/* the mass-list tables scroll inside their panel bodies */
+#mass1Panel .panel-body, #mass2Panel .panel-body { overflow: auto; }
+.panel-header {
+  flex: 0 0 auto;
+  background: #e9eef7;
+  border-bottom: 1px solid #ccc;
+  padding: 4px 8px;
+  cursor: move;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.panel-title { font-weight: bold; white-space: nowrap; }
+.panel-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex: 1 1 auto; }
+.panel-anno { color: #e03131; font-weight: bold; min-width: 1px; }
+/* The MS1 info slot keeps the scan-info width; the hover annotation overlays
+   it (absolute) so swapping them never changes the header's wrapping. */
+#ms1InfoSlot, #ms2InfoSlot { position: relative; white-space: nowrap; }
+#ms1InfoSlot #ms1ScanInfo, #ms2InfoSlot #ms2ScanInfo { white-space: nowrap; }
+#ms1InfoSlot .panel-anno, #ms2InfoSlot .panel-anno { position: absolute; left: 0; top: 0; white-space: nowrap; }
+.panel-nav { margin-left: auto; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.panel-body { flex: 1 1 auto; overflow: hidden; }
+.panel-body svg { width: 100%; height: 100%; display: block; }
+
+/* App modal (help popup), styled to match the panels */
+.app-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+}
+.app-modal-overlay.open { display: flex; }
+.app-modal {
+  background: #fff;
+  width: 480px;
+  max-width: 92vw;
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+.app-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e9eef7;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 14px;
+}
+.app-modal-title { font-weight: bold; font-size: 16px; }
+.app-modal-close {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: #555;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.app-modal-close:hover { color: #000; }
+.app-modal-body { padding: 14px 18px; font-size: 14px; color: #222; }
+.app-modal-body ul { margin: 0; padding-left: 20px; }
+.app-modal-body li { margin-bottom: 8px; }
+.app-modal-body li:last-child { margin-bottom: 0; }

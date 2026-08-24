@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "none",
+    "strict": true,
+    "lib": ["es2018", "dom", "dom.iterable"],
+    "skipLibCheck": true,
+    "outDir": "./public/js"
+  },
+  "include": ["./src/client/*"]
+}

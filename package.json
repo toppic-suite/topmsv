@@ -1,0 +1,41 @@
+{
+  "name": "topmsv-for-toppic",
+  "version": "1.0.0",
+  "description": "Web tool for visualizing TopFD spectral deconvolution and TopPIC database search results",
+  "main": "server.ts",
+  "scripts": {
+    "start": "ts-node --project tsconfig.server.json server.ts",
+    "serve": "ts-node --project tsconfig.server.json server.ts",
+    "typecheck:server": "tsc --project tsconfig.server.json",
+    "build:client": "tsc && tsc --project tsconfig.home.json",
+    "convert": "ts-node --project tsconfig.server.json src/server/convert/cli.ts"
+  },
+  "keywords": [
+    "mass-spectrometry",
+    "proteomics",
+    "top-down",
+    "toppic",
+    "topfd",
+    "viewer"
+  ],
+  "author": "Xiaowen Liu and Claude Code",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.11",
+    "@types/d3": "5.16.0",
+    "@types/express": "^4.17.21",
+    "@types/jqueryui": "^1.12.6",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "fast-xml-parser": "^5.11.0",
+    "multer": "^2.1.1",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
