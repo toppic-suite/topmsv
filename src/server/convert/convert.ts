@@ -78,12 +78,8 @@ export function generateDataJsTree(
 ): void {
   const progress = onProgress ?? (() => undefined);
 
-  // per-prsm files
-  for (const d of data) {
-    writeDataJs(path.join(outDir, 'prsms', `prsm${d.prsm.prsmId}.js`),
-                { prsm: buildPrsm(d, true) });
-  }
-  progress(`wrote ${data.length} prsm files`);
+  // Per-prsm files (data_js/prsms/prsm<N>.js) are not written here: they are
+  // generated dynamically by the server (src/server/prsmSource.ts).
 
   // prsms.js (all prsms, brief, in input order)
   writeDataJs(path.join(outDir, 'prsms.js'),

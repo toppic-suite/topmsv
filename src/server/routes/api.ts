@@ -10,6 +10,7 @@ import {
 } from '../datasets';
 import { convertDataset } from '../convert/convert';
 import { parsePrsmXmlFile } from '../convert/toppicXml';
+import { invalidatePrsmSource } from '../prsmSource';
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ router.get('/datasets', (req, res) => {
 });
 
 router.delete('/datasets/:id', (req, res) => {
+  invalidatePrsmSource(req.params.id);
   if (deleteDataset(req.params.id)) res.json({ deleted: true });
   else res.status(404).json({ error: 'dataset not found' });
 });

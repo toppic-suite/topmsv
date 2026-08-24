@@ -33,7 +33,9 @@ viewer per dataset.
 /                          public/index.html + public/js/home.js (from src/client/home.ts)
 /api/datasets              upload (multer) -> data/<id>/ -> ensureIndexes + convertDataset
 /d/<id>/topmsv/...         static viewer (public/topmsv, shared by all datasets)
-/d/<id>/toppic_*_cutoff/data_js/...   generated files from data/<id>/...
+/d/<id>/toppic_*_cutoff/data_js/...   generated files from data/<id>/... EXCEPT:
+/d/<id>/toppic_*_cutoff/data_js/prsms/prsm<N>.js  generated ON THE FLY (src/server/prsmSource.ts,
+                                      per-dataset LRU cache of parsed XML+fasta+sqlite)
 /d/<id>/topfd/ms{1,2}_json/spectrum<N>.js  generated ON THE FLY from sqlite (src/server/spectrumJs.ts)
 /d/<id>/spectra.html + /d/<id>/api/*  raw-spectra browser + its sqlite JSON API
 ```

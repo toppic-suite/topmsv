@@ -61,9 +61,10 @@ permutations of envelopes with near-tied EnvCNN scores (the msalign order is
 not recoverable from the sqlite file) and a few ±0.01 ppm last-digit values —
 all verified semantically equivalent.
 
-Per-scan spectrum files (`topfd/ms{1,2}_json/spectrum<id>.js`) are generated
-on the fly from the sqlite file instead of being materialized (the example
-dataset would otherwise need ~275 MB of files).
+Per-scan spectrum files (`topfd/ms{1,2}_json/spectrum<id>.js`) and per-PrSM
+files (`data_js/prsms/prsm<id>.js`) are generated on the fly from the stored
+inputs instead of being materialized (the example dataset would otherwise need
+~275 MB of spectrum files plus hundreds of PrSM files).
 
 ## Pages
 
