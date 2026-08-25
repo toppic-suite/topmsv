@@ -1,21 +1,23 @@
-"use strict";
 /**
  * draw navigation bar while avoiding cross origin issue
  */
-const drawNav = function () {
-    //depending on where it is being called... is it index html?
-    let x = location.href;
-    let n = x.lastIndexOf("/");
-    let htmlName = x.substring(n + 1, x.length);
-    //the path to the other pages are different for index.html only
-    let relPath;
-    if (htmlName == "index.html") {
-        relPath = " ";
-    }
-    else {
-        relPath = "../";
-    }
-    let navCode = '<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" id="nav-div"> \
+const drawNav = function(){
+  //depending on where it is being called... is it index html?
+  let x: string = location.href;
+  let n: number = x.lastIndexOf("/");
+  let htmlName: string = x.substring(n + 1, x.length)
+
+  //the path to the other pages are different for index.html only
+  let relPath: string;
+
+  if (htmlName == "index.html"){
+    relPath = " ";
+  }
+  else{
+    relPath = "../";
+  }
+
+  let navCode: string = '<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" id="nav-div"> \
   <div id="for-flex" style="display:flex; width: 100%">\
   <div class=" navcontainer">\
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">\
@@ -26,8 +28,9 @@ const drawNav = function () {
   <li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + 'visual/ms.html">Spectrum Identifications</a></li>\
   <li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + 'inspect/spectrum.html">Visual Inspection</a></li>\
   <li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + '../spectra.html">Raw Spectra</a></li></ul>\
-  </div></div></div></nav>';
-    $(function () {
-        $("#nav-bar").html(navCode);
-    });
+  </div></div></div></nav>'
+
+  $(function(){
+    $("#nav-bar").html(navCode)
+  });
 }();

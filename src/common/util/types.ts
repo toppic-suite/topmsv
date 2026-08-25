@@ -9,6 +9,12 @@ type Atom = {
   "atom":string;
   "count":number;
 }
+type InteRt = {
+  "rt": number,
+  "inteSum": number,
+  "intePercentage": number,
+  "scanNum": string
+}
 type BreakPoints = {
   "anno": string,
   "existCIon": boolean,

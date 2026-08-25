@@ -95,12 +95,15 @@ src/server/convert/          TopPIC XML + sqlite -> data_js converter
 src/server/vendor.ts         serves all browser libraries (spectra.html +
                              topmsv viewer) under /vendor/* straight from
                              node_modules
-src/common/                  TopMSV visualization library (TypeScript, compiled
-                             to public/js/common, loaded as script-tag globals)
+src/common/                  TopMSV visualization library, single source for
+                             both apps (TypeScript, compiled to public/js/common,
+                             loaded as script-tag globals; <module>/viewer/ holds
+                             the viewer's variants of the five divergent files)
 src/client/                  home page TypeScript (compiled to public/js)
 public/index.html            home page
 public/spectra.html + js/    raw-spectra browser
-public/topmsv/               TopMSV viewer (visual/, inspect/, common/)
+public/topmsv/               TopMSV viewer pages (visual/, inspect/; library
+                             loaded from public/js/common)
 data/                        uploaded datasets (gitignored)
 ```
 

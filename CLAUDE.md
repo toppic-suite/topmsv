@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm install
-npm run build:client        # tsc (viewer lib -> public/js/common) + tsc -p tsconfig.home.json (home page -> public/js)
+npm run build:client        # tsc (spectra lib) + tsc -p tsconfig.viewer.json (viewer variants) + tsc -p tsconfig.home.json -> public/js
 npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
@@ -120,18 +120,20 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
 ### Viewer specifics (public/topmsv, public/js)
 
 - `public/topmsv/` is the TopMSV viewer TopPIC ships with its HTML output
-  (script-tag globals, no modules, load order in HTML matters; `.ts` sources
-  sit next to committed compiled `.js` — the `.js` is what runs). Local
-  patches: removed TopMG cards, fixed `ms.html`'s `common/types/` -> `common/util/`
+  (script-tag globals, no modules, load order in HTML matters; the page
+  scripts under `visual/js` and `inspect/js` are committed compiled `.js`
+  with `.ts` sources next to them — the `.js` is what runs). The viewer's
+  `common/` library tree was **removed**: its HTML now loads the shared
+  library from `../../js/common/...` (compiled from `src/common`, resolves
+  under both `/` and `/d/<id>/` because both fall through to the same
+  `express.static(public)`), its nav-bar/common CSS from `../../css/`, and
+  vendor libs from `../../vendor/...`. Local patches vs upstream TopMSV:
+  removed TopMG cards, fixed `ms.html`'s `common/types/` -> `common/util/`
   paths, removed the Chrome-only alert, added the missing `folder` param in
-  `proteoform.js`'s single-PrSM link, added a Raw Spectra nav link, and fixed
-  `prsm_para.js/.ts` `getBpCoordinates` so the N-terminal cleavage bracket
-  (break point 0) is anchored before the first residue instead of one row
-  above the sequence (upstream TopMSV bug; also fixed in `src/common`), and
-  repointed the library `<script>`/`<link>` tags from the (removed) frozen
-  `public/topmsv/node_modules` bundle to `../../vendor/...` (`public/vendor`,
-  one level above `topmsv/` — resolves under both `/` and `/d/<id>/` because
-  both fall through to the same `express.static(public)`).
+  `proteoform.js`'s single-PrSM link, added a Raw Spectra nav link, fixed
+  `getBpCoordinates` so the N-terminal cleavage bracket (break point 0) is
+  anchored before the first residue (upstream bug), and dropped a dead
+  `proteoform/proteoform.js` script tag.
 - `public/js` + `public/spectra.html` are the raw-spectra browser (from the
   reference Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on load.
@@ -147,9 +149,21 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   runs) was migrated off the v5-only d3.event/d3.mouse globals to the
   v6+ listener signature (`.on("x", function(event, d))`, `d3.pointer`) —
   keep new d3 event handlers in that style.
-- `src/common/` is the shared TypeScript visualization library compiled by the
-  root `tsconfig.json` (include is `./src/common/*/*` — exactly one directory
-  level; deeper files are silently not compiled).
+- `src/common/` is the single source for the shared visualization library
+  used by BOTH apps, compiled to `public/js/common` in two passes:
+  the root `tsconfig.json` (include `./src/common/*/*` — exactly one
+  directory level; deeper files are silently not compiled) builds the
+  spectra-browser set, and `tsconfig.viewer.json` builds the TopMSV viewer's
+  variants of the five deliberately-divergent files from
+  `src/common/{spectrum_view,prsm_view}/viewer/` into
+  `public/js/common/<module>/viewer/` (same global class names — safe only
+  because they compile as separate programs and no page loads both sets;
+  spectra versions do panel-header hover annotations + base-intensity lines,
+  viewer versions do floating tooltips). `allowJs` is on: the untyped
+  `parse_json/*.js` and `save_image/{save_image,util}.js` modules pass
+  through to the output. `util/viewer_globals.d.ts` declares the page-script
+  globals (SeqOfExecution etc.) that `draw_table.ts` and the viewer
+  `add_shift.ts` reference.
 
 ## Reference material (untracked, gitignored)
 
