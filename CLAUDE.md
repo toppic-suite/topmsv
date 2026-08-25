@@ -125,17 +125,23 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   `proteoform.js`'s single-PrSM link, added a Raw Spectra nav link, and fixed
   `prsm_para.js/.ts` `getBpCoordinates` so the N-terminal cleavage bracket
   (break point 0) is anchored before the first residue instead of one row
-  above the sequence (upstream TopMSV bug; also fixed in `src/common`).
-  Vendored libraries live in `public/topmsv/node_modules` (committed).
+  above the sequence (upstream TopMSV bug; also fixed in `src/common`), and
+  repointed the library `<script>`/`<link>` tags from the (removed) frozen
+  `public/topmsv/node_modules` bundle to `../../vendor/...` (`public/vendor`,
+  one level above `topmsv/` — resolves under both `/` and `/d/<id>/` because
+  both fall through to the same `express.static(public)`).
 - `public/js` + `public/spectra.html` are the raw-spectra browser (from the
   reference Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on load.
-- `public/vendor/` (used only by spectra.html) is **gitignored and generated**:
-  `scripts/sync-vendor.mjs` copies it from node_modules (postinstall /
-  `npm run sync:vendor`); versions are managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the drawing code
+- `public/vendor/` (ALL browser libraries — spectra.html and the topmsv
+  viewer) is **gitignored and generated**: `scripts/sync-vendor.mjs` copies it
+  from node_modules (postinstall / `npm run sync:vendor`); versions are
+  managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the drawing code
   uses the v5-only d3.event/d3.mouse API), jquery ^3 ($.trim etc. removed in
-  4), datatables.net ^1 (2.x breaking). `public/topmsv/node_modules` is NOT
-  synced — it is TopPIC's own frozen viewer bundle.
+  4), datatables.net ^1 (2.x breaking), `bootstrap4` = npm alias for
+  bootstrap@^4 + popper.js ^1 (the viewer markup is Bootstrap 4 —
+  spectra.html uses the separate Bootstrap 5 copy in `vendor/bootstrap/`),
+  fontawesome ^5 (icon class names).
 - `src/common/` is the shared TypeScript visualization library compiled by the
   root `tsconfig.json` (include is `./src/common/*/*` — exactly one directory
   level; deeper files are silently not compiled).
