@@ -26,7 +26,7 @@ const drawNavBar = function(): void {
         { href: dsRoot + "topmsv/visual/proteins.html", text: "Protein Identifications" },
         { href: dsRoot + "topmsv/visual/ms.html", text: "Spectrum Identifications" },
         { href: dsRoot + "topmsv/inspect/spectrum.html", text: "Visual Inspection" },
-        { href: dsRoot + "spectra/spectra.html", text: "Raw Spectra" },
+        { href: dsRoot + "spectra/spectra.html", text: "Spectra" },
       ];
       navCode += '<ul class="topmsv-nav-links">';
       items.forEach((item) => {
