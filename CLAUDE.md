@@ -5,19 +5,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm install                 # postinstall also syncs public/vendor from node_modules
+npm install
 npm run build:client        # tsc (viewer lib -> public/js/common) + tsc -p tsconfig.home.json (home page -> public/js)
 npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
 npm run convert -- --sqlite f.sqlite --prsm p.xml --proteoform q.xml [--fasta db.fasta] --out outdir
-npm run sync:vendor         # re-copy browser libs from node_modules into public/vendor
 ```
 
-`public/js/common/`, `public/js/home.js` and `public/vendor/` are gitignored —
-after a fresh clone `npm install` (postinstall repopulates `public/vendor`) and
-`build:client` are **both required**; re-run `build:client` after edits under
-`src/common/` or `src/client/`. Server code runs via ts-node (no emit). Node >= 24 required
+`public/js/common/` and `public/js/home.js` are gitignored — after a fresh
+clone `npm install` and `build:client` are **both required** (browser
+libraries are served straight from node_modules, see below); re-run
+`build:client` after edits under `src/common/` or `src/client/`. Server code
+runs via ts-node (no emit). Node >= 24 required
 (`node:sqlite`). There is no test suite; verification = the converter
 validation loop below plus loading pages in a browser.
 
@@ -43,6 +43,8 @@ file the vendored TopMSV viewer consumes is generated on the fly.
                                       per-dataset LRU cache of fully assembled PrsmData)
 /d/<id>/topfd/ms{1,2}_json/spectrum<N>.js  generated ON THE FLY from sqlite (src/server/spectrumJs.ts)
 /d/<id>/spectra.html + /d/<id>/api/*  raw-spectra browser + its sqlite JSON API
+/vendor/* and /d/<id>/vendor/*        browser libraries served straight from
+                                      node_modules (src/server/vendor.ts)
 ```
 
 The topmsv viewer's own relative paths (`../../toppic_prsm_cutoff/data_js`,
@@ -133,14 +135,14 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
 - `public/js` + `public/spectra.html` are the raw-spectra browser (from the
   reference Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on load.
-- `public/vendor/` (ALL browser libraries — spectra.html and the topmsv
-  viewer) is **gitignored and generated**: `scripts/sync-vendor.mjs` copies it
-  from node_modules (postinstall / `npm run sync:vendor`); versions are
-  managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the drawing code
-  uses the v5-only d3.event/d3.mouse API), jquery ^3 ($.trim etc. removed in
-  4), datatables.net ^1 (2.x breaking), `bootstrap4` = npm alias for
-  bootstrap@^4 + popper.js ^1 (the viewer markup is Bootstrap 4 —
-  spectra.html uses the separate Bootstrap 5 copy in `vendor/bootstrap/`),
+- ALL browser libraries (spectra.html and the topmsv viewer) are served
+  under `/vendor/*` **straight from node_modules** by `src/server/vendor.ts`
+  (a URL-prefix -> node_modules-dir table; nothing is copied under `public/`);
+  versions are managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the
+  drawing code uses the v5-only d3.event/d3.mouse API), jquery ^3 ($.trim
+  etc. removed in 4), datatables.net ^1 (2.x breaking), `bootstrap4` = npm
+  alias for bootstrap@^4 + popper.js ^1 (the viewer markup is Bootstrap 4 —
+  spectra.html uses the separate Bootstrap 5 copy at `vendor/bootstrap/`),
   fontawesome ^5 (icon class names).
 - `src/common/` is the shared TypeScript visualization library compiled by the
   root `tsconfig.json` (include is `./src/common/*/*` — exactly one directory

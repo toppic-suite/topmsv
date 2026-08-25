@@ -11,12 +11,13 @@ PrSM / spectrum views.
 Requires Node.js >= 24 (the server uses the built-in `node:sqlite` module).
 
 ```
-npm install              # postinstall also copies public/vendor from node_modules
+npm install
 npm run build:client     # compile the browser TypeScript (required after a fresh clone)
 ```
 
-Both steps are required after a fresh clone: `public/vendor/` (browser
-libraries) and the compiled `public/js/` output are generated, not committed.
+Both steps are required after a fresh clone: browser libraries are served
+straight from `node_modules`, and the compiled `public/js/` output is
+generated, not committed.
 
 ## Run
 
@@ -91,14 +92,14 @@ all verified semantically equivalent.
 server.ts                    entry point (ts-node)
 src/server/                  Express app, dataset registry, sqlite access
 src/server/convert/          TopPIC XML + sqlite -> data_js converter
+src/server/vendor.ts         serves all browser libraries (spectra.html +
+                             topmsv viewer) under /vendor/* straight from
+                             node_modules
 src/common/                  TopMSV visualization library (TypeScript, compiled
                              to public/js/common, loaded as script-tag globals)
 src/client/                  home page TypeScript (compiled to public/js)
 public/index.html            home page
 public/spectra.html + js/    raw-spectra browser
-public/vendor/               all browser libraries (spectra.html + topmsv viewer),
-                             copied from node_modules by scripts/sync-vendor.mjs
-                             on postinstall (gitignored)
 public/topmsv/               TopMSV viewer (visual/, inspect/, common/)
 data/                        uploaded datasets (gitignored)
 ```

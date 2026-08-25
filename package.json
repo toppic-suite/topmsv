@@ -8,8 +8,6 @@
     "serve": "ts-node --project tsconfig.server.json server.ts",
     "typecheck:server": "tsc --project tsconfig.server.json",
     "build:client": "tsc && tsc --project tsconfig.home.json",
-    "sync:vendor": "node scripts/sync-vendor.mjs",
-    "postinstall": "node scripts/sync-vendor.mjs",
     "convert": "ts-node --project tsconfig.server.json src/server/convert/cli.ts"
   },
   "keywords": [

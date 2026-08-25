@@ -2,6 +2,7 @@
 //   /d/:ds/api/...                     sqlite query API for the raw-spectra browser
 //   /d/:ds/topfd/ms{1,2}_json/spectrum<id>.js   dynamic TopFD spectrum files
 //   /d/:ds/toppic_*_cutoff/data_js/...          generated identification data
+//   /d/:ds/vendor/...                  browser libraries served from node_modules
 //   /d/:ds/<anything else>             shared static assets (topmsv viewer, spectra page)
 
 import * as express from 'express';
@@ -9,6 +10,7 @@ import * as path from 'path';
 import { getDb, readMeta } from '../datasets';
 import { buildSpectrumJs } from '../spectrumJs';
 import { buildDataJsFile } from '../prsmSource';
+import vendorRouter from '../vendor';
 
 const PUBLIC_DIR = path.join(__dirname, '..', '..', '..', 'public');
 
@@ -144,6 +146,8 @@ router.get('/:cutoff(toppic_prsm_cutoff|toppic_proteoform_cutoff)/data_js/*', (r
 });
 
 // -------------------------------------------------- shared viewer static files
+
+router.use('/vendor', vendorRouter);
 
 router.use((req, res, next) => {
   express.static(PUBLIC_DIR)(req, res, next);
