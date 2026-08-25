@@ -14,5 +14,10 @@
     "declaration": true,
     "declarationDir": "./types/spectra-lib"
   },
-  "include": ["./src/common/*/*"]
+  "include": ["./src/common/*/*"],
+  "exclude": [
+    // TopMSV-viewer-only variants (compiled by tsconfig.viewer.json); their
+    // class names collide with the spectra-browser versions in topfd_view/.
+    "./src/common/toppic_view"
+  ]
 }

@@ -1,12 +1,11 @@
 {
   // Second compile pass for the TopMSV viewer's variants of the five files
   // that diverge from the spectra-browser versions (floating tooltips vs
-  // panel-header annotations, no base-intensity lines). The variants live in
-  // src/common/<module>/viewer/ - one directory deeper than the root
-  // tsconfig's "./src/common/*/*" include, so the main pass never sees them.
-  // This pass compiles the whole library again with the five spectra files
-  // swapped out, so the same global class names never collide within one
-  // program; shared files re-emit byte-identical output.
+  // panel-header annotations, no base-intensity lines). The viewer variants
+  // live in src/common/toppic_view/, the spectra-browser versions in
+  // src/common/topfd_view/; each tsconfig excludes the other's folder, so
+  // each pass sees exactly one definition of every global class name and
+  // shared files re-emit byte-identical output.
   "compilerOptions": {
     "allowJs": true,
     "alwaysStrict": true,
@@ -23,12 +22,10 @@
     "declaration": true,
     "declarationDir": "./types/viewer-lib"
   },
-  "include": ["./src/common/*/*", "./src/common/*/viewer/*"],
+  "include": ["./src/common/*/*"],
   "exclude": [
-    "./src/common/spectrum_view/draw_spectrum.ts",
-    "./src/common/spectrum_view/spectrum_view.ts",
-    "./src/common/spectrum_view/spectrum_parameter.ts",
-    "./src/common/prsm_view/add_shift.ts",
-    "./src/common/prsm_view/prsm_para.ts"
+    // spectra-browser variants (this pass compiles the TopMSV viewer
+    // variants from src/common/toppic_view instead)
+    "./src/common/topfd_view"
   ]
 }
