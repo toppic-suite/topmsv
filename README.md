@@ -99,11 +99,15 @@ src/common/                  TopMSV visualization library, single source for
                              both apps (TypeScript, compiled to public/js/common,
                              loaded as script-tag globals; <module>/viewer/ holds
                              the viewer's variants of the five divergent files)
+src/spectra/                 raw-spectra browser page scripts (compiled to
+                             public/js)
+src/viewer/                  TopMSV viewer page scripts (compiled to
+                             public/topmsv/{visual,inspect}/js)
 src/client/                  home page TypeScript (compiled to public/js)
 public/index.html            home page
-public/spectra.html + js/    raw-spectra browser
-public/topmsv/               TopMSV viewer pages (visual/, inspect/; library
-                             loaded from public/js/common)
+public/spectra.html          raw-spectra browser page (scripts generated)
+public/topmsv/               TopMSV viewer HTML (visual/, inspect/; all JS
+                             generated from src/viewer + src/common)
 data/                        uploaded datasets (gitignored)
 ```
 

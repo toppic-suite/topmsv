@@ -2,6 +2,12 @@
 //parse data from js file
 "use strict";
 class ParsePrsm {
+    /**
+     * @param {boolean} [drawMs1Spec]
+     * @param {string|null} [ms1SpecPath]
+     * @param {boolean} [drawMs2Spec]
+     * @param {string|null} [ms2SpecPath]
+     */
     constructor(drawMs1Spec = false, ms1SpecPath = null, drawMs2Spec = false, ms2SpecPath = null) {
         this.drawMs1Spec_ = drawMs1Spec;
         this.drawMs2Spec_ = drawMs2Spec;

@@ -1,0 +1,17 @@
+{
+  // Raw-spectra browser page scripts (src/spectra -> public/js).
+  // Typechecks against the spectra-flavor library globals via the .d.ts
+  // files the root tsconfig emits into types/spectra-lib (build order:
+  // root pass first). Strictness is relaxed to match the upstream code.
+  "compilerOptions": {
+    "allowJs": true,
+    "alwaysStrict": true,
+    "target": "es2018",
+    "moduleResolution": "node",
+    "lib": ["es6", "dom", "es2016"],
+    "skipLibCheck": true,
+    "rootDir": "./src/spectra",
+    "outDir": "./public/js"
+  },
+  "include": ["./src/spectra/**/*", "./types/spectra-lib/**/*"]
+}

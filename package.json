@@ -7,7 +7,7 @@
     "start": "ts-node --project tsconfig.server.json server.ts",
     "serve": "ts-node --project tsconfig.server.json server.ts",
     "typecheck:server": "tsc --project tsconfig.server.json",
-    "build:client": "tsc && tsc --project tsconfig.viewer.json && tsc --project tsconfig.home.json",
+    "build:client": "tsc && tsc --project tsconfig.viewer.json && tsc --project tsconfig.spectra.json && tsc --project tsconfig.viewerpages.json && tsc --project tsconfig.home.json",
     "convert": "ts-node --project tsconfig.server.json src/server/convert/cli.ts"
   },
   "keywords": [

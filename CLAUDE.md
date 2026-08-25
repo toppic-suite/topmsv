@@ -6,18 +6,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm install
-npm run build:client        # tsc (spectra lib) + tsc -p tsconfig.viewer.json (viewer variants) + tsc -p tsconfig.home.json -> public/js
+npm run build:client        # 5 tsc passes: spectra lib (+.d.ts) -> js/common | viewer lib variants (tsconfig.viewer.json)
+                            # | spectra pages (tsconfig.spectra.json, src/spectra -> public/js) | viewer pages
+                            # (tsconfig.viewerpages.json, src/viewer -> public/topmsv/{visual,inspect}/js) | home page
 npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
 npm run convert -- --sqlite f.sqlite --prsm p.xml --proteoform q.xml [--fasta db.fasta] --out outdir
 ```
 
-`public/js/common/` and `public/js/home.js` are gitignored — after a fresh
-clone `npm install` and `build:client` are **both required** (browser
-libraries are served straight from node_modules, see below); re-run
-`build:client` after edits under `src/common/` or `src/client/`. Server code
-runs via ts-node (no emit). Node >= 24 required
+ALL client JS is generated: `public/js/`, `public/topmsv/{visual,inspect}/js/`
+and `types/` (library `.d.ts` used by the page-script passes) are gitignored —
+after a fresh clone `npm install` and `build:client` are **both required**
+(browser libraries are served straight from node_modules, see below); re-run
+`build:client` after edits under `src/common/`, `src/spectra/`, `src/viewer/`
+or `src/client/`. Server code runs via ts-node (no emit). Node >= 24 required
 (`node:sqlite`). There is no test suite; verification = the converter
 validation loop below plus loading pages in a browser.
 
@@ -120,23 +123,27 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
 ### Viewer specifics (public/topmsv, public/js)
 
 - `public/topmsv/` is the TopMSV viewer TopPIC ships with its HTML output
-  (script-tag globals, no modules, load order in HTML matters; the page
-  scripts under `visual/js` and `inspect/js` are committed compiled `.js`
-  with `.ts` sources next to them — the `.js` is what runs). The viewer's
-  `common/` library tree was **removed**: its HTML now loads the shared
-  library from `../../js/common/...` (compiled from `src/common`, resolves
-  under both `/` and `/d/<id>/` because both fall through to the same
-  `express.static(public)`), its nav-bar/common CSS from `../../css/`, and
-  vendor libs from `../../vendor/...`. Local patches vs upstream TopMSV:
+  (script-tag globals, no modules, load order in HTML matters). Only the
+  HTML is committed: the page scripts under `visual/js` and `inspect/js`
+  are compiled from `src/viewer/` (tsconfig.viewerpages.json), and the
+  shared library loads from `../../js/common/...` (compiled from
+  `src/common`, resolves under both `/` and `/d/<id>/` because both fall
+  through to the same `express.static(public)`), nav-bar/common CSS from
+  `../../css/`, vendor libs from `../../vendor/...`. Local patches vs
+  upstream TopMSV:
   removed TopMG cards, fixed `ms.html`'s `common/types/` -> `common/util/`
   paths, removed the Chrome-only alert, added the missing `folder` param in
   `proteoform.js`'s single-PrSM link, added a Raw Spectra nav link, fixed
   `getBpCoordinates` so the N-terminal cleavage bracket (break point 0) is
   anchored before the first residue (upstream bug), and dropped a dead
   `proteoform/proteoform.js` script tag.
-- `public/js` + `public/spectra.html` are the raw-spectra browser (from the
-  reference Express viewer): `api.js` uses dataset-relative `api/...` URLs and
-  auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on load.
+- `public/spectra.html` + `public/js` (generated from `src/spectra/`,
+  tsconfig.spectra.json) are the raw-spectra browser (from the reference
+  Express viewer): `api.js` uses dataset-relative `api/...` URLs and
+  auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on
+  load. `src/spectra` mixes `.ts` and plain `.js` (allowJs passthrough for
+  the files that never had TS sources); `globals.d.ts` declares `$.trim`,
+  which current @types/jquery dropped.
 - ALL browser libraries (spectra.html and the topmsv viewer) are served
   under `/vendor/*` **straight from node_modules** by `src/server/vendor.ts`
   (a URL-prefix -> node_modules-dir table; nothing is copied under `public/`);

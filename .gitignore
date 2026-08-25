@@ -1,6 +1,8 @@
 node_modules/
-public/js/common/
-public/js/home.js
+public/js/
+public/topmsv/visual/js/
+public/topmsv/inspect/js/
+types/
 data/
 ref_code/
 ref_data/
