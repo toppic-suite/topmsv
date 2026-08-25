@@ -14,7 +14,9 @@
   min-width: 50%;
 }
 .container_img{
-  margin-top: 100px !important;
+  /* the upstream page reserved 100px for a fixed-position navbar; our nav bar
+     is in normal flow, so use the same 24px content gap as the home page */
+  margin-top: 24px !important;
 }
 
 .cards-container{

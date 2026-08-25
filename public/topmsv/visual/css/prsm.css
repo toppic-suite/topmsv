@@ -4,7 +4,9 @@ div.container {
 	font-family : "Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 15px;
 	max-width: 1060px;
-  margin-top: 100px !important;
+  /* the upstream pages reserved 100px for a fixed-position navbar; our nav bar
+     is in normal flow, so use the same 24px content gap as the home page */
+  margin-top: 24px !important;
 }
 .table-borderless{
   margin-left: 1rem !important;
