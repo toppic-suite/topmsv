@@ -138,12 +138,15 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
 - ALL browser libraries (spectra.html and the topmsv viewer) are served
   under `/vendor/*` **straight from node_modules** by `src/server/vendor.ts`
   (a URL-prefix -> node_modules-dir table; nothing is copied under `public/`);
-  versions are managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the
-  drawing code uses the v5-only d3.event/d3.mouse API), jquery ^3 ($.trim
+  versions are managed in package.json. Hard ceilings: jquery ^3 ($.trim
   etc. removed in 4), datatables.net ^1 (2.x breaking), `bootstrap4` = npm
   alias for bootstrap@^4 + popper.js ^1 (the viewer markup is Bootstrap 4 —
   spectra.html uses the separate Bootstrap 5 copy at `vendor/bootstrap/`),
-  fontawesome ^5 (icon class names).
+  fontawesome ^5 (icon class names). d3 is ^7: all drawing code (src/common
+  and the viewer copies under public/topmsv, .ts AND the .js that actually
+  runs) was migrated off the v5-only d3.event/d3.mouse globals to the
+  v6+ listener signature (`.on("x", function(event, d))`, `d3.pointer`) —
+  keep new d3 event handlers in that style.
 - `src/common/` is the shared TypeScript visualization library compiled by the
   root `tsconfig.json` (include is `./src/common/*/*` — exactly one directory
   level; deeper files are silently not compiled).

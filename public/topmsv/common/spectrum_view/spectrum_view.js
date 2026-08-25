@@ -123,8 +123,8 @@ class SpectrumView {
             drawRawSpectrum(this.id_, this.para_, this.envList_);
         }
     }
-    zoomed() {
-        let transform = d3.event.transform;
+    zoomed(event) {
+        let transform = event.transform;
         let graph = $("#" + this.getSvgId()).data("graph");
         let svg = document.getElementById(this.getSvgId());
         if (svg) {
@@ -132,7 +132,7 @@ class SpectrumView {
             let ratio = transform.k / graph.getTransformScale();
             graph.setTransformX(transform.x);
             graph.setTransformScale(transform.k);
-            let mousePos = d3.mouse(svg);
+            let mousePos = d3.pointer(event, svg);
             if (ratio == 1) {
                 graph.getPara().drag(distance);
             }

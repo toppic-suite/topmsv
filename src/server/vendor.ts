@@ -7,8 +7,6 @@
 // Version constraints (enforced by the ranges in package.json):
 //   jquery         ^3       - jQuery 4 removes APIs the viewer code uses ($.trim, ...)
 //   datatables.net ^1       - DataTables 2 changes API and markup
-//   d3             5.16.0 exactly - the drawing code uses the v5-only
-//                            d3.event / d3.mouse API removed in v6+
 //   bootstrap4     npm:bootstrap@^4 - the TopMSV viewer markup is Bootstrap 4
 //                            (spectra.html uses the separate Bootstrap 5 copy)
 //   popper.js      ^1       - what Bootstrap 4's dropdowns/tooltips require

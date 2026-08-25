@@ -123,7 +123,7 @@ class DrawPrsm {
           .attr("y", yPos) 
           .style("fill", color)
           .text(letter)
-          .on("click",function(d){
+          .on("click",function(){
             addShift.handleOnClick(letter, pos);
           });
       }
@@ -322,8 +322,8 @@ class DrawPrsm {
         .attr("height", 23)
         .attr("ion_pos", bpIonPos)
         .style("opacity", 0)
-        .on("mouseover", () => {
-          this.appendBpAnno(anno);
+        .on("mouseover", (event: any) => {
+          this.appendBpAnno(event, anno);
         })
         .on("mouseout", () => {
           this.removeBpAnno();	
@@ -335,18 +335,18 @@ class DrawPrsm {
   * Function to add annotation to the polylines on mouseOver
   * @param {String} anno - Contains consolidated annotation to display
   */
-  appendBpAnno(anno: string): void {
+  appendBpAnno(event: any, anno: string): void {
     // tooltip is a bootstrap class
-    let div = d3.select("body").append("div")	
+    let div = d3.select("body").append("div")
       .attr("id", "break_point_anno")
-      .attr("class", "tooltip")				
-      .style("opacity", 0); 
-    div.transition()		
-      .duration(10)		
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+    div.transition()
+      .duration(10)
       .style("opacity", .9);
-    div.html(anno)	
-      .style("left", (d3.event.pageX)  + "px")		
-      .style("top", (d3.event.pageY - 28)+ "px") ;
+    div.html(anno)
+      .style("left", (event.pageX)  + "px")
+      .style("top", (event.pageY - 28)+ "px") ;
   }
 
  /**

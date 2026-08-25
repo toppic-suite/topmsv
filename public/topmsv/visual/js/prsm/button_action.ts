@@ -11,14 +11,14 @@ function addButtonActions(): void {
             appendTo: "body"
         });
     });
-    d3.select("#download_ms1_png_btn").on("click", function () {
-        let x: number = d3.event.pageX;
-        let y: number = d3.event.pageY;
+    d3.select("#download_ms1_png_btn").on("click", function (event: any) {
+        let x: number = event.pageX;
+        let y: number = event.pageY;
         popupNameWindow("png", "ms1_svg", x, y);
     });
-    d3.select("#download_ms1_svg_btn").on("click", function () {
-        let x: number = d3.event.pageX;
-        let y: number = d3.event.pageY;
+    d3.select("#download_ms1_svg_btn").on("click", function (event: any) {
+        let x: number = event.pageX;
+        let y: number = event.pageY;
         popupNameWindow("svg", "ms1_svg", x, y);
     });
     // Show MS2 graph button 

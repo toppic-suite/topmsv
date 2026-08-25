@@ -152,15 +152,15 @@ class SaveSpectrum{
 
     // Coordinates at which a pop window to be launched to give name for the image to be downloaded
     // All the actions for different image buttons on different spectrums
-    d3.select("#download_ms2_graph_png_btn").on("click", () => {
-      let x = d3.event.pageX;
-      let y = d3.event.pageY;
+    d3.select("#download_ms2_graph_png_btn").on("click", (event: any) => {
+      let x = event.pageX;
+      let y = event.pageY;
       // function inside prsmtohtml.js to pop up a window
       popupNameWindow("png", "popup_ms2_svg",x,y)
     })
-    d3.select("#download_ms2_graph_svg_btn").on("click", () => {
-      let x = d3.event.pageX;
-      let y = d3.event.pageY;
+    d3.select("#download_ms2_graph_svg_btn").on("click", (event: any) => {
+      let x = event.pageX;
+      let y = event.pageY;
       popupNameWindow("svg", "popup_ms2_svg",x,y)
     })
   }

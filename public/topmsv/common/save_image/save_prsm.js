@@ -162,17 +162,17 @@ class SavePrsm {
                 $(".modal-backdrop").css('z-index', 1040);
             });
             //	Download the svg as ".svg" image
-            d3.select('#prsm_popup_svg_btn').on("click", () => {
+            d3.select('#prsm_popup_svg_btn').on("click", (event) => {
                 let svgId = "prsm_popup_svg";
-                let x = d3.event.pageX;
-                let y = d3.event.pageY;
+                let x = event.pageX;
+                let y = event.pageY;
                 popupNameWindow("svg", svgId, x, y);
             });
             //	Download svg as PNG Image
-            d3.select('#prsm_popup_png_btn').on("click", () => {
+            d3.select('#prsm_popup_png_btn').on("click", (event) => {
                 let svgId = "prsm_popup_svg";
-                let x = d3.event.pageX;
-                let y = d3.event.pageY;
+                let x = event.pageX;
+                let y = event.pageY;
                 popupNameWindow("png", svgId, x, y);
             });
         };

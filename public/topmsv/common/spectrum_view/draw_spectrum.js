@@ -94,7 +94,7 @@ function onMouseOut() {
  * @param {Object} - Contains mz and intensity value of the current peak
  * @param {object} para - Contains the parameters like height, width etc.,. tht helps to draw the graph
  */
-function onMouseOverPeak(this_element, peak, para) {
+function onMouseOverPeak(this_element, event, peak, para) {
     let intensity = " inte:" + peak.getIntensity().toFixed(3);
     let pos = peak.getPos().toFixed(3);
     if (para.getIsMonoMassGraph()) {
@@ -112,8 +112,8 @@ function onMouseOverPeak(this_element, peak, para) {
         .attr("class", "tooltip");
     div.transition().duration(30)
         .style("opacity", 2);
-    div.html(tooltipData).style("left", (d3.event.pageX + 12) + "px")
-        .style("top", (d3.event.pageY - 28) + "px")
+    div.html(tooltipData).style("left", (event.pageX + 12) + "px")
+        .style("top", (event.pageY - 28) + "px")
         .style("fill", "black");
 }
 /**
@@ -123,7 +123,7 @@ function onMouseOverPeak(this_element, peak, para) {
  * @param {Array} envelope_list - Contains Envelope List
  * @param {object} para - Contains the parameters like height, width etc.,. tht helps to draw the graph
  */
-function onMouseOverCircle(this_element, envelope, peak) {
+function onMouseOverCircle(this_element, event, envelope, peak) {
     let mz = "m/z:" + peak.getPos().toFixed(3);
     let inte = "inte:" + peak.getIntensity().toFixed(2);
     let mass = "mass:" + envelope.getMonoMass().toFixed(3);
@@ -135,15 +135,15 @@ function onMouseOverCircle(this_element, envelope, peak) {
         .attr("class", "tooltip");
     div.transition().duration(30)
         .style("opacity", 2);
-    div.html(tooltipData).style("left", (d3.event.pageX + 12) + "px")
-        .style("top", (d3.event.pageY - 28) + "px")
+    div.html(tooltipData).style("left", (event.pageX + 12) + "px")
+        .style("top", (event.pageY - 28) + "px")
         .style("fill", "black");
 }
 /**
  * @function onMouseOverFragmentMassAndIonType
  * @description Function to show the theoretical mass and matched ion type on mouse over of peaks
  */
-function onMouseOverFragmentMassAndIonType(this_element, mass, ionData) {
+function onMouseOverFragmentMassAndIonType(this_element, event, mass, ionData) {
     let pos = mass.toFixed(3);
     let tooltipData = "mass: " + pos + ", " + "ion type: " + ionData;
     if (ionData == null) {
@@ -157,8 +157,8 @@ function onMouseOverFragmentMassAndIonType(this_element, mass, ionData) {
         .attr("class", "tooltip");
     div.transition().duration(30)
         .style("opacity", 2);
-    div.html(tooltipData).style("left", (d3.event.pageX + 12) + "px")
-        .style("top", (d3.event.pageY - 28) + "px")
+    div.html(tooltipData).style("left", (event.pageX + 12) + "px")
+        .style("top", (event.pageY - 28) + "px")
         .style("fill", "black");
 }
 /**
@@ -396,9 +396,9 @@ function drawPeaks(svg, para, peakList) {
                     .attr("y2", para.getSVGHeight() - para.getPadding().bottom)
                     .attr("stroke", "black")
                     .attr("stroke-width", "2")
-                    .on("mouseover", function () {
+                    .on("mouseover",function(event){
                     //@ts-ignore - allow using this to pass interacted html node
-                    onMouseOverPeak(this, peak, para);
+                    onMouseOverPeak(this, event, peak, para);
                 })
                     .on("mouseout", function () {
                     //@ts-ignore
@@ -452,9 +452,9 @@ function drawEnvelopes(svg, para, envList) {
                             .style("opacity", "0.8")
                             .style("stroke", color)
                             .style("stroke-width", "2")
-                            .on("mouseover", function () {
+                            .on("mouseover",function(event){
                             //@ts-ignore
-                            onMouseOverCircle(this, env, peak);
+                            onMouseOverCircle(this, event, env, peak);
                         })
                             .on("mouseout", function () {
                             //@ts-ignore
@@ -505,8 +505,8 @@ function drawEnvelopes(svg, para, envList) {
         .style("opacity", "0.8")
         .style("stroke",color)
         .style("stroke-width","2")
-        .on("mouseover",function(){
-          onMouseOverCircle(this,env,peak);
+        .on("mouseover",function(event){
+          onMouseOverCircle(this, event, env, peak);
         })
         .on("mouseout",function(){
           onCircleMouseOut(this);
@@ -672,9 +672,9 @@ function drawSequence(svg, para, proteoform, nMasses, cMasses, ions) {
             .attr("y2", y + 15)
             .attr("stroke", "black")
             .attr("stroke-width", "1")
-            .on("mouseover", function () {
+            .on("mouseover",function(event){
             //@ts-ignore
-            onMouseOverFragmentMassAndIonType(this, mass, ionData.text);
+            onMouseOverFragmentMassAndIonType(this, event, mass, ionData.text);
         })
             .on("mouseout", function () {
             //@ts-ignore

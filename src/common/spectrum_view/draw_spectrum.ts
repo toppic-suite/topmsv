@@ -151,8 +151,8 @@ function onMouseOut(){
     .attr("class", "tooltip")
   div.transition().duration(30)
     .style("opacity", 2);
-  div.html(tooltipData).style("left", (d3.event.pageX + 12)  + "px")
-    .style("top", (d3.event.pageY - 28)+ "px")
+  div.html(tooltipData).style("left", (event.pageX + 12)  + "px")
+    .style("top", (event.pageY - 28)+ "px")
     .style("fill", "black");
     */
 }
@@ -181,7 +181,7 @@ function onMouseOverCircle(this_element: any, envelope: Envelope, peak: Peak, pa
  * @function onMouseOverFragmentMassAndIonType
  * @description Function to show the theoretical mass and matched ion type on mouse over of peaks
  */
- function onMouseOverFragmentMassAndIonType(this_element: any, mass: number, ionData: string | null) {
+ function onMouseOverFragmentMassAndIonType(this_element: any, event: any, mass: number, ionData: string | null) {
   let pos: string = mass.toFixed(3);
   let tooltipData: string = "mass: " + pos + ", " + "ion type: " + ionData;
   if (ionData == null){
@@ -197,8 +197,8 @@ function onMouseOverCircle(this_element: any, envelope: Envelope, peak: Peak, pa
     .attr("class", "tooltip")
   div.transition().duration(30)
     .style("opacity", 2);
-  div.html(tooltipData).style("left", (d3.event.pageX + 12)  + "px")
-    .style("top", (d3.event.pageY - 28)+ "px")
+  div.html(tooltipData).style("left", (event.pageX + 12)  + "px")
+    .style("top", (event.pageY - 28)+ "px")
     .style("fill", "black");
 }
 
@@ -742,9 +742,9 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
       .attr("y2",y+15)
       .attr("stroke","black")
       .attr("stroke-width","1")
-      .on("mouseover",function(){
+      .on("mouseover",function(event: any){
         //@ts-ignore
-        onMouseOverFragmentMassAndIonType(this, mass, ionData.text);
+        onMouseOverFragmentMassAndIonType(this, event, mass, ionData.text);
       })
       .on("mouseout",function(){
         //@ts-ignore

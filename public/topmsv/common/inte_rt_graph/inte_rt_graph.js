@@ -112,16 +112,9 @@ class InteRtGraph {
             .attr('preserveAspectRatio', 'xMidYMid meet')
             .attr('width', '100%')
             .attr('height', '100%');
-        //@ts-ignore   
-        let xAxis = d3.axisBottom()
-            //@ts-ignore   
-            .scale(xScale)
+        let xAxis = d3.axisBottom(xScale)
             .ticks(20);
-        //@ts-ignore   
-        let yAxis = d3.axisLeft()
-            //@ts-ignore   
-            .scale(yScale)
-            //@ts-ignore   
+        let yAxis = d3.axisLeft(yScale)
             .tickFormat(formatPercent)
             .ticks(5);
         svg.append('g')
@@ -182,9 +175,9 @@ class InteRtGraph {
             .on("mouseover mousemove touchmove", hoverMouseOn)
             .on("click", mouseClick);
         let bisectRT = d3.bisector(function (d) { return d.rt; }).right;
-        function mouseClick() {
-            let mouse_x = d3.mouse(d3.event.currentTarget)[0];
-            let mouse_y = d3.mouse(d3.event.currentTarget)[1];
+        function mouseClick(event) {
+            let mouse_x = d3.pointer(event)[0];
+            let mouse_y = d3.pointer(event)[1];
             //@ts-ignore 
             let maxMouse = xScale(maxRT); // maxRT is already checked if it is undefined
             let mouseRT = xScale.invert(mouse_x - padding.left);
@@ -214,9 +207,9 @@ class InteRtGraph {
                 //fixedLine.style("opacity", 1e-6);
             }
         }
-        function hoverMouseOn() {
-            let mouse_x = d3.mouse(d3.event.currentTarget)[0];
-            let mouse_y = d3.mouse(d3.event.currentTarget)[1];
+        function hoverMouseOn(event) {
+            let mouse_x = d3.pointer(event)[0];
+            let mouse_y = d3.pointer(event)[1];
             //@ts-ignore 
             let maxMouse = xScale(maxRT); // maxRT is already checked if it is undefined
             hoverLine.attr("x1", mouse_x).attr("x2", mouse_x);
