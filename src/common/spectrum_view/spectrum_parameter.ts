@@ -1,111 +1,103 @@
+//shared parameters and view-state math of the spectrum view (axes,
+//zoom/drag window, peak coordinates). The TopMSV viewer and the spectra
+//browser derive their own SpectrumViewParameters from this base.
 /**	@function SpectrumViewParameters
  * @description Get data from global variable spectrum_data and utilities to manupulate
  * the data
  */
 
- class SpectrumViewParameters {
+ class SpectrumViewParametersBase {
   // Ratio between average and monoisopotic mass
-  private avgToMonoRatio_: number = 1.000684;
+  protected avgToMonoRatio_: number = 1.000684;
 
   // SVG size
-  private svgWidth_: number = 910;
-  private svgHeight_: number = 270;
+  protected svgWidth_: number = 910;
+  protected svgHeight_: number = 270;
 	// SVG padding 
-	private padding_: Padding = {left:70, right:50, head:10, bottom:50};
+	protected padding_: Padding = {left:70, right:50, head:10, bottom:50};
   // spectrum size
-	private specWidth_: number = this.svgWidth_ - this.padding_.left - this.padding_.right;
-  private specHeight_: number = this.svgHeight_ - this.padding_.head - this.padding_.bottom;
+	protected specWidth_: number = this.svgWidth_ - this.padding_.left - this.padding_.right;
+  protected specHeight_: number = this.svgHeight_ - this.padding_.head - this.padding_.bottom;
 
   // M/z range of visuable window
-  private winMinMz_: number = 0;
-  private winMaxMz_: number = 2000;
-  private winCenterMz_: number = 1000;
+  protected winMinMz_: number = 0;
+  protected winMaxMz_: number = 2000;
+  protected winCenterMz_: number = 1000;
 
   //minimum possible m/z after zooming/dragging, to prevent dragging/zooming into negative m/z value
   //if new m/z is less than this value, it is reset to this value
-  private minPossibleMz_: number = -100;
-  private maxPossibleMzMargin_: number = 300;
+  protected minPossibleMz_: number = -100;
+  protected maxPossibleMzMargin_: number = 300;
 
   // M/z range of peaks
-  private dataMinMz_: number = 0;
-  private dataMaxMz_: number = 2000;
+  protected dataMinMz_: number = 0;
+  protected dataMaxMz_: number = 2000;
 
   // M/z range, color of highlighted part.
-  private showHighlight_: boolean = false;
-  private hlMinMz_: number = 0;
-  private hlMaxMz_: number = 0;
-  private hlColor_: string = "gray";
+  protected showHighlight_: boolean = false;
+  protected hlMinMz_: number = 0;
+  protected hlMaxMz_: number = 0;
+  protected hlColor_: string = "gray";
 
   // Max intensity of visuable window
-  private winMaxInte_: number = 30000;
+  protected winMaxInte_: number = 30000;
 
   // Intensity range of peaks
-  private dataMaxInte_: number = 30000;
-  private dataMinInte_: number = 0;
+  protected dataMaxInte_: number = 30000;
+  protected dataMinInte_: number = 0;
   // add a margin so that the visuable intensity range is [0, dataMaxInte * inteMargin]
-  private inteMargin_: number = 1.2;
+  protected inteMargin_: number = 1.2;
 
   // scale m/z to x coordinate
-  private xScale_: number = 0.35;
+  protected xScale_: number = 0.35;
   // scale intensity to y coordinate
-  private yScale_: number = 0.005;
+  protected yScale_: number = 0.005;
 
   // Numbers of ticks
-  private xTickNum_: number = 10;
-  private yTickNum_: number = 5 ;
-  private tickLength_: number = 7 ;
+  protected xTickNum_: number = 10;
+  protected yTickNum_: number = 5 ;
+  protected tickLength_: number = 7 ;
   // Tick width list used in the function getTickWidth
-  private tickWidthList_: number[] = [10000,8000,6000,5000,4000,3000,2000,1000,800,700,600,500,450,400,350,300,250,200,150,100,50,20,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
+  protected tickWidthList_: number[] = [10000,8000,6000,5000,4000,3000,2000,1000,800,700,600,500,450,400,350,300,250,200,150,100,50,20,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001,0.0005,0.0001,0.00005,0.00001,0.000005,0.000001];
   // Tick height list used in the function getTickHeight
-  private tickHeightList_: number[] = [50,40,30,25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001];
+  protected tickHeightList_: number[] = [50,40,30,25,20,15,10,5,3,2,1,0.5,0.2,0.1,0.05,0.01,0.005,0.001];
 
   //Limiting the peaks and envelopes to 4000 using 20 bins
-  private binNum_: number = 20;
-  private peakNumPerBin_: number = 50;
+  protected binNum_: number = 20;
+  protected peakNumPerBin_: number = 50;
   //Padding for mouse over peak floatings.
-  private mouseOverPadding_: {"head": number, "middle": number} = {head:20,middle:14};
+  protected mouseOverPadding_: {"head": number, "middle": number} = {head:20,middle:14};
 
   // Envelope circle size: min and max radius	
-  private showEnvelopes_: boolean = true;
-  private defaultRadius_: number = 0.05;
-  private minRadius_: number = 2;
-  private maxRadius_: number = 5;
+  protected showEnvelopes_: boolean = true;
+  protected defaultRadius_: number = 0.05;
+  protected minRadius_: number = 2;
+  protected maxRadius_: number = 5;
   //	Colors for the envelope circles	
-  private envColorList_: string[] = ["red","darkorange","blue"];
+  protected envColorList_: string[] = ["red","darkorange","blue"];
 
   // Parameters related to annoated ions
-  private showIons_: boolean = true;
-  private ionXShift_: number = -5;
-  private ionYShift_: number = -15;
+  protected showIons_: boolean = true;
+  protected ionXShift_: number = -5;
+  protected ionYShift_: number = -15;
 
   // Mono mass graph
-  private showError_: boolean = true;
-  private showLines_: boolean = true;
-  private isMonoMassGraph_: boolean = false;
-  private errorPlotPadding_: Padding = {left:70, right:50, head:10, bottom:10};
-  private errorPlotHeight_: number = 40;
-  private errorThreshold_: number = 0.2;
-  private errorYTickNum_: number = 2;
+  protected showError_: boolean = true;
+  protected showLines_: boolean = true;
+  protected isMonoMassGraph_: boolean = false;
+  protected errorPlotPadding_: Padding = {left:70, right:50, head:10, bottom:10};
+  protected errorPlotHeight_: number = 40;
+  protected errorThreshold_: number = 0.2;
+  protected errorYTickNum_: number = 2;
   
   //restrict x zoom
-  private isXZoomAllowed_ = true;
+  protected isXZoomAllowed_ = true;
 
   //sequence length
   //for determining max m/z window based on seq length in mass graph
-  private seqLength_: number = -1;
-
-  // id of the page element that shows the hovered peak's m/z and intensity
-  // (each spectrum panel has its own, e.g. MS1 vs MS2)
-  private annoElementId_: string = "curMsOneAnnoText";
+  protected seqLength_: number = -1; 
 
   constructor() {
-  }
-
-  getAnnoElementId(): string {
-    return this.annoElementId_;
-  }
-  setAnnoElementId(id: string): void {
-    this.annoElementId_ = id;
   }
 
   //getters and setters
@@ -398,10 +390,6 @@
     this.updateScale(this.dataMinMz_, this.dataMaxMz_, this.dataMaxInte_ * this.inteMargin_);
   }
 
-  resetScale(): void {
-    this.updateScale(this.dataMinMz_, this.dataMaxMz_, this.dataMaxInte_ * this.inteMargin_);
-  }
-
   /**
    * @function drag
    * @description 
@@ -446,6 +434,7 @@
     oriValues.max = this.winMaxMz_;
     oriValues.center = this.winCenterMz_;
     oriValues.xScale = this.xScale_;
+
     let mouseSpecX: number = mouseSvgX - this.padding_.left;
     this.winCenterMz_ =  mouseSpecX/this.xScale_ + this.winMinMz_;
     /*self is a global variable of datasource object containing all the data needed to use when zoomed*/
@@ -456,11 +445,8 @@
     if (this.winMinMz_ < this.minPossibleMz_){//prevent zooming out into negative mass
       this.winMinMz_ = this.minPossibleMz_;
     }
-    if (this.winMaxMz_ > this.dataMaxMz_ + this.maxPossibleMzMargin_) {
+    if (this.winMaxMz_ > this.dataMaxMz_ + this.maxPossibleMzMargin_){
       this.winMaxMz_ = this.dataMaxMz_ + this.maxPossibleMzMargin_;
-      if (this.winMaxMz_ > this.winMinMz_) {
-        this.xScale_ = this.specWidth_ / (this.winMaxMz_ - this.winMinMz_);
-      }
     }
     if (this.winCenterMz_ > this.winMaxMz_) {
       this.winMinMz_ = oriValues.min;

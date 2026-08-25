@@ -1,3 +1,7 @@
+//shared spectrum view: binds the SVG, zoom and drag, holds the peak /
+//envelope / ion data and draws the basic and mono-mass spectra. The TopMSV
+//viewer and the spectra browser derive their own SpectrumView from this
+//base.
 /**
  * @function SpectrumView
  * @description Function draws the graph, binds zoom and drag function to the graph
@@ -6,22 +10,22 @@
  * @param {Array} peakData - contains peakList and envelope list 
  * @param {Array} ionData - Contains data with mass and ACID name to plot on the graph
  */
-class SpectrumView {
+class SpectrumViewBase {
   // parameters for zoom
-  private transformX_: number = 0;
-  private transformScale_: number = 1.0;
-  private id_: string;
-  private para_: SpectrumViewParameters;
-  private peakList_: Peak[];
-  private envList_: Envelope[] = [];
-  private ionList_: MatchedIon[] | null = null;
-  private svg_: any;
-  private proteoform_: Proteoform | null  = null;
-  private nIon_: string = "";
-  private cIon_: string = "";
-  private nMassList_: TheoMass[] = []; 
-  private cMassList_: TheoMass[] = [];
-  private centerPos_: number = -1;//center m/z or mono mass of the current view
+  protected transformX_: number = 0;
+  protected transformScale_: number = 1.0;
+  protected id_: string;
+  protected para_: SpectrumViewParameters;
+  protected peakList_: Peak[];
+  protected envList_: Envelope[] = [];
+  protected ionList_: MatchedIon[] | null = null;
+  protected svg_: any;
+  protected proteoform_: Proteoform | null  = null;
+  protected nIon_: string = "";
+  protected cIon_: string = "";
+  protected nMassList_: TheoMass[] = []; 
+  protected cMassList_: TheoMass[] = [];
+  protected centerPos_: number = -1;//center m/z or mono mass of the current view
 
   constructor(svgId: string, peakList: Peak[], sequenceLength: number = -1) {
     this.id_ = svgId;
@@ -93,7 +97,6 @@ class SpectrumView {
   addRawSpectrumAnno(envList: Envelope[], ionList: MatchedIon[] | null): void{
     this.envList_ = envList;
     this.para_.addColorToEnvelopes(envList);
-    //this.envPeakList = this.getEnvPeakList(this.envList);
     if (!ionList){
       console.error("ERROR: invalid input for spectrum graph");
       return;
@@ -123,7 +126,6 @@ class SpectrumView {
       drawMonoMassSpectrum(this.id_, this.para_, this.proteoform_, this.nMassList_, this.cMassList_, this.ionList_);
     }
     else {
-      //drawRawSpectrum(this.id, this.para, this.envPeakList);
       drawRawSpectrum(this.id_, this.para_, this.envList_);
     }
   }
