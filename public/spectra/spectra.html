@@ -3,7 +3,7 @@
 <head>
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>TopMSV Viewer</title>
-<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+<link rel="icon" type="image/x-icon" href="/common/images/favicon.ico">
 <link rel="stylesheet" type="text/css" href="../vendor/bootstrap/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="../vendor/datatables/css/jquery.dataTables.min.css">
 <link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
@@ -17,52 +17,52 @@
 <!-- for d3 visualization -->
 <script src="../vendor/d3/d3.js"></script>
 <!-- Views -->
-<script src="../js/views/errorView.js"></script>
-<script src="../js/views/fixedPtmView.js"></script>
-<script src="../js/views/infoView.js"></script>
-<script src="../js/views/ionCheckBoxView.js"></script>
-<script src="../js/views/ionTableView.js"></script>
-<script src="../js/views/massInteView.js"></script>
-<script src="../js/views/peakView.js"></script>
-<script src="../js/views/sequenceView.js"></script>
-<script src="../js/views/helperView.js"></script>
-<script src="../js/views/graphTabView.js"></script>
+<script src="../common/js/views/errorView.js"></script>
+<script src="../common/js/views/fixedPtmView.js"></script>
+<script src="../common/js/views/infoView.js"></script>
+<script src="../common/js/views/ionCheckBoxView.js"></script>
+<script src="../common/js/views/ionTableView.js"></script>
+<script src="../common/js/views/massInteView.js"></script>
+<script src="../common/js/views/peakView.js"></script>
+<script src="../common/js/views/sequenceView.js"></script>
+<script src="../common/js/views/helperView.js"></script>
+<script src="../common/js/views/graphTabView.js"></script>
 <!-- Models -->
-<script src="../js/models/calcMatchedPeaks.js"></script>
-<script src="../js/models/spectrumData.js"></script>
-<script src="../js/models/parseData.js"></script>
+<script src="../common/js/models/calcMatchedPeaks.js"></script>
+<script src="../common/js/models/spectrumData.js"></script>
+<script src="../common/js/models/parseData.js"></script>
 
-<script src="../js/common/prsm_view/add_shift.js"></script>
-<script src="../js/common/topfd_view/topfd_add_shift.js"></script>
-<script src="../js/common/prsm_view/draw_prsm.js"></script>
-<script src="../js/common/prsm_view/prsm_data.js"></script>
-<script src="../js/common/prsm_view/prsm_view.js"></script>
-<script src="../js/common/prsm_view/prsm_para.js"></script>
+<script src="../common/js/common/prsm_view/add_shift.js"></script>
+<script src="../common/js/common/topfd_view/topfd_add_shift.js"></script>
+<script src="../common/js/common/prsm_view/draw_prsm.js"></script>
+<script src="../common/js/common/prsm_view/prsm_data.js"></script>
+<script src="../common/js/common/prsm_view/prsm_view.js"></script>
+<script src="../common/js/common/prsm_view/prsm_para.js"></script>
 
-<script src="../js/common/proteoform/protein_constant.js"></script>
+<script src="../common/js/common/proteoform/protein_constant.js"></script>
 
-<script src="../js/common/spectrum_view/spectrum_view.js"></script>
-<script src="../js/common/topfd_view/topfd_spectrum_view.js"></script>
-<script src="../js/common/spectrum_view/draw_spectrum.js"></script>
-<script src="../js/common/topfd_view/topfd_draw_spectrum.js"></script>
-<script src="../js/common/spectrum_view/spectrum_parameter.js"></script>
-<script src="../js/common/topfd_view/topfd_spectrum_parameter.js"></script>
-<script src="../js/common/mass_spectrum/spectrumFunction.js"></script>
+<script src="../common/js/common/spectrum_view/spectrum_view.js"></script>
+<script src="../common/js/common/topfd_view/topfd_spectrum_view.js"></script>
+<script src="../common/js/common/spectrum_view/draw_spectrum.js"></script>
+<script src="../common/js/common/topfd_view/topfd_draw_spectrum.js"></script>
+<script src="../common/js/common/spectrum_view/spectrum_parameter.js"></script>
+<script src="../common/js/common/topfd_view/topfd_spectrum_parameter.js"></script>
+<script src="../common/js/common/mass_spectrum/spectrumFunction.js"></script>
 
-<script src="../js/common/distribution_calc/amino_acid_distribution.js"></script>
-<script src="../js/common/distribution_calc/emass_and_distribution.js"></script>
-<script src="../js/common/distribution_calc/isotopes.js"></script>
-<script src="../js/common/distribution_calc/molecular_formulae.js"></script>
+<script src="../common/js/common/distribution_calc/amino_acid_distribution.js"></script>
+<script src="../common/js/common/distribution_calc/emass_and_distribution.js"></script>
+<script src="../common/js/common/distribution_calc/isotopes.js"></script>
+<script src="../common/js/common/distribution_calc/molecular_formulae.js"></script>
 
-<script src="../js/common/util/types.js"></script>
-<script src="../js/common/util/common_ptm_list.js"></script>
-<script src="../js/common/util/format_util.js"></script>
+<script src="../common/js/common/util/types.js"></script>
+<script src="../common/js/common/util/common_ptm_list.js"></script>
+<script src="../common/js/common/util/format_util.js"></script>
 <!--data classes-->
-<script src="../js/common/sequence/mod.js"></script>
-<script src="../js/common/mass_spectrum/peak.js"></script>
-<script src="../js/common/mass_spectrum/envelope.js"></script>
-<script src="../js/common/prsm/matchedPeakEnvelopePair.js"></script>
-<script src="../js/common/mass_spectrum/spectrum.js"></script>
+<script src="../common/js/common/sequence/mod.js"></script>
+<script src="../common/js/common/mass_spectrum/peak.js"></script>
+<script src="../common/js/common/mass_spectrum/envelope.js"></script>
+<script src="../common/js/common/prsm/matchedPeakEnvelopePair.js"></script>
+<script src="../common/js/common/mass_spectrum/spectrum.js"></script>
 </head>
 <body>
 	<!--<div id="nav-bar"></div> -->
@@ -237,11 +237,11 @@
 		</div>
 	</div>
 	<!-- Controller -->
-	<script src="../js/controllers/viewer_index.js"></script>
-	<script src="../js/controllers/viewer_seq_exec.js"></script>
-	<script src="../js/views/base.js"></script>
-	<script src="../js/views/massTableView.js"></script>
-	<script src="../js/api.js"></script>
-	<script src="../js/viewer.js"></script>
+	<script src="../common/js/controllers/viewer_index.js"></script>
+	<script src="../common/js/controllers/viewer_seq_exec.js"></script>
+	<script src="../common/js/views/base.js"></script>
+	<script src="../common/js/views/massTableView.js"></script>
+	<script src="../common/js/api.js"></script>
+	<script src="../common/js/viewer.js"></script>
 </body>
 </html>

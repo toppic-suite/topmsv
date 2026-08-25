@@ -16,7 +16,7 @@ npm run build:client     # compile the browser TypeScript (required after a fres
 ```
 
 Both steps are required after a fresh clone: browser libraries are served
-straight from `node_modules`, and the compiled `public/js/` output is
+straight from `node_modules`, and the compiled `public/common/js/` output is
 generated, not committed.
 
 ## Run

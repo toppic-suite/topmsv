@@ -14,5 +14,8 @@
     "rootDir": "./src/viewer",
     "outDir": "./public/topmsv"
   },
-  "include": ["./src/viewer/**/*", "./types/viewer-lib/**/*"]
+  "include": ["./src/viewer/**/*", "./types/lib/**/*"],
+  // the merged types/lib holds both variant declaration sets;
+  // each page pass excludes the other app's variants
+  "exclude": ["./types/lib/topfd_view"]
 }

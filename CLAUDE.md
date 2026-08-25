@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm install
 npm run build:client        # 5 tsc passes: spectra lib (+.d.ts) -> js/common | viewer lib variants (tsconfig.viewer.json)
-                            # | spectra pages (tsconfig.spectra.json, src/spectra -> public/js) | viewer pages
+                            # | spectra pages (tsconfig.spectra.json, src/spectra -> public/common/js) | viewer pages
                             # (tsconfig.viewerpages.json, src/viewer -> public/topmsv/{visual,inspect}/js) | home page
 npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
@@ -15,7 +15,7 @@ DATA_DIR=/path PORT=8080 npm start
 npm run convert -- --sqlite f.sqlite --prsm p.xml --proteoform q.xml [--fasta db.fasta] --out outdir
 ```
 
-ALL client JS is generated: `public/js/`, `public/topmsv/{visual,inspect}/js/`
+ALL client JS is generated: `public/common/js/`, `public/topmsv/{visual,inspect}/js/`
 and `types/` (library `.d.ts` used by the page-script passes) are gitignored —
 after a fresh clone `npm install` and `build:client` are **both required**
 (browser libraries are served straight from node_modules, see below); re-run
@@ -35,7 +35,7 @@ file the vendored TopMSV viewer consumes is generated on the fly.
 ### URL / data flow
 
 ```
-/                          public/index.html + public/js/home.js (from src/client/home.ts)
+/                          public/index.html + public/common/js/home.js (from src/client/home.ts)
 /api/datasets              upload (multer) -> data/<id>/ -> ensureIndexes + getDatasetSource
                            (validates + warms the cache; no files are generated;
                            ensureIndexes also switches the sqlite copy to
@@ -120,7 +120,7 @@ the same run to re-run this.
 Dynamic-endpoint check: CLI output and the served files must stay
 byte-identical (`curl` each path, `cmp` against the CLI tree).
 
-### Viewer specifics (public/topmsv, public/js)
+### Viewer specifics (public/topmsv, public/common/js)
 
 - `public/topmsv/` is the TopMSV viewer TopPIC ships with its HTML output
   (script-tag globals, no modules, load order in HTML matters). Only the
@@ -137,7 +137,7 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   `getBpCoordinates` so the N-terminal cleavage bracket (break point 0) is
   anchored before the first residue (upstream bug), and dropped a dead
   `proteoform/proteoform.js` script tag.
-- `public/spectra.html` + `public/js` (generated from `src/spectra/`,
+- `public/spectra/spectra.html` + `public/common/js` (generated from `src/spectra/`,
   tsconfig.spectra.json) are the raw-spectra browser (from the reference
   Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on
@@ -157,13 +157,13 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   v6+ listener signature (`.on("x", function(event, d))`, `d3.pointer`) —
   keep new d3 event handlers in that style.
 - `src/common/` is the single source for the shared visualization library
-  used by BOTH apps, compiled to `public/js/common` in two passes:
+  used by BOTH apps, compiled to `public/common/js/common` in two passes:
   the root `tsconfig.json` (include `./src/common/*/*` — exactly one
   directory level; deeper files are silently not compiled) builds the
   spectra-browser set, and `tsconfig.viewer.json` builds the TopMSV viewer's
   variants of the five deliberately-divergent files from
   `src/common/{spectrum_view,prsm_view}/viewer/` into
-  `public/js/common/<module>/viewer/` (same global class names — safe only
+  `public/common/js/common/<module>/viewer/` (same global class names — safe only
   because they compile as separate programs and no page loads both sets;
   spectra versions do panel-header hover annotations + base-intensity lines,
   viewer versions do floating tooltips). `allowJs` is on: the untyped
