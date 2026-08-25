@@ -2,13 +2,19 @@
  * Styles of the shared navigation bar (self-contained: the bar is used on
  * pages with Bootstrap 4, Bootstrap 5 and no framework at all).
  */
+/* The bar matches the homepage header (home.css .topbar) exactly:
+   same background, same height and the same 980px content column, so the
+   "TopMSV" brand sits at the same position on every page. */
 .topmsv-nav {
-  background-color: #343a40;
-  padding: 0.6rem 1rem;
+  background-color: #2c3e50;
+  padding: 18px 0;
+  /* same font as the homepage heading (home.css body) */
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 .topmsv-nav .navcontainer {
-  max-width: 1200px;
+  max-width: 980px;
   margin: auto;
+  padding: 0 16px;
   display: flex;
   align-items: center;
 }
@@ -19,10 +25,22 @@
 .topmsv-nav a:hover {
   color: #fff;
 }
+/* neutralize Bootstrap 4/5 navbar spacing on pages that load a framework,
+   so the bar has the same height everywhere */
+.topmsv-nav .navbar-brand {
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+.topmsv-nav .topmsv-nav-links .nav-link {
+  padding: 0;
+}
 .topmsv-nav .navbar-brand h3 {
+  /* same style as the homepage heading (home.css .topbar h1) */
   margin: 0 1rem 0 0;
-  font-size: 1.5rem;
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
   color: #fff;
 }
 .topmsv-nav .topmsv-nav-links {

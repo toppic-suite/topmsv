@@ -16,6 +16,8 @@ body {
   margin: 0 auto;
   padding: 0 16px;
   font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
 }
 .subtitle { margin: 4px 0 0; color: #cfd8e3; font-size: 14px; }
 main { max-width: 980px; margin: 24px auto; padding: 0 16px; }
