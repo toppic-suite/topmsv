@@ -8,9 +8,15 @@ body {
 .topbar {
   background: #2c3e50;
   color: #fff;
-  padding: 18px 32px;
+  padding: 18px 0;
 }
-.topbar h1 { margin: 0; font-size: 24px; }
+/* align the heading with the centered content column below */
+.topbar h1 {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 16px;
+  font-size: 24px;
+}
 .subtitle { margin: 4px 0 0; color: #cfd8e3; font-size: 14px; }
 main { max-width: 980px; margin: 24px auto; padding: 0 16px; }
 .card {
