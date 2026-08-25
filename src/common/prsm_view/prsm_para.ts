@@ -1,3 +1,5 @@
+//layout parameters for the PrSM sequence view, shared by the TopMSV viewer
+//and the spectra browser.
 class PrsmPara {
   private rowLength_: number = 30 ;
   private blockLength_: number = 10 ;

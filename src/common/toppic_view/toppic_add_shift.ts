@@ -1,11 +1,11 @@
-//enable click-to-add a mass shift in a prsm sequence in the inspect page. 
-class AddShift {
-  static appliedPtm: number[] = [];//variable PTM applied to the sequence so far
-  static unknownMassShift: {"pos": number, "mass": number}[] = [];
-  static clickedLetter: string = "";
-  static clickedPos: number = -1;
+//TopMSV viewer variant of AddShift: enables click-to-add a mass shift in a
+//prsm sequence on the inspect page. Click state and the PTM pop-up come from
+//AddShiftBase; this class implements applying the selected shift and
+//re-running the matching.
+class AddShift extends AddShiftBase {
 
   constructor() {
+    super();
     this.addTabEventListener();
   };
 
@@ -27,10 +27,6 @@ class AddShift {
   }
 
   addUnknownShift(e: JQuery.ClickEvent<HTMLElement, undefined, HTMLElement, HTMLElement>): void {
-    /*let ptmDiv: HTMLElement | null = document.getElementById("tooltip-pop");
-    if (ptmDiv) {
-      ptmDiv.style.display = "none";
-    }*/
     $("#tooltip-pop").modal('hide');
     let val: string | number | string[] | undefined = $("#mass-value").val();
 
@@ -61,7 +57,7 @@ class AddShift {
     unknownMassShiftList = parseResult[1];
     protVarPtmsList = parseResult[2];
     variablePtmsList = parseResult[3];
-    
+
     //remove previous mass shift if exists on a same residue
     for (let i: number = 0; i < unknownMassShiftList.length; i++) {
       if (unknownMassShiftList[i].getLeftPos() == AddShift.clickedPos) {
@@ -93,7 +89,7 @@ class AddShift {
         break;
       }
     }
-    //if None was selected, don't add it to ptm 
+    //if None was selected, don't add it to ptm
     if (mass != 0.0) {
       //add new variable ptm
       unknownMassShiftList.push(new MassShift(AddShift.clickedPos, AddShift.clickedPos+1, mass, "Unknown", mass.toString()));
@@ -118,10 +114,6 @@ class AddShift {
   }
 
   applyShift(ptmIdx: number, letter: string, pos: number): void {
-    /*let ptmDiv: HTMLElement | null = document.getElementById("tooltip-pop");
-    if (ptmDiv) {
-      ptmDiv.style.display = "none";
-    }*/
     $("#tooltip-pop").modal('hide');
     let mass: number = commonPtmList[ptmIdx].mass;
     let unknownMassShiftList: MassShift[] = [];
@@ -137,12 +129,12 @@ class AddShift {
     if (!parseResult) {
       return;
     }
-    
+
     sequence = parseResult[0];
     unknownMassShiftList = parseResult[1];
     protVarPtmsList = parseResult[2];
     variablePtmsList = parseResult[3];
-    
+
     //remove previous mass shift if exists on a same residue
     for (let i: number = 0; i < unknownMassShiftList.length; i++) {
       if (unknownMassShiftList[i].getLeftPos() == pos) {
@@ -174,17 +166,18 @@ class AddShift {
         break;
       }
     }
-    //if None was selected, don't add it to ptm 
+    //if None was selected, don't add it to ptm
     if (mass != 0) {
       //add new variable ptm
       variablePtmsList.push(new MassShift(pos, pos+1, mass, "Variable", commonPtmList[ptmIdx].abbr, new Mod(letter, mass, commonPtmList[ptmIdx].name)));
-      
+
       if (!AddShift.appliedPtm.includes(ptmIdx)) {
         AddShift.appliedPtm.push(ptmIdx);
       }
     }
     this.updateInspectPage(sequence, unknownMassShiftList, protVarPtmsList, variablePtmsList);
   }
+
   static searchBar(): void {
     let input: HTMLInputElement = <HTMLInputElement>document.getElementById("search-input");
     let filter: string = input.value.toUpperCase();
@@ -202,40 +195,6 @@ class AddShift {
       else {
         li[i].style.display = "none";
       }
-    }
-  }
-
-  handleOnClick(letter: string, pos: number): void{
-    AddShift.clickedLetter = letter;
-    AddShift.clickedPos = pos;
-
-    let ptmDiv: HTMLElement | null = document.getElementById("tooltip-pop");
-    if (ptmDiv != null) {
-      $("#tooltip-pop").modal('show');
-      ptmDiv.style.opacity = "1";
-
-      $('#ptm-list').empty();
-      $('#applied-ptm-list').empty();
-
-      commonPtmList.forEach((ptm, idx) => {
-        let entry: JQuery<HTMLLIElement> = $("<li></li>");
-        entry.text(ptm.abbr + " (" + ptm.name + "); " + ptm.mass);
-        entry.attr("id", "ptm" + idx);
-        entry.attr("class", "text-center");
-        entry.css("cursor", "pointer");
-        entry.on("click", () => {this.applyShift(idx, letter, pos)});
-        $("#ptm-list").append(entry);
-      })
-
-      AddShift.appliedPtm.forEach((ptmIdx, idx) => {
-        let entry: JQuery<HTMLLIElement> = $("<li></li>");
-        entry.text(commonPtmList[ptmIdx].abbr + " (" + commonPtmList[ptmIdx].name + "); " + commonPtmList[ptmIdx].mass);
-        entry.attr("id", "applied-ptm" + commonPtmList[ptmIdx].abbr);
-        entry.attr("class", "text-center");
-        entry.css("cursor", "pointer");
-        entry.on("click", () => {this.applyShift(ptmIdx, letter, pos)});
-        $("#applied-ptm-list").append(entry);
-      })
     }
   }
 }
