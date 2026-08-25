@@ -167,7 +167,7 @@ async function updateMsOneById(cur_ms_one_id) {
   }
 }
 
-// The dataset is fixed by the URL (/d/<dataset>/spectra.html), so the data
+// The dataset is fixed by the URL (/d/<dataset>/spectra/spectra.html), so the data
 // file is loaded automatically when the page opens.
 (async () => {
   ms_file_path_text.textContent = await window.electronAPI.openMsFile();

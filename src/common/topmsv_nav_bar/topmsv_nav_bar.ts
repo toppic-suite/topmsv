@@ -27,7 +27,7 @@ const drawNav = function(){
   <ul class="navbar-nav mr-auto mt-2 mt-lg-0"><li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + 'visual/proteins.html">Protein Identifications</a></li>\
   <li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + 'visual/ms.html">Spectrum Identifications</a></li>\
   <li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + 'inspect/spectrum.html">Visual Inspection</a></li>\
-  <li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + '../spectra.html">Raw Spectra</a></li></ul>\
+  <li class="navtab">|</li><li class="nav-item"><a class="nav-link" href="' + relPath + '../spectra/spectra.html">Raw Spectra</a></li></ul>\
   </div></div></div></nav>'
 
   $(function(){
