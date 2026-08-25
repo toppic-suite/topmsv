@@ -22,6 +22,7 @@ const drawNavBar = function(): void {
       + '<span class="headBlock"><h3><strong id="toppic_icon">T</strong>opMSV</h3></span></a>';
     if (dsRoot) {
       const items: { href: string, text: string }[] = [
+        { href: "/", text: "Home" },
         { href: dsRoot + "topmsv/visual/proteins.html", text: "Protein Identifications" },
         { href: dsRoot + "topmsv/visual/ms.html", text: "Spectrum Identifications" },
         { href: dsRoot + "topmsv/inspect/spectrum.html", text: "Visual Inspection" },
