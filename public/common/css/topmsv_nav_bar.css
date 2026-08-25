@@ -1,45 +1,46 @@
 /**
-*CSS to set the width of the Navigation bar
-*/
-.navbar {
-  padding-top: 1rem !important;
-  padding-right: 1rem !important;
-  padding-bottom: 1rem !important;
-  padding-left: 1rem !important;
+ * Styles of the shared navigation bar (self-contained: the bar is used on
+ * pages with Bootstrap 4, Bootstrap 5 and no framework at all).
+ */
+.topmsv-nav {
+  background-color: #343a40;
+  padding: 0.6rem 1rem;
 }
-/**
-*Increasing the container width
-*/
-@media (min-width: 1200px) {
-    .navcontainer {
-        max-width: 1200px;
-		margin: auto;
-		display:flex;
-    }
+.topmsv-nav .navcontainer {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
 }
-.navbar-collapse{
-	margin: auto;
+.topmsv-nav a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
 }
-mark{
-    background-color: aliceblue !important;
+.topmsv-nav a:hover {
+  color: #fff;
 }
-.navbar li {
-    list-style-type:none;
-    float:left;
-    margin:0 10px 0px 10px;
+.topmsv-nav .navbar-brand h3 {
+  margin: 0 1rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #fff;
 }
-.navbar-right{
-	margin: 0px 0px 0px 430px;
+.topmsv-nav .topmsv-nav-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-
-.navtab{
-    color: #fff !important;
-    align-content: center !important;
-    padding-top: 0.4rem;
+.topmsv-nav .topmsv-nav-links li {
+  margin: 0 10px;
 }
-
+.topmsv-nav .navtab {
+  color: #fff;
+}
+mark {
+  background-color: aliceblue !important;
+}
 #tooltip_imagename {
-  transform: translateX(-35%)!important;
+  transform: translateX(-35%) !important;
 }
-
-
