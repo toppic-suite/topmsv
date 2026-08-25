@@ -14,9 +14,10 @@ npm run convert -- --sqlite f.sqlite --prsm p.xml --proteoform q.xml [--fasta db
 npm run sync:vendor         # re-copy browser libs from node_modules into public/vendor
 ```
 
-`public/js/common/` and `public/js/home.js` are gitignored — `build:client` is
-**required after a fresh clone** and after edits under `src/common/` or
-`src/client/`. Server code runs via ts-node (no emit). Node >= 24 required
+`public/js/common/`, `public/js/home.js` and `public/vendor/` are gitignored —
+after a fresh clone `npm install` (postinstall repopulates `public/vendor`) and
+`build:client` are **both required**; re-run `build:client` after edits under
+`src/common/` or `src/client/`. Server code runs via ts-node (no emit). Node >= 24 required
 (`node:sqlite`). There is no test suite; verification = the converter
 validation loop below plus loading pages in a browser.
 
@@ -129,9 +130,9 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
 - `public/js` + `public/spectra.html` are the raw-spectra browser (from the
   reference Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on load.
-- `public/vendor/` (used only by spectra.html) is synced from node_modules by
-  `scripts/sync-vendor.mjs` (postinstall / `npm run sync:vendor`); versions are
-  managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the drawing code
+- `public/vendor/` (used only by spectra.html) is **gitignored and generated**:
+  `scripts/sync-vendor.mjs` copies it from node_modules (postinstall /
+  `npm run sync:vendor`); versions are managed in package.json. Hard ceilings: d3 exactly 5.16.0 (the drawing code
   uses the v5-only d3.event/d3.mouse API), jquery ^3 ($.trim etc. removed in
   4), datatables.net ^1 (2.x breaking). `public/topmsv/node_modules` is NOT
   synced — it is TopPIC's own frozen viewer bundle.

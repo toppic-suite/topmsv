@@ -2,6 +2,7 @@ node_modules/
 !public/topmsv/node_modules/
 public/js/common/
 public/js/home.js
+public/vendor/
 data/
 ref_code/
 ref_data/
