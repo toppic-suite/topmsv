@@ -1,4 +1,4 @@
-# TopMSV for TopPIC
+# TopMSV Viewer
 
 A web-based tool for visualizing the output of the spectral deconvolution tool
 **TopFD** and the database search tool **TopPIC**. Datasets are uploaded through
