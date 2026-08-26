@@ -1,6 +1,6 @@
 # TopMSV Viewer — architecture
 
-## What the converter does
+## Introduction
 
 The server reproduces TopPIC's own HTML-report generation (ported from
 toppic-suite `src/visual`, `src/prsm`, `src/ms`):

@@ -49,8 +49,8 @@ the identified proteoform region are reconstructed heuristically (an `M` for
 NME proteoforms, `X` placeholders otherwise) and the protein is truncated at
 the proteoform end.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for what the converter does, the
-served pages, the project layout and the example dataset.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for an introduction of the design,
+the served pages, the project layout and the example dataset.
 
 ## License
 
