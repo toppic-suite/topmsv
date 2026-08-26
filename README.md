@@ -26,6 +26,11 @@ npm start                # http://localhost:3000
 DATA_DIR=/path/to/data PORT=8080 npm start
 ```
 
+The second form sets two optional environment variables: `DATA_DIR` is the
+directory where uploaded datasets are stored (default: `data/` in the
+repository), and `PORT` is the port number the web server listens on
+(default: 3000). Either can be set independently.
+
 Open http://localhost:3000, upload the three files of a dataset, and click
 **Identifications** or **Raw spectra** in the dataset table.
 
