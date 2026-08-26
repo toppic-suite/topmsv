@@ -130,13 +130,16 @@ async function updateMsOneById(cur_ms_one_id) {
         parseInt(env.charge),
         parseFloat(env.intensity));
       env_obj_list.push(env_obj);
-      mass_table.row.add([parseInt(env.env_id), 
+      mass_table.row.add([parseInt(env.env_id),
       parseFloat(env.mono_mass),
       parseFloat(env.mono_mass)/parseInt(env.charge) + 1.007276,
       parseInt(env.charge),
       parseFloat(env.intensity),
-      parseFloat(env.envcnn_score)]).draw(false);
+      parseFloat(env.envcnn_score)]);
     }
+    // draw outside the loop: with zero envelopes the table must still repaint
+    // (clear() alone leaves the previous spectrum's rows on screen)
+    mass_table.draw();
     cur_ms_one_env_num_text.textContent = env_obj_list.length; 
     let db_env_peak_list = await window.electronAPI.getMsOneEnvPeakListById(cur_ms_one_id);
     for (let i = 0; i < db_env_peak_list.length; i++) {
@@ -321,8 +324,11 @@ async function updateMsTwoById(cur_ms_two_id) {
       parseFloat(env.mono_mass)/parseInt(env.charge) + 1.007276,
       parseInt(env.charge),
       parseFloat(env.intensity),
-      parseFloat(env.envcnn_score)]).draw(false);
+      parseFloat(env.envcnn_score)]);
     }
+    // draw outside the loop: with zero envelopes the table must still repaint
+    // (clear() alone leaves the previous spectrum's rows on screen)
+    mass2_table.draw();
     if (cur_ms_two_env_num_text) cur_ms_two_env_num_text.textContent = env_obj_list.length;
     let db_env_peak_list = await window.electronAPI.getMsTwoEnvPeakListById(cur_ms_two_id);
     for (let i = 0; i < db_env_peak_list.length; i++) {
