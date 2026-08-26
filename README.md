@@ -31,8 +31,21 @@ directory where uploaded datasets are stored (default: `data/` in the
 repository), and `PORT` is the port number the web server listens on
 (default: 3000). Either can be set independently.
 
-Open http://localhost:3000, upload the three files of a dataset, and click
-**Identifications** or **Spectra** in the dataset table.
+## Upload a dataset
+
+Open http://localhost:3000 and fill in the **Upload a dataset** form:
+
+1. Optionally enter a dataset name (it defaults to the sqlite file name).
+2. Select the TopFD output sqlite file and the two TopPIC result XML files
+   (the PrSM XML and the proteoform XML) — see the table below.
+3. Optionally select the protein database (FASTA) used for the search.
+4. Click **Upload**. The files are validated and the dataset appears in the
+   **Datasets** table, where **Identifications** opens the protein list and
+   **Spectra** opens the raw-spectra browser. **Delete** removes a dataset
+   permanently.
+
+Nothing is converted on disk: the server keeps only the uploaded files and
+generates all viewer data on the fly.
 
 ## Input files
 

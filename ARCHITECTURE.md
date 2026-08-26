@@ -37,33 +37,44 @@ all verified semantically equivalent.
   protein, proteoform, PrSM and spectrum views, visual inspection). This is
   the original TopMSV viewer that TopPIC ships with its HTML output, patched
   minimally (broken script paths, dead TopMG cards, browser-check alert,
-  a missing URL parameter, extra nav links).
-- `/d/<dataset>/spectra.html` — a raw-spectra browser (all MS1/MS2 scans with
-  peak lists and envelope annotations, linked navigation between MS1 and its
-  fragmentation scans).
+  a missing URL parameter) and extended with a shared nav bar that
+  highlights the current page and a `data=<name>` URL shorthand for the
+  proteins and spectrum-list pages.
+- `/d/<dataset>/spectra/spectra.html` — a raw-spectra browser (all MS1/MS2
+  scans with peak lists and envelope annotations, linked navigation between
+  MS1 and its fragmentation scans), backed by a per-dataset JSON API under
+  `/d/<dataset>/api/...`.
+- `/vendor/*` (also reachable as `/d/<dataset>/vendor/*`) — all browser
+  libraries, served straight from `node_modules`.
 
 ## Project layout
 
 ```
-server.ts                    entry point (ts-node)
-src/server/                  Express app, dataset registry, sqlite access
+server.ts                    entry point (ts-node, no emit)
+src/server/                  Express app, dataset registry, sqlite access,
+                             on-the-fly data_js/spectrum generation
+src/server/routes/           dataset upload/list API and per-dataset routes
 src/server/convert/          TopPIC XML + sqlite -> data_js converter
-src/server/vendor.ts         serves all browser libraries (spectra.html +
+src/server/vendor.ts         serves all browser libraries (spectra browser +
                              topmsv viewer) under /vendor/* straight from
                              node_modules
 src/common/                  TopMSV visualization library, single source for
-                             both apps (TypeScript, compiled to public/js/common,
-                             loaded as script-tag globals; <module>/viewer/ holds
-                             the viewer's variants of the five divergent files)
+                             both apps (TypeScript, compiled to
+                             public/common/js/common, loaded as script-tag
+                             globals; <module>/viewer/ holds the viewer's
+                             variants of the five divergent files)
 src/spectra/                 raw-spectra browser page scripts (compiled to
-                             public/js)
+                             public/common/js)
 src/viewer/                  TopMSV viewer page scripts (compiled to
                              public/topmsv/{visual,inspect}/js)
-src/client/                  home page TypeScript (compiled to public/js)
+src/client/                  home page TypeScript (compiled to
+                             public/common/js)
 public/index.html            home page
-public/spectra.html          raw-spectra browser page (scripts generated)
+public/spectra/spectra.html  raw-spectra browser page (scripts generated)
 public/topmsv/               TopMSV viewer HTML (visual/, inspect/; all JS
                              generated from src/viewer + src/common)
+public/common/               shared CSS and images; public/common/js/ holds
+                             all generated browser JS (gitignored)
 data/                        uploaded datasets (gitignored)
 ```
 
