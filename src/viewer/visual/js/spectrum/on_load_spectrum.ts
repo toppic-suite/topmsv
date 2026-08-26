@@ -34,7 +34,12 @@ $(document).ready(function () {
     }
     else {
         $(".search-box").css('display', 'inline-block');
-        let folderName: string = l_split[1].split("=")[1];
+        // "data=<name>" is shorthand for "folder=../../<name>/data_js"
+        let params: URLSearchParams = new URLSearchParams(l_split[1]);
+        let dataName: string | null = params.get("data");
+        let folderName: string = (dataName != null)
+            ? "../../" + dataName + "/data_js"
+            : l_split[1].split("=")[1];
         let finalPath: string = folderName;
         let head: HTMLHeadElement = document.getElementsByTagName('head')[0];
         let script: HTMLScriptElement = document.createElement('script');

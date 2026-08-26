@@ -24,7 +24,7 @@ const drawNavBar = function(): void {
       const items: { href: string, text: string }[] = [
         { href: "/", text: "Home" },
         { href: dsRoot + "topmsv/visual/proteins.html?data=toppic_proteoform_cutoff", text: "Protein Identifications" },
-        { href: dsRoot + "topmsv/visual/ms.html", text: "Spectrum Identifications" },
+        { href: dsRoot + "topmsv/visual/ms.html?data=toppic_prsm_cutoff", text: "Spectrum Identifications" },
         { href: dsRoot + "topmsv/inspect/spectrum.html", text: "Visual Inspection" },
         { href: dsRoot + "spectra/spectra.html", text: "Spectra" },
       ];
