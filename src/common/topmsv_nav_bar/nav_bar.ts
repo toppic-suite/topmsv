@@ -23,7 +23,7 @@ const drawNavBar = function(): void {
     if (dsRoot) {
       const items: { href: string, text: string }[] = [
         { href: "/", text: "Home" },
-        { href: dsRoot + "topmsv/visual/proteins.html?folder=../../toppic_proteoform_cutoff/data_js", text: "Protein Identifications" },
+        { href: dsRoot + "topmsv/visual/proteins.html?data=toppic_proteoform_cutoff", text: "Protein Identifications" },
         { href: dsRoot + "topmsv/visual/ms.html", text: "Spectrum Identifications" },
         { href: dsRoot + "topmsv/inspect/spectrum.html", text: "Visual Inspection" },
         { href: dsRoot + "spectra/spectra.html", text: "Spectra" },
