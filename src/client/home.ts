@@ -81,7 +81,7 @@ function setupUpload(): void {
     const data = new FormData(form);
     btn.disabled = true;
     status.classList.remove('error');
-    status.textContent = 'Uploading and converting… this may take a moment for large files.';
+    status.textContent = 'Uploading… this may take a moment for large files.';
     try {
       const res = await fetch('api/datasets', { method: 'POST', body: data });
       const body = await res.json();
