@@ -9,7 +9,9 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .container{
-  padding-top: 100px !important;
+  /* the upstream page reserved 100px for a fixed-position navbar; our nav bar
+     is in normal flow, so use the same 24px content gap as the home page */
+  padding-top: 24px !important;
 }
 /** Below CSS codes are formatting the information box at the top of inspect page
 */

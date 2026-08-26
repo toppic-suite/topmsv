@@ -30,8 +30,11 @@ const drawNavBar = function(): void {
       ];
       navCode += '<ul class="topmsv-nav-links">';
       items.forEach((item) => {
+        // highlight the item for the page being shown (hrefs are absolute
+        // paths built from dsRoot, so they compare against location.pathname)
+        const active: boolean = item.href.split("?")[0] === location.pathname;
         navCode += '<li class="navtab">|</li>'
-          + '<li class="nav-item"><a class="nav-link" href="' + item.href + '">' + item.text + '</a></li>';
+          + '<li class="nav-item"><a class="nav-link' + (active ? ' active' : '') + '" href="' + item.href + '">' + item.text + '</a></li>';
       });
       navCode += '</ul>';
     }

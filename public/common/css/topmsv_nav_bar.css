@@ -56,6 +56,11 @@
 .topmsv-nav .navtab {
   color: #fff;
 }
+/* the nav item for the page being shown */
+.topmsv-nav .topmsv-nav-links .nav-link.active,
+.topmsv-nav .topmsv-nav-links .nav-link.active:hover {
+  color: #ffc107;
+}
 mark {
   background-color: aliceblue !important;
 }
