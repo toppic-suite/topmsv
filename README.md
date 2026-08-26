@@ -32,7 +32,7 @@ repository), and `PORT` is the port number the web server listens on
 (default: 3000). Either can be set independently.
 
 Open http://localhost:3000, upload the three files of a dataset, and click
-**Identifications** or **Raw spectra** in the dataset table.
+**Identifications** or **Spectra** in the dataset table.
 
 ## Input files
 
