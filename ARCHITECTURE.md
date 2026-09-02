@@ -30,11 +30,19 @@ file.
 ## Project layout
 
 ```
-server.ts                    entry point (ts-node, no emit)
-src/server/                  Express app, dataset registry, sqlite access,
-                             on-the-fly data_js/spectrum generation
-src/server/routes/           dataset upload/list API and per-dataset routes
+server.ts                    entry point (run with ts-node, no emit)
+src/server/app.ts            Express app wiring all routes together
+src/server/datasets.ts       dataset registry (upload storage, meta.json,
+                             DATA_DIR resolution)
+src/server/routes/           dataset upload/list/delete API (api.ts) and the
+                             per-dataset /d/<id>/ routes (dataset.ts)
+src/server/prsmSource.ts     per-dataset in-memory cache of parsed and
+                             matched PrSM data; serves the data_js files
+src/server/spectrumJs.ts     per-scan topfd/ms{1,2}_json/spectrum<N>.js
+                             generated straight from the sqlite file
 src/server/convert/          TopPIC XML + sqlite -> data_js converter
+                             (payload builders shared by the dynamic
+                             endpoints and the npm run convert CLI, cli.ts)
 src/server/vendor.ts         serves all browser libraries (spectra browser +
                              topmsv viewer) under /vendor/* straight from
                              node_modules
@@ -42,7 +50,8 @@ src/common/                  TopMSV visualization library, single source for
                              both apps (TypeScript, compiled to
                              public/common/js/common, loaded as script-tag
                              globals; <module>/viewer/ holds the viewer's
-                             variants of the five divergent files)
+                             variants of the five divergent files;
+                             topmsv_nav_bar/ is the shared nav bar)
 src/spectra/                 raw-spectra browser page scripts (compiled to
                              public/common/js)
 src/viewer/                  TopMSV viewer page scripts (compiled to
@@ -55,11 +64,10 @@ public/topmsv/               TopMSV viewer HTML (visual/, inspect/; all JS
                              generated from src/viewer + src/common)
 public/common/               shared CSS and images; public/common/js/ holds
                              all generated browser JS (gitignored)
-data/                        uploaded datasets (gitignored)
+data/                        uploaded datasets (gitignored; override with
+                             DATA_DIR)
+tsconfig*.json               the five build:client passes (spectra library,
+                             viewer library variants, spectra pages, viewer
+                             pages, home page) + tsconfig.server.json for
+                             npm run typecheck:server
 ```
-
-## Example dataset
-
-`ref_data/` (not part of the repository) contains an example: `st_1.sqlite`,
-`st_1_ms2_toppic_prsm.xml`, `st_1_ms2_toppic_proteoform.xml`. Upload these
-three files on the home page to try the tool.
