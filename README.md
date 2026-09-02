@@ -3,8 +3,8 @@
 A web-based tool for visualizing the output of the spectral deconvolution tool
 **TopFD** and the database search tool **TopPIC**. Datasets are uploaded through
 the browser; the server converts them into the data files consumed by the
-TopMSV visualization library and serves the interactive protein / proteoform /
-PrSM / spectrum views.
+TopMSV visualization library and serves the interactive protein , proteoform, 
+proteoform-spectrum-match (PrSM), and spectrum views.
 
 ## Install
 
@@ -21,19 +21,26 @@ generated, not committed.
 
 ## Run
 
+Start the local server at port 3000:
+
 ```
 npm start                # http://localhost:3000
+```
+
+or start the local web server at a specified port (i.e., 8080) and data folder:
+
+```
 DATA_DIR=/path/to/data PORT=8080 npm start
 ```
 
-The second form sets two optional environment variables: `DATA_DIR` is the
+In the command, we set two optional environment variables: `DATA_DIR` is the
 directory where uploaded datasets are stored (default: `data/` in the
 repository), and `PORT` is the port number the web server listens on
 (default: 3000). Either can be set independently.
 
 ## Upload a dataset
 
-Open http://localhost:3000 and fill in the **Upload a dataset** form:
+Open http://localhost:3000 using a web browser and fill in the **Upload a dataset** form:
 
 1. Optionally enter a dataset name (it defaults to the sqlite file name).
 2. Select the TopFD output sqlite file and the two TopPIC result XML files
@@ -53,7 +60,7 @@ generates all viewer data on the fly.
 |---|---|---|
 | TopFD sqlite file | `*.sqlite` / `*.db` (e.g. `st_1.sqlite`) | TopFD (spectra, deconvoluted envelopes) |
 | TopPIC PrSM XML | `*_ms2_toppic_prsm.xml` | TopPIC (PrSMs with spectrum-level FDR cutoff) |
-| TopPIC proteoform XML | `*_ms2_toppic_proteoform.xml` | TopPIC (proteoform-level FDR cutoff) |
+| TopPIC proteoform XML | `*_ms2_toppic_proteoform.xml` | TopPIC (PrSMs with proteoform-level FDR cutoff) |
 | Protein database (optional) | FASTA used for the search | — |
 
 The FASTA file is optional but recommended: the TopPIC XML files contain only
