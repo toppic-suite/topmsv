@@ -64,16 +64,13 @@ generates all viewer data on the fly.
 | Protein database (optional) | FASTA used for the search | — |
 
 The FASTA file is optional but recommended: the TopPIC XML files contain only
-the matched sub-sequences, so without the FASTA the parts of a protein outside
-the identified proteoform region are reconstructed heuristically (an `M` for
-NME proteoforms, `X` placeholders otherwise) and the protein is truncated at
-the proteoform end.
+the matched truncated protein sequences, so without the FASTA the amino acids 
+in the truncated parts of the identified proteoform are reconstructed heuristically (an `M` for
+NME proteoforms, `X` placeholders otherwise). 
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for an introduction of the design,
 the served pages, the project layout and the example dataset.
 
 ## License
 
-Apache 2.0. The TopMSV viewer code and the conversion algorithms are derived
-from [TopMSV](https://github.com/toppic-suite/topmsv) and
-[toppic-suite](https://github.com/toppic-suite/toppic-suite) (Apache 2.0).
+Apache 2.0. 
