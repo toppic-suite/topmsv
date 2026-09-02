@@ -16,10 +16,9 @@ const drawNavBar = function(): void {
     const match: RegExpMatchArray | null = location.pathname.match(/^(.*\/d\/[^/]+\/)/);
     const dsRoot: string = match ? match[1] : "";
 
-    const brandHref: string = dsRoot ? dsRoot + "topmsv/index.html" : "/";
     let navCode: string = '<nav class="topmsv-nav" id="nav-div"><div class="navcontainer">'
-      + '<a class="navbar-brand logo" href="' + brandHref + '">'
-      + '<span class="headBlock"><h3><strong id="toppic_icon">T</strong>opMSV</h3></span></a>';
+      + '<span class="navbar-brand logo">'
+      + '<span class="headBlock"><h3><strong id="toppic_icon">T</strong>opMSV</h3></span></span>';
     if (dsRoot) {
       const items: { href: string, text: string }[] = [
         { href: "/", text: "Home" },
