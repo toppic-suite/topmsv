@@ -69,7 +69,7 @@ in the truncated parts of the identified proteoform are reconstructed heuristica
 NME proteoforms, `X` placeholders otherwise). 
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for an introduction of the design,
-the served pages, the project layout and the example dataset.
+the webpages, the project layout and the example dataset.
 
 ## License
 

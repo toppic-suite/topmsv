@@ -2,10 +2,10 @@
 
 ## Introduction
 
-The server reproduces TopPIC's own HTML-report generation (ported from
-toppic-suite `src/visual`, `src/prsm`, `src/ms`):
+The server generates the data of protein, proteoform, and spectral identifications 
+for visualization using webpages with the following functions. 
 
-- reads deconvoluted MS2 peak lists from the sqlite file (msalign precision),
+- reads deconvoluted MS2 peak lists from the sqlite file,
 - rebuilds theoretical B/Y ion ladders from the proteoform annotation,
   including fixed / protein-variable PTMs and unexpected/variable mass shifts,
 - matches peaks to ions with TopPIC's tolerance model (10 ppm, 0.01 Da floor,
