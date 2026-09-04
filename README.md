@@ -22,12 +22,6 @@ then restart the terminal (or `source ~/.bashrc`).
 **Windows** — install [nvm-windows](https://github.com/coreybutler/nvm-windows):
 download and run `nvm-setup.exe` from its
 [latest release](https://github.com/coreybutler/nvm-windows/releases/latest),
-or install it with winget:
-
-```
-winget install CoreyButler.NVMforWindows
-```
-
 then open a new terminal (as administrator for `nvm use`).
 
 With nvm installed, install Node.js 24 (same commands on all platforms):
