@@ -9,6 +9,22 @@ proteoform-spectrum-match (PrSM), and spectrum views.
 ## Install
 
 Requires Node.js >= 24 (the server uses the built-in `node:sqlite` module).
+An easy way to get it is [nvm](https://github.com/nvm-sh/nvm) (Node Version
+Manager). Install nvm:
+
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+```
+
+then restart the terminal (or `source ~/.bashrc`) and install Node.js 24:
+
+```
+nvm install 24
+nvm use 24
+node -v                  # should print v24.x.x
+```
+
+With Node.js in place, install and build the tool:
 
 ```
 npm install
