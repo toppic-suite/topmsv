@@ -13,7 +13,7 @@ class SavePrsm{
           <div class="modal-header ">
             <!-- Your first column here -->
             <h5 class="modal-title ml-auto">Save PrSM Image</h5>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div classs="modal-header modal2-header pb-0">
             <table class="table table-sm table_modal">
@@ -56,15 +56,15 @@ class SavePrsm{
           </div>
           <div class="modal-footer">
             <button class="btn btn-primary btn-sm custom "  
-                    id="prsm_popup_help_btn" data-toggle="modal"
-                                            data-target="#prsm_help_popup_window">Help</button>
+                    id="prsm_popup_help_btn" data-bs-toggle="modal"
+                                            data-bs-target="#prsm_help_popup_window">Help</button>
             <button type="button" class="btn btn-primary btn-sm custom " id = "prsm_popup_png_btn" >
             <i class="fa fa-download"></i><span>&nbsp;&nbsp;PNG</span>
             </button>
             <button type="button" class="btn btn-primary btn-sm custom " id = "prsm_popup_svg_btn" >
             <i class="fa fa-download"></i><span>&nbsp;&nbsp;SVG</span>
             </button>
-            <button type="button" class="btn btn-primary btn-sm custom " data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary btn-sm custom " data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -74,7 +74,7 @@ class SavePrsm{
       <div class="modal-content help-window">
         <div class="modal-header ">
           <h5 class="modal-title ml-auto">Help</h5>
-          <button type="button" class="close" id = "prsm-help-window-close-btn" data-dismiss="modal">&times;</button>
+          <button type="button" class="btn-close" id = "prsm-help-window-close-btn" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body" >
           <ul>

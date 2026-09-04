@@ -16,7 +16,7 @@ class SaveSpectrum{
         <div class="modal-content">
           <div class="modal-header ">
             <h3>Save MS/MS Spectrum</h3>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <div> 
@@ -61,7 +61,7 @@ class SaveSpectrum{
             "download_ms2_graph_svg_btn" >
               <i class="fa fa-download"></i><span>&nbsp;&nbsp;SVG</span>
             </button>
-            <button type="button" class="btn btn-primary btn-sm custom " data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary btn-sm custom " data-bs-dismiss="modal">Close</button>
           </div>
         </div>
       </div>

@@ -9,16 +9,15 @@
 <link rel="stylesheet" type="text/css" 
                        href="../../vendor/datatables/css/jquery.dataTables.css">
 <link rel="stylesheet" type="text/css" 
-                       href="../../vendor/bootstrap4/bootstrap.min.css">
+                       href="../../vendor/bootstrap/bootstrap.min.css">
 <link rel="stylesheet" type="text/css"
                        href="../../common/css/topmsv_nav_bar.css"/>
 <link rel="stylesheet" type="text/css"
                        href="../../common/css/common.css"/>
 <link rel="stylesheet" type="text/css" href="css/prsm.css">
 
-<script src="../../vendor/popper/popper.js"></script>
 <script src="../../vendor/jquery/jquery.js"></script>
-<script src="../../vendor/bootstrap4/bootstrap.min.js"></script>
+<script src="../../vendor/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../../vendor/jquery-ui/jquery-ui.min.js"></script>
 <script src="../../vendor/d3/d3.js"></script>
 <script src="../../vendor/canvas-toBlob/canvas-toBlob.js"></script>
@@ -93,7 +92,7 @@
         <div class="dropdown dropdownscanlist">
           <button type="button" 
                   class="btn btn-primary btn-sm dropdown-toggle" 
-                  data-toggle="dropdown" 
+                  data-bs-toggle="dropdown" 
                   id="scanList">
             Inspect
           </button>
@@ -117,8 +116,8 @@
         </tr>
         <tr>
           <td>Precursor m/z (mono):</td>
-          <td><a id = "Precursor_mz" data-toggle="modal"
-                                    data-target="#ms1_graph_popup_window"></a></td>
+          <td><a id = "Precursor_mz" data-bs-toggle="modal"
+                                    data-bs-target="#ms1_graph_popup_window"></a></td>
           <td>Precursor mass (mono):</td>
           <td id = "Precursor_mass"></td>
           <td>Proteoform mass:</td>
@@ -151,8 +150,8 @@
             <td>
               <td width = "15%" align = "right">
                 <button id = "save_prsm_btn" class="btn btn-primary btn-sm"
-                                             data-toggle="modal"
-                                             data-target="#save_prsm_popup_window" 
+                                             data-bs-toggle="modal"
+                                             data-bs-target="#save_prsm_popup_window" 
                                              style="width:80%" >
                                              Save PrSM
                 </button>
@@ -171,7 +170,7 @@
       <ul class="nav nav-tabs graph_nav" id="ms2_graph_nav"></ul>
       <div class="text-center" id="dataLoading">
         <!--<div class="spinner-border "  role="status">
-          <span class="sr-only">Loading...</span>
+          <span class="visually-hidden">Loading...</span>
         </div><h3>&nbsp; Loading...</h3>-->
       </div>
     </div>
@@ -193,16 +192,16 @@
                   <button type ="button" id = "ms2_graph_help_btn" 
                                           class="btn btn-primary btn-sm" 
                                           style = "display:none;width:80%"
-                                          data-toggle="modal"
-                                          data-target="#ms2_graph_help_popup_window">
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#ms2_graph_help_popup_window">
                     Help</button>
                 </a>
               </td>
               <td width = "15%" align = "right">
                 <div class="prsmgraphdownload">
                   <button type="button" class="btn btn-primary btn-sm" 
-                                        data-toggle="modal" 
-                                        data-target="#ms2_graph_popup_window" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#ms2_graph_popup_window" 
                                         id="ms2_graph_save_btn" 
                                         style="display:none"> 
                     Save Spectrum 
@@ -249,7 +248,7 @@
       <div class="modal-content">
         <div class="modal-header ">
           <h4 class="modal-title">MS1 Spectrum</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <svg id="ms1_svg" style="background-color:#F8F8F8" ></svg>
@@ -269,7 +268,7 @@
       <div class="modal-content help-window">
         <div class="modal-header ">
           <h3>Help</h3>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <ul>

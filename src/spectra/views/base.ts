@@ -1,6 +1,6 @@
 const domElements = {
     precursorMass : <HTMLInputElement>document.getElementById("precursormass"),
-    customControlInput : <HTMLCollectionOf<HTMLInputElement>>document.getElementsByClassName("custom-control-input"),
+    customControlInput : <HTMLCollectionOf<HTMLInputElement>>document.getElementsByClassName("form-check-input"),
     totalSeqMass : <HTMLElement>document.getElementById("totalseqmass_h6"),
     massVariation : <HTMLElement>document.getElementById("massvariation_h6"),
     dropDownMenuLink : <HTMLElement>document.getElementById("dropdownMenuLink"),

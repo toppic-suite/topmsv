@@ -7,9 +7,8 @@
 // Version constraints (enforced by the ranges in package.json):
 //   jquery         ^3       - jQuery 4 removes APIs the viewer code uses ($.trim, ...)
 //   datatables.net ^1       - DataTables 2 changes API and markup
-//   bootstrap4     npm:bootstrap@^4 - the TopMSV viewer markup is Bootstrap 4
-//                            (spectra.html uses the separate Bootstrap 5 copy)
-//   popper.js      ^1       - what Bootstrap 4's dropdowns/tooltips require
+//   bootstrap      ^5       - all pages use Bootstrap 5 (the viewer pages load
+//                            bootstrap.bundle.min.js, which includes Popper)
 //   fontawesome    ^5       - the icon class names used by the viewer HTML
 
 import * as express from 'express';
@@ -26,9 +25,6 @@ const MOUNTS: Array<[string, string]> = [
   ['/jquery-ui', 'jquery-ui/dist'],
   ['/bootstrap', 'bootstrap/dist/css'],
   ['/bootstrap', 'bootstrap/dist/js'],
-  ['/bootstrap4', 'bootstrap4/dist/css'],
-  ['/bootstrap4', 'bootstrap4/dist/js'],
-  ['/popper', 'popper.js/dist/umd'],
   ['/d3', 'd3/dist'],
   ['/datatables/js', 'datatables.net/js'],
   ['/datatables/css', 'datatables.net-dt/css'],

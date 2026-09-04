@@ -161,10 +161,12 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   under `/vendor/*` **straight from node_modules** by `src/server/vendor.ts`
   (a URL-prefix -> node_modules-dir table; nothing is copied under `public/`);
   versions are managed in package.json. Hard ceilings: jquery ^3 ($.trim
-  etc. removed in 4), datatables.net ^1 (2.x breaking), `bootstrap4` = npm
-  alias for bootstrap@^4 + popper.js ^1 (the viewer markup is Bootstrap 4 —
-  spectra.html uses the separate Bootstrap 5 copy at `vendor/bootstrap/`),
-  fontawesome ^5 (icon class names). d3 is ^7: all drawing code (src/common
+  etc. removed in 4), datatables.net ^1 (2.x breaking), fontawesome ^5 (icon
+  class names). Everything is Bootstrap 5: the viewer pages were migrated
+  from Bootstrap 4 (`data-bs-*` attributes, `btn-close`, `form-check`,
+  `float-end`, `visually-hidden`) and load `bootstrap.bundle.min.js`
+  (Popper included); jQuery `.modal()` calls keep working via Bootstrap 5's
+  jQuery interop — use `data-bs-*` in any new markup. d3 is ^7: all drawing code (src/common
   and the viewer copies under public/topmsv, .ts AND the .js that actually
   runs) was migrated off the v5-only d3.event/d3.mouse globals to the
   v6+ listener signature (`.on("x", function(event, d))`, `d3.pointer`) —
