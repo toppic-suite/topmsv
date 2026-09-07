@@ -64,6 +64,9 @@ repository), and `PORT` is the port number the web server listens on
 
 ## Upload a dataset
 
+An example dataset can be downloaded from
+https://toppic.org/software/topmsv/example_data/topmsv_viewer_data.zip.
+
 Open http://localhost:3000 using a web browser and fill in the **Upload a dataset** form:
 
 1. Optionally enter a dataset name (it defaults to the sqlite file name).
