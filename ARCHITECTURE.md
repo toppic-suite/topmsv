@@ -13,10 +13,19 @@ for visualization using webpages with the following functions.
 - recomputes p-values/e-values from the stored information of PrSMs
 
 A dataset directory holds the uploaded
-input files. All data for visualization are generated dynamically from a per-dataset
+input files: the TopFD sqlite file (required), the TopPIC PrSM and proteoform
+XML files (optional, uploaded as a pair) and the search FASTA (optional). All
+data for visualization are generated dynamically from a per-dataset
 in-memory cache of the parsed and matched inputs, and the per-scan spectrum
 files come straight from the sqlite
-file. 
+file.
+
+A dataset uploaded without the TopPIC XML files has no identification data:
+`meta.json` records `hasIdentifications: false`, every `data_js` request
+returns 404, the home page and the nav bar hide the identification links,
+and the identification pages show a "no identification data" message. The
+raw-spectra browser and the visual inspection page only need the sqlite
+file, so they work for every dataset.
 
 
 ## Pages
