@@ -4,6 +4,7 @@ interface DatasetMeta {
   id: string;
   name: string;
   createdAt: string;
+  hasIdentifications: boolean;
   prsmCount: number;
   proteoformCount: number;
   proteinCount: number;
@@ -36,16 +37,28 @@ function renderDatasets(list: DatasetMeta[]): void {
     + '</tr></thead><tbody>';
   for (const d of list) {
     const created = new Date(d.createdAt).toLocaleString();
+    const ds = encodeURIComponent(d.id);
+    let note = '';
+    if (!d.hasIdentifications) {
+      note = ' <span class="hint" title="Uploaded without the TopPIC XML files">(spectra only)</span>';
+    } else if (!d.hasFasta) {
+      note = ' <span class="hint" title="Uploaded without a FASTA database">(no FASTA)</span>';
+    }
+    // a dataset without the TopPIC XMLs has no identification pages
+    const count = (n: number) => (d.hasIdentifications ? String(n) : '&ndash;');
+    const identLink = d.hasIdentifications
+      ? `<a href="d/${ds}/topmsv/visual/proteins.html?data=toppic_proteoform_cutoff">Identifications</a>`
+      : '';
     html += `<tr>
-      <td>${esc(d.name)}${d.hasFasta ? '' : ' <span class="hint" title="Uploaded without a FASTA database">(no FASTA)</span>'}</td>
+      <td>${esc(d.name)}${note}</td>
       <td>${esc(created)}</td>
-      <td class="num">${d.proteinCount}</td>
-      <td class="num">${d.proteoformCount}</td>
-      <td class="num">${d.prsmCount}</td>
+      <td class="num">${count(d.proteinCount)}</td>
+      <td class="num">${count(d.proteoformCount)}</td>
+      <td class="num">${count(d.prsmCount)}</td>
       <td class="num">${d.ms1Count} / ${d.ms2Count}</td>
       <td class="actions">
-        <a href="d/${encodeURIComponent(d.id)}/topmsv/visual/proteins.html?data=toppic_proteoform_cutoff">Identifications</a>
-        <a href="d/${encodeURIComponent(d.id)}/spectra/spectra.html">Spectra</a>
+        ${identLink}
+        <a href="d/${ds}/spectra/spectra.html">Spectra</a>
       </td>
       <td><button class="danger" data-id="${esc(d.id)}">Delete</button></td>
     </tr>`;

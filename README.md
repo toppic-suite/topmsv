@@ -70,13 +70,15 @@ https://toppic.org/software/topmsv/example_data/topmsv_viewer_data.zip.
 Open http://localhost:3000 using a web browser and fill in the **Upload a dataset** form:
 
 1. Optionally enter a dataset name (it defaults to the sqlite file name).
-2. Select the TopFD output sqlite file and the two TopPIC result XML files
-   (the PrSM XML and the proteoform XML) — see the table below.
-3. Optionally select the protein database (FASTA) used for the search.
-4. Click **Upload**. The files are validated and the dataset appears in the
-   **Datasets** table, where **Identifications** opens the protein list and
-   **Spectra** opens the raw-spectra browser. **Delete** removes a dataset
-   permanently.
+2. Select the TopFD output sqlite file — see the table below.
+3. Optionally select the two TopPIC result XML files (the PrSM XML and the
+   proteoform XML). They must be uploaded together; without them the dataset
+   offers only the raw-spectra pages and no identification pages.
+4. Optionally select the protein database (FASTA) used for the search.
+5. Click **Upload**. The files are validated and the dataset appears in the
+   **Datasets** table, where **Identifications** opens the protein list (for
+   datasets uploaded with the TopPIC XMLs) and **Spectra** opens the
+   raw-spectra browser. **Delete** removes a dataset permanently.
 
 Nothing is converted on disk: the server keeps only the uploaded files and
 generates all viewer data on the fly.
@@ -86,8 +88,8 @@ generates all viewer data on the fly.
 | Upload field | File | Producer |
 |---|---|---|
 | TopFD sqlite file | `*.sqlite` / `*.db` (e.g. `st_1.sqlite`) | TopFD (spectra, deconvoluted envelopes) |
-| TopPIC PrSM XML | `*_ms2_toppic_prsm.xml` | TopPIC (PrSMs with spectrum-level FDR cutoff) |
-| TopPIC proteoform XML | `*_ms2_toppic_proteoform.xml` | TopPIC (PrSMs with proteoform-level FDR cutoff) |
+| TopPIC PrSM XML (optional, with the proteoform XML) | `*_ms2_toppic_prsm.xml` | TopPIC (PrSMs with spectrum-level FDR cutoff) |
+| TopPIC proteoform XML (optional, with the PrSM XML) | `*_ms2_toppic_proteoform.xml` | TopPIC (PrSMs with proteoform-level FDR cutoff) |
 | Protein database (optional) | FASTA used for the search | — |
 
 The FASTA file is optional but recommended: the TopPIC XML files contain only

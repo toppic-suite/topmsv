@@ -33,6 +33,15 @@ $(document).ready(function () {
         script.type = 'text/javascript';
         script.src = file_name;
         head.appendChild(script);
+        // A dataset uploaded without the TopPIC XMLs has no data_js files
+        // (the request 404s): say so instead of leaving the page blank.
+        script.onerror = function () {
+            let div: Element = document.getElementsByClassName("container")[0];
+            let p: HTMLParagraphElement = document.createElement('p');
+            p.className = "no-identifications";
+            p.innerHTML = 'No identification data: this dataset was uploaded without the TopPIC PrSM and proteoform XML files.';
+            div.appendChild(p);
+        };
         // Wait till the data is loaded from proteins.js and start executing the code
         script.onload = function () {
             // Function builds the complete HTML

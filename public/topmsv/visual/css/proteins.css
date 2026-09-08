@@ -70,3 +70,9 @@ footer{
 #switch-to-spectrum{
   padding-left: 20px !important;
 }
+/* shown when the dataset was uploaded without the TopPIC XMLs */
+.container .no-identifications {
+  padding-left: 20px;
+  font-size: 1.1rem;
+  color: #555;
+}

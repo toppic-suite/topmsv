@@ -1,7 +1,8 @@
 // Dataset registry. Each dataset lives in data/<id>/ and holds the uploaded
-// input files plus the generated data_js trees:
-//   ms.sqlite, prsm.xml, proteoform.xml, [db.fasta], meta.json,
-//   toppic_prsm_cutoff/data_js/..., toppic_proteoform_cutoff/data_js/...
+// uploaded input files:
+//   ms.sqlite, [prsm.xml, proteoform.xml], [db.fasta], meta.json
+// The TopPIC XMLs come as a pair or not at all; without them the dataset
+// has no identification data (only the raw-spectra pages work).
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -14,6 +15,7 @@ export interface DatasetMeta {
   id: string;
   name: string;
   createdAt: string;
+  hasIdentifications: boolean;   // prsm.xml + proteoform.xml were uploaded
   prsmCount: number;
   proteoformCount: number;
   proteinCount: number;
@@ -34,6 +36,11 @@ export function datasetDir(id: string): string | null {
   return abs;
 }
 
+/** meta.json written before the XMLs became optional lacks the flag. */
+function normalizeMeta(meta: DatasetMeta): DatasetMeta {
+  return { ...meta, hasIdentifications: meta.hasIdentifications ?? true };
+}
+
 export function listDatasets(): DatasetMeta[] {
   const out: DatasetMeta[] = [];
   for (const entry of fs.readdirSync(DATA_ROOT, { withFileTypes: true })) {
@@ -41,7 +48,7 @@ export function listDatasets(): DatasetMeta[] {
     const metaPath = path.join(DATA_ROOT, entry.name, 'meta.json');
     if (!fs.existsSync(metaPath)) continue;
     try {
-      out.push(JSON.parse(fs.readFileSync(metaPath, 'utf8')));
+      out.push(normalizeMeta(JSON.parse(fs.readFileSync(metaPath, 'utf8'))));
     } catch {
       /* ignore broken metadata */
     }
@@ -56,7 +63,7 @@ export function readMeta(id: string): DatasetMeta | null {
   const metaPath = path.join(dir, 'meta.json');
   if (!fs.existsSync(metaPath)) return null;
   try {
-    return JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    return normalizeMeta(JSON.parse(fs.readFileSync(metaPath, 'utf8')));
   } catch {
     return null;
   }

@@ -28,7 +28,9 @@ const MAX_CACHED = 2;
 
 /**
  * Parse and assemble a dataset (cached). Returns null when the dataset does
- * not exist; throws when its input files are invalid.
+ * not exist or was uploaded without the TopPIC XMLs (every data_js request
+ * then 404s, which the viewer pages report as "no identification data");
+ * throws when its input files are invalid.
  */
 export function getDatasetSource(ds: string): DatasetSource | null {
   const cached = cache.get(ds);

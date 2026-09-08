@@ -16,7 +16,9 @@
     <section class="card">
       <h2>Upload a dataset</h2>
       <p class="hint">
-        Select the TopFD output sqlite file and the two TopPIC result XML files.
+        Select the TopFD output sqlite file. The two TopPIC result XML files are
+        optional but must be uploaded together: without them the dataset offers
+        only the raw-spectra pages, with no protein or spectrum identifications.
         The protein database (FASTA) is optional but recommended: without it,
         protein sequences outside the identified proteoform regions cannot be shown.
       </p>
@@ -30,12 +32,12 @@
           <input type="file" id="sqliteInput" name="sqlite" accept=".sqlite,.db" required>
         </div>
         <div class="formrow">
-          <label for="prsmInput">TopPIC PrSM XML <span class="req">*</span></label>
-          <input type="file" id="prsmInput" name="prsmXml" accept=".xml" required>
+          <label for="prsmInput">TopPIC PrSM XML (optional)</label>
+          <input type="file" id="prsmInput" name="prsmXml" accept=".xml">
         </div>
         <div class="formrow">
-          <label for="proteoformInput">TopPIC proteoform XML <span class="req">*</span></label>
-          <input type="file" id="proteoformInput" name="proteoformXml" accept=".xml" required>
+          <label for="proteoformInput">TopPIC proteoform XML (optional)</label>
+          <input type="file" id="proteoformInput" name="proteoformXml" accept=".xml">
         </div>
         <div class="formrow">
           <label for="fastaInput">Protein database (FASTA, optional)</label>

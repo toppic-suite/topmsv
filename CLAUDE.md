@@ -27,8 +27,10 @@ validation loop below plus loading pages in a browser.
 ## What this app is
 
 A web tool for visualizing TopFD (spectral deconvolution) + TopPIC (database
-search) output. Users upload a TopFD `.sqlite`, the TopPIC prsm/proteoform
-XMLs, and optionally the search FASTA. Nothing derived is stored on disk: a
+search) output. Users upload a TopFD `.sqlite`, optionally the TopPIC
+prsm/proteoform XMLs (as a pair; without them only the raw-spectra pages
+work, `meta.hasIdentifications` is false and every `data_js` request 404s),
+and optionally the search FASTA. Nothing derived is stored on disk: a
 dataset directory holds only the uploaded inputs + `meta.json`; every data
 file the vendored TopMSV viewer consumes is generated on the fly.
 

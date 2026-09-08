@@ -53,17 +53,26 @@ router.post('/datasets', uploadFields, (req, res) => {
     const prsmFile = files?.prsmXml?.[0];
     const proteoformFile = files?.proteoformXml?.[0];
     const fastaFile = files?.fasta?.[0];
-    if (!sqliteFile || !prsmFile || !proteoformFile) {
+    if (!sqliteFile) {
       cleanupTmp();
-      res.status(400).json({ error: 'sqlite, prsmXml and proteoformXml files are all required' });
+      res.status(400).json({ error: 'the TopFD sqlite file is required' });
       return;
     }
+    // The TopPIC XMLs are optional, but only as a pair: the proteoform XML
+    // alone carries no PrSM data and the PrSM XML alone leaves the
+    // proteoform-level cutoff undefined.
+    if (!!prsmFile !== !!proteoformFile) {
+      cleanupTmp();
+      res.status(400).json({ error: 'the TopPIC PrSM XML and proteoform XML must be uploaded together (or both omitted)' });
+      return;
+    }
+    const hasIdentifications = !!prsmFile && !!proteoformFile;
     if (!/\.(sqlite|db)$/i.test(sqliteFile.originalname)) {
       cleanupTmp();
       res.status(400).json({ error: 'the TopFD file must be a .sqlite/.db file' });
       return;
     }
-    if (!/\.xml$/i.test(prsmFile.originalname) || !/\.xml$/i.test(proteoformFile.originalname)) {
+    if (prsmFile && proteoformFile && (!/\.xml$/i.test(prsmFile.originalname) || !/\.xml$/i.test(proteoformFile.originalname))) {
       cleanupTmp();
       res.status(400).json({ error: 'the TopPIC result files must be .xml files' });
       return;
@@ -89,24 +98,29 @@ router.post('/datasets', uploadFields, (req, res) => {
       fs.renameSync(f.path, path.join(dir!, name));
     };
     move(sqliteFile, 'ms.sqlite');
-    move(prsmFile, 'prsm.xml');
-    move(proteoformFile, 'proteoform.xml');
+    if (prsmFile && proteoformFile) {
+      move(prsmFile, 'prsm.xml');
+      move(proteoformFile, 'proteoform.xml');
+    }
     if (fastaFile) move(fastaFile, 'db.fasta');
 
     try {
       ensureIndexes(path.join(dir, 'ms.sqlite'));
-      // Parse, match and cache the dataset now: this validates the uploaded
-      // files (all data_js files are then served dynamically from this cache).
-      const source = getDatasetSource(id);
-      if (!source) throw new Error('uploaded files could not be read');
+      // Parse, match and cache the identifications now: this validates the
+      // uploaded XMLs (all data_js files are then served dynamically from
+      // this cache). Without XMLs the dataset only offers the raw spectra.
+      const source = hasIdentifications ? getDatasetSource(id) : null;
+      if (hasIdentifications && !source) throw new Error('uploaded files could not be read');
+      const all = source ? source.all : [];
       const counts = countMeta(path.join(dir, 'ms.sqlite'));
       const meta: DatasetMeta = {
         id,
         name: requested.replace(/\.(sqlite|db)$/i, ''),
         createdAt: new Date().toISOString(),
-        prsmCount: source.all.length,
-        proteoformCount: new Set(source.all.map((d) => d.prsm.proteoClusterId)).size,
-        proteinCount: new Set(source.all.map((d) => d.prsm.protId)).size,
+        hasIdentifications,
+        prsmCount: all.length,
+        proteoformCount: new Set(all.map((d) => d.prsm.proteoClusterId)).size,
+        proteinCount: new Set(all.map((d) => d.prsm.protId)).size,
         ms1Count: counts.ms1Count,
         ms2Count: counts.ms2Count,
         hasFasta: !!fastaFile,
