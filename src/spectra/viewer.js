@@ -131,9 +131,14 @@ async function updateMsOneById(cur_ms_one_id) {
         parseFloat(env.intensity));
       env_obj.setId(parseInt(env.env_id));
       env_obj_list.push(env_obj);
+      // ref m/z from the ref_mass column (NaN, shown blank, if absent)
+      let refMz = (env.ref_mass != null)
+        ? parseFloat(env.ref_mass) / parseInt(env.charge) + 1.007276
+        : NaN;
       mass_table.row.add([parseInt(env.env_id),
       parseFloat(env.mono_mass),
       parseFloat(env.mono_mass)/parseInt(env.charge) + 1.007276,
+      refMz,
       parseInt(env.charge),
       parseFloat(env.intensity),
       parseFloat(env.envcnn_score)]);
@@ -159,9 +164,8 @@ async function updateMsOneById(cur_ms_one_id) {
     ms1_view.addBaseInte(ms_one_spec_info.base_inte, ms_one_spec_info.min_ref_inte);
     ms_one_graph = $("#" + ms1_view.getSvgId()).data("graph");
     ms_one_graph.redraw();
-    $("#mass1Table .row_mono_mz").on('click', function (e) {
-      //	get Mono M/z value
-      //console.log("clicked mono mz value");
+    $("#mass1Table .row_mono_mz, #mass1Table .row_ref_mz").on('click', function (e) {
+      //	get the clicked m/z value (mono or ref) and center the graph on it
       let monoMz = parseFloat(e.currentTarget.innerHTML);
       ms_one_graph.getPara().updateMzRange(monoMz);
       ms_one_graph.redraw();
@@ -322,9 +326,15 @@ async function updateMsTwoById(cur_ms_two_id) {
         parseFloat(env.intensity));
       env_obj.setId(parseInt(env.env_id));
       env_obj_list.push(env_obj);
+      // ref m/z: m/z of the envelope's reference (most abundant) peak, from
+      // the ref_mass column (NaN, shown blank, for sqlite files without it)
+      let refMz = (env.ref_mass != null)
+        ? parseFloat(env.ref_mass) / parseInt(env.charge) + 1.007276
+        : NaN;
       mass2_table.row.add([parseInt(env.env_id),
       parseFloat(env.mono_mass),
       parseFloat(env.mono_mass)/parseInt(env.charge) + 1.007276,
+      refMz,
       parseInt(env.charge),
       parseFloat(env.intensity),
       parseFloat(env.envcnn_score)]);
@@ -348,8 +358,8 @@ async function updateMsTwoById(cur_ms_two_id) {
     ms2_view.addRawSpectrumAnno(env_obj_list, []);
     ms_two_graph = $("#ms2_svg_graph").data("graph");
     ms_two_graph.redraw();
-    $("#mass2Table .row_mono_mz").on('click', function (e) {
-      //	get Mono M/z value
+    $("#mass2Table .row_mono_mz, #mass2Table .row_ref_mz").on('click', function (e) {
+      //	get the clicked m/z value (mono or ref) and center the graph on it
       let monoMz = parseFloat(e.currentTarget.innerHTML);
       ms_two_graph.getPara().updateMzRange(monoMz);
       ms_two_graph.redraw();
