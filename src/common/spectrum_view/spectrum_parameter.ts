@@ -73,8 +73,12 @@
   protected defaultRadius_: number = 0.05;
   protected minRadius_: number = 2;
   protected maxRadius_: number = 5;
-  //	Colors for the envelope circles	
-  protected envColorList_: string[] = ["red","darkorange","blue"];
+  //	Colors for the envelope circles. Envelopes closer than envColorMinGap_
+  //	m/z never share a color; the list is used in order, so the first three
+  //	keep the classic look and the rest only appear in crowded regions.
+  protected envColorList_: string[] = ["red", "darkorange", "blue", "green", "purple",
+    "deeppink", "darkcyan", "saddlebrown", "olive", "navy", "crimson", "darkviolet"];
+  protected envColorMinGap_: number = 2.0;
 
   // Parameters related to annoated ions
   protected showIons_: boolean = true;
@@ -491,17 +495,47 @@
   /**
    * @function addColorToEnvelopes
    * @description 
-   * Add color to envelopes.
+   * Add color to envelopes so that neighbors are distinguishable: two
+   * envelopes whose peaks come within envColorMinGap_ m/z of each other
+   * (their m/z ranges are less than that far apart) always get different
+   * colors. Greedy coloring in m/z order: each envelope takes the first
+   * palette color not used by an earlier envelope it conflicts with, so the
+   * extra colors only show up where envelopes crowd together. If the palette
+   * runs out, colors are reused starting from the least recently used one.
    */
   addColorToEnvelopes(envList: Envelope[]): void{
     if(!envList || envList.length === 0 || typeof envList[0].getPeaks() === "undefined") return;
-    envList.sort(function(x,y){
-      return (x.getPeaks()[0].getPos() - y.getPeaks()[0].getPos());
-    })
-    let colorNum: number = this.envColorList_.length; 
-    for (let i = 0; i < envList.length; i++) 
-    {
-      envList[i].setDisplayColor(this.envColorList_[i%colorNum]);
+    let ranges: { env: Envelope, minMz: number, maxMz: number }[] = envList.map(env => {
+      let minMz: number = Infinity;
+      let maxMz: number = -Infinity;
+      env.getPeaks().forEach(peak => {
+        minMz = Math.min(minMz, peak.getPos());
+        maxMz = Math.max(maxMz, peak.getPos());
+      });
+      return { env: env, minMz: minMz, maxMz: maxMz };
+    });
+    ranges.sort((x, y) => x.minMz - y.minMz);
+    let colorNum: number = this.envColorList_.length;
+    let colorIdx: number[] = new Array(ranges.length);
+    for (let i = 0; i < ranges.length; i++) {
+      // colors already taken by earlier envelopes within the gap
+      let used: boolean[] = new Array(colorNum).fill(false);
+      for (let j = i - 1; j >= 0; j--) {
+        if (ranges[j].maxMz + this.envColorMinGap_ > ranges[i].minMz) {
+          used[colorIdx[j]] = true;
+        }
+      }
+      let pick: number = used.indexOf(false);
+      if (pick < 0) {
+        // more overlapping envelopes than colors: fall back to cycling
+        pick = i % colorNum;
+      }
+      colorIdx[i] = pick;
+      ranges[i].env.setDisplayColor(this.envColorList_[pick]);
+    }
+    // keep the list itself in m/z order, as before
+    for (let i = 0; i < ranges.length; i++) {
+      envList[i] = ranges[i].env;
     }
   }
 
