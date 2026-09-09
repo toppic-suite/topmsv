@@ -129,6 +129,7 @@ async function updateMsOneById(cur_ms_one_id) {
       let env_obj = new Envelope(parseFloat(env.mono_mass),
         parseInt(env.charge),
         parseFloat(env.intensity));
+      env_obj.setId(parseInt(env.env_id));
       env_obj_list.push(env_obj);
       mass_table.row.add([parseInt(env.env_id),
       parseFloat(env.mono_mass),
@@ -358,10 +359,10 @@ async function updateMsTwoById(cur_ms_two_id) {
   }
 }
 
-// Clicking a theoretical-peak circle in the MS2 graph selects the envelope's
-// row in the MS2 mass list (highlighted and scrolled into view). The circles
-// dispatch "envelopeclick" on the <svg> (see topfd_draw_spectrum.ts), so one
-// listener on the svg element covers every redraw.
+// Clicking a theoretical-peak circle in the MS1 or MS2 graph selects the
+// envelope's row in that panel's mass list (highlighted and scrolled into
+// view). The circles dispatch "envelopeclick" on the <svg> (see
+// topfd_draw_spectrum.ts), so one listener per svg element covers every redraw.
 function showEnvelopeInMassList(table, panelId, envId) {
   let rowNodes = table.rows().nodes();
   for (let i = 0; i < rowNodes.length; i++) {
@@ -379,6 +380,9 @@ function showEnvelopeInMassList(table, panelId, envId) {
   }
 }
 
+document.getElementById('ms1_svg_graph').addEventListener('envelopeclick', (e) => {
+  showEnvelopeInMassList(mass_table, 'mass1Panel', e.detail.envelope.getId());
+});
 document.getElementById('ms2_svg_graph').addEventListener('envelopeclick', (e) => {
   showEnvelopeInMassList(mass2_table, 'mass2Panel', e.detail.envelope.getId());
 });
