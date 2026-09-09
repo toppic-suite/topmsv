@@ -35,6 +35,29 @@ file, so they work for every dataset.
 - `/d/<dataset>/spectra/spectra.html` — a raw-spectra browser (all MS1/MS2
   scans with peak lists and envelope annotations, linked navigation between
   MS1 and its fragmentation scans), backed by a per-dataset JSON API under
+  `/d/<dataset>/api/...` that queries the sqlite file directly.
+
+### Envelope display in the spectrum panels
+
+The circles drawn over a spectrum are TopFD's theoretical isotopic
+envelopes (the `ms1_env_peak` / `ms2_env_peak` tables), not experimental
+peaks. Two behaviors of the shared drawing library matter here:
+
+- **Coloring** (`addColorToEnvelopes` in
+  `src/common/spectrum_view/spectrum_parameter.ts`): envelopes are colored
+  greedily in m/z order so that any two envelopes whose peak ranges come
+  within 2 m/z of each other get different colors. The palette has twelve
+  colors; the first three (red, orange, blue) are used wherever possible, so
+  the extra colors only appear in crowded regions such as overlapping
+  precursor charge states.
+- **Click-to-select** (`drawEnvelopes` in
+  `src/common/topfd_view/topfd_draw_spectrum.ts`): clicking a circle
+  dispatches an `envelopeclick` CustomEvent on the enclosing `<svg>` carrying
+  the `Envelope` (which stores the TopFD `env_id`) and the clicked peak. The
+  raw-spectra browser (`src/spectra/viewer.js`) listens on both spectrum svgs
+  and highlights and scrolls to the envelope's row in the matching mass list.
+  The drawing library knows nothing about the page layout, so other pages can
+  react to the same event differently or ignore it.
 
 ## Project layout
 
