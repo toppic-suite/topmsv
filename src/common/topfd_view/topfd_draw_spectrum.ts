@@ -11,6 +11,9 @@ function drawBaseInte(svgId: string, para: SpectrumViewParameters, baseInte: num
       .attr("y2", y)
       .attr("stroke", "red")
       .attr("stroke-width", "2")
+      // a reference line drawn above the circles: let clicks and hovers
+      // reach the circles/peaks underneath it
+      .style("pointer-events", "none")
   }
 }
 
@@ -185,6 +188,7 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
             .style("opacity", "0.8")
             .style("stroke",color)
             .style("stroke-width","2")
+            .style("cursor","pointer")
             .on("mouseover",function(){
               //@ts-ignore
               onMouseOverCircle(this,env,peak,para);
@@ -192,12 +196,40 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
             .on("mouseout",function(){
               //@ts-ignore
               onCircleMouseOut(this);
+            })
+            .on("click",function(event: MouseEvent){
+              //@ts-ignore
+              onCircleClick(this,env,peak,event);
             });
           }
         })
       //}
     }
   })
+}
+
+/**
+ * @function onCircleClick
+ * @description Announce a click on an envelope circle as an "envelopeclick"
+ * CustomEvent on the enclosing <svg>, with the envelope and peak in `detail`.
+ * The page owning the graph listens for it (e.g. the raw-spectra browser
+ * highlights the envelope's row in its mass list); the drawing code itself
+ * stays independent of any page layout.
+ * @param {Node} this_element - the clicked circle
+ * @param {Envelope} envelope - the envelope the circle belongs to
+ * @param {Peak} peak - the theoretical peak the circle marks
+ * @param {MouseEvent} event - the click event (stopped so the zoom/drag
+ * behavior on the svg does not also react)
+ */
+function onCircleClick(this_element: SVGCircleElement, envelope: Envelope, peak: Peak, event: MouseEvent) {
+  event.stopPropagation();
+  let svg: SVGSVGElement | null = this_element.ownerSVGElement;
+  if (svg) {
+    svg.dispatchEvent(new CustomEvent("envelopeclick", {
+      bubbles: true,
+      detail: { envelope: envelope, peak: peak }
+    }));
+  }
 }
 /*function drawEnvelopes(svg,para,envPeakList) {
   let circles = svg.append("g").attr("id", "circles");

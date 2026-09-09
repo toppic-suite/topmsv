@@ -214,6 +214,11 @@
 #mass2Panel { left: 50%; top: 50%; width: 50%; height: 49%; }
 /* the mass-list tables scroll inside their panel bodies */
 #mass1Panel .panel-body, #mass2Panel .panel-body { overflow: auto; }
+/* mass-list row selected by clicking one of its envelope circles in the graph */
+#mass1Table tr.env-selected td, #mass2Table tr.env-selected td {
+  background-color: #fff3cd !important;
+  font-weight: 600;
+}
 .panel-header {
   flex: 0 0 auto;
   background: #e9eef7;

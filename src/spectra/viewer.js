@@ -316,9 +316,11 @@ async function updateMsTwoById(cur_ms_two_id) {
     mass2_table.clear();
     for (let i = 0; i < db_env_list.length; i++) {
       let env = db_env_list[i];
-      env_obj_list.push(new Envelope(parseFloat(env.mono_mass),
+      let env_obj = new Envelope(parseFloat(env.mono_mass),
         parseInt(env.charge),
-        parseFloat(env.intensity)));
+        parseFloat(env.intensity));
+      env_obj.setId(parseInt(env.env_id));
+      env_obj_list.push(env_obj);
       mass2_table.row.add([parseInt(env.env_id),
       parseFloat(env.mono_mass),
       parseFloat(env.mono_mass)/parseInt(env.charge) + 1.007276,
@@ -355,6 +357,31 @@ async function updateMsTwoById(cur_ms_two_id) {
     await syncMsOneToMsTwo();
   }
 }
+
+// Clicking a theoretical-peak circle in the MS2 graph selects the envelope's
+// row in the MS2 mass list (highlighted and scrolled into view). The circles
+// dispatch "envelopeclick" on the <svg> (see topfd_draw_spectrum.ts), so one
+// listener on the svg element covers every redraw.
+function showEnvelopeInMassList(table, panelId, envId) {
+  let rowNodes = table.rows().nodes();
+  for (let i = 0; i < rowNodes.length; i++) {
+    rowNodes[i].classList.remove('env-selected');
+  }
+  let row = table.row(function (idx, data) { return data[0] === envId; });
+  let node = row.node();
+  if (!node) return;
+  node.classList.add('env-selected');
+  // scroll only inside the panel body, not the whole page
+  let body = document.querySelector('#' + panelId + ' .panel-body');
+  if (body) {
+    let target = node.offsetTop - (body.clientHeight - node.offsetHeight) / 2;
+    body.scrollTop = Math.max(0, target);
+  }
+}
+
+document.getElementById('ms2_svg_graph').addEventListener('envelopeclick', (e) => {
+  showEnvelopeInMassList(mass2_table, 'mass2Panel', e.detail.envelope.getId());
+});
 
 ms_two_next_btn.addEventListener('click', async () => {
   let id = spec_data.getCurMsTwoId();
