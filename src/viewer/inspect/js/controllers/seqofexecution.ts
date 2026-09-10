@@ -136,13 +136,22 @@ class SeqOfExecution {
         });
         /* Get combined list of both matched and unmatched peaks to write to table*/
         matchedUnMatchedPeaks = calcMatchedPeaks.getMatchedAndUnMatchedList(monoMassList, matchedPeakList);
-        //add matchedUnmatchedPeaks as decovPeaks in spectrum object
+        //add matchedUnmatchedPeaks as decovPeaks in spectrum object.
+        //matchedUnMatchedPeaks holds one entry per match, so an experimental
+        //mass matched by several theoretical masses appears several times;
+        //the deconvoluted peak list must hold each experimental mass once
+        //(the All/Matched/Not matched counts are per experimental peak).
         let decovPeaksList: Peak[] = [];
         let matchedPeakPairList: MatchedPeakEnvelopePair[] = [];
+        let peakById: Map<string, Peak> = new Map();
         matchedUnMatchedPeaks.forEach((peak: MatchedUnMatchedPeak) => {
-            let mz: number = parseFloat((peak.mass / peak.charge + 1.007276466879).toFixed(4));
-            let peakObj: Peak = new Peak(peak.peakId, peak.mass, mz, peak.intensity, peak.mass, peak.charge);
-            decovPeaksList.push(peakObj);
+            let peakObj: Peak | undefined = peakById.get(peak.peakId);
+            if (!peakObj) {
+                let mz: number = parseFloat((peak.mass / peak.charge + 1.007276466879).toFixed(4));
+                peakObj = new Peak(peak.peakId, peak.mass, mz, peak.intensity, peak.mass, peak.charge);
+                peakById.set(peak.peakId, peakObj);
+                decovPeaksList.push(peakObj);
+            }
             if (peak.matchedInd == "Y") {
                 let ionObj: Ion = new Ion(peak.ion, peak.ion.slice(0, 1), "", -1, peak.massError, peak.PPMerror);
                 matchedPeakPairList.push(new MatchedPeakEnvelopePair(peak.thMass, peakObj, ionObj));
