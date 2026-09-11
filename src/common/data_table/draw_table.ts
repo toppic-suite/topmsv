@@ -42,8 +42,8 @@
             }
             this.showIonPeaks(pos);
         });
-        //mono m/z or ref m/z click: center the spectrum on that value
-        $(".row_mono_mz, .row_ref_mz").click((e) => {
+        //ref m/z click: center the spectrum on that value
+        $(".row_ref_mz").click((e) => {
             /*	get Mono M/z value till 3 decimal values	*/
             let monoMz: number = parseFloat(parseFloat(e.currentTarget.innerHTML).toFixed(3));
 
@@ -151,7 +151,7 @@
                     { "type": "num" },
                     { "type": "num" },
                     { "type": "num" },
-                    null,
+                    { "type": "num" },
                     null,
                     { "type": "num" },
                     { "type": "num" },
@@ -176,7 +176,7 @@
                     { "type": "num", "visible": false },
                     { "type": "num" },
                     { "type": "num" },
-                    null,
+                    { "type": "num" },
                     null,
                     { "type": "num" },
                     { "type": "num" },
@@ -324,12 +324,8 @@
             td.setAttribute("class", "row_monoMass");
           }
           if (i == 3) {
-            //	provide link to click on m/z value to view spectrum 
-            let a: HTMLAnchorElement = document.createElement('a');
-            a.href = "#!";
-            a.className = "row_mono_mz";
-            a.innerHTML = FormatUtil.formatFloat(peak.getMonoMz().toString(), "dataTable");
-            td.appendChild(a);
+            td.innerHTML = FormatUtil.formatFloat(peak.getMonoMz().toString(), "dataTable");
+            td.setAttribute("class", "row_monoMz");
           }
           if (i == 4) {
             // m/z of the envelope's reference (most abundant) isotope; blank
