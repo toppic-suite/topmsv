@@ -168,8 +168,15 @@
 .td_fragments{
   text-align : center !important ;
 }
-.matched_fragments{
-  background-color:hsla(120, 100%, 50%, 0.3);;
+/* Bootstrap 5 paints every table cell through its own --bs-table-bg rule
+   (.table>:not(caption)>*>*), which outranks a bare class selector and
+   would hide this highlight; set the variable and override the striping. */
+.table > :not(caption) > * > .matched_fragments,
+.matched_fragments {
+  --bs-table-bg: hsla(120, 100%, 50%, 0.3);
+  --bs-table-accent-bg: transparent;
+  background-color: hsla(120, 100%, 50%, 0.3);
+  box-shadow: none;
 }
 .matched_fragments:hover{
   cursor: pointer;
