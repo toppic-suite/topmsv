@@ -164,8 +164,8 @@ async function updateMsOneById(cur_ms_one_id) {
     ms1_view.addBaseInte(ms_one_spec_info.base_inte, ms_one_spec_info.min_ref_inte);
     ms_one_graph = $("#" + ms1_view.getSvgId()).data("graph");
     ms_one_graph.redraw();
-    $("#mass1Table .row_mono_mz, #mass1Table .row_ref_mz").on('click', function (e) {
-      //	get the clicked m/z value (mono or ref) and center the graph on it
+    $("#mass1Table .row_ref_mz").on('click', function (e) {
+      //	center the graph on the clicked ref m/z value
       let monoMz = parseFloat(e.currentTarget.innerHTML);
       ms_one_graph.getPara().updateMzRange(monoMz);
       ms_one_graph.redraw();
@@ -358,8 +358,8 @@ async function updateMsTwoById(cur_ms_two_id) {
     ms2_view.addRawSpectrumAnno(env_obj_list, []);
     ms_two_graph = $("#ms2_svg_graph").data("graph");
     ms_two_graph.redraw();
-    $("#mass2Table .row_mono_mz, #mass2Table .row_ref_mz").on('click', function (e) {
-      //	get the clicked m/z value (mono or ref) and center the graph on it
+    $("#mass2Table .row_ref_mz").on('click', function (e) {
+      //	center the graph on the clicked ref m/z value
       let monoMz = parseFloat(e.currentTarget.innerHTML);
       ms_two_graph.getPara().updateMzRange(monoMz);
       ms_two_graph.redraw();

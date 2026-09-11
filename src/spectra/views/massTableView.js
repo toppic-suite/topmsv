@@ -1,7 +1,7 @@
 // Column config for the MS1 and MS2 mass-list tables (deconvoluted
-// envelopes): ID, mono mass, mono m/z (click to center the spectrum),
-// [ref m/z: computed from the envelope's ref_mass, also clickable],
-// charge, intensity, score. Built per table so a table without the ref m/z
+// envelopes): ID, mono mass, mono m/z, [ref m/z: computed from the
+// envelope's ref_mass, click to center the spectrum], charge, intensity,
+// score. Built per table so a table without the ref m/z
 // column keeps the right column indexes.
 function massTableConfig(withRefMz) {
     // index of each column after the optional ref m/z column
@@ -27,17 +27,13 @@ function massTableConfig(withRefMz) {
         }
     },
     {
-        targets: [1, 5 + shift],
+        targets: [1, 2, 5 + shift],
         render: function (data, type, row) {
             if (type === 'display' && typeof data === 'number') {
                 return data.toFixed(3);
             }
             return data;
         }
-    },
-    {
-        targets: [2],
-        render: mzLink('row_mono_mz')
     }];
     if (withRefMz) {
         columnDefs.push({ targets: [3], render: mzLink('row_ref_mz') });

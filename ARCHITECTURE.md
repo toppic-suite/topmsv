@@ -56,8 +56,8 @@ peaks. Two behaviors of the shared drawing library matter here:
   Ref m/z is the m/z of the envelope's reference (most abundant) isotope,
   computed as `ref_mass / charge + 1.007276` from the `ref_mass` column that
   newer TopFD versions write to `ms1_env` / `ms2_env`; it is blank for sqlite
-  files without that column. Both m/z values are links that center the
-  spectrum on them.
+  files without that column. Ref m/z is a link that centers the spectrum on
+  it; mono m/z is plain text.
 - **PrSM peak table Ref m/z** (`src/common/data_table/draw_table.ts`, header
   in `visual/prsm.html` and the two `inspect/spectrum*.html`): the same
   column next to Mono m/z. The value comes from the `ref_mass` field that
