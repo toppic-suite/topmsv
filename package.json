@@ -49,5 +49,8 @@
   },
   "allowScripts": {
     "@fortawesome/fontawesome-free@5.15.4": true
+  },
+  "overrides": {
+    "qs": "^6.16.0"
   }
 }
