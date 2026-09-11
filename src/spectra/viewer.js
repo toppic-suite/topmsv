@@ -135,7 +135,8 @@ async function updateMsOneById(cur_ms_one_id) {
       let refMz = (env.ref_mass != null)
         ? parseFloat(env.ref_mass) / parseInt(env.charge) + 1.007276
         : NaN;
-      mass_table.row.add([parseInt(env.env_id),
+      // mass ID is shown 1-based (TopFD env_id + 1), like the PrSM peak table
+      mass_table.row.add([parseInt(env.env_id) + 1,
       parseFloat(env.mono_mass),
       parseFloat(env.mono_mass)/parseInt(env.charge) + 1.007276,
       refMz,
@@ -331,7 +332,8 @@ async function updateMsTwoById(cur_ms_two_id) {
       let refMz = (env.ref_mass != null)
         ? parseFloat(env.ref_mass) / parseInt(env.charge) + 1.007276
         : NaN;
-      mass2_table.row.add([parseInt(env.env_id),
+      // mass ID is shown 1-based (TopFD env_id + 1), like the PrSM peak table
+      mass2_table.row.add([parseInt(env.env_id) + 1,
       parseFloat(env.mono_mass),
       parseFloat(env.mono_mass)/parseInt(env.charge) + 1.007276,
       refMz,
@@ -378,7 +380,8 @@ function showEnvelopeInMassList(table, panelId, envId) {
   for (let i = 0; i < rowNodes.length; i++) {
     rowNodes[i].classList.remove('env-selected');
   }
-  let row = table.row(function (idx, data) { return data[0] === envId; });
+  // the mass ID column holds env_id + 1
+  let row = table.row(function (idx, data) { return data[0] === envId + 1; });
   let node = row.node();
   if (!node) return;
   node.classList.add('env-selected');

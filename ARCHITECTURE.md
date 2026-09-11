@@ -52,7 +52,8 @@ peaks. Two behaviors of the shared drawing library matter here:
   precursor charge states.
 - **Mass lists** (`src/spectra/views/massTableView.js`, rows built in
   `src/spectra/viewer.js`): each spectrum panel has a table of its envelopes
-  with mass ID, mono mass, mono m/z, ref m/z, charge, intensity and EnvCNN score.
+  with mass ID (1-based: TopFD `env_id` + 1, as in the PrSM peak table),
+  mono mass, mono m/z, ref m/z, charge, intensity and EnvCNN score.
   Ref m/z is the m/z of the envelope's reference (most abundant) isotope,
   computed as `ref_mass / charge + 1.007276` from the `ref_mass` column that
   newer TopFD versions write to `ms1_env` / `ms2_env`; it is blank for sqlite
