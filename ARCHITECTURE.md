@@ -79,6 +79,31 @@ peaks. Two behaviors of the shared drawing library matter here:
   The drawing library knows nothing about the page layout, so other pages can
   react to the same event differently or ignore it.
 
+### Visual inspection page
+
+`/d/<dataset>/topmsv/inspect/spectrum.html` is a standalone calculator:
+the user pastes a raw peak list (m/z, intensity), a deconvoluted mass list
+(mass, intensity, charge; extra columns are ignored) and a protein sequence,
+picks ion types and an error tolerance, and presses Submit. Everything runs
+in the browser (`src/viewer/inspect/js/`): `SeqOfExecution` in
+`controllers/seqofexecution.ts` parses the inputs, matches the mass list
+against the theoretical fragment masses (`models/calcMatchedPeaks.ts`),
+draws the annotated sequence, the graphs and the tables. Two behaviors worth
+knowing:
+
+- **Matches at position 0 are valid.** `matchedPeakAttributes` fills the
+  match fields (ion name, index, position, errors) by checking that they are
+  present, not truthy. An intact-protein mass in the list matches the
+  full-length Y ion, whose cleavage position is 0, and an exact match has a
+  mass error of 0; a truthiness test skipped those fields and left a peak
+  flagged as matched without an ion name, which threw in the sequence view
+  and left the page blank.
+- **Graph tabs follow the inputs.** The "Scan" tab shows the raw spectrum
+  built from the Peaks box; the "Mass scan" tab shows the mass graph built
+  from the Masses box. When the Peaks box is empty the spectrum graph is
+  never drawn, so the page hides the "Scan" tab and opens "Mass scan"
+  instead of an empty panel.
+
 ## Project layout
 
 ```
