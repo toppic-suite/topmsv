@@ -70,7 +70,7 @@ function addSearchBoxEvent(): void {
 
   let p: HTMLParagraphElement = document.createElement('p');
   let a: HTMLAnchorElement = document.createElement('a');
-  a.href = "prsm" + ".html" + "?folder=" + folderName + "&protein=" + prsm.prsm_id;
+  a.href = "prsm.html?folder=" + folderName + "&prsm_id=" + prsm.prsm_id;
   //a.innerHTML = protein.sequence_name + " " + "first residue = " + protein.annotation.first_residue_position + " " + "last residue = " + protein.annotation.last_residue_position;
   a.innerHTML = sequence;
   p.appendChild(a);
