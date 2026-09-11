@@ -335,6 +335,14 @@ class SeqOfExecution {
         createMs2NavElementInspect(0, Constants.GRAPHTABDIV, Constants.GRAPHTABNAV, "");
         addCheckboxTabInspect(Constants.GRAPHTABNAV);
         addEventNavBar(monoMassGraphObj);
+        if (spectrum.getPeaks().length === 0) {
+            // No raw peak list was entered, so the spectrum graph behind the
+            // "Scan" tab was never drawn: hide that tab and open the mass
+            // graph, which only needs the mass list, instead of an empty panel.
+            $("#" + Constants.GRAPHTABDIV + "_graphlist_0").hide();
+            switchTab("monographlist");
+            $("#checkbox-tab").show();
+        }
         /*add event handlers for spectrum graph buttons*/
         $("#ms2_graph_show_btn").click(function () {
             if ($.trim($(this).text()) === 'Show Spectrum') {
