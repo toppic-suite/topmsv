@@ -168,7 +168,11 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   from Bootstrap 4 (`data-bs-*` attributes, `btn-close`, `form-check`,
   `float-end`, `visually-hidden`) and load `bootstrap.bundle.min.js`
   (Popper included); jQuery `.modal()` calls keep working via Bootstrap 5's
-  jQuery interop — use `data-bs-*` in any new markup. d3 is ^7: all drawing code (src/common
+  jQuery interop — use `data-bs-*` in any new markup. Bootstrap 5 dropped
+  `position: absolute` from `.tooltip`, which every floating hover box
+  (peak/envelope/fragment-mass tooltips, break-point annotation, save-image
+  name popup) relies on for its inline left/top — `div.tooltip` in
+  `public/common/css/common.css` supplies it; keep that rule. d3 is ^7: all drawing code (src/common
   and the viewer copies under public/topmsv, .ts AND the .js that actually
   runs) was migrated off the v5-only d3.event/d3.mouse globals to the
   v6+ listener signature (`.on("x", function(event, d))`, `d3.pointer`) —

@@ -42,7 +42,13 @@ button.close, button.btn-close {
 }
 
 
+/* Floating hover boxes (peak / envelope / fragment-mass tooltips, the
+   save-image name popup) are appended to <body> with inline left/top.
+   Bootstrap 4 positioned .tooltip absolutely; Bootstrap 5 does not, so
+   without this rule they render in normal flow at the end of the page. */
 div.tooltip {
+  position: absolute;
+  z-index: 1080;
   box-sizing: border-box;
   display: inline-block;
   min-width: 1.5em;
