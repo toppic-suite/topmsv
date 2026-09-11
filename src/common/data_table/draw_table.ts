@@ -42,8 +42,8 @@
             }
             this.showIonPeaks(pos);
         });
-        //mono mz click
-        $(".row_mono_mz").click((e) => {
+        //mono m/z or ref m/z click: center the spectrum on that value
+        $(".row_mono_mz, .row_ref_mz").click((e) => {
             /*	get Mono M/z value till 3 decimal values	*/
             let monoMz: number = parseFloat(parseFloat(e.currentTarget.innerHTML).toFixed(3));
 
@@ -152,6 +152,7 @@
                     { "type": "num" },
                     { "type": "num" },
                     null,
+                    null,
                     { "type": "num" },
                     { "type": "num" },
                     { "type": "num" },
@@ -175,6 +176,7 @@
                     { "type": "num", "visible": false },
                     { "type": "num" },
                     { "type": "num" },
+                    null,
                     null,
                     { "type": "num" },
                     { "type": "num" },
@@ -292,7 +294,7 @@
         tr.setAttribute("id", id);
         tr.setAttribute("class", l_class);
         tr.setAttribute("role", "row");
-        for (let i = 0; i < 11; i++) {
+        for (let i = 0; i < 12; i++) {
           var td: HTMLTableDataCellElement = document.createElement('td');
           td.setAttribute("align", "center");
           if (i == 0) {
@@ -330,12 +332,25 @@
             td.appendChild(a);
           }
           if (i == 4) {
+            // m/z of the envelope's reference (most abundant) isotope; blank
+            // when the data source has no ref mass (older TopFD sqlite files)
+            let refMz: number | undefined = peak.getRefMz();
+            if (refMz !== undefined && !isNaN(refMz)) {
+              let a: HTMLAnchorElement = document.createElement('a');
+              a.href = "#!";
+              a.className = "row_ref_mz";
+              a.innerHTML = FormatUtil.formatFloat(refMz.toString(), "dataTable");
+              td.appendChild(a);
+            }
+            td.setAttribute("class", "row_refMz");
+          }
+          if (i == 5) {
             //td.innerHTML = peak.getIntensity().toString();
             let intensity: string = (peak.getIntensity()).toExponential();
             td.innerHTML = Number.parseFloat(intensity).toPrecision(3);
             td.setAttribute("class", "row_intensity");
           }
-          if (i == 5) {
+          if (i == 6) {
             let charge: number | undefined = peak.getCharge();
             if (!charge) {
               console.error("ERROR: mono peak does not have charge");
@@ -345,14 +360,14 @@
             td.setAttribute("class", "row_charge");
           }
           if (matchedPeaks && matchedPeakPair) {
-            if (i == 6) {
+            if (i == 7) {
               td.innerHTML = FormatUtil.formatFloat(matchedPeakPair.getTheoMass().toString(), "dataTable");
             }
-            if (i == 7) {
+            if (i == 8) {
               let ionPos: string = matchedPeakPair.getIon().getId();
               td.innerHTML = matchedPeakPair.getIon().getName() + ionPos.slice(1);
             }
-            if (i == 8) {
+            if (i == 9) {
             //if c-term ion, pos = pos + 1
               let ion: string = matchedPeakPair.getIon().getName();
               let ionPos: number = parseInt((matchedPeakPair.getIon().getId()).slice(1));
@@ -368,7 +383,7 @@
                 td.innerHTML = ionPos.toString();
               }
             }
-            if (i == 9) {
+            if (i == 10) {
               let massError: number | undefined = matchedPeakPair.getIon().getMassError();
               if (massError == undefined) {
                 console.error("ERROR: massError is not provided");
@@ -377,7 +392,7 @@
                   td.innerHTML = FormatUtil.formatFloat(massError.toString(), "dataTable");
               }
             }
-            if (i == 10) {
+            if (i == 11) {
               let ppmError: number | undefined = matchedPeakPair.getIon().getPpmError();
               if (ppmError == undefined) {
                 console.log(matchedPeakPair.getIon());

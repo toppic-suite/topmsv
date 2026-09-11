@@ -58,6 +58,14 @@ peaks. Two behaviors of the shared drawing library matter here:
   newer TopFD versions write to `ms1_env` / `ms2_env`; it is blank for sqlite
   files without that column. Both m/z values are links that center the
   spectrum on them.
+- **PrSM peak table Ref m/z** (`src/common/data_table/draw_table.ts`, header
+  in `visual/prsm.html` and the two `inspect/spectrum*.html`): the same
+  column next to Mono m/z. The value comes from the `ref_mass` field that
+  `src/server/spectrumJs.ts` adds to each envelope of `topfd/ms2_json/
+  spectrum<N>.js` when the sqlite has the column; `parse_prsm.js` stores it
+  on the `Envelope` and copies the derived m/z onto the deconvoluted `Peak`
+  with the same id (deconvoluted peak ids index the envelope list). The cell
+  is blank when the ref mass is unknown (older sqlite, inspect-page input).
 - **Click-to-select** (`drawEnvelopes` in
   `src/common/topfd_view/topfd_draw_spectrum.ts`): clicking a circle
   dispatches an `envelopeclick` CustomEvent on the enclosing `<svg>` carrying

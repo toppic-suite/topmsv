@@ -7,6 +7,7 @@ class Peak {
   private intensity_: number;
   private displayLevel_: number = -1;
   private specId_: string | undefined;
+  private refMz_: number | undefined;   // m/z of the envelope's reference isotope (deconv. peaks only)
 
   constructor(peakId: string, pos: number, monoMz: number, intensity: number, monoMass?: number, charge?: number, specId?: string) {
     this.peakId_ = peakId;
@@ -52,6 +53,12 @@ class Peak {
   }
   setMonoMz(mass: number): void {
     this.monoMz_ = mass;
+  }
+  getRefMz(): number | undefined {
+    return this.refMz_;
+  }
+  setRefMz(refMz: number | undefined): void {
+    this.refMz_ = refMz;
   }
   setIntensity(intensity: number): void {
     this.intensity_ = intensity;

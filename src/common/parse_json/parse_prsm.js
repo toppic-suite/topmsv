@@ -80,6 +80,9 @@ class ParsePrsm {
                 for (let i = 0; i < ms1_data.envelopes.length; i++) {
                     let env = ms1_data.envelopes[i];
                     let envObj = new Envelope(env.mono_mass, env.charge);
+                    if (env.ref_mass != null) {
+                        envObj.setRefMass(parseFloat(env.ref_mass));
+                    }
                     for (let j = 0; j < env.env_peaks.length; j++) {
                         let peak = new Peak(j.toString(), parseFloat(env.env_peaks[j].mz), parseFloat(env.env_peaks[j].mz), parseFloat(env.env_peaks[j].intensity));
                         envObj.addPeaks(peak);
@@ -140,6 +143,9 @@ class ParsePrsm {
                             for (let m = 0; m < specList[j].envelopes.length; m++) {
                                 let env = specList[j].envelopes[m];
                                 let envObj = new Envelope(parseFloat(env.mono_mass), parseFloat(env.charge));
+                                if (env.ref_mass != null) {
+                                    envObj.setRefMass(parseFloat(env.ref_mass));
+                                }
                                 for (let n = 0; n < env.env_peaks.length; n++) {
                                     let peak = new Peak(n.toString(), parseFloat(env.env_peaks[n].mz), parseFloat(env.env_peaks[n].mz), parseFloat(env.env_peaks[n].intensity));
                                     envObj.addPeaks(peak);
@@ -149,7 +155,13 @@ class ParsePrsm {
                             let deconvPeaks = [];
                             prsm_data.prsm.ms.peaks.peak.forEach((peak) => {
                                 if (peak.spec_id == specList[j].id) {
-                                    deconvPeaks.push(new Peak(peak.peak_id, parseFloat(peak.monoisotopic_mass), parseFloat(peak.monoisotopic_mz), parseFloat(peak.intensity), parseFloat(peak.monoisotopic_mass), parseInt(peak.charge), peak.spec_id));
+                                    let deconvPeak = new Peak(peak.peak_id, parseFloat(peak.monoisotopic_mass), parseFloat(peak.monoisotopic_mz), parseFloat(peak.intensity), parseFloat(peak.monoisotopic_mass), parseInt(peak.charge), peak.spec_id);
+                                    // deconvoluted peak ids index the spectrum's envelope list
+                                    let env = envelopes[parseInt(peak.peak_id)];
+                                    if (env) {
+                                        deconvPeak.setRefMz(env.getRefMz());
+                                    }
+                                    deconvPeaks.push(deconvPeak);
                                 }
                             });
                             //check if nIons and cIons were identified from prsm file
@@ -230,6 +242,7 @@ class ParsePrsm {
                         ionText = ionType + matchedIon.ion_display_position;
                         //create matched pair
                         let matchedPeakObj = new Peak(element.peak_id, parseFloat(element.monoisotopic_mz), parseFloat(element.monoisotopic_mz), parseFloat(element.intensity), parseFloat(element.monoisotopic_mass), parseInt(element.charge), element.spec_id);
+                        matchedPeakObj.setRefMz(envelopes[peakId].getRefMz());
                         let ionTerm = "";
                         if (element.matched_ions.matched_ion.ion_type[0] == "X" || element.matched_ions.matched_ion.ion_type[0] == "Y" ||
                             element.matched_ions.matched_ion.ion_type[0] == "Z") {
@@ -253,6 +266,7 @@ class ParsePrsm {
                             }
                             ionText = ionType + matchedIon.ion_display_position;
                             let matchedPeakObj = new Peak(element.peak_id, parseFloat(element.monoisotopic_mz), parseFloat(element.monoisotopic_mz), parseFloat(element.intensity), parseFloat(element.monoisotopic_mass), parseInt(element.charge), element.spec_id);
+                            matchedPeakObj.setRefMz(envelopes[peakId].getRefMz());
                             let ionTerm = "";
                             if (element.matched_ions.matched_ion[i].ion_type[0] == "X" || element.matched_ions.matched_ion[i].ion_type[0] == "Y" ||
                                 element.matched_ions.matched_ion[i].ion_type[0] == "Z") {

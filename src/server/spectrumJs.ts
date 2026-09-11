@@ -8,7 +8,17 @@ import { fixedToString, toScientificStr } from './convert/format';
 
 interface JsonPeak { mz: string; intensity: string }
 interface JsonEnvPeak { mz: number; intensity: number }
-interface JsonEnvelope { id: number; mono_mass: number; charge: number; env_peaks: JsonEnvPeak[] }
+interface JsonEnvelope {
+  id: number; mono_mass: number; charge: number;
+  ref_mass?: number;   // reference (most abundant) isotope mass; newer TopFD only
+  env_peaks: JsonEnvPeak[];
+}
+
+// Whether <prefix>_env has the ref_mass column (added by newer TopFD versions).
+function hasRefMass(db: DatabaseSync, prefix: string): boolean {
+  const cols = db.prepare(`PRAGMA table_info(${prefix}_env)`).all() as { name: string }[];
+  return cols.some((c) => c.name === 'ref_mass');
+}
 
 export function buildSpectrumJs(db: DatabaseSync, level: 1 | 2, specId: number): string | null {
   const prefix = level === 1 ? 'ms1' : 'ms2';
@@ -36,8 +46,10 @@ export function buildSpectrumJs(db: DatabaseSync, level: 1 | 2, specId: number):
     intensity: toScientificStr(r.intensity, 4),
   }));
 
+  const withRefMass = hasRefMass(db, prefix);
   const envRows = db.prepare(
-    `SELECT env_id, mono_mass, charge FROM ${prefix}_env WHERE spec_id = ? ORDER BY env_id`,
+    `SELECT env_id, mono_mass, charge${withRefMass ? ', ref_mass' : ''} FROM ${prefix}_env ` +
+    'WHERE spec_id = ? ORDER BY env_id',
   ).all(specId) as any[];
   const envPeakRows = db.prepare(
     `SELECT env_id, mz, intensity FROM ${prefix}_env_peak WHERE spec_id = ? ORDER BY env_id, peak_id`,
@@ -48,12 +60,12 @@ export function buildSpectrumJs(db: DatabaseSync, level: 1 | 2, specId: number):
     if (!list) { list = []; peaksByEnv.set(r.env_id, list); }
     list.push({ mz: r.mz, intensity: r.intensity });
   }
-  doc.envelopes = envRows.map((r, i): JsonEnvelope => ({
-    id: i,
-    mono_mass: r.mono_mass,
-    charge: r.charge,
-    env_peaks: peaksByEnv.get(r.env_id) ?? [],
-  }));
+  doc.envelopes = envRows.map((r, i): JsonEnvelope => {
+    const env: JsonEnvelope = { id: i, mono_mass: r.mono_mass, charge: r.charge, env_peaks: [] };
+    if (withRefMass && r.ref_mass != null) env.ref_mass = r.ref_mass;
+    env.env_peaks = peaksByEnv.get(r.env_id) ?? [];
+    return env;
+  });
 
   const globalName = level === 1 ? 'ms1_data' : 'ms2_data';
   return `${globalName} =\n` + JSON.stringify(doc, null, 4);

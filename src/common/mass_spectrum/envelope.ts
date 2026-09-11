@@ -6,6 +6,7 @@ class Envelope {
   private displayLevel_: number = -1;
   private peaks_ : Peak[] = [];
   private id_: number = -1;   // envelope id in its spectrum (TopFD env_id), -1 if unknown
+  private refMass_: number | undefined;   // reference (most abundant) isotope mass, if known
 
   constructor(monoMass: number, charge: number, intensity: number = -1) {
     this.monoMass_ = monoMass;
@@ -35,6 +36,17 @@ class Envelope {
   }
   setId(id: number): void {
     this.id_ = id;
+  }
+  getRefMass(): number | undefined {
+    return this.refMass_;
+  }
+  setRefMass(refMass: number): void {
+    this.refMass_ = refMass;
+  }
+  // m/z of the reference isotope, undefined when ref mass is unknown
+  getRefMz(): number | undefined {
+    if (this.refMass_ === undefined) return undefined;
+    return this.refMass_ / this.charge_ + 1.007276;
   }
   setDisplayColor(displayColor: string): void {
     this.displayColor_ = displayColor;
