@@ -60,13 +60,16 @@ peaks. Two behaviors of the shared drawing library matter here:
   files without that column. Ref m/z is a link that centers the spectrum on
   it; mono m/z is plain text.
 - **PrSM peak table Ref m/z** (`src/common/data_table/draw_table.ts`, header
-  in `visual/prsm.html` and the two `inspect/spectrum*.html`): the same
-  column next to Mono m/z. The value comes from the `ref_mass` field that
+  in `visual/prsm.html`): the same column next to Mono m/z, carrying the
+  click-to-center link (Mono m/z is plain text there). The inspect pages
+  share the table code but construct `DataTable` with `showRefMz = false`:
+  their pasted peaks have no ref mass, so they keep the old layout with the
+  link on Mono m/z. The value comes from the `ref_mass` field that
   `src/server/spectrumJs.ts` adds to each envelope of `topfd/ms2_json/
   spectrum<N>.js` when the sqlite has the column; `parse_prsm.js` stores it
   on the `Envelope` and copies the derived m/z onto the deconvoluted `Peak`
   with the same id (deconvoluted peak ids index the envelope list). The cell
-  is blank when the ref mass is unknown (older sqlite, inspect-page input).
+  is blank when the ref mass is unknown (older sqlite files).
 - **Click-to-select** (`drawEnvelopes` in
   `src/common/topfd_view/topfd_draw_spectrum.ts`): clicking a circle
   dispatches an `envelopeclick` CustomEvent on the enclosing `<svg>` carrying

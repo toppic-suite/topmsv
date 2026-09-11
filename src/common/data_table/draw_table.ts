@@ -10,11 +10,16 @@
     private addOneToPeakNum_: boolean;
     private specSvgId_: string = "";
     private monoMassSvgId_: string = "";
+    // With a Ref m/z column (PrSM page) the Ref m/z cell carries the
+    // click-to-center link and Mono m/z is plain text; without it (inspect
+    // page, whose peaks have no ref mass) Mono m/z carries the link.
+    private showRefMz_: boolean;
 
-    constructor(prsmObj: Prsm, showScanNum: boolean, ms2GraphList: SpectrumView[]) {
+    constructor(prsmObj: Prsm, showScanNum: boolean, ms2GraphList: SpectrumView[], showRefMz: boolean = true) {
         this.prsmObj_ = prsmObj;
         this.showScanNum_ = showScanNum;
         this.ms2GraphList_ = ms2GraphList;
+        this.showRefMz_ = showRefMz;
         if (this.showScanNum_) {
             this.addOneToPeakNum_ = true;
         }
@@ -42,8 +47,8 @@
             }
             this.showIonPeaks(pos);
         });
-        //ref m/z click: center the spectrum on that value
-        $(".row_ref_mz").click((e) => {
+        //m/z link click (ref m/z, or mono m/z without a ref column): center the spectrum on that value
+        $(".row_mono_mz, .row_ref_mz").click((e) => {
             /*	get Mono M/z value till 3 decimal values	*/
             let monoMz: number = parseFloat(parseFloat(e.currentTarget.innerHTML).toFixed(3));
 
@@ -139,55 +144,38 @@
         });
     }
     addTable() {
-        if (this.showScanNum_) {
-            //@ts-ignore
-            $('#spectrum').DataTable({
-                "scrollY": "400px",
-                "scrollCollapse": true,
-                "paging": false,
-                "order": [[1, "asc"]],
-                "bSortClasses": false,
-                "columns": [
-                    { "type": "num" },
-                    { "type": "num" },
-                    { "type": "num" },
-                    { "type": "num" },
-                    null,
-                    { "type": "num" },
-                    { "type": "num" },
-                    { "type": "num" },
-                    null,
-                    { "type": "num" },
-                    { "type": "num" },
-                    { "type": "num" }
-                ]
-            });
+        // null = HTML cell (link / text), "num" = numeric sort
+        let columns: ({ [k: string]: unknown } | null)[] = [
+            { "type": "num", "visible": this.showScanNum_ },   // Scan
+            { "type": "num" },                                   // Mass ID
+            { "type": "num" },                                   // Mono mass
+            this.showRefMz_ ? { "type": "num" } : null,          // Mono m/z (plain, or link)
+        ];
+        if (this.showRefMz_) {
+            columns.push(null);                                  // Ref m/z (link)
         }
-        else {
-            //@ts-ignore
-            $('#spectrum').DataTable({
-                "scrollY": "400px",
-                "scrollCollapse": true,
-                "paging": false,
-                "destroy": true,
-                "order": [[1, "asc"]],
-                "bSortClasses": false,
-                "columns": [
-                    { "type": "num", "visible": false },
-                    { "type": "num" },
-                    { "type": "num" },
-                    { "type": "num" },
-                    null,
-                    { "type": "num" },
-                    { "type": "num" },
-                    { "type": "num" },
-                    null,
-                    { "type": "num" },
-                    { "type": "num" },
-                    { "type": "num" }
-                ]
-            });
+        columns.push(
+            { "type": "num" },                                   // Intensity
+            { "type": "num" },                                   // Charge
+            { "type": "num" },                                   // Theoretical mass
+            null,                                                // Ion
+            { "type": "num" },                                   // Pos
+            { "type": "num" },                                   // Mass error
+            { "type": "num" },                                   // PPM error
+        );
+        let config: { [k: string]: unknown } = {
+            "scrollY": "400px",
+            "scrollCollapse": true,
+            "paging": false,
+            "order": [[1, "asc"]],
+            "bSortClasses": false,
+            "columns": columns,
+        };
+        if (!this.showScanNum_) {
+            config["destroy"] = true;   // inspect page rebuilds the table on every run
         }
+        //@ts-ignore
+        $('#spectrum').DataTable(config);
     }
     drawTable(): void {
       var _a: HTMLElement | null;
@@ -295,6 +283,9 @@
         tr.setAttribute("class", l_class);
         tr.setAttribute("role", "row");
         for (let i = 0; i < 12; i++) {
+          if (i == 4 && !self.showRefMz_) {
+            continue;   // no Ref m/z column on this page
+          }
           var td: HTMLTableDataCellElement = document.createElement('td');
           td.setAttribute("align", "center");
           if (i == 0) {
@@ -324,7 +315,18 @@
             td.setAttribute("class", "row_monoMass");
           }
           if (i == 3) {
-            td.innerHTML = FormatUtil.formatFloat(peak.getMonoMz().toString(), "dataTable");
+            let monoMzText: string = FormatUtil.formatFloat(peak.getMonoMz().toString(), "dataTable");
+            if (self.showRefMz_) {
+              td.innerHTML = monoMzText;
+            }
+            else {
+              // no Ref m/z column: the mono m/z value is the click-to-center link
+              let a: HTMLAnchorElement = document.createElement('a');
+              a.href = "#!";
+              a.className = "row_mono_mz";
+              a.innerHTML = monoMzText;
+              td.appendChild(a);
+            }
             td.setAttribute("class", "row_monoMz");
           }
           if (i == 4) {

@@ -324,7 +324,8 @@ class SeqOfExecution {
         let saveSpectrumObj = new SaveSpectrum([spectrumGraphObj], [monoMassGraphObj]);
         saveSpectrumObj.main();
         /*draw peaks table*/
-        let dataTable = new DataTable(prsmObj, false, [spectrumGraphObj]);
+        // no Ref m/z column: inspect-page peaks carry no ref mass
+        let dataTable = new DataTable(prsmObj, false, [spectrumGraphObj], false);
         dataTable.setSpecSvgId("ms2_svg_div_graph_");
         dataTable.setMonoMassSvgId("ms2_svg_div_mono_graph_");
         dataTable.drawTable();
