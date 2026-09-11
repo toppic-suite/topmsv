@@ -408,13 +408,13 @@
       let matchedPeakCnt: HTMLElement | null = document.getElementById("matched_peak_count");
       let notMatchedPeakCnt: HTMLElement | null = document.getElementById("not_matched_peak_count");
       if (allPeakCnt) {
-          allPeakCnt.innerHTML = "All peaks (" + l_All_Peaks.toString() + ")";
+          allPeakCnt.innerHTML = "All masses (" + l_All_Peaks.toString() + ")";
       }
       if (matchedPeakCnt) {
-          matchedPeakCnt.innerHTML = "Matched peaks (" + l_matched_peak_count.toString() + ")";
+          matchedPeakCnt.innerHTML = "Matched masses (" + l_matched_peak_count.toString() + ")";
       }
       if (notMatchedPeakCnt) {
-          notMatchedPeakCnt.innerHTML = "Not Matched peaks (" + l_not_matched_peak_count.toString() + ")";
+          notMatchedPeakCnt.innerHTML = "Not matched masses (" + l_not_matched_peak_count.toString() + ")";
       }
       if (!table) {
         console.error("ERROR: table element is not created correctly");
