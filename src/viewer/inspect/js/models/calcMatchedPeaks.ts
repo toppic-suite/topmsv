@@ -34,7 +34,14 @@ class CalcMatchedPeaks {
 		let PPMerror: number | undefined;
         let charge: number | undefined = peak.getCharge();
         let monoMass: number | undefined = peak.getMonoMass();
-        if (ion && ionPos && position && massDiff && mass) {
+        // The match fields are only passed for matched peaks (the unmatched
+        // call passes three arguments). Test for presence, not truthiness:
+        // an ion index or position of 0 (e.g. a full-length C-terminal ion
+        // whose position is 0) and an exact mass error of 0 are valid values,
+        // and skipping them left a peak flagged "Y" with no ion name, which
+        // crashed the sequence view (peak.ion.slice on undefined).
+        if (ion !== undefined && ionPos !== undefined && position !== undefined
+            && massDiff !== undefined && mass !== undefined) {
             // Check if Matched Indicator is Yes "Y" else keep empty spaces in the new attributes
             if (matchedInd == this.CONST_Y) {
                 thMass = Math.round(mass * 10000) / 10000;
