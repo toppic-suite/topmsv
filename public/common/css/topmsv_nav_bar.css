@@ -51,7 +51,12 @@
   padding: 0;
 }
 .topmsv-nav .topmsv-nav-links li {
-  margin: 0 10px;
+  margin: 0 7px;
+  /* a menu item never breaks across lines: with all six items the row
+     is close to the 980px column, and flex would otherwise shrink the
+     items until their text wraps */
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .topmsv-nav .navtab {
   color: #fff;
