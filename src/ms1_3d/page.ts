@@ -23,6 +23,7 @@ class Ms1Page {
   private status = $<HTMLElement>('status');
   private cutoffInput = $<HTMLInputElement>('cutoff');
   private busy = false;
+  private pendingView: ViewRange | null = null;   // latest request made while a load was in flight
 
   constructor() {
     this.graph = new Ms1Graph({
@@ -67,7 +68,11 @@ class Ms1Page {
   }
 
   private async requestView(view: ViewRange): Promise<void> {
-    if (this.busy) return;
+    if (this.busy) {
+      // keep the newest request and apply it once the current load is done
+      this.pendingView = view;
+      return;
+    }
     this.busy = true;
     try {
       this.graph.setViewRange(view.mzmin, view.mzmax, view.rtmin, view.rtmax);
@@ -76,6 +81,11 @@ class Ms1Page {
       this.setStatus((err as Error).message, true);
     } finally {
       this.busy = false;
+    }
+    if (this.pendingView) {
+      const next = this.pendingView;
+      this.pendingView = null;
+      await this.requestView(next);
     }
   }
 
@@ -117,17 +127,22 @@ class Ms1Page {
   /* ---- controls */
   private wireControls(): void {
     const g = this.graph;
-    $('request').addEventListener('click', () => {
+    const request = (): void => {
       const rtmin = parseFloat($<HTMLInputElement>('rt-min').value);
       const rtmax = parseFloat($<HTMLInputElement>('rt-max').value);
       const mzmin = parseFloat($<HTMLInputElement>('mz-min').value);
       const mzmax = parseFloat($<HTMLInputElement>('mz-max').value);
-      if ([rtmin, rtmax, mzmin, mzmax].some((v) => !Number.isFinite(v))) { alert('Enter numbers for all four range values.'); return; }
-      if (rtmin >= rtmax) { alert('Invalid range: minimum retention time must be below the maximum.'); return; }
-      if (mzmin >= mzmax) { alert('Invalid range: minimum m/z must be below the maximum.'); return; }
-      if (this.cutoffInput.value.trim() !== '' && !Number.isFinite(parseFloat(this.cutoffInput.value))) { alert('Invalid cutoff value: enter a number.'); return; }
+      if ([rtmin, rtmax, mzmin, mzmax].some((v) => !Number.isFinite(v))) { this.setStatus('Enter numbers for all four range values.', true); return; }
+      if (rtmin >= rtmax) { this.setStatus('Invalid range: the minimum retention time must be below the maximum.', true); return; }
+      if (mzmin >= mzmax) { this.setStatus('Invalid range: the minimum m/z must be below the maximum.', true); return; }
+      if (this.cutoffInput.value.trim() !== '' && !Number.isFinite(parseFloat(this.cutoffInput.value))) { this.setStatus('Invalid cutoff value: enter a number.', true); return; }
       void this.requestView({ mzmin, mzmax, mzrange: mzmax - mzmin, rtmin, rtmax, rtrange: rtmax - rtmin, intmin: 0, intmax: 0 });
-    });
+    };
+    $('request').addEventListener('click', request);
+    // Enter in any of the window boxes submits the request too
+    for (const id of ['rt-min', 'rt-max', 'mz-min', 'mz-max', 'cutoff']) {
+      $(id).addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); request(); } });
+    }
     $('reset').addEventListener('click', () => {
       this.cutoffInput.value = '';
       g.isHighlightingScan = $<HTMLInputElement>('highlight-scan').checked;
@@ -162,7 +177,6 @@ class Ms1Page {
       else { void el.requestFullscreen(); }
     });
     document.addEventListener('fullscreenchange', () => g.resize());
-    $('cutoff').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('request').click(); });
   }
 }
 
