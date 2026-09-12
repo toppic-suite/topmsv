@@ -16,6 +16,7 @@ const onLoadOfHTML = function (): void {
     let folder: string | null = params.get("folder");
     let prsmId: string | null = params.get("prsm_id");
     let specId: string | null = params.get("spec_id");
+    let scan: string | null = params.get("scan");
     bindLoadByIdForm(folder);
     let loadType: HTMLSelectElement | null = <HTMLSelectElement>document.getElementById("load_type");
     let loadId: HTMLInputElement | null = <HTMLInputElement>document.getElementById("load_id");
@@ -28,6 +29,12 @@ const onLoadOfHTML = function (): void {
         if (loadType && loadId) { loadType.value = "spectrum"; loadId.value = specId; }
         setIonCheckbox(null);
         loadSpectrumForInspect(specId);
+    }
+    else if (scan) {
+        // the same, addressed by MS2 scan number
+        if (loadType && loadId) { loadType.value = "scan"; loadId.value = scan; }
+        setIonCheckbox(null);
+        loadScanForInspect(scan);
     }
     else {
         setIonCheckbox(null);

@@ -115,9 +115,44 @@ function loadSpectrumForInspect(specId: string): void {
 }
 
 /**
+ * Load the MS2 spectrum with exactly this scan number (see
+ * loadSpectrumForInspect). The dataset API only knows "first spectrum with
+ * scan >= N", so the scan is verified and a miss names the next scan.
+ * @param scan - MS2 scan number
+ */
+function loadScanForInspect(scan: string): void {
+    setLoadStatus("Looking up scan " + scan + "...");
+    let api: string = "../../api/";
+    fetch(api + "ms2-id-by-scan/" + scan)
+        .then((r) => r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
+        .then((row: { id: number } | null) => {
+            if (!row) {
+                setLoadStatus("No MS2 spectrum has scan " + scan + " or later", true);
+                return null;
+            }
+            return fetch(api + "ms2-info/" + row.id).then((r) => r.json());
+        })
+        .then((info: any) => {
+            if (!info) {
+                return;
+            }
+            if (String(info.scan) !== scan) {
+                setLoadStatus("No MS2 spectrum has scan " + scan + " (next MS2 scan is " + info.scan + ", spectrum " + info.id + ")", true);
+                return;
+            }
+            loadSpectrumForInspect(String(info.id));
+        })
+        .catch((err: Error) => {
+            console.error(err);
+            setLoadStatus("Scan " + scan + " could not be looked up", true);
+        });
+}
+
+/**
  * Wire the "Load from this dataset" form: PrSM ID loads a PrSM (first
  * spectrum) from the page's ?folder= or the default folder, Spectrum ID
- * loads a bare MS2 spectrum. The URL is updated to match.
+ * loads a bare MS2 spectrum by TopFD spectrum id, MS2 scan loads it by
+ * scan number. The URL is updated to match.
  * @param folder - the page's ?folder= value, if any
  */
 function bindLoadByIdForm(folder: string | null): void {
@@ -137,6 +172,10 @@ function bindLoadByIdForm(folder: string | null): void {
         if (typeSelect.value === "prsm") {
             setInspectUrl({ folder: dataFolder, prsm_id: id });
             loadPrsmForInspect(dataFolder, id, null);
+        }
+        else if (typeSelect.value === "scan") {
+            setInspectUrl({ scan: id });
+            loadScanForInspect(id);
         }
         else {
             setInspectUrl({ spec_id: id });

@@ -94,11 +94,13 @@ defaults to the prsm cutoff tree, which holds every PrSM). Nothing is
 passed between the pages any more (the old localStorage hand-off is gone),
 so an inspection URL can be reloaded or bookmarked. The "Load from this
 dataset" form at the top does the same on demand: a PrSM ID loads that PrSM
-(first spectrum), a Spectrum ID loads a bare MS2 spectrum through the
-dataset JSON API (`../../api/ms2-info|ms2-peaks|ms2-envs/<id>`) into the
-peak list, mass list and ion types, leaving sequence, PTMs and precursor
-mass alone (the sqlite stores no MS2 precursor mass); `?spec_id=` alone
-does the spectrum load. Both update the URL. Everything runs
+(first spectrum); a Spectrum ID, or an MS2 scan number (resolved through
+`../../api/ms2-id-by-scan/<scan>` and checked for an exact match), loads a
+bare MS2 spectrum through the dataset JSON API
+(`../../api/ms2-info|ms2-peaks|ms2-envs/<id>`) into the peak list, mass
+list and ion types, leaving sequence, PTMs and precursor mass alone (the
+sqlite stores no MS2 precursor mass); `?spec_id=` or `?scan=` alone does
+the same. Every load updates the URL. Everything runs
 in the browser (`src/viewer/inspect/js/`): `SeqOfExecution` in
 `controllers/seqofexecution.ts` parses the inputs, matches the mass list
 against the theoretical fragment masses (`models/calcMatchedPeaks.ts`),
