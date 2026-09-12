@@ -82,6 +82,7 @@ export class Ms1Graph {
   autoScaleIntensity = true;
   isPan = false;                 // skip auto intensity scaling for a pan
   intSquish = 1;
+  manualIntScale = 1;            // ctrl + wheel factor, kept across redraws until Reset
 
   private onData?: GraphOptions['onData'];
 
@@ -378,6 +379,14 @@ export class Ms1Graph {
     return intScale;
   }
 
+  /** ctrl + wheel: scale the peak heights by `factor`; remembered until Reset. */
+  scaleIntensity(factor: number): void {
+    this.manualIntScale *= factor;
+    this.plotGroup.scale.set(this.plotGroup.scale.x, this.plotGroup.scale.y * factor, this.plotGroup.scale.z);
+    if (factor > 1) this.adjustIntensity();
+    this.render();
+  }
+
   /** After a manual intensity zoom-in: let boosted low peaks fall back to their true height. */
   adjustIntensity(): void {
     const yScale = this.plotGroup.scale.y * this.dataGroup.scale.y;
@@ -530,10 +539,8 @@ export class Ms1Graph {
 
   /** Place the 3D peak lines for the current data (strongest peaks first). */
   updatePeaks(data: PeakRow[]): void {
-    if (this.autoScaleIntensity) {
-      // reset a manual (ctrl + wheel) scale before auto scaling
-      this.plotGroup.scale.set(this.plotGroup.scale.x, Ms1Graph.maxPeakHeight / this.dataRange.intmax, this.plotGroup.scale.z);
-    }
+    // default scale times the remembered ctrl + wheel factor
+    this.plotGroup.scale.set(this.plotGroup.scale.x, (Ms1Graph.maxPeakHeight / this.dataRange.intmax) * this.manualIntScale, this.plotGroup.scale.z);
     const intScale = this.calcIntScale();
     const min = data.length ? data[data.length - 1].intensity : 0;
     const max = data.length ? data[0].intensity : 0;

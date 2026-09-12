@@ -77,20 +77,13 @@ export class Ms1Interaction {
     this.scrollLock = true;
     try {
       if (e.ctrlKey) {
-        this.scaleIntensity(e.deltaY > 0 ? 0.75 : 1.5);
+        this.graph.scaleIntensity(e.deltaY > 0 ? 0.75 : 1.5);
       } else {
         this.zoomAt(e);
       }
     } finally {
       this.scrollLock = false;
     }
-  }
-
-  private scaleIntensity(factor: number): void {
-    const g = this.graph;
-    g.plotGroup.scale.set(g.plotGroup.scale.x, g.plotGroup.scale.y * factor, g.plotGroup.scale.z);
-    if (factor > 1) g.adjustIntensity();
-    g.render();
   }
 
   private zoomAt(e: WheelEvent): void {

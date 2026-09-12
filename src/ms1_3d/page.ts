@@ -132,6 +132,7 @@ class Ms1Page {
       this.cutoffInput.value = '';
       g.isHighlightingScan = $<HTMLInputElement>('highlight-scan').checked;
       g.curRt = -1;
+      g.manualIntScale = 1;
       g.setViewRangeToFull();
       void this.requestView(g.viewRange);
     });
