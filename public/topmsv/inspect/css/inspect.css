@@ -67,7 +67,13 @@
   */
   #errorval{
     text-align: center!important; 
-    width: 80 !important;
+    width: 5em !important;
+  }
+  /* the error-type select is a .form-control (100% of its table cell); size
+     it to its longest option so "Mass error" / "PPM error" are not clipped */
+  #error_dropdown{
+    width: auto !important;
+    min-width: 8.5em;
   }
   .error_input{
     vertical-align: bottom !important;
@@ -178,6 +184,12 @@
 /*buttons*/
 .prsmgraphdownload button{
   margin: 1px !important;
+}
+/* "Load from this dataset" form: the button sits in a shrink-to-fit column,
+   so common.css's .btn max-width:80% would squeeze it below its label */
+#load_by_id .btn {
+  max-width: none !important;
+  white-space: nowrap;
 }
 /*precursor mass text box*/
 #precursormass{
