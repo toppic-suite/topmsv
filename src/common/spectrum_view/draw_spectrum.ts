@@ -498,8 +498,9 @@ function drawSequence(svg: any, para: SpectrumViewParameters, proteoform: Proteo
       .attr("stroke","black")
       .attr("stroke-width","1")
       .on("mouseover",function(event: any){
+        // unmatched theoretical masses have no ion: show the mass alone
         //@ts-ignore
-        onMouseOverFragmentMassAndIonType(this, event, mass, ionData.text);
+        onMouseOverFragmentMassAndIonType(this, event, mass, ionData ? ionData.text : null);
       })
       .on("mouseout",function(){
         //@ts-ignore
