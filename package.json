@@ -7,7 +7,7 @@
     "start": "ts-node --project tsconfig.server.json server.ts",
     "serve": "ts-node --project tsconfig.server.json server.ts",
     "typecheck:server": "tsc --project tsconfig.server.json",
-    "build:client": "npm run clean:client && tsc && tsc --project tsconfig.spectra.json && tsc --project tsconfig.viewerpages.json && tsc --project tsconfig.home.json",
+    "build:client": "npm run clean:client && tsc && tsc --project tsconfig.spectra.json && tsc --project tsconfig.viewerpages.json && tsc --project tsconfig.home.json && tsc --project tsconfig.ms1_3d.json",
     "convert": "ts-node --project tsconfig.server.json src/server/convert/cli.ts",
     "clean:client": "node -e \"for (const d of ['types/lib','public/common/js','public/topmsv/visual/js','public/topmsv/inspect/js']) require('fs').rmSync(d,{recursive:true,force:true})\""
   },
@@ -28,6 +28,7 @@
     "@types/jqueryui": "^1.12.6",
     "@types/multer": "^2.1.0",
     "@types/node": "^24.10.1",
+    "@types/three": "^0.186.0",
     "ts-node": "^10.9.2"
   },
   "dependencies": {
@@ -43,6 +44,7 @@
     "jquery": "^3.7.1",
     "jquery-ui": "^1.14.2",
     "multer": "^2.1.1",
+    "three": "^0.186.0",
     "typescript": "^5.9.3"
   },
   "engines": {

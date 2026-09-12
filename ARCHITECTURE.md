@@ -152,6 +152,10 @@ src/common/                  TopMSV visualization library, single source for
 src/spectra/                 raw-spectra browser page scripts (plain JS,
                              copied to public/common/js): the MS1/MS2
                              panels, mass lists and the dataset API client
+src/ms1_3d/                  MS1 3D view (three.js, ES modules; compiled to
+                             public/common/js/ms1_3d)
+public/ms1_3d/ms1_3d.html    MS1 3D view page (needs the dataset's
+                             optional ms1_3d.db)
 src/viewer/                  TopMSV viewer page scripts (compiled to
                              public/topmsv/{visual,inspect}/js)
 src/client/                  home page TypeScript (compiled to

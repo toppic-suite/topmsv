@@ -22,7 +22,12 @@ export interface DatasetMeta {
   ms1Count: number;
   ms2Count: number;
   hasFasta: boolean;
+  has3d: boolean;                // ms1_3d.db (MS1 peaks for the 3D view) was uploaded
 }
+
+/** Files of a dataset directory that hold sqlite databases. */
+export const MS_DB_FILE = 'ms.sqlite';
+export const MS1_3D_DB_FILE = 'ms1_3d.db';
 
 export function sanitizeId(name: string): string {
   const id = name.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
@@ -36,9 +41,9 @@ export function datasetDir(id: string): string | null {
   return abs;
 }
 
-/** meta.json written before the XMLs became optional lacks the flag. */
+/** meta.json written before a flag existed lacks it. */
 function normalizeMeta(meta: DatasetMeta): DatasetMeta {
-  return { ...meta, hasIdentifications: meta.hasIdentifications ?? true };
+  return { ...meta, hasIdentifications: meta.hasIdentifications ?? true, has3d: meta.has3d ?? false };
 }
 
 export function listDatasets(): DatasetMeta[] {
@@ -77,6 +82,34 @@ export function deleteDataset(id: string): boolean {
   return true;
 }
 
+/**
+ * Check an uploaded MS1 3D peak database (the multi-resolution
+ * CONFIG + PEAKS<n> layout the TopMSV server produces) and switch it to
+ * rollback journaling like ensureIndexes does for the TopFD file.
+ * Throws a descriptive error for anything else.
+ */
+export function prepare3dDb(dbPath: string): void {
+  const db = new DatabaseSync(dbPath);
+  try {
+    db.exec('PRAGMA journal_mode = DELETE;');
+    const tables = new Set(
+      (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[])
+        .map((r) => r.name.toUpperCase()),
+    );
+    if (!tables.has('CONFIG') || !tables.has('PEAKS0')) {
+      throw new Error('the MS1 3D file is not a TopMSV 3D peak database (CONFIG / PEAKS0 tables missing)');
+    }
+    const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
+    for (let i = 0; i < levels; i++) {
+      if (!tables.has('PEAKS' + i)) {
+        throw new Error(`the MS1 3D file lists ${levels} levels in CONFIG but has no PEAKS${i} table`);
+      }
+    }
+  } finally {
+    db.close();
+  }
+}
+
 /** Add spec_id indexes so per-spectrum queries are fast (TopFD ships none). */
 export function ensureIndexes(sqlitePath: string): void {
   const db = new DatabaseSync(sqlitePath);
@@ -100,23 +133,26 @@ export function ensureIndexes(sqlitePath: string): void {
 
 // ------------------------------------------------- open sqlite handle cache
 
+// keyed by "<dataset id>/<file name>": a dataset may have the TopFD file
+// and the MS1 3D peak database open at the same time
 const openDbs = new Map<string, DatabaseSync>();
-const MAX_OPEN = 4;
+const MAX_OPEN = 6;
 
-export function getDb(id: string): DatabaseSync | null {
-  const cached = openDbs.get(id);
+function getDbFile(id: string, file: string): DatabaseSync | null {
+  const key = id + '/' + file;
+  const cached = openDbs.get(key);
   if (cached) {
     // refresh LRU position
-    openDbs.delete(id);
-    openDbs.set(id, cached);
+    openDbs.delete(key);
+    openDbs.set(key, cached);
     return cached;
   }
   const dir = datasetDir(id);
   if (!dir) return null;
-  const sqlitePath = path.join(dir, 'ms.sqlite');
+  const sqlitePath = path.join(dir, file);
   if (!fs.existsSync(sqlitePath)) return null;
   const db = new DatabaseSync(sqlitePath, { readOnly: true });
-  openDbs.set(id, db);
+  openDbs.set(key, db);
   if (openDbs.size > MAX_OPEN) {
     const oldest = openDbs.keys().next().value as string;
     const old = openDbs.get(oldest);
@@ -126,11 +162,24 @@ export function getDb(id: string): DatabaseSync | null {
   return db;
 }
 
+/** The dataset's TopFD sqlite (read-only, cached). */
+export function getDb(id: string): DatabaseSync | null {
+  return getDbFile(id, MS_DB_FILE);
+}
+
+/** The dataset's MS1 3D peak database (read-only, cached); null if not uploaded. */
+export function getDb3d(id: string): DatabaseSync | null {
+  return getDbFile(id, MS1_3D_DB_FILE);
+}
+
 export function closeDb(id: string): void {
-  const db = openDbs.get(id);
-  if (db) {
-    openDbs.delete(id);
-    try { db.close(); } catch { /* ignore */ }
+  for (const file of [MS_DB_FILE, MS1_3D_DB_FILE]) {
+    const key = id + '/' + file;
+    const db = openDbs.get(key);
+    if (db) {
+      openDbs.delete(key);
+      try { db.close(); } catch { /* ignore */ }
+    }
   }
 }
 

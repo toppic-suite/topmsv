@@ -20,21 +20,24 @@ const drawNavBar = function(): void {
       + '<span class="navbar-brand logo">'
       + '<span class="headBlock"><h3><strong id="toppic_icon">T</strong>opMSV</h3></span></span>';
     if (dsRoot) {
-      // identification: true marks the pages that need the TopPIC XMLs
-      const items: { href: string, text: string, identification?: boolean }[] = [
+      // identification: true marks the pages that need the TopPIC XMLs,
+      // threeD: true the page that needs the MS1 3D peak database
+      const items: { href: string, text: string, identification?: boolean, threeD?: boolean }[] = [
         { href: "/", text: "Home" },
         { href: dsRoot + "topmsv/visual/proteins.html?data=toppic_proteoform_cutoff", text: "Protein Identifications", identification: true },
         { href: dsRoot + "topmsv/visual/ms.html?data=toppic_prsm_cutoff", text: "Spectrum Identifications", identification: true },
         { href: dsRoot + "topmsv/inspect/spectrum.html", text: "Visual Inspection" },
         { href: dsRoot + "spectra/spectra.html", text: "Spectra" },
+        { href: dsRoot + "ms1_3d/ms1_3d.html", text: "MS1 3D View", threeD: true },
       ];
       navCode += '<ul class="topmsv-nav-links">';
       items.forEach((item) => {
         // highlight the item for the page being shown (hrefs are absolute
         // paths built from dsRoot, so they compare against location.pathname)
         const active: boolean = item.href.split("?")[0] === location.pathname;
-        navCode += '<li class="navtab"' + (item.identification ? ' data-identification="1"' : '') + '>|</li>'
-          + '<li class="nav-item"' + (item.identification ? ' data-identification="1"' : '') + '>'
+        const flags: string = (item.identification ? ' data-identification="1"' : '') + (item.threeD ? ' data-threed="1"' : '');
+        navCode += '<li class="navtab"' + flags + '>|</li>'
+          + '<li class="nav-item"' + flags + '>'
           + '<a class="nav-link' + (active ? ' active' : '') + '" href="' + item.href + '">' + item.text + '</a></li>';
       });
       navCode += '</ul>';
@@ -46,15 +49,19 @@ const drawNavBar = function(): void {
     }
   };
 
-  // A dataset uploaded without the TopPIC XMLs has no identification pages:
-  // drop their links once the dataset's metadata says so (the links are
-  // rendered first so the bar never flashes when the fetch is slow).
+  // A dataset uploaded without the TopPIC XMLs has no identification pages,
+  // one without the MS1 3D peak database has no 3D view: drop those links
+  // once the dataset's metadata says so (the links are rendered first so
+  // the bar never flashes when the fetch is slow).
   const hideIdentificationLinks = function(container: HTMLElement, dsRoot: string): void {
     fetch(dsRoot + "api/meta")
       .then((res) => (res.ok ? res.json() : null))
-      .then((meta: { hasIdentifications?: boolean } | null) => {
+      .then((meta: { hasIdentifications?: boolean, has3d?: boolean } | null) => {
         if (meta && meta.hasIdentifications === false) {
           container.querySelectorAll("[data-identification]").forEach((el) => el.remove());
+        }
+        if (meta && meta.has3d !== true) {
+          container.querySelectorAll("[data-threed]").forEach((el) => el.remove());
         }
       })
       .catch(() => { /* keep the links */ });

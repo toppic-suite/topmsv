@@ -11,6 +11,7 @@ interface DatasetMeta {
   ms1Count: number;
   ms2Count: number;
   hasFasta: boolean;
+  has3d: boolean;          // MS1 3D peak database uploaded
 }
 
 async function fetchDatasets(): Promise<DatasetMeta[]> {
@@ -59,6 +60,7 @@ function renderDatasets(list: DatasetMeta[]): void {
       <td class="actions">
         ${identLink}
         <a href="d/${ds}/spectra/spectra.html">Spectra</a>
+        ${d.has3d ? `<a href="d/${ds}/ms1_3d/ms1_3d.html">MS1 3D</a>` : ''}
       </td>
       <td><button class="danger" data-id="${esc(d.id)}">Delete</button></td>
     </tr>`;

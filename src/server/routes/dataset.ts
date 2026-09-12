@@ -1,5 +1,6 @@
 // Per-dataset routes, mounted at /d/:ds/...
 //   /d/:ds/api/...                     sqlite query API for the raw-spectra browser
+//   /d/:ds/api/3d/...                  MS1 3D view API over ms1_3d.db (see below)
 //   /d/:ds/topfd/ms{1,2}_json/spectrum<id>.js   dynamic TopFD spectrum files
 //   /d/:ds/toppic_*_cutoff/data_js/...          generated identification data
 //   /d/:ds/vendor/...                  browser libraries served from node_modules
@@ -7,7 +8,7 @@
 
 import * as express from 'express';
 import * as path from 'path';
-import { getDb, readMeta } from '../datasets';
+import { getDb, getDb3d, readMeta } from '../datasets';
 import { buildSpectrumJs } from '../spectrumJs';
 import { buildDataJsFile } from '../prsmSource';
 import vendorRouter from '../vendor';
@@ -19,6 +20,77 @@ const router = express.Router({ mergeParams: true });
 function dbOf(req: express.Request) {
   return getDb((req.params as { ds: string }).ds);
 }
+
+// ------------------------------------------------------------------ MS1 3D view
+// ms1_3d.db (produced by the TopMSV server's mzML converter) holds the MS1
+// peaks at several resolutions: CONFIG has one row per level with the data
+// bounds and the peak count of PEAKS<level>; RETENTIONTIME is in
+// milliseconds. The API converts retention times to minutes.
+
+const RT_MS_PER_MIN = 60000;
+const MAX_3D_PEAKS = 20000;
+
+function num(v: unknown, fallback: number): number {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+// total intensity of the full-resolution level per dataset (one scan of
+// PEAKS0, cached; the page scales weak regions relative to it)
+const totalIntensityCache = new Map<string, number>();
+
+// Levels (index, m/z and RT (minutes) bounds, intensity bounds, peak count)
+// and the total intensity of the run.
+router.get('/api/3d/config', (req, res) => {
+  const ds = (req.params as { ds: string }).ds;
+  const db = getDb3d(ds);
+  if (!db) { res.status(404).json({ error: 'this dataset has no MS1 3D peak database' }); return; }
+  const rows = db.prepare('SELECT * FROM CONFIG').all() as any[];
+  let totalIntensity = totalIntensityCache.get(ds);
+  if (totalIntensity === undefined) {
+    totalIntensity = (db.prepare('SELECT SUM(INTENSITY) AS s FROM PEAKS0').get() as { s: number }).s ?? 0;
+    totalIntensityCache.set(ds, totalIntensity);
+  }
+  res.json({
+    levels: rows.map((r, i) => ({
+      level: i,
+      mzMin: r.MZMIN, mzMax: r.MZMAX,
+      rtMin: r.RTMIN / RT_MS_PER_MIN, rtMax: r.RTMAX / RT_MS_PER_MIN,
+      intMin: r.INTMIN, intMax: r.INTMAX,
+      count: r.COUNT,
+    })),
+    totalIntensity,
+  });
+});
+
+// The strongest peaks of one level inside an m/z x RT (minutes) window.
+router.get('/api/3d/peaks', (req, res) => {
+  const db = getDb3d((req.params as { ds: string }).ds);
+  if (!db) { res.status(404).json({ error: 'this dataset has no MS1 3D peak database' }); return; }
+  const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
+  const level = Math.floor(num(req.query.level, levels - 1));
+  if (level < 0 || level >= levels) { res.status(400).json({ error: 'level out of range' }); return; }
+  const maxPeaks = Math.min(MAX_3D_PEAKS, Math.max(1, Math.floor(num(req.query.maxPeaks, 4000))));
+  const rows = db.prepare(
+    `SELECT MZ, INTENSITY, RETENTIONTIME, COLOR FROM PEAKS${level}
+     WHERE RETENTIONTIME >= ? AND RETENTIONTIME <= ? AND MZ >= ? AND MZ <= ? AND INTENSITY > ?
+     ORDER BY INTENSITY DESC LIMIT ?`,
+  ).all(
+    num(req.query.minRt, 0) * RT_MS_PER_MIN, num(req.query.maxRt, Number.MAX_SAFE_INTEGER / RT_MS_PER_MIN) * RT_MS_PER_MIN,
+    num(req.query.minMz, 0), num(req.query.maxMz, Number.MAX_VALUE),
+    num(req.query.cutoff, 0), maxPeaks,
+  ) as any[];
+  res.json(rows.map((r) => ({ mz: r.MZ, intensity: r.INTENSITY, rt: r.RETENTIONTIME / RT_MS_PER_MIN, color: r.COLOR })));
+});
+
+// MS1 scans of the TopFD file with their retention times (minutes), for
+// naming the scan under the cursor and highlighting one scan.
+router.get('/api/3d/scans', (req, res) => {
+  const db = dbOf(req);
+  if (!db) { res.json([]); return; }
+  const rows = db.prepare('SELECT id, scan, retention_time FROM ms1_spectrum ORDER BY retention_time').all() as any[];
+  res.json(rows.map((r) => ({ id: r.id, scan: r.scan, rt: r.retention_time / 60 })));
+});
 
 // ------------------------------------------------------------------ meta
 

@@ -33,6 +33,9 @@ const MOUNTS: Array<[string, string]> = [
   ['/fontawesome/webfonts', '@fortawesome/fontawesome-free/webfonts'],
   ['/file-saver', 'file-saver/dist'],
   ['/canvas-toBlob', 'canvas-toBlob'],
+  // ES modules for the MS1 3D view: build/three.module.js and
+  // examples/jsm/controls/OrbitControls.js (import map in ms1_3d.html)
+  ['/three', 'three'],
 ];
 
 const vendorRouter = express.Router();
