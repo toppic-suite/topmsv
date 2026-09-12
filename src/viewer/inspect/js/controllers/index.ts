@@ -2,57 +2,25 @@
 // Gets executed once HTML is loaded
 $(document).ready(function (): void {
     onLoadOfHTML();
-    localStorage.clear();
-    //ion type data needs to be preserved because it is recorded only once when the prsm.html opens. 
-    //Without this line it is going to break when the user tries to open inspect window again after closing.
-    //localStorage.setItem('ionType', ionType); 
 });
 /**
  * @function onLoadOfHTML
  * @description Gets invoked immediatley after loading html
  */
 const onLoadOfHTML = function (): void {
-    // Get the data from local storage 
-    let peakAndIntensityList: string | null = parsePeakMass('peakAndIntensityList');
-    // console.log(peakAndIntensityList);
-    let massAndIntensityList: string | null = parsePeakMass('massAndIntensityList');
-    let sequence: string | null = parseSeq('sequence');
-    let l_fixedPtmList: MassShift[] = parsePTM('fixedPtmList');
-    let protVarPtmsList: MassShift[] = parsePTM('protVarPtmsList');
-    let variablePtmsList: MassShift[] = parsePTM('variablePtmsList');
-    let unknownMassShiftList: MassShift[] = parsePTM('unknownMassShiftList');
-    let precursorMass: number | null = parsePrecursorMass("precursorMass");
-    if (peakAndIntensityList !== null && massAndIntensityList !== null) {
-        setDataToPeakAndIntensity(peakAndIntensityList);
-        setDataToMassAndIntensity(massAndIntensityList);
-    }
-    if (sequence) {
-        setDataToSequence(sequence, unknownMassShiftList, protVarPtmsList, variablePtmsList);
-    }    
-    if (l_fixedPtmList) {
-        setFixedMasses(l_fixedPtmList);
-    }
-    /*if(protVarPtmsList || variablePtmsList) {//not distinguishing variable PTM from unknown mass shifts
-        setVariablePTMList(protVarPtmsList, variablePtmsList);
-    }*/
     setPrecursorMass(100);
-    
-    if (precursorMass) {
-        setPrecursorMass(precursorMass);
+    // Opened from a PrSM page (?folder=&prsm_id=[&spec_id=]): load that PrSM's
+    // spectrum and sequence data into the inputs. Otherwise the page starts
+    // empty with the default b/y ions.
+    let params = new URLSearchParams(window.location.search);
+    let folder: string | null = params.get("folder");
+    let prsmId: string | null = params.get("prsm_id");
+    if (folder && prsmId) {
+        loadPrsmForInspect(folder, prsmId, params.get("spec_id"));
     }
-    // if(peakAndIntensityList !== null && massAndIntensityList !== null
-    // 	&& sequence !== null && precursorMass !== null)
-    // {	
-    // 	setDataToPeakAndIntensity(peakAndIntensityList);
-    // 	setDataToMassAndIntensity(massAndIntensityList);
-    // 	setDataToSequence(sequence, unknownMassShiftList);
-    //     setFixedMasses(l_fixedPtmList);
-    // 	setPrecursorMass(precursorMass);
-    // }
-    //set the checkbox based on the ion type used in the data, which is stored in local storage
-    let ionType: string | null = getIonType();
-
-    setIonCheckbox(ionType);
+    else {
+        setIonCheckbox(null);
+    }
     
     let massErrorthVal: number = 0.1;
     let ppmErrorthVal: number = 15;

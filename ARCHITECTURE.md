@@ -84,7 +84,14 @@ peaks. Two behaviors of the shared drawing library matter here:
 `/d/<dataset>/topmsv/inspect/spectrum.html` is a standalone calculator:
 the user pastes a raw peak list (m/z, intensity), a deconvoluted mass list
 (mass, intensity, charge; extra columns are ignored) and a protein sequence,
-picks ion types and an error tolerance, and presses Submit. Everything runs
+picks ion types and an error tolerance, and presses Submit. Opened as
+`spectrum.html?folder=<data_js folder>&prsm_id=<id>[&spec_id=<ms2 id>]`
+(the PrSM page's Inspect dropdown links there, one item per scan) it fills
+those inputs itself: `models/loadPrsm.ts` loads the PrSM json through the
+same `ParsePrsm` the PrSM page uses and `src/common/prsm/inspect_data.ts`
+derives the lists, sequence, PTMs and precursor mass from it. Nothing is
+passed between the pages any more (the old localStorage hand-off is gone),
+so an inspection URL can be reloaded or bookmarked. Everything runs
 in the browser (`src/viewer/inspect/js/`): `SeqOfExecution` in
 `controllers/seqofexecution.ts` parses the inputs, matches the mass list
 against the theoretical fragment masses (`models/calcMatchedPeaks.ts`),

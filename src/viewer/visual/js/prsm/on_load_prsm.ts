@@ -52,10 +52,8 @@ $(document).ready(function () {
                 scanIds.push(spectra.getScanNum());
                 specIds.push(spectra.getSpectrumId());
             });
-            // Add Buttong with dropdowns with Scan numbers to navigae to inspect page
-            setDropDownItemsForInspectButton(scanIds, specIds);
-            // Add all the data and set local storage variables
-            onClickToInspect(prsmObj);
+            // Add Button with dropdowns with Scan numbers linking to the inspect page
+            setDropDownItemsForInspectButton(scanIds, specIds, folder_path, prsm_seq_num);
             // Using spectrum graph library
             // Get Ms1 Id to draw MS1 Spectrum
             loadMsOne(prsmObj.getMs1Spectra(), "ms1_svg");

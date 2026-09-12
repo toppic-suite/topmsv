@@ -33,7 +33,3 @@ function setIonCheckbox(ionType: string | null): void {
 		}
 	})
 }
-
-const getIonType = (): string | null => {
-	return window.localStorage.getItem('ionType');
-}
