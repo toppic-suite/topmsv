@@ -81,8 +81,10 @@ export class Ms1Graph {
   isIntensityAbsolute = true;    // color by the converter's class, else by relative intensity
   autoScaleIntensity = true;
   isPan = false;                 // skip auto intensity scaling for a pan
-  intSquish = 1;
-  manualIntScale = 1;            // ctrl + wheel factor, kept across redraws until Reset
+  intSquish = 1;                 // auto-adjusted scale of the current window (calcIntScale)
+  customizedScaleFactor = 1;     // ctrl + wheel factor applied on top of it; Reset restores 1
+  // peak height = intensity x default scale (plotGroup.scale.y = maxPeakHeight / data intmax)
+  //             x auto-adjusted scale x customizedScaleFactor (both in dataGroup.scale.y)
 
   private onData?: GraphOptions['onData'];
 
@@ -379,10 +381,10 @@ export class Ms1Graph {
     return intScale;
   }
 
-  /** ctrl + wheel: scale the peak heights by `factor`; remembered until Reset. */
+  /** ctrl + wheel: multiply the customized scale factor; it stays until Reset. */
   scaleIntensity(factor: number): void {
-    this.manualIntScale *= factor;
-    this.plotGroup.scale.set(this.plotGroup.scale.x, this.plotGroup.scale.y * factor, this.plotGroup.scale.z);
+    this.customizedScaleFactor *= factor;
+    this.dataGroup.scale.set(this.dataGroup.scale.x, this.intSquish * this.customizedScaleFactor, this.dataGroup.scale.z);
     if (factor > 1) this.adjustIntensity();
     this.render();
   }
@@ -497,10 +499,10 @@ export class Ms1Graph {
     const g = Ms1Graph.gridRange;
     const mzSquish = g / (r.mzmax - r.mzmin);
     const rtSquish = -g / (r.rtmax - r.rtmin);
-    const intSquish = this.calcIntScale();
+    const intSquish = this.calcIntScale();   // auto-adjusted for the peaks in the window
     this.intSquish = intSquish;
     this.isPan = false;
-    this.dataGroup.scale.set(mzSquish, intSquish, rtSquish);
+    this.dataGroup.scale.set(mzSquish, intSquish * this.customizedScaleFactor, rtSquish);
     this.dataGroup.position.set(-r.mzmin * mzSquish, 0, g - r.rtmin * rtSquish);
     this.markerGroup.scale.set(1, 1, rtSquish);
     this.markerGroup.position.set(0, 0, g - r.rtmin * rtSquish);
@@ -539,8 +541,8 @@ export class Ms1Graph {
 
   /** Place the 3D peak lines for the current data (strongest peaks first). */
   updatePeaks(data: PeakRow[]): void {
-    // default scale times the remembered ctrl + wheel factor
-    this.plotGroup.scale.set(this.plotGroup.scale.x, (Ms1Graph.maxPeakHeight / this.dataRange.intmax) * this.manualIntScale, this.plotGroup.scale.z);
+    // the plot group always carries the default scale
+    this.plotGroup.scale.set(this.plotGroup.scale.x, Ms1Graph.maxPeakHeight / this.dataRange.intmax, this.plotGroup.scale.z);
     const intScale = this.calcIntScale();
     const min = data.length ? data[data.length - 1].intensity : 0;
     const max = data.length ? data[0].intensity : 0;
@@ -555,8 +557,8 @@ export class Ms1Graph {
       let y = point.intensity;
       let lowPeak = false;
       // boost peaks that would be shorter than minPeakHeight world units
-      // (the y scale of the plot and data groups turns intensity into height)
-      const yScale = this.plotGroup.scale.y * intScale;
+      // (default scale x auto-adjusted scale x customized factor turns intensity into height)
+      const yScale = this.plotGroup.scale.y * intScale * this.customizedScaleFactor;
       if (y * yScale < Ms1Graph.minPeakHeight) {
         y = Ms1Graph.minPeakHeight / yScale;
         lowPeak = true;
