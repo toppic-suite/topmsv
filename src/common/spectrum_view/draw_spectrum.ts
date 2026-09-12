@@ -1,7 +1,8 @@
-//shared drawing functions of the spectrum view (axes, ticks, labels,
-//peaks, envelopes, ions, sequence ladder, error plot). Functions whose
-//behavior differs between the TopMSV viewer and the spectra browser live
-//in src/common/toppic_view/ and src/common/topfd_view/ instead.
+//drawing functions of the spectrum view (axes, ticks, labels, peaks,
+//envelopes, ions, sequence ladder, error plot, base-intensity lines).
+//Hover info goes to a floating tooltip, or to the element named by
+//para.getAnnoElementId() when a page sets one; envelope circles are thinned
+//by display level when para.getThinEnvelopes() is on.
 
 
 /**
@@ -663,4 +664,242 @@ function drawErrorPoints(svg: any, para: SpectrumViewParameters,
 function updateViewBox(svgId: string, width: number, height: number) {
   let svg = d3.select("body").select("#"+svgId);
   svg.attr("viewBox", "0 0 "+ width +" "+ height);
+}
+
+/**
+ * @function onMouseOut
+ * @description Remove the floating tooltips and clear every hover-annotation element
+ */
+function onMouseOut(){
+  d3.selectAll("#MyTextMZIN").remove();
+  d3.selectAll("#MyTextMassCharge").remove();
+  d3.selectAll("#MyTextFragmentMass").remove();
+  SpectrumViewParameters.annoElementIds.forEach(function (annoId: string) {
+    let selText = document.getElementById(annoId);
+    if (selText) {
+      selText.textContent = "";
+    }
+  });
+}
+
+/**
+ * @function showHoverInfo
+ * @description Show hover text either in the page's annotation element
+ * (lines joined by two spaces) or as a floating tooltip next to the cursor
+ * (one line per item)
+ * @param {string} tooltipId - id of the floating tooltip div
+ * @param {string[]} lines - the items to show
+ */
+function showHoverInfo(tooltipId: string, event: any, lines: string[], para: SpectrumViewParameters) {
+  let annoId: string | null = para.getAnnoElementId();
+  if (annoId) {
+    let selText = document.getElementById(annoId);
+    if (selText) {
+      selText.textContent = lines.join("  ");
+    }
+    return;
+  }
+  var div = d3.select("body").append("div")
+    .attr("id", tooltipId)
+    .attr("class", "tooltip")
+  div.transition().duration(30)
+    .style("opacity", 2);
+  div.html(lines.join("<br>")).style("left", (event.pageX + 12)  + "px")
+    .style("top", (event.pageY - 28)+ "px")
+    .style("fill", "black");
+}
+
+/**
+ * @function onMouseOverPeak
+ * @description Show the m/z (or mass) and intensity of a hovered peak
+ * @param {Node} this_element - the hovered peak line
+ */
+function onMouseOverPeak(this_element: any, event: any, peak: Peak, para: SpectrumViewParameters) {
+  let intensity: string = " inte:"+ peak.getIntensity().toFixed(3);
+  let pos: string = peak.getPos().toFixed(3);
+  if (para.getIsMonoMassGraph()) {
+    pos = "mass:" + pos;
+  }
+  else {
+    pos = "m/z:"+ pos;
+  }
+  d3.select(this_element).style("stroke","red")
+    .style("stroke-width","2");
+  showHoverInfo("MyTextMZIN", event, [pos, intensity], para);
+}
+
+/**
+ * @function onMouseOverCircle
+ * @description Show the m/z, intensity, envelope mass and charge of a hovered envelope circle
+ * @param {Node} this_element - the hovered circle
+ */
+function onMouseOverCircle(this_element: any, event: any, envelope: Envelope, peak: Peak, para: SpectrumViewParameters) {
+  let mz: string = "m/z:"+peak.getPos().toFixed(3);
+  let inte: string = "inte:"+peak.getIntensity().toFixed(2);
+  let mass: string = "mass:"+envelope.getMonoMass().toFixed(3);
+  let charge: string = "charge:"+ envelope.getCharge() ;
+  showHoverInfo("MyTextMassCharge", event, [mz, inte, mass, charge], para);
+}
+
+/**
+ * @function onCircleClick
+ * @description Announce a click on an envelope circle as an "envelopeclick"
+ * CustomEvent on the enclosing <svg>, with the envelope and peak in `detail`.
+ * A page owning the graph may listen for it (the raw-spectra browser
+ * highlights the envelope's row in its mass list); the drawing code itself
+ * stays independent of any page layout.
+ * @param {Node} this_element - the clicked circle
+ * @param {MouseEvent} event - the click event (stopped so the zoom/drag
+ * behavior on the svg does not also react)
+ */
+function onCircleClick(this_element: SVGCircleElement, envelope: Envelope, peak: Peak, event: MouseEvent) {
+  event.stopPropagation();
+  let svg: SVGSVGElement | null = this_element.ownerSVGElement;
+  if (svg) {
+    svg.dispatchEvent(new CustomEvent("envelopeclick", {
+      bubbles: true,
+      detail: { envelope: envelope, peak: peak }
+    }));
+  }
+}
+
+/**
+ * @function drawPeaks
+ * @description Function to draw peak lines on the graph
+ * @param {Node} svg -  is a html node on which the graph is being ploted
+ * @param {object} para - Contains the parameters like height, width etc.,. tht helps to draw the graph
+ * @param {Array} peakList - peaks to draw
+ */
+function drawPeaks(svg: any, para: SpectrumViewParameters, peakList: Peak[]){
+  let peaks = svg.append("g")
+    .attr("id", "peaks");
+  var len: number = peakList.length;
+  // limits provide current count of number of peaks drawn on graph per bin(range) 
+  // so that we can limit tha peak count to peaksPerRange count
+  let ratio: number = (para.getWinMaxMz() - para.getWinMinMz()) / (para.getDataMaxMz() - para.getDataMinMz());
+  ratio = Math.min(1, ratio);
+  let spectrumData = new SpectrumFunction();
+
+  for(let i =0;i<len;i++)
+  {
+    let peak: Peak = peakList[i];
+
+    if(peak.getPos() >= para.getWinMinMz() && peak.getPos()  < para.getWinMaxMz())
+    {
+      if (peak.getDisplayLevel() / (spectrumData.getMzLevel().length - 3)>= ratio || ratio <= 0.2){
+        peaks.append("line")
+        .attr("x1",function(){
+          return para.getPeakXPos(peak.getPos() );
+        })
+        .attr("y1",function(){
+          let y = para.getPeakYPos(peak.getIntensity());
+          if(y<=para.getPadding().head) return para.getPadding().head ;
+          else return y ;
+        })
+        .attr("x2",function(){
+          return para.getPeakXPos(peak.getPos());
+        })
+        .attr("y2",para.getSVGHeight() - para.getPadding().bottom )
+        .attr("stroke","black")
+        .attr("stroke-width","2")
+        .on("mouseover",function(event: any){
+          //@ts-ignore - allow using this to pass interacted html node
+          onMouseOverPeak(this, event, peak, para);
+        })
+        .on("mouseout",function(){
+          //@ts-ignore
+          onPeakMouseOut(this);
+        });
+      }
+    }
+  }
+}
+
+/**
+ * @function drawEnvelopes
+ * @description Function to add circles for the envelope data
+ * @param {Node} svg -  is a html node on which the graph is being ploted
+ * @param {object} para - Contains the parameters like height, width etc.,. tht helps to draw the graph
+ * @param {Array} envList - envelopes to draw
+ */
+function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[]) {
+  let circles = svg.append("g").attr("id", "circles");
+  let minPercentage: number = 0.0;
+  let maxIntensity: number = para.getDataMaxInte();
+  let spectrumData = new SpectrumFunction();
+  // limits provide current count of number of peaks drawn on graph per bin(range)
+  // so that we can limit tha peak count to circlesPerRange count
+  let ratio = (para.getWinMaxMz() - para.getWinMinMz()) / (para.getDataMaxMz() - para.getDataMinMz());
+  ratio = Math.min(1, ratio);
+
+  envList.forEach(env => {
+    let peaks = env.getPeaks(); 
+    let color = env.getDisplayColor();
+    
+    if(peaks[0].getPos() >= para.getWinMinMz() && peaks[0].getPos() < para.getWinMaxMz()) 
+    { 
+      //display envelopes based on level, but when the ratio falls below threshold, show all envs in the range
+      let shown: boolean = !para.getThinEnvelopes()
+        || env.getDisplayLevel() / (spectrumData.getMzLevel().length - 3) >= ratio || ratio <= 0.2;
+      if (shown){
+        peaks.forEach(peak => {
+          let percentInte = peak.getIntensity()/maxIntensity * 100 ;
+          if (percentInte >= minPercentage){//Show only envelopes with minimum of 0.5%
+            circles.append("circle")
+            .attr("id","circles")
+            .attr("cx",function(){
+              return para.getPeakXPos(peak.getPos());
+            })
+            .attr("cy",function(){
+              let cy = para.getPeakYPos(peak.getIntensity());
+              if(cy < para.getPadding().head) return para.getPadding().head;
+              else return cy ;
+            })
+            .attr("r",function(){
+              return para.getCircleSize();
+            })
+            .style("fill","white")
+            .style("opacity", "0.8")
+            .style("stroke",color)
+            .style("stroke-width","2")
+            .style("cursor","pointer")
+            .on("mouseover",function(event: any){
+              //@ts-ignore
+              onMouseOverCircle(this, event, env, peak, para);
+            })
+            .on("mouseout",function(){
+              //@ts-ignore
+              onCircleMouseOut(this);
+            })
+            .on("click",function(event: MouseEvent){
+              //@ts-ignore
+              onCircleClick(this, env, peak, event);
+            });
+          }
+        })
+      }
+    }
+  })
+}
+
+/**
+ * @function drawBaseInte
+ * @description Horizontal reference line at an intensity (base intensity /
+ * minimum reference intensity of a raw spectrum)
+ */
+function drawBaseInte(svgId: string, para: SpectrumViewParameters, baseInte: number) {
+  let svg = d3.select("body").select("#"+svgId).select("#svgGroup");
+  let y = para.getPeakYPos(baseInte);
+  if (y > para.getPadding().head) {
+    svg.append("g").attr("id", "baseInte").append("line")
+      .attr("x1", para.getPadding().left)
+      .attr("y1", y)
+      .attr("x2", para.getSVGWidth() + para.getPadding().left)
+      .attr("y2", y)
+      .attr("stroke", "red")
+      .attr("stroke-width", "2")
+      // a reference line drawn above the circles: let clicks and hovers
+      // reach the circles/peaks underneath it
+      .style("pointer-events", "none")
+  }
 }

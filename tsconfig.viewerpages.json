@@ -1,9 +1,9 @@
 {
   // TopMSV viewer page scripts (src/viewer -> public/topmsv):
   // src/viewer/visual/js -> public/topmsv/visual/js, same for inspect/js.
-  // Typechecks against the viewer-flavor library globals via the .d.ts files
-  // tsconfig.viewer.json emits into types/viewer-lib (build order: viewer
-  // library pass first). Strictness is relaxed to match the upstream code.
+  // Typechecks against the shared library globals via the .d.ts files the
+  // root tsconfig emits into types/lib (build order: root pass first).
+  // Strictness is relaxed to match the upstream code.
   "compilerOptions": {
     "allowJs": true,
     "alwaysStrict": true,
@@ -14,8 +14,5 @@
     "rootDir": "./src/viewer",
     "outDir": "./public/topmsv"
   },
-  "include": ["./src/viewer/**/*", "./types/lib/**/*"],
-  // the merged types/lib holds both variant declaration sets;
-  // each page pass excludes the other app's variants
-  "exclude": ["./types/lib/topfd_view"]
+  "include": ["./src/viewer/**/*", "./types/lib/**/*"]
 }

@@ -71,7 +71,7 @@ peaks. Two behaviors of the shared drawing library matter here:
   with the same id (deconvoluted peak ids index the envelope list). The cell
   is blank when the ref mass is unknown (older sqlite files).
 - **Click-to-select** (`drawEnvelopes` in
-  `src/common/topfd_view/topfd_draw_spectrum.ts`): clicking a circle
+  `src/common/spectrum_view/draw_spectrum.ts`): clicking a circle
   dispatches an `envelopeclick` CustomEvent on the enclosing `<svg>` carrying
   the `Envelope` (which stores the TopFD `env_id`) and the clicked peak. The
   raw-spectra browser (`src/spectra/viewer.js`) listens on both spectrum svgs
@@ -139,9 +139,11 @@ src/server/vendor.ts         serves all browser libraries (spectra browser +
                              node_modules
 src/common/                  TopMSV visualization library, single source for
                              both apps (TypeScript, compiled to
-                             public/common/js/common, loaded as script-tag
-                             globals; <module>/viewer/ holds the viewer's
-                             variants of the five divergent files;
+                             public/common/js/common in one pass, loaded as
+                             script-tag globals; spectrum_view/ is the one
+                             spectrum-panel implementation every page uses,
+                             configured per page through
+                             SpectrumViewParameters options;
                              topmsv_nav_bar/ is the shared nav bar)
 src/spectra/                 raw-spectra browser page scripts (compiled to
                              public/common/js)
@@ -157,8 +159,8 @@ public/common/               shared CSS and images; public/common/js/ holds
                              all generated browser JS (gitignored)
 data/                        uploaded datasets (gitignored; override with
                              DATA_DIR)
-tsconfig*.json               the five build:client passes (spectra library,
-                             viewer library variants, spectra pages, viewer
-                             pages, home page) + tsconfig.server.json for
-                             npm run typecheck:server
+tsconfig*.json               the four build:client passes (shared library,
+                             spectra pages, viewer pages, home page) +
+                             tsconfig.server.json for npm run
+                             typecheck:server
 ```

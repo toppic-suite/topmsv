@@ -1,7 +1,7 @@
-//shared spectrum view: binds the SVG, zoom and drag, holds the peak /
-//envelope / ion data and draws the basic and mono-mass spectra. The TopMSV
-//viewer and the spectra browser derive their own SpectrumView from this
-//base.
+//spectrum view shared by every page: binds the SVG, zoom and drag, holds
+//the peak / envelope / ion data and draws the raw and mono-mass spectra.
+//Page-specific behavior is configured through SpectrumViewParameters
+//(hover annotation target, envelope thinning) and addBaseInte().
 /**
  * @function SpectrumView
  * @description Function draws the graph, binds zoom and drag function to the graph
@@ -10,7 +10,7 @@
  * @param {Array} peakData - contains peakList and envelope list 
  * @param {Array} ionData - Contains data with mass and ACID name to plot on the graph
  */
-class SpectrumViewBase {
+class SpectrumView {
   // parameters for zoom
   protected transformX_: number = 0;
   protected transformScale_: number = 1.0;
@@ -26,6 +26,10 @@ class SpectrumViewBase {
   protected nMassList_: TheoMass[] = []; 
   protected cMassList_: TheoMass[] = [];
   protected centerPos_: number = -1;//center m/z or mono mass of the current view
+  // base intensity / minimum reference intensity reference lines on raw
+  // spectra (raw-spectra browser); null = not drawn
+  protected baseInte_: number | null = null;
+  protected minRefInte_: number | null = null;
 
   constructor(svgId: string, peakList: Peak[], sequenceLength: number = -1) {
     this.id_ = svgId;
@@ -104,6 +108,11 @@ class SpectrumViewBase {
     this.ionList_ = ionList; 
   }
 
+  addBaseInte(baseInte: number, minRefInte: number): void {
+    this.baseInte_ = baseInte;
+    this.minRefInte_ = minRefInte;
+  }
+
   addMonoMassSpectrumAnno(ionList: MatchedIon[] | null, 
   proteoform: Proteoform, nIonType: string, cIonType: string): void{
     this.ionList_ = ionList; 
@@ -127,6 +136,12 @@ class SpectrumViewBase {
     }
     else {
       drawRawSpectrum(this.id_, this.para_, this.envList_);
+      if (this.baseInte_ !== null) {
+        drawBaseInte(this.id_, this.para_, this.baseInte_);
+      }
+      if (this.minRefInte_ !== null) {
+        drawBaseInte(this.id_, this.para_, this.minRefInte_);
+      }
     }
   }
 

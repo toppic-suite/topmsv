@@ -50,6 +50,15 @@ let cur_ms_two_ms1_id = -1;
 let ms_two_link_active = true;
 
 // Show an empty spectrum in the MS2 panel (empty axes, cleared header/table).
+// The MS1 / MS2 panels of this page show hover info in the panel header
+// (annoElementId) and draw every envelope in the window (no thinning);
+// the shared SpectrumView defaults to the TopMSV viewer's floating
+// tooltips and thinned envelopes.
+function configurePanelView(view, annoElementId) {
+  view.getPara().setAnnoElementId(annoElementId);
+  view.getPara().setThinEnvelopes(false);
+}
+
 function clearMsTwoPanel() {
   spec_data.setCurMsTwoId(-1);
   cur_ms_two_ms1_id = -1;
@@ -62,6 +71,7 @@ function clearMsTwoPanel() {
   query_ms_two_scan_input.value = "";
   mass2_table.clear().draw();
   let ms2_view = new SpectrumView("ms2_svg_graph", []);
+  configurePanelView(ms2_view, "curMsTwoAnnoText");
   ms2_view.addRawSpectrumAnno([], []);
   ms_two_graph = $("#ms2_svg_graph").data("graph");
   ms_two_graph.redraw();
@@ -161,6 +171,7 @@ async function updateMsOneById(cur_ms_one_id) {
     new SpectrumFunction().assignLevelPeaks(peak_obj_list);
     new SpectrumFunction().assignLevelEnvs(env_obj_list);
     let ms1_view = new SpectrumView("ms1_svg_graph", peak_obj_list);
+    configurePanelView(ms1_view, "curMsOneAnnoText");
     ms1_view.addRawSpectrumAnno(env_obj_list, []);
     ms1_view.addBaseInte(ms_one_spec_info.base_inte, ms_one_spec_info.min_ref_inte);
     ms_one_graph = $("#" + ms1_view.getSvgId()).data("graph");
@@ -357,6 +368,7 @@ async function updateMsTwoById(cur_ms_two_id) {
     new SpectrumFunction().assignLevelPeaks(peak_obj_list);
     new SpectrumFunction().assignLevelEnvs(env_obj_list);
     let ms2_view = new SpectrumView("ms2_svg_graph", peak_obj_list);
+    configurePanelView(ms2_view, "curMsTwoAnnoText");
     ms2_view.addRawSpectrumAnno(env_obj_list, []);
     ms_two_graph = $("#ms2_svg_graph").data("graph");
     ms_two_graph.redraw();

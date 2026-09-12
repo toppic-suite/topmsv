@@ -6,9 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm install
-npm run build:client        # 5 tsc passes: spectra lib (+.d.ts) -> js/common | viewer lib variants (tsconfig.viewer.json)
-                            # | spectra pages (tsconfig.spectra.json, src/spectra -> public/common/js) | viewer pages
-                            # (tsconfig.viewerpages.json, src/viewer -> public/topmsv/{visual,inspect}/js) | home page
+npm run build:client        # clean:client (drops types/lib + public/common/js/common) then 4 tsc passes:
+                            # shared lib (+.d.ts) -> js/common | spectra pages (tsconfig.spectra.json,
+                            # src/spectra -> public/common/js) | viewer pages (tsconfig.viewerpages.json,
+                            # src/viewer -> public/topmsv/{visual,inspect}/js) | home page
 npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
@@ -181,16 +182,17 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   v6+ listener signature (`.on("x", function(event, d))`, `d3.pointer`) —
   keep new d3 event handlers in that style.
 - `src/common/` is the single source for the shared visualization library
-  used by BOTH apps, compiled to `public/common/js/common` in two passes:
-  the root `tsconfig.json` (include `./src/common/*/*` — exactly one
-  directory level; deeper files are silently not compiled) builds the
-  spectra-browser set, and `tsconfig.viewer.json` builds the TopMSV viewer's
-  variants of the five deliberately-divergent files from
-  `src/common/{spectrum_view,prsm_view}/viewer/` into
-  `public/common/js/common/<module>/viewer/` (same global class names — safe only
-  because they compile as separate programs and no page loads both sets;
-  spectra versions do panel-header hover annotations + base-intensity lines,
-  viewer versions do floating tooltips). `allowJs` is on: the untyped
+  used by BOTH apps, compiled to `public/common/js/common` by the root
+  `tsconfig.json` in one pass (include `./src/common/*/*` — exactly one
+  directory level; deeper files are silently not compiled). Every page loads
+  the same `spectrum_view/` scripts; page differences are options on
+  `SpectrumViewParameters`: `setAnnoElementId(id)` routes hover text to an
+  element instead of the default floating tooltip, `setThinEnvelopes(false)`
+  draws every envelope in the window instead of thinning by display level
+  (the raw-spectra browser sets both per panel in `src/spectra/viewer.js`),
+  and `SpectrumView.addBaseInte()` adds the red base-intensity lines. The
+  `envelopeclick` CustomEvent is dispatched on every page; only the spectra
+  browser listens. `allowJs` is on: the untyped
   `parse_json/*.js` and `save_image/{save_image,util}.js` modules pass
   through to the output. `util/viewer_globals.d.ts` declares the page-script
   globals (SeqOfExecution etc.) that `draw_table.ts` and the viewer

@@ -6,7 +6,7 @@
  * the data
  */
 
- class SpectrumViewParametersBase {
+ class SpectrumViewParameters {
   // Ratio between average and monoisopotic mass
   protected avgToMonoRatio_: number = 1.000684;
 
@@ -101,6 +101,17 @@
   //for determining max m/z window based on seq length in mass graph
   protected seqLength_: number = -1; 
 
+  // ---- page options (defaults = TopMSV viewer behavior) ----
+  // Where hover info goes: null = a floating tooltip next to the cursor;
+  // an element id = that element's text (the raw-spectra browser shows it in
+  // each panel's header). Every id ever set is remembered so onMouseOut can
+  // clear all panels.
+  protected annoElementId_: string | null = null;
+  static annoElementIds: Set<string> = new Set<string>();
+  // Thin envelope circles by display level when zoomed out (the raw-spectra
+  // browser shows every envelope in the window instead).
+  protected thinEnvelopes_: boolean = true;
+
   constructor() {
   }
 
@@ -192,6 +203,25 @@
   }
   getIsXZoomAllowed(): boolean {
     return this.isXZoomAllowed_;
+  }
+  getAnnoElementId(): string | null {
+    return this.annoElementId_;
+  }
+  setAnnoElementId(id: string | null): void {
+    this.annoElementId_ = id;
+    if (id) {
+      SpectrumViewParameters.annoElementIds.add(id);
+    }
+  }
+  getThinEnvelopes(): boolean {
+    return this.thinEnvelopes_;
+  }
+  setThinEnvelopes(thin: boolean): void {
+    this.thinEnvelopes_ = thin;
+  }
+  // back to the full data range
+  resetScale(): void {
+    this.updateScale(this.dataMinMz_, this.dataMaxMz_, this.dataMaxInte_ * this.inteMargin_);
   }
   setSeqLength(seqLength: number): void{
     this.seqLength_ = seqLength; 
@@ -445,12 +475,15 @@
     this.xScale_ = this.xScale_ * ratio ; 
     this.winMinMz_ = this.winCenterMz_ - mouseSpecX / this.xScale_; 
     this.winMaxMz_ = this.winCenterMz_ + (this.specWidth_ - mouseSpecX) / this.xScale_;
-    //console.log(this.winMaxMz_, this.dataMaxMz_ + 500)
     if (this.winMinMz_ < this.minPossibleMz_){//prevent zooming out into negative mass
       this.winMinMz_ = this.minPossibleMz_;
     }
-    if (this.winMaxMz_ > this.dataMaxMz_ + this.maxPossibleMzMargin_){
+    if (this.winMaxMz_ > this.dataMaxMz_ + this.maxPossibleMzMargin_) {
       this.winMaxMz_ = this.dataMaxMz_ + this.maxPossibleMzMargin_;
+      // rescale so the clamped window still fills the plot width
+      if (this.winMaxMz_ > this.winMinMz_) {
+        this.xScale_ = this.specWidth_ / (this.winMaxMz_ - this.winMinMz_);
+      }
     }
     if (this.winCenterMz_ > this.winMaxMz_) {
       this.winMinMz_ = oriValues.min;

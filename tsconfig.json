@@ -1,4 +1,7 @@
 {
+  // Shared visualization library (src/common -> public/common/js/common),
+  // one program for both apps; also emits the .d.ts files the page-script
+  // passes typecheck against.
   "compilerOptions": {
     "allowJs": true,
     "alwaysStrict": true,
@@ -14,10 +17,5 @@
     "declaration": true,
     "declarationDir": "./types/lib"
   },
-  "include": ["./src/common/*/*"],
-  "exclude": [
-    // TopMSV-viewer-only variants (compiled by tsconfig.viewer.json); their
-    // class names collide with the spectra-browser versions in topfd_view/.
-    "./src/common/toppic_view"
-  ]
+  "include": ["./src/common/*/*"]
 }
