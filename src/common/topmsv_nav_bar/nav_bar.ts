@@ -28,7 +28,7 @@ const drawNavBar = function(): void {
         { href: dsRoot + "topmsv/visual/ms.html?data=toppic_prsm_cutoff", text: "Spectrum Identifications", identification: true },
         { href: dsRoot + "topmsv/inspect/spectrum.html", text: "Visual Inspection" },
         { href: dsRoot + "spectra/spectra.html", text: "Spectra" },
-        { href: dsRoot + "ms1_3d/ms1_3d.html", text: "MS1 3D View", threeD: true },
+        { href: dsRoot + "ms1_3d/ms1_3d.html", text: "MS1 3D", threeD: true },
       ];
       navCode += '<ul class="topmsv-nav-links">';
       items.forEach((item) => {
