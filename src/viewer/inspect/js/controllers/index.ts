@@ -15,8 +15,19 @@ const onLoadOfHTML = function (): void {
     let params = new URLSearchParams(window.location.search);
     let folder: string | null = params.get("folder");
     let prsmId: string | null = params.get("prsm_id");
-    if (folder && prsmId) {
-        loadPrsmForInspect(folder, prsmId, params.get("spec_id"));
+    let specId: string | null = params.get("spec_id");
+    bindLoadByIdForm(folder);
+    let loadType: HTMLSelectElement | null = <HTMLSelectElement>document.getElementById("load_type");
+    let loadId: HTMLInputElement | null = <HTMLInputElement>document.getElementById("load_id");
+    if (prsmId) {
+        if (loadType && loadId) { loadType.value = "prsm"; loadId.value = prsmId; }
+        loadPrsmForInspect(folder ? folder : DEFAULT_INSPECT_FOLDER, prsmId, specId);
+    }
+    else if (specId) {
+        // a bare MS2 spectrum: peaks, masses and ion types only
+        if (loadType && loadId) { loadType.value = "spectrum"; loadId.value = specId; }
+        setIonCheckbox(null);
+        loadSpectrumForInspect(specId);
     }
     else {
         setIonCheckbox(null);

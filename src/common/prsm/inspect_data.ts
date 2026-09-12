@@ -14,6 +14,7 @@ interface InspectData {
   variablePtmsList: MassShift[];
   unknownMassShiftList: MassShift[];
   precursorMass: string;
+  scan: string;                     // scan number of the inspected spectrum
 }
 
 /**
@@ -142,5 +143,6 @@ function extractInspectData(prsmObj: Prsm, specId: string | null): InspectData |
     variablePtmsList: varPtmFiltered,
     unknownMassShiftList: unknownMassShiftList,
     precursorMass: precursorMass,
+    scan: currentSpec.getScanNum(),
   };
 }

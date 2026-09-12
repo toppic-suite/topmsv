@@ -105,6 +105,22 @@
   <div id="nav-bar"></div>
   <div class="container bodycontainer">
 	<div class="flex-rectangle">
+		<div class="row mb-2" id="load_by_id">
+			<div class="col-auto"><h5 class="mb-0">Load from this dataset</h5></div>
+			<div class="col-auto">
+				<select id="load_type" class="form-select form-select-sm">
+					<option value="prsm">PrSM ID</option>
+					<option value="spectrum">Spectrum ID</option>
+				</select>
+			</div>
+			<div class="col-auto">
+				<input id="load_id" type="number" min="0" step="1" class="form-control form-control-sm" placeholder="ID" style="width:7em">
+			</div>
+			<div class="col-auto">
+				<button id="load_btn" type="button" class="btn btn-primary btn-sm">Load</button>
+			</div>
+			<div class="col-auto"><span id="load_status" class="form-text"></span></div>
+		</div>
 		<div class="row">
 			<div class="col-md-4 col-lg-4">
 				<!--<h5>Peaks <img src="images/info.png" id="peakintensityinfo"
