@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm install
-npm run build:client        # clean:client (drops types/lib + public/common/js/common) then 4 tsc passes:
+npm run build:client        # clean:client (drops types/lib + every generated js dir) then 4 tsc passes:
                             # shared lib (+.d.ts) -> js/common | spectra pages (tsconfig.spectra.json,
                             # src/spectra -> public/common/js) | viewer pages (tsconfig.viewerpages.json,
                             # src/viewer -> public/topmsv/{visual,inspect}/js) | home page
@@ -160,9 +160,11 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   tsconfig.spectra.json) are the raw-spectra browser (from the reference
   Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on
-  load. `src/spectra` mixes `.ts` and plain `.js` (allowJs passthrough for
-  the files that never had TS sources); `globals.d.ts` declares `$.trim`,
-  which current @types/jquery dropped.
+  load. `src/spectra` is plain `.js` (allowJs passthrough): `viewer.js`
+  (panels), `api.js`, `views/massTableView.js`, `models/spectrumData.js`.
+  It has no sequence-matching code of its own: the MS2 panel's Inspect
+  button opens `topmsv/inspect/spectrum.html?spec_id=<id>`, which loads the
+  spectrum itself.
 - ALL browser libraries (spectra.html and the topmsv viewer) are served
   under `/vendor/*` **straight from node_modules** by `src/server/vendor.ts`
   (a URL-prefix -> node_modules-dir table; nothing is copied under `public/`);

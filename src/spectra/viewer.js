@@ -28,6 +28,7 @@ const ms_two_prev_btn = document.getElementById('msTwoPrevBtn')
 const ms_two_next_btn = document.getElementById('msTwoNextBtn')
 const ms_two_go_btn = document.getElementById('msTwoGoBtn')
 const ms_two_reset_btn = document.getElementById('msTwoResetBtn')
+const ms_two_inspect_btn = document.getElementById('msTwoInspectBtn')
 let ms_two_total_scan_num_text = document.getElementById('msTwoTotalScanNumText')
 let cur_ms_two_order_text = document.getElementById('curMsTwoOrderText')
 let cur_ms_two_scan_text = document.getElementById('curMsTwoScanText')
@@ -463,6 +464,14 @@ ms_two_reset_btn.addEventListener('click', async () => {
     ms_two_graph.getPara().resetScale();
     ms_two_graph.redraw();
   }
+})
+
+// Sequence matching lives in the shared visual inspection page: open it on
+// the current MS2 spectrum (it loads the peaks, masses and ion types itself).
+ms_two_inspect_btn.addEventListener('click', () => {
+  let id = spec_data.getCurMsTwoId();
+  if (id < 0) return;
+  window.open('../topmsv/inspect/spectrum.html?spec_id=' + id, '_blank');
 })
 
 // Make the MS1 and MS2 panels draggable by their header. Resizing is handled

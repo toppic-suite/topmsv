@@ -19,26 +19,9 @@
 <!-- for d3 visualization -->
 <script src="../vendor/d3/d3.js"></script>
 <!-- Views -->
-<script src="../common/js/views/errorView.js"></script>
-<script src="../common/js/views/fixedPtmView.js"></script>
-<script src="../common/js/views/infoView.js"></script>
-<script src="../common/js/views/ionCheckBoxView.js"></script>
-<script src="../common/js/views/ionTableView.js"></script>
-<script src="../common/js/views/massInteView.js"></script>
-<script src="../common/js/views/peakView.js"></script>
-<script src="../common/js/views/sequenceView.js"></script>
-<script src="../common/js/views/helperView.js"></script>
-<script src="../common/js/views/graphTabView.js"></script>
 <!-- Models -->
-<script src="../common/js/models/calcMatchedPeaks.js"></script>
 <script src="../common/js/models/spectrumData.js"></script>
-<script src="../common/js/models/parseData.js"></script>
 
-<script src="../common/js/common/prsm_view/add_shift.js"></script>
-<script src="../common/js/common/prsm_view/draw_prsm.js"></script>
-<script src="../common/js/common/prsm_view/prsm_data.js"></script>
-<script src="../common/js/common/prsm_view/prsm_view.js"></script>
-<script src="../common/js/common/prsm_view/prsm_para.js"></script>
 
 <script src="../common/js/common/proteoform/protein_constant.js"></script>
 
@@ -47,16 +30,10 @@
 <script src="../common/js/common/spectrum_view/spectrum_parameter.js"></script>
 <script src="../common/js/common/mass_spectrum/spectrumFunction.js"></script>
 
-<script src="../common/js/common/distribution_calc/amino_acid_distribution.js"></script>
-<script src="../common/js/common/distribution_calc/emass_and_distribution.js"></script>
-<script src="../common/js/common/distribution_calc/isotopes.js"></script>
-<script src="../common/js/common/distribution_calc/molecular_formulae.js"></script>
 
 <script src="../common/js/common/util/types.js"></script>
-<script src="../common/js/common/util/common_ptm_list.js"></script>
 <script src="../common/js/common/util/format_util.js"></script>
 <!--data classes-->
-<script src="../common/js/common/sequence/mod.js"></script>
 <script src="../common/js/common/mass_spectrum/peak.js"></script>
 <script src="../common/js/common/mass_spectrum/envelope.js"></script>
 <script src="../common/js/common/prsm/matchedPeakEnvelopePair.js"></script>
@@ -140,6 +117,7 @@
 						<button id="msTwoPrevBtn" class="btn btn-primary btn-sm">Prev</button>
 						<button id="msTwoNextBtn" class="btn btn-primary btn-sm">Next</button>
 						<button id="msTwoResetBtn" class="btn btn-primary btn-sm">Reset</button>
+						<button id="msTwoInspectBtn" class="btn btn-primary btn-sm" title="Open this MS2 spectrum in the visual inspection page">Inspect</button>
 					</span>
 				</span>
 			</div>
@@ -194,30 +172,6 @@
 			</div>
 		</div>
 	</div>
-	<div class="flex-rectangle" hidden>
-		<div class="row">
-			<div class="col-6">
-				<p>
-					<text>MS2 scan:&nbsp;</text>
-					<input type="text" size="10" id="MsTwoScan">
-					<button id="prevMsTwoBtn" class="btn btn-primary btn-sm">Prev</button>
-					<button id="nextMsTwoBtn" class="btn btn-primary btn-sm">Next</button>
-				</p>
-			</div>
-			<div class="col-6">
-				<p>
-					<text>Precursor mass:&nbsp;</text>
-					<input type="text" id="precursormass">
-				</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-12  d-flex justify-content-center">
-			<svg id="ms2_svg_div_graph_0" height="270" width="1000" style="background-color:white"></svg>
-			</div>
-		</div>
-	</div>    
-  
 	<!-- Help popup, styled to match the panels -->
 	<div id="helpPopupWin" class="app-modal-overlay" role="dialog" aria-modal="true">
 		<div class="app-modal">
@@ -236,9 +190,6 @@
 		</div>
 	</div>
 	<!-- Controller -->
-	<script src="../common/js/controllers/viewer_index.js"></script>
-	<script src="../common/js/controllers/viewer_seq_exec.js"></script>
-	<script src="../common/js/views/base.js"></script>
 	<script src="../common/js/views/massTableView.js"></script>
 	<script src="../common/js/api.js"></script>
 	<script src="../common/js/viewer.js"></script>

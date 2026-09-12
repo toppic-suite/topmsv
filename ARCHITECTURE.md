@@ -100,7 +100,9 @@ bare MS2 spectrum through the dataset JSON API
 (`../../api/ms2-info|ms2-peaks|ms2-envs/<id>`) into the peak list, mass
 list and ion types, leaving sequence, PTMs and precursor mass alone (the
 sqlite stores no MS2 precursor mass); `?spec_id=` or `?scan=` alone does
-the same. Every load updates the URL. Everything runs
+the same. Every load updates the URL. The raw-spectra browser has no
+sequence-matching code of its own: its MS2 panel's Inspect button opens
+this page with `?spec_id=` for the spectrum on display. Everything runs
 in the browser (`src/viewer/inspect/js/`): `SeqOfExecution` in
 `controllers/seqofexecution.ts` parses the inputs, matches the mass list
 against the theoretical fragment masses (`models/calcMatchedPeaks.ts`),
@@ -147,8 +149,9 @@ src/common/                  TopMSV visualization library, single source for
                              configured per page through
                              SpectrumViewParameters options;
                              topmsv_nav_bar/ is the shared nav bar)
-src/spectra/                 raw-spectra browser page scripts (compiled to
-                             public/common/js)
+src/spectra/                 raw-spectra browser page scripts (plain JS,
+                             copied to public/common/js): the MS1/MS2
+                             panels, mass lists and the dataset API client
 src/viewer/                  TopMSV viewer page scripts (compiled to
                              public/topmsv/{visual,inspect}/js)
 src/client/                  home page TypeScript (compiled to

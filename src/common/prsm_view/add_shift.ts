@@ -1,9 +1,8 @@
 //click-to-add a mass shift on a residue of a prsm sequence (PrsmView with
 //allowMod): keeps the click state, shows the PTM selection pop-up and, on
 //selection, applies the shift to the sequence input and re-runs the
-//matching through the page's SeqOfExecution / setDataToSequence (declared in
-//util/viewer_globals.d.ts; the inspect page and the raw-spectra browser both
-//define them).
+//matching through the inspect page's SeqOfExecution / setDataToSequence
+//(declared in util/viewer_globals.d.ts).
 class AddShift {
   static appliedPtm: number[] = [];//variable PTM applied to the sequence so far
   static unknownMassShift: {"pos": number, "mass": number}[] = [];
