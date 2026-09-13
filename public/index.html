@@ -16,11 +16,10 @@
     <section class="card">
       <h2>Upload a dataset</h2>
       <p class="hint">
-        Select the TopFD output sqlite file. The two TopPIC result XML files are
-        optional but must be uploaded together: without them the dataset offers
-        only the raw-spectra pages, with no protein or spectrum identifications.
-        The protein database (FASTA) is optional but recommended: without it,
-        protein sequences outside the identified proteoform regions cannot be shown.
+        Select the sqlite file written by TopFD and TopPIC. It holds the
+        deconvoluted spectra and, when TopPIC was run, the identifications and
+        the search database; newer TopFD versions also add the MS1 3D peak
+        tables. Pages whose data the file lacks are shown disabled.
       </p>
       <form id="uploadForm">
         <div class="formrow">
@@ -28,20 +27,8 @@
           <input type="text" id="nameInput" name="name" placeholder="(defaults to the sqlite file name)">
         </div>
         <div class="formrow">
-          <label for="sqliteInput">TopFD sqlite file <span class="req">*</span></label>
+          <label for="sqliteInput">TopFD / TopPIC sqlite file <span class="req">*</span></label>
           <input type="file" id="sqliteInput" name="sqlite" accept=".sqlite,.db" required>
-        </div>
-        <div class="formrow">
-          <label for="prsmInput">TopPIC PrSM XML (optional)</label>
-          <input type="file" id="prsmInput" name="prsmXml" accept=".xml">
-        </div>
-        <div class="formrow">
-          <label for="proteoformInput">TopPIC proteoform XML (optional)</label>
-          <input type="file" id="proteoformInput" name="proteoformXml" accept=".xml">
-        </div>
-        <div class="formrow">
-          <label for="fastaInput">Protein database (FASTA, optional)</label>
-          <input type="file" id="fastaInput" name="fasta" accept=".fasta,.fa,.txt">
         </div>
         <div class="formrow">
           <button type="submit" id="uploadBtn">Upload</button>

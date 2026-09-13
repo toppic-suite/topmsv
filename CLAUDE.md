@@ -14,7 +14,7 @@ npm run build:client        # clean:client (drops types/lib + every generated js
 npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
-npm run convert -- --sqlite f.sqlite --prsm p.xml --proteoform q.xml [--fasta db.fasta] --out outdir
+npm run convert -- --sqlite f.sqlite --out outdir
 ```
 
 ALL client JS is generated: `public/common/js/`, `public/topmsv/{visual,inspect}/js/`
@@ -29,15 +29,17 @@ validation loop below plus loading pages in a browser.
 ## What this app is
 
 A web tool for visualizing TopFD (spectral deconvolution) + TopPIC (database
-search) output. Users upload a TopFD `.sqlite`, optionally the TopPIC
-prsm/proteoform XMLs (as a pair; without them only the raw-spectra pages
-work, `meta.hasIdentifications` is false and every `data_js` request 404s),
-and optionally the search FASTA. Newer TopFD versions also write the MS1
-3D peak tables (multi-resolution CONFIG + PEAKS<n>) into the same sqlite;
-the upload detects them (`meta.has3d`) and enables the MS1 3D view, whose
-nav item is otherwise shown disabled. Nothing derived is stored on disk: a
-dataset directory holds only the uploaded inputs + `meta.json`; every data
-file the vendored TopMSV viewer consumes is generated on the fly.
+search) output. Users upload ONE sqlite file: TopFD writes the spectra
+(`ms{1,2}_*` tables) and, in newer versions, the MS1 3D peak tables
+(multi-resolution CONFIG + PEAKS<n>); TopPIC appends its identifications
+(`prsm`, `prsm_mass_shift`, `proteoform`, `prsm_protein_match`) and the
+search database (`fasta_seq`) to the same file. The upload inspects the
+tables (`meta.hasIdentifications`, `meta.hasFasta`, `meta.has3d`); a nav
+item whose data the file lacks is rendered disabled, and without
+identification tables every `data_js` request 404s. The old separate
+XML/FASTA uploads are not supported. Nothing derived is stored on disk: a
+dataset directory holds only `ms.sqlite` + `meta.json`; every data file the
+vendored TopMSV viewer consumes is generated on the fly.
 
 ### URL / data flow
 
@@ -70,10 +72,20 @@ Ported from toppic-suite (`src/visual/*`, `src/prsm/*`, `src/ms/*`; clone
 github.com/toppic-suite/toppic-suite if you need to consult the C++). The
 payload builders in `builder.ts` are shared by the dynamic endpoints and the
 `npm run convert` CLI (which writes static trees purely as the validation
-harness) — never let the two drift apart. Key invariants, validated
-byte-for-byte against a TopPIC-generated `_html` reference tree:
+harness) — never let the two drift apart. `toppicSqlite.ts` reads the
+identification tables TopPIC writes (`prsm_sql_writer.cpp`): the `prsm`
+table is the PrSM-level cutoff set in TSV column layout (`first_residue` /
+`last_residue` 1-based, `scans` space-separated, `e_value` as stored, no
+p-value), `prsm_mass_shift` holds every shift of those PrSMs with
+0-based region-local break points, mass, TopPIC alteration type name and
+annotation (PTM abbreviation, or the signed 4-decimal value of an
+unexpected shift), `proteoform` (one row per proteoform) defines the
+proteoform-level cutoff, and `fasta_seq` gives the full protein sequences.
+Protein ids are assigned by first appearance (the tables store names).
+Key invariants, validated byte-for-byte against a TopPIC-generated `_html`
+reference tree when the inputs were the XML files:
 
-- **Coordinates**: XML `mass_shift` break-point positions are proteoform-region-local
+- **Coordinates**: mass-shift break-point positions are proteoform-region-local
   (add `start_pos` for protein coordinates used in `data_js`).
 - **Residue/ion masses**: exact values from toppic-suite base data
   (`constants.ts`); Fixed + Protein-variable alterations fold into residue
@@ -85,9 +97,8 @@ byte-for-byte against a TopPIC-generated `_html` reference tree:
   `findPairs`/`increaseIJ` — NOT exhaustive matching; reproducing its
   skip behavior is what makes the matched sets identical.
 - **Values**: deconv masses rounded to 6 decimals, intensities to 2 (msalign
-  precision); e/p-values recomputed from `extreme_value` components
-  (`one_protein_probability * test_number * adjust_factor`), never taken from
-  the XML's rounded `e_value` element.
+  precision); the e-value is the sqlite's `e_value`, the p-value is unknown
+  (written as "N/A").
 - **Serialization** (builder.ts + format.ts): C++ formatting ports
   (`toString(double)` = sci-10dp when |v|<1 else fixed-10dp, 2-digit
   exponents; `evalueToString`; `fixedToString`), exact field order from the
@@ -97,9 +108,9 @@ byte-for-byte against a TopPIC-generated `_html` reference tree:
   **Booleans (`exist_n_ion`, `exist_c_ion`, `n_acetylation`) must be written
   as "0"/"1"** — the viewer compares them with `== 0` / `== 1`, and
   "true"/"false" silently breaks the matched-ion annotation in sequence views.
-- **proteoform_cutoff tree** = prsm-XML records filtered to clusters present in
-  the proteoform XML (TopPIC generates it from the full PrSM set, not from the
-  one-per-cluster proteoform file).
+- **proteoform_cutoff tree** = `prsm` rows filtered to the `proteoform_id`s
+  present in the `proteoform` table (TopPIC generates it from the full PrSM
+  set, not from the one-per-proteoform rows).
 
 Known, accepted divergences from TopPIC output: envelope pairs with near-tied
 EnvCNN scores can be numbered/ordered differently (msalign order isn't stored
@@ -111,23 +122,22 @@ only precursor-window envelopes — reviewed and accepted (a few extra circles
 in the precursor popup), do not "fix" it. Its envelopes also carry a
 `ref_mass` field (reference-isotope mass, present only when the sqlite
 `ms{1,2}_env` table has that column) that TopPIC's writer does not emit —
-the PrSM peak table's Ref m/z column is derived from it. Also: e/p-values and
-protein/proteoform cluster ids are **run statistics from the input XML** — a
-reference tree generated by a different TopPIC run/version will differ in
-them (and in the e-value-sorted orderings they drive) no matter what the
-converter does; only compare those against the XML that actually produced
-the reference.
+the PrSM peak table's Ref m/z column is derived from it. Also: e-values and
+proteoform ids are **run statistics from the TopPIC run** and protein ids
+are assigned by the reader — a reference tree generated by a different
+TopPIC run/version will differ in them (and in the e-value-sorted orderings
+they drive) no matter what the converter does; only compare those against
+the run that actually produced the reference.
 
 ### Validation loop (use it after touching the converter)
 
-`ref_data/` has the example inputs; the byte-level ground-truth `_html` tree
-was removed from the repo — obtain a TopPIC-generated `*_html` directory for
-the same run to re-run this.
+`test_data/st_1.sqlite` is the example input (gitignored); the byte-level
+ground-truth `_html` tree was removed from the repo — obtain a
+TopPIC-generated `*_html` directory for the same run to re-run this.
 
-1. Build a synthetic FASTA from the reference residue arrays (script pattern:
-   read `.../data_js/prsms/prsmN.js`, join `annotation.residue[].acid`).
-2. `npm run convert` against the inputs with that FASTA.
-3. `diff -rq` against the reference `data_js` trees, then a semantic
+1. `npm run convert -- --sqlite test_data/st_1.sqlite --out outdir`
+   (the search database comes from the sqlite's `fasta_seq` table).
+2. `diff -rq` against the reference `data_js` trees, then a semantic
    comparator that treats peak lists as value-sets with peak ids remapped
    (and, for a reference from a different TopPIC run, masks p/e-values and
    cluster/protein ids — see above).
@@ -217,6 +227,7 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
 
 ## Reference material (untracked, gitignored)
 
-`ref_data/` holds example inputs (st_1.sqlite 103MB + TopPIC XMLs) — upload
-these on the home page to try the tool. `sqlite3` CLI is not installed;
-inspect `.sqlite` files with `node:sqlite`.
+`test_data/st_1.sqlite` is the example input (TopFD spectra + MS1 3D
+tables + TopPIC identifications + fasta_seq) — upload it on the home page
+to try the tool. `sqlite3` CLI is not installed; inspect `.sqlite` files
+with `node:sqlite`.

@@ -12,20 +12,22 @@ for visualization using webpages with the following functions.
   ±1.00235 Da isotope variants for masses above 5000 Da).
 - recomputes p-values/e-values from the stored information of PrSMs
 
-A dataset directory holds the uploaded
-input files: the TopFD sqlite file (required), the TopPIC PrSM and proteoform
-XML files (optional, uploaded as a pair) and the search FASTA (optional). All
-data for visualization are generated dynamically from a per-dataset
-in-memory cache of the parsed and matched inputs, and the per-scan spectrum
-files come straight from the sqlite
-file.
+A dataset directory holds one uploaded sqlite file (`ms.sqlite`): TopFD's
+spectra and, in newer versions, the MS1 3D peak tables, plus the
+identification tables and search database TopPIC appends to the same file
+(`src/server/convert/toppicSqlite.ts` reads them). All data for
+visualization are generated dynamically from a per-dataset in-memory cache
+of the read and matched identifications, and the per-scan spectrum files
+come straight from the sqlite file.
 
-A dataset uploaded without the TopPIC XML files has no identification data:
-`meta.json` records `hasIdentifications: false`, every `data_js` request
-returns 404, the home page and the nav bar hide the identification links,
-and the identification pages show a "no identification data" message. The
-raw-spectra browser and the visual inspection page only need the sqlite
-file, so they work for every dataset.
+A sqlite without the TopPIC identification tables has no identification
+data: `meta.json` records `hasIdentifications: false`, every `data_js`
+request returns 404, the home page omits the identification link, the nav
+bar renders the identification items disabled, and the identification
+pages show a "no identification data" message. The raw-spectra browser and
+the visual inspection page only need the spectra, so they work for every
+dataset; the MS1 3D view needs the 3D peak tables (`has3d`) and its nav
+item is disabled otherwise.
 
 
 ## Pages
@@ -135,9 +137,10 @@ src/server/prsmSource.ts     per-dataset in-memory cache of parsed and
                              matched PrSM data; serves the data_js files
 src/server/spectrumJs.ts     per-scan topfd/ms{1,2}_json/spectrum<N>.js
                              generated straight from the sqlite file
-src/server/convert/          TopPIC XML + sqlite -> data_js converter
-                             (payload builders shared by the dynamic
-                             endpoints and the npm run convert CLI, cli.ts)
+src/server/convert/          sqlite (spectra + TopPIC identification
+                             tables) -> data_js converter (payload builders
+                             shared by the dynamic endpoints and the
+                             npm run convert CLI, cli.ts)
 src/server/vendor.ts         serves all browser libraries (spectra browser +
                              topmsv viewer) under /vendor/* straight from
                              node_modules

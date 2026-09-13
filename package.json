@@ -39,7 +39,6 @@
     "datatables.net": "^1.13.11",
     "datatables.net-dt": "^1.13.11",
     "express": "^4.19.2",
-    "fast-xml-parser": "^5.11.0",
     "file-saver": "^2.0.5",
     "jquery": "^3.7.1",
     "jquery-ui": "^1.14.2",

@@ -1,24 +1,23 @@
 // Dynamic generation of the data_js files (prsms.js, proteins.js and the
 // per-item prsm/protein/proteoform files). Nothing is materialized on disk:
-// on first request the dataset's inputs are parsed and every PrSM is matched
-// once (about a second for the example dataset); the assembled data is cached
-// per dataset (small LRU) and each file is serialized from it on demand.
+// on first request the identification tables of the dataset's sqlite are
+// read and every PrSM is matched once (about a second for the example
+// dataset); the assembled data is cached per dataset (small LRU) and each
+// file is serialized from it on demand.
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { parsePrsmXmlFile } from './convert/toppicXml';
-import { parseFasta } from './convert/fasta';
 import { MsDataDb } from './convert/msdata';
-import { assemblePrsmData } from './convert/convert';
+import { loadIdentifications } from './convert/convert';
 import {
   PrsmData, buildPrsmFilePayload, buildPrsmsIndexPayload, buildProteoformFilePayload,
   buildProteinFilePayload, buildProteinsIndexPayload, serializeDataJs,
 } from './convert/builder';
 import { DEFAULT_PARAMETERS } from './convert/constants';
-import { datasetDir } from './datasets';
+import { datasetDir, readMeta, MS_DB_FILE } from './datasets';
 
 export interface DatasetSource {
-  all: PrsmData[];                  // every PrSM of the prsm-level cutoff, in XML order
+  all: PrsmData[];                  // every PrSM of the prsm-level cutoff, in prsm_id order
   byId: Map<number, PrsmData>;
   passingClusters: Set<number>;     // clusters passing the proteoform-level cutoff
 }
@@ -27,10 +26,10 @@ const cache = new Map<string, DatasetSource>();
 const MAX_CACHED = 2;
 
 /**
- * Parse and assemble a dataset (cached). Returns null when the dataset does
- * not exist or was uploaded without the TopPIC XMLs (every data_js request
- * then 404s, which the viewer pages report as "no identification data");
- * throws when its input files are invalid.
+ * Read and assemble a dataset's identifications (cached). Returns null when
+ * the dataset does not exist or its sqlite has no identification tables
+ * (every data_js request then 404s, which the viewer pages report as "no
+ * identification data"); throws when the tables are invalid.
  */
 export function getDatasetSource(ds: string): DatasetSource | null {
   const cached = cache.get(ds);
@@ -41,27 +40,21 @@ export function getDatasetSource(ds: string): DatasetSource | null {
   }
   const dir = datasetDir(ds);
   if (!dir) return null;
-  const sqlitePath = path.join(dir, 'ms.sqlite');
-  const prsmXmlPath = path.join(dir, 'prsm.xml');
-  const proteoformXmlPath = path.join(dir, 'proteoform.xml');
-  if (!fs.existsSync(sqlitePath) || !fs.existsSync(prsmXmlPath) || !fs.existsSync(proteoformXmlPath)) {
-    return null;
-  }
-  const prsms = parsePrsmXmlFile(fs.readFileSync(prsmXmlPath, 'utf8'));
-  const proteoformPrsms = parsePrsmXmlFile(fs.readFileSync(proteoformXmlPath, 'utf8'));
-  const fastaPath = path.join(dir, 'db.fasta');
-  const fasta = fs.existsSync(fastaPath) ? parseFasta(fs.readFileSync(fastaPath, 'utf8')) : null;
+  const sqlitePath = path.join(dir, MS_DB_FILE);
+  if (!fs.existsSync(sqlitePath)) return null;
+  const fileName = readMeta(ds)?.name ?? ds;
   const db = new MsDataDb(sqlitePath);
-  let all: PrsmData[];
+  let loaded: { all: PrsmData[]; passingClusters: Set<number> } | null;
   try {
-    all = assemblePrsmData(prsms, db, fasta, DEFAULT_PARAMETERS);
+    loaded = loadIdentifications(db, fileName, DEFAULT_PARAMETERS);
   } finally {
     db.close();
   }
+  if (!loaded) return null;
   const source: DatasetSource = {
-    all,
-    byId: new Map(all.map((d) => [d.prsm.prsmId, d])),
-    passingClusters: new Set(proteoformPrsms.map((p) => p.proteoClusterId)),
+    all: loaded.all,
+    byId: new Map(loaded.all.map((d) => [d.prsm.prsmId, d])),
+    passingClusters: loaded.passingClusters,
   };
   cache.set(ds, source);
   if (cache.size > MAX_CACHED) {

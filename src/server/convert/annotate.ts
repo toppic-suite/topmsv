@@ -10,7 +10,7 @@
 import {
   AA_MASS, ISOTOPE_MASS, ION_TYPE_SHIFT, N_TERM_ION_TYPES, MatchingParameters,
 } from './constants';
-import { PrsmRec, MassShiftRec } from './toppicXml';
+import { PrsmRec, MassShiftRec } from './prsmRecord';
 
 export interface DeconvPeak {
   specId: number;

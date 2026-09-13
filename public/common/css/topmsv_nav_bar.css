@@ -61,7 +61,7 @@
 .topmsv-nav .navtab {
   color: #fff;
 }
-/* a page the dataset has no data for (MS1 3D without the 3D peak tables) */
+/* a page the dataset has no data for (identifications, MS1 3D) */
 .topmsv-nav .topmsv-nav-links .nav-link.disabled,
 .topmsv-nav .topmsv-nav-links .nav-link.disabled:hover {
   color: rgba(255, 255, 255, 0.35);

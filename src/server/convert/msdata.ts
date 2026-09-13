@@ -30,6 +30,11 @@ export class MsDataDb {
     this.db.close();
   }
 
+  /** The underlying handle (the identification tables live in the same file). */
+  raw(): DatabaseSync {
+    return this.db;
+  }
+
   getMs2Spectrum(specId: number): Ms2SpectrumRow | null {
     const row = this.db.prepare('SELECT * FROM ms2_spectrum WHERE id = ?').get(specId);
     return (row as unknown as Ms2SpectrumRow) ?? null;

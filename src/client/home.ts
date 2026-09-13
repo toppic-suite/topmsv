@@ -4,7 +4,7 @@ interface DatasetMeta {
   id: string;
   name: string;
   createdAt: string;
-  hasIdentifications: boolean;
+  hasIdentifications: boolean;   // the sqlite holds the TopPIC identification tables
   prsmCount: number;
   proteoformCount: number;
   proteinCount: number;
@@ -41,11 +41,11 @@ function renderDatasets(list: DatasetMeta[]): void {
     const ds = encodeURIComponent(d.id);
     let note = '';
     if (!d.hasIdentifications) {
-      note = ' <span class="hint" title="Uploaded without the TopPIC XML files">(spectra only)</span>';
+      note = ' <span class="hint" title="The sqlite file has no TopPIC identification tables">(spectra only)</span>';
     } else if (!d.hasFasta) {
-      note = ' <span class="hint" title="Uploaded without a FASTA database">(no FASTA)</span>';
+      note = ' <span class="hint" title="The sqlite file has no search database (fasta_seq)">(no database)</span>';
     }
-    // a dataset without the TopPIC XMLs has no identification pages
+    // a dataset without identification tables has no identification pages
     const count = (n: number) => (d.hasIdentifications ? String(n) : '&ndash;');
     const identLink = d.hasIdentifications
       ? `<a href="d/${ds}/topmsv/visual/proteins.html?data=toppic_proteoform_cutoff">Identifications</a>`

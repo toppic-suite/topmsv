@@ -49,24 +49,27 @@ const drawNavBar = function(): void {
     }
   };
 
-  // A dataset uploaded without the TopPIC XMLs has no identification pages:
-  // drop those links once the dataset's metadata says so; a sqlite without
-  // the MS1 3D peak tables keeps the MS1 3D item but disabled. (The links
+  // A sqlite without the TopPIC identification tables has no identification
+  // pages, one without the MS1 3D peak tables no 3D view: their nav items
+  // are rendered disabled once the dataset's metadata says so. (The links
   // are rendered first so the bar never flashes when the fetch is slow.)
+  const disable = function(container: HTMLElement, selector: string, title: string): void {
+    container.querySelectorAll(selector).forEach((el) => {
+      const link = el as HTMLAnchorElement;
+      link.classList.add("disabled");
+      link.removeAttribute("href");
+      link.title = title;
+    });
+  };
   const hideIdentificationLinks = function(container: HTMLElement, dsRoot: string): void {
     fetch(dsRoot + "api/meta")
       .then((res) => (res.ok ? res.json() : null))
       .then((meta: { hasIdentifications?: boolean, has3d?: boolean } | null) => {
         if (meta && meta.hasIdentifications === false) {
-          container.querySelectorAll("[data-identification]").forEach((el) => el.remove());
+          disable(container, "[data-identification] .nav-link", "This dataset's sqlite file has no TopPIC identification tables");
         }
         if (meta && meta.has3d !== true) {
-          container.querySelectorAll("[data-threed] .nav-link").forEach((el) => {
-            const link = el as HTMLAnchorElement;
-            link.classList.add("disabled");
-            link.removeAttribute("href");
-            link.title = "This dataset's sqlite file has no MS1 3D peak tables";
-          });
+          disable(container, "[data-threed] .nav-link", "This dataset's sqlite file has no MS1 3D peak tables");
         }
       })
       .catch(() => { /* keep the links */ });

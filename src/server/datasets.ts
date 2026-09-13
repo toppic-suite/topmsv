@@ -7,6 +7,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { DatabaseSync } from 'node:sqlite';
+import { dbHasIdentifications, dbHasFasta } from './convert/toppicSqlite';
 
 export const DATA_ROOT = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'));
 fs.mkdirSync(DATA_ROOT, { recursive: true });
@@ -15,13 +16,13 @@ export interface DatasetMeta {
   id: string;
   name: string;
   createdAt: string;
-  hasIdentifications: boolean;   // prsm.xml + proteoform.xml were uploaded
+  hasIdentifications: boolean;   // the sqlite holds the TopPIC identification tables
   prsmCount: number;
   proteoformCount: number;
   proteinCount: number;
   ms1Count: number;
   ms2Count: number;
-  hasFasta: boolean;
+  hasFasta: boolean;             // the sqlite holds the search database (fasta_seq)
   has3d: boolean;                // the sqlite also holds the MS1 3D peak tables (CONFIG + PEAKS<n>)
 }
 
@@ -79,6 +80,16 @@ export function deleteDataset(id: string): boolean {
   closeDb(id);
   fs.rmSync(dir, { recursive: true, force: true });
   return true;
+}
+
+/** What an uploaded sqlite holds besides the TopFD results. */
+export function inspectSqlite(sqlitePath: string): { hasIdentifications: boolean; hasFasta: boolean; has3d: boolean } {
+  const db = new DatabaseSync(sqlitePath, { readOnly: true });
+  try {
+    return { hasIdentifications: dbHasIdentifications(db), hasFasta: dbHasFasta(db), has3d: dbHas3dTables(db) };
+  } finally {
+    db.close();
+  }
 }
 
 /**

@@ -10,7 +10,7 @@ import {
   fixedToString, doubleToString, toScientificStr, evalueToString, boolToString, ionSortName,
 } from './format';
 import { PROTON_MASS, PRECISE_POINT_NUM, DECIMAL_POINT_NUM } from './constants';
-import { PrsmRec } from './toppicXml';
+import { PrsmRec } from './prsmRecord';
 import { ProteoformContext, SpectrumMatch, PeakIonPair } from './annotate';
 
 export interface SpectrumHeaderInfo {

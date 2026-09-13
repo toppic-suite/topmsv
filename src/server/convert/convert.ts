@@ -1,11 +1,13 @@
-// Dataset conversion driver: TopPIC prsm/proteoform XML + TopFD sqlite
-// (+ optional FASTA) -> the data_js file trees consumed by the TopMSV viewer.
+// Dataset conversion driver: the TopPIC sqlite (TopFD results +
+// identification tables + search database) -> the data_js file trees
+// consumed by the TopMSV viewer.
 
 import * as fs from 'fs';
 import * as path from 'path';
 import { PROTON_MASS, DEFAULT_PARAMETERS, MatchingParameters } from './constants';
-import { parsePrsmXmlFile, PrsmRec } from './toppicXml';
-import { parseFasta, resolveProteinSeq, FastaEntry } from './fasta';
+import { PrsmRec } from './prsmRecord';
+import { dbHasIdentifications, readPrsms, readPassingClusters, readFastaEntries } from './toppicSqlite';
+import { resolveProteinSeq, FastaEntry } from './fasta';
 import { buildProteoformContext, matchPrsm } from './annotate';
 import {
   PrsmData, SpectrumHeaderInfo, buildPrsmFilePayload, buildPrsmsIndexPayload,
@@ -111,11 +113,25 @@ export function generateDataJsTree(
   progress('wrote proteins.js');
 }
 
+/**
+ * Read and match every PrSM of an open sqlite. Returns null when the file
+ * has no identification tables.
+ */
+export function loadIdentifications(
+  db: MsDataDb,
+  fileName: string,
+  para: MatchingParameters,
+): { all: PrsmData[]; passingClusters: Set<number> } | null {
+  const raw = db.raw();
+  if (!dbHasIdentifications(raw)) return null;
+  const prsms = readPrsms(raw, fileName);
+  const fasta = readFastaEntries(raw, prsms.map((p) => p.seqName));
+  const all = assemblePrsmData(prsms, db, fasta.size > 0 ? fasta : null, para);
+  return { all, passingClusters: readPassingClusters(raw) };
+}
+
 export interface ConvertOptions {
   sqlitePath: string;
-  prsmXmlPath: string;
-  proteoformXmlPath: string;
-  fastaPath?: string | null;
   outDir: string; // dataset root; trees are written to <outDir>/<cutoff>/data_js
   parameters?: Partial<MatchingParameters>;
   onProgress?: (msg: string) => void;
@@ -126,19 +142,15 @@ export function convertDataset(opts: ConvertOptions): void {
   const progress = opts.onProgress ?? (() => undefined);
   const db = new MsDataDb(opts.sqlitePath);
   try {
-    const fasta = opts.fastaPath ? parseFasta(fs.readFileSync(opts.fastaPath, 'utf8')) : null;
-
-    progress(`parsing ${path.basename(opts.prsmXmlPath)}`);
-    const prsms = parsePrsmXmlFile(fs.readFileSync(opts.prsmXmlPath, 'utf8'));
-    progress(`matching ${prsms.length} PrSMs`);
-    const data = assemblePrsmData(prsms, db, fasta, para);
+    progress(`reading identifications from ${path.basename(opts.sqlitePath)}`);
+    const loaded = loadIdentifications(db, path.basename(opts.sqlitePath), para);
+    if (!loaded) throw new Error('the sqlite file has no identification tables (prsm, proteoform, prsm_mass_shift)');
+    const { all: data, passingClusters } = loaded;
+    progress(`matched ${data.length} PrSMs`);
     generateDataJsTree(data, path.join(opts.outDir, 'toppic_prsm_cutoff', 'data_js'), progress);
 
     // The proteoform-cutoff tree shows every PrSM whose proteoform passes the
-    // proteoform-level FDR cutoff; the proteoform XML defines that cluster set.
-    progress(`parsing ${path.basename(opts.proteoformXmlPath)}`);
-    const proteoformPrsms = parsePrsmXmlFile(fs.readFileSync(opts.proteoformXmlPath, 'utf8'));
-    const passingClusters = new Set(proteoformPrsms.map((p) => p.proteoClusterId));
+    // proteoform-level FDR cutoff; the proteoform table defines that cluster set.
     const proteoformData = data.filter((d) => passingClusters.has(d.prsm.proteoClusterId));
     progress(`proteoform cutoff keeps ${proteoformData.length} PrSMs in ${passingClusters.size} proteoforms`);
     generateDataJsTree(proteoformData,
