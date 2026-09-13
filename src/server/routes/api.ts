@@ -6,7 +6,7 @@ import * as path from 'path';
 import multer from 'multer';
 import {
   DATA_ROOT, datasetDir, listDatasets, readMeta, deleteDataset, sanitizeId,
-  ensureIndexes, prepare3dDb, countMeta, DatasetMeta, MS_DB_FILE, MS1_3D_DB_FILE,
+  ensureIndexes, has3dTables, countMeta, DatasetMeta, MS_DB_FILE,
 } from '../datasets';
 import { getDatasetSource, invalidatePrsmSource } from '../prsmSource';
 
@@ -39,7 +39,6 @@ const uploadFields = upload.fields([
   { name: 'prsmXml', maxCount: 1 },
   { name: 'proteoformXml', maxCount: 1 },
   { name: 'fasta', maxCount: 1 },
-  { name: 'ms1_3d', maxCount: 1 },
 ]);
 
 router.post('/datasets', uploadFields, (req, res) => {
@@ -54,7 +53,6 @@ router.post('/datasets', uploadFields, (req, res) => {
     const prsmFile = files?.prsmXml?.[0];
     const proteoformFile = files?.proteoformXml?.[0];
     const fastaFile = files?.fasta?.[0];
-    const ms1_3dFile = files?.ms1_3d?.[0];
     if (!sqliteFile) {
       cleanupTmp();
       res.status(400).json({ error: 'the TopFD sqlite file is required' });
@@ -77,11 +75,6 @@ router.post('/datasets', uploadFields, (req, res) => {
     if (prsmFile && proteoformFile && (!/\.xml$/i.test(prsmFile.originalname) || !/\.xml$/i.test(proteoformFile.originalname))) {
       cleanupTmp();
       res.status(400).json({ error: 'the TopPIC result files must be .xml files' });
-      return;
-    }
-    if (ms1_3dFile && !/\.(sqlite|db)$/i.test(ms1_3dFile.originalname)) {
-      cleanupTmp();
-      res.status(400).json({ error: 'the MS1 3D file must be a .sqlite/.db file' });
       return;
     }
 
@@ -110,11 +103,11 @@ router.post('/datasets', uploadFields, (req, res) => {
       move(proteoformFile, 'proteoform.xml');
     }
     if (fastaFile) move(fastaFile, 'db.fasta');
-    if (ms1_3dFile) move(ms1_3dFile, MS1_3D_DB_FILE);
 
     try {
       ensureIndexes(path.join(dir, MS_DB_FILE));
-      if (ms1_3dFile) prepare3dDb(path.join(dir, MS1_3D_DB_FILE));
+      // newer TopFD versions write the MS1 3D peak tables into the same file
+      const has3d = has3dTables(path.join(dir, MS_DB_FILE));
       // Parse, match and cache the identifications now: this validates the
       // uploaded XMLs (all data_js files are then served dynamically from
       // this cache). Without XMLs the dataset only offers the raw spectra.
@@ -133,7 +126,7 @@ router.post('/datasets', uploadFields, (req, res) => {
         ms1Count: counts.ms1Count,
         ms2Count: counts.ms2Count,
         hasFasta: !!fastaFile,
-        has3d: !!ms1_3dFile,
+        has3d,
       };
       fs.writeFileSync(path.join(dir, 'meta.json'), JSON.stringify(meta, null, 2));
       res.json(meta);

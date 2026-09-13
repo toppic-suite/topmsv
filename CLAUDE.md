@@ -32,9 +32,12 @@ A web tool for visualizing TopFD (spectral deconvolution) + TopPIC (database
 search) output. Users upload a TopFD `.sqlite`, optionally the TopPIC
 prsm/proteoform XMLs (as a pair; without them only the raw-spectra pages
 work, `meta.hasIdentifications` is false and every `data_js` request 404s),
-optionally the search FASTA, and optionally an MS1 3D peak database
-(`ms1_3d.db`, the multi-resolution CONFIG + PEAKS<n> sqlite the TopMSV
-server's mzML converter writes; `meta.has3d`) for the MS1 3D view. Nothing derived is stored on disk: a
+and optionally the search FASTA. Newer TopFD versions also write the MS1
+3D peak tables (multi-resolution CONFIG + PEAKS<n>) into the same sqlite;
+the upload detects them (`meta.has3d`) and enables the MS1 3D view, whose
+nav item is otherwise shown disabled. (`getDb3d` falls back to the
+separate `ms1_3d.db` of datasets uploaded when the 3D peaks were a
+second file.) Nothing derived is stored on disk: a
 dataset directory holds only the uploaded inputs + `meta.json`; every data
 file the vendored TopMSV viewer consumes is generated on the fly.
 
@@ -52,7 +55,7 @@ file the vendored TopMSV viewer consumes is generated on the fly.
                                       per-dataset LRU cache of fully assembled PrsmData)
 /d/<id>/topfd/ms{1,2}_json/spectrum<N>.js  generated ON THE FLY from sqlite (src/server/spectrumJs.ts)
 /d/<id>/spectra/spectra.html + /d/<id>/api/*  raw-spectra browser + its sqlite JSON API
-/d/<id>/ms1_3d/ms1_3d.html + /d/<id>/api/3d/*  MS1 3D view over the optional ms1_3d.db
+/d/<id>/ms1_3d/ms1_3d.html + /d/<id>/api/3d/*  MS1 3D view over the sqlite's 3D peak tables
                                       (config | peaks?level&minMz&maxMz&minRt&maxRt&maxPeaks&cutoff | scans)
 /vendor/* and /d/<id>/vendor/*        browser libraries served straight from
                                       node_modules (src/server/vendor.ts)
@@ -177,8 +180,8 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   pre-allocated line per peak, ticks as sprites, 2D top-down mode),
   `interaction.ts` pan/zoom/scan highlight, `data.ts` the `/api/3d/`
   client and the resolution-level choice, `page.ts` the controls.
-  RETENTIONTIME in ms1_3d.db is milliseconds; the API and the page use
-  minutes.
+  RETENTIONTIME in the 3D tables is milliseconds; the API and the page
+  use minutes.
 - ALL browser libraries (spectra.html and the topmsv viewer) are served
   under `/vendor/*` **straight from node_modules** by `src/server/vendor.ts`
   (a URL-prefix -> node_modules-dir table; nothing is copied under `public/`);

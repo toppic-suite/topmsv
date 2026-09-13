@@ -154,8 +154,8 @@ src/spectra/                 raw-spectra browser page scripts (plain JS,
                              panels, mass lists and the dataset API client
 src/ms1_3d/                  MS1 3D view (three.js, ES modules; compiled to
                              public/common/js/ms1_3d)
-public/ms1_3d/ms1_3d.html    MS1 3D view page (needs the dataset's
-                             optional ms1_3d.db)
+public/ms1_3d/ms1_3d.html    MS1 3D view page (needs the MS1 3D peak
+                             tables in the dataset's sqlite)
 src/viewer/                  TopMSV viewer page scripts (compiled to
                              public/topmsv/{visual,inspect}/js)
 src/client/                  home page TypeScript (compiled to

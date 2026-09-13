@@ -49,10 +49,10 @@ const drawNavBar = function(): void {
     }
   };
 
-  // A dataset uploaded without the TopPIC XMLs has no identification pages,
-  // one without the MS1 3D peak database has no 3D view: drop those links
-  // once the dataset's metadata says so (the links are rendered first so
-  // the bar never flashes when the fetch is slow).
+  // A dataset uploaded without the TopPIC XMLs has no identification pages:
+  // drop those links once the dataset's metadata says so; a sqlite without
+  // the MS1 3D peak tables keeps the MS1 3D item but disabled. (The links
+  // are rendered first so the bar never flashes when the fetch is slow.)
   const hideIdentificationLinks = function(container: HTMLElement, dsRoot: string): void {
     fetch(dsRoot + "api/meta")
       .then((res) => (res.ok ? res.json() : null))
@@ -61,7 +61,12 @@ const drawNavBar = function(): void {
           container.querySelectorAll("[data-identification]").forEach((el) => el.remove());
         }
         if (meta && meta.has3d !== true) {
-          container.querySelectorAll("[data-threed]").forEach((el) => el.remove());
+          container.querySelectorAll("[data-threed] .nav-link").forEach((el) => {
+            const link = el as HTMLAnchorElement;
+            link.classList.add("disabled");
+            link.removeAttribute("href");
+            link.title = "This dataset's sqlite file has no MS1 3D peak tables";
+          });
         }
       })
       .catch(() => { /* keep the links */ });

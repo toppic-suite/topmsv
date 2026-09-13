@@ -1,6 +1,6 @@
 // Per-dataset routes, mounted at /d/:ds/...
 //   /d/:ds/api/...                     sqlite query API for the raw-spectra browser
-//   /d/:ds/api/3d/...                  MS1 3D view API over ms1_3d.db (see below)
+//   /d/:ds/api/3d/...                  MS1 3D view API over the sqlite's 3D peak tables (see below)
 //   /d/:ds/topfd/ms{1,2}_json/spectrum<id>.js   dynamic TopFD spectrum files
 //   /d/:ds/toppic_*_cutoff/data_js/...          generated identification data
 //   /d/:ds/vendor/...                  browser libraries served from node_modules
@@ -22,10 +22,11 @@ function dbOf(req: express.Request) {
 }
 
 // ------------------------------------------------------------------ MS1 3D view
-// ms1_3d.db (produced by the TopMSV server's mzML converter) holds the MS1
-// peaks at several resolutions: CONFIG has one row per level with the data
-// bounds and the peak count of PEAKS<level>; RETENTIONTIME is in
-// milliseconds. The API converts retention times to minutes.
+// Newer TopFD versions write the MS1 peaks at several resolutions into the
+// same sqlite: CONFIG has one row per level with the data bounds and the
+// peak count of PEAKS<level>; RETENTIONTIME is in milliseconds. The API
+// converts retention times to minutes. getDb3d is null (404 here) for a
+// file without those tables.
 
 const RT_MS_PER_MIN = 60000;
 const MAX_3D_PEAKS = 20000;
@@ -44,7 +45,7 @@ const totalIntensityCache = new Map<string, number>();
 router.get('/api/3d/config', (req, res) => {
   const ds = (req.params as { ds: string }).ds;
   const db = getDb3d(ds);
-  if (!db) { res.status(404).json({ error: 'this dataset has no MS1 3D peak database' }); return; }
+  if (!db) { res.status(404).json({ error: 'this dataset has no MS1 3D peak tables' }); return; }
   const rows = db.prepare('SELECT * FROM CONFIG').all() as any[];
   let totalIntensity = totalIntensityCache.get(ds);
   if (totalIntensity === undefined) {
@@ -66,7 +67,7 @@ router.get('/api/3d/config', (req, res) => {
 // The strongest peaks of one level inside an m/z x RT (minutes) window.
 router.get('/api/3d/peaks', (req, res) => {
   const db = getDb3d((req.params as { ds: string }).ds);
-  if (!db) { res.status(404).json({ error: 'this dataset has no MS1 3D peak database' }); return; }
+  if (!db) { res.status(404).json({ error: 'this dataset has no MS1 3D peak tables' }); return; }
   const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
   const level = Math.floor(num(req.query.level, levels - 1));
   if (level < 0 || level >= levels) { res.status(400).json({ error: 'level out of range' }); return; }

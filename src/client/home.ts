@@ -11,7 +11,7 @@ interface DatasetMeta {
   ms1Count: number;
   ms2Count: number;
   hasFasta: boolean;
-  has3d: boolean;          // MS1 3D peak database uploaded
+  has3d: boolean;          // the sqlite holds the MS1 3D peak tables
 }
 
 async function fetchDatasets(): Promise<DatasetMeta[]> {

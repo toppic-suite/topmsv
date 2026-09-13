@@ -22,12 +22,13 @@ export interface DatasetMeta {
   ms1Count: number;
   ms2Count: number;
   hasFasta: boolean;
-  has3d: boolean;                // ms1_3d.db (MS1 peaks for the 3D view) was uploaded
+  has3d: boolean;                // the sqlite also holds the MS1 3D peak tables (CONFIG + PEAKS<n>)
 }
 
-/** Files of a dataset directory that hold sqlite databases. */
+/** The dataset's sqlite file (TopFD output, optionally with the MS1 3D peak tables). */
 export const MS_DB_FILE = 'ms.sqlite';
-export const MS1_3D_DB_FILE = 'ms1_3d.db';
+/** Datasets uploaded before TopFD wrote the 3D tables into its own file carry them here. */
+const LEGACY_3D_DB_FILE = 'ms1_3d.db';
 
 export function sanitizeId(name: string): string {
   const id = name.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
@@ -83,31 +84,33 @@ export function deleteDataset(id: string): boolean {
 }
 
 /**
- * Check an uploaded MS1 3D peak database (the multi-resolution
- * CONFIG + PEAKS<n> layout the TopMSV server produces) and switch it to
- * rollback journaling like ensureIndexes does for the TopFD file.
- * Throws a descriptive error for anything else.
+ * Whether a TopFD sqlite also holds the MS1 3D peak tables (the
+ * multi-resolution CONFIG + PEAKS<n> layout newer TopFD versions write
+ * into the same file). Throws when CONFIG lists more levels than there
+ * are PEAKS tables, i.e. the file is truncated.
  */
-export function prepare3dDb(dbPath: string): void {
-  const db = new DatabaseSync(dbPath);
+export function has3dTables(sqlitePath: string): boolean {
+  const db = new DatabaseSync(sqlitePath, { readOnly: true });
   try {
-    db.exec('PRAGMA journal_mode = DELETE;');
-    const tables = new Set(
-      (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[])
-        .map((r) => r.name.toUpperCase()),
-    );
-    if (!tables.has('CONFIG') || !tables.has('PEAKS0')) {
-      throw new Error('the MS1 3D file is not a TopMSV 3D peak database (CONFIG / PEAKS0 tables missing)');
-    }
-    const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
-    for (let i = 0; i < levels; i++) {
-      if (!tables.has('PEAKS' + i)) {
-        throw new Error(`the MS1 3D file lists ${levels} levels in CONFIG but has no PEAKS${i} table`);
-      }
-    }
+    return dbHas3dTables(db);
   } finally {
     db.close();
   }
+}
+
+function dbHas3dTables(db: DatabaseSync): boolean {
+  const tables = new Set(
+    (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[])
+      .map((r) => r.name.toUpperCase()),
+  );
+  if (!tables.has('CONFIG') || !tables.has('PEAKS0')) return false;
+  const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
+  for (let i = 0; i < levels; i++) {
+    if (!tables.has('PEAKS' + i)) {
+      throw new Error(`the sqlite file lists ${levels} MS1 3D levels in CONFIG but has no PEAKS${i} table`);
+    }
+  }
+  return levels > 0;
 }
 
 /** Add spec_id indexes so per-spectrum queries are fast (TopFD ships none). */
@@ -133,8 +136,8 @@ export function ensureIndexes(sqlitePath: string): void {
 
 // ------------------------------------------------- open sqlite handle cache
 
-// keyed by "<dataset id>/<file name>": a dataset may have the TopFD file
-// and the MS1 3D peak database open at the same time
+// keyed by "<dataset id>/<file name>": the main sqlite, and for legacy
+// datasets the separate 3D peak file, may be open at the same time
 const openDbs = new Map<string, DatabaseSync>();
 const MAX_OPEN = 6;
 
@@ -162,18 +165,33 @@ function getDbFile(id: string, file: string): DatabaseSync | null {
   return db;
 }
 
-/** The dataset's TopFD sqlite (read-only, cached). */
+/** The dataset's sqlite (read-only, cached). */
 export function getDb(id: string): DatabaseSync | null {
   return getDbFile(id, MS_DB_FILE);
 }
 
-/** The dataset's MS1 3D peak database (read-only, cached); null if not uploaded. */
+// whether a dataset's main sqlite holds the 3D tables (checked once per handle)
+const mainHas3d = new Map<string, boolean>();
+
+/**
+ * The database holding the MS1 3D peak tables: the dataset's sqlite when
+ * it has them, else the separate file of a legacy upload, else null.
+ */
 export function getDb3d(id: string): DatabaseSync | null {
-  return getDbFile(id, MS1_3D_DB_FILE);
+  const db = getDb(id);
+  if (!db) return null;
+  let inMain = mainHas3d.get(id);
+  if (inMain === undefined) {
+    inMain = dbHas3dTables(db);
+    mainHas3d.set(id, inMain);
+  }
+  if (inMain) return db;
+  return getDbFile(id, LEGACY_3D_DB_FILE);
 }
 
 export function closeDb(id: string): void {
-  for (const file of [MS_DB_FILE, MS1_3D_DB_FILE]) {
+  mainHas3d.delete(id);
+  for (const file of [MS_DB_FILE, LEGACY_3D_DB_FILE]) {
     const key = id + '/' + file;
     const db = openDbs.get(key);
     if (db) {
