@@ -27,8 +27,6 @@ export interface DatasetMeta {
 
 /** The dataset's sqlite file (TopFD output, optionally with the MS1 3D peak tables). */
 export const MS_DB_FILE = 'ms.sqlite';
-/** Datasets uploaded before TopFD wrote the 3D tables into its own file carry them here. */
-const LEGACY_3D_DB_FILE = 'ms1_3d.db';
 
 export function sanitizeId(name: string): string {
   const id = name.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
@@ -136,26 +134,24 @@ export function ensureIndexes(sqlitePath: string): void {
 
 // ------------------------------------------------- open sqlite handle cache
 
-// keyed by "<dataset id>/<file name>": the main sqlite, and for legacy
-// datasets the separate 3D peak file, may be open at the same time
 const openDbs = new Map<string, DatabaseSync>();
-const MAX_OPEN = 6;
+const MAX_OPEN = 4;
 
-function getDbFile(id: string, file: string): DatabaseSync | null {
-  const key = id + '/' + file;
-  const cached = openDbs.get(key);
+/** The dataset's sqlite (read-only, cached). */
+export function getDb(id: string): DatabaseSync | null {
+  const cached = openDbs.get(id);
   if (cached) {
     // refresh LRU position
-    openDbs.delete(key);
-    openDbs.set(key, cached);
+    openDbs.delete(id);
+    openDbs.set(id, cached);
     return cached;
   }
   const dir = datasetDir(id);
   if (!dir) return null;
-  const sqlitePath = path.join(dir, file);
+  const sqlitePath = path.join(dir, MS_DB_FILE);
   if (!fs.existsSync(sqlitePath)) return null;
   const db = new DatabaseSync(sqlitePath, { readOnly: true });
-  openDbs.set(key, db);
+  openDbs.set(id, db);
   if (openDbs.size > MAX_OPEN) {
     const oldest = openDbs.keys().next().value as string;
     const old = openDbs.get(oldest);
@@ -165,39 +161,27 @@ function getDbFile(id: string, file: string): DatabaseSync | null {
   return db;
 }
 
-/** The dataset's sqlite (read-only, cached). */
-export function getDb(id: string): DatabaseSync | null {
-  return getDbFile(id, MS_DB_FILE);
-}
+// whether a dataset's sqlite holds the 3D tables (checked once per handle)
+const has3dCache = new Map<string, boolean>();
 
-// whether a dataset's main sqlite holds the 3D tables (checked once per handle)
-const mainHas3d = new Map<string, boolean>();
-
-/**
- * The database holding the MS1 3D peak tables: the dataset's sqlite when
- * it has them, else the separate file of a legacy upload, else null.
- */
+/** The dataset's sqlite when it holds the MS1 3D peak tables, else null. */
 export function getDb3d(id: string): DatabaseSync | null {
   const db = getDb(id);
   if (!db) return null;
-  let inMain = mainHas3d.get(id);
-  if (inMain === undefined) {
-    inMain = dbHas3dTables(db);
-    mainHas3d.set(id, inMain);
+  let has3d = has3dCache.get(id);
+  if (has3d === undefined) {
+    has3d = dbHas3dTables(db);
+    has3dCache.set(id, has3d);
   }
-  if (inMain) return db;
-  return getDbFile(id, LEGACY_3D_DB_FILE);
+  return has3d ? db : null;
 }
 
 export function closeDb(id: string): void {
-  mainHas3d.delete(id);
-  for (const file of [MS_DB_FILE, LEGACY_3D_DB_FILE]) {
-    const key = id + '/' + file;
-    const db = openDbs.get(key);
-    if (db) {
-      openDbs.delete(key);
-      try { db.close(); } catch { /* ignore */ }
-    }
+  has3dCache.delete(id);
+  const db = openDbs.get(id);
+  if (db) {
+    openDbs.delete(id);
+    try { db.close(); } catch { /* ignore */ }
   }
 }
 

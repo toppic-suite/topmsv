@@ -35,9 +35,7 @@ work, `meta.hasIdentifications` is false and every `data_js` request 404s),
 and optionally the search FASTA. Newer TopFD versions also write the MS1
 3D peak tables (multi-resolution CONFIG + PEAKS<n>) into the same sqlite;
 the upload detects them (`meta.has3d`) and enables the MS1 3D view, whose
-nav item is otherwise shown disabled. (`getDb3d` falls back to the
-separate `ms1_3d.db` of datasets uploaded when the 3D peaks were a
-second file.) Nothing derived is stored on disk: a
+nav item is otherwise shown disabled. Nothing derived is stored on disk: a
 dataset directory holds only the uploaded inputs + `meta.json`; every data
 file the vendored TopMSV viewer consumes is generated on the fly.
 
