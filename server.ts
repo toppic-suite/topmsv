@@ -4,10 +4,10 @@ import { serverConfig, applyCommandLine } from './src/server/config';
 
 const PORT = process.env.PORT || 3000;
 
-// usage: npm start -- [view-only]
+// usage: npm start -- [--view-only]
 const unknownArgs = applyCommandLine(process.argv.slice(2));
 if (unknownArgs.length > 0) {
-  console.error(`unknown argument(s): ${unknownArgs.join(' ')}\nusage: npm start -- [view-only]`);
+  console.error(`unknown argument(s): ${unknownArgs.join(' ')}\nusage: npm start -- [--view-only]`);
   process.exit(1);
 }
 

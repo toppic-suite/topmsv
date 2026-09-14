@@ -15,7 +15,7 @@ import { serverConfig } from '../config';
 const router = express.Router();
 
 /** Refuse uploads and deletions when the server was started with
- *  view-only (for uploads this runs before multer, so no temporary file is
+ *  --view-only (for uploads this runs before multer, so no temporary file is
  *  written). */
 function rejectWhenViewOnly(req: express.Request, res: express.Response, next: express.NextFunction): void {
   if (serverConfig.viewOnly) {

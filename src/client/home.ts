@@ -26,7 +26,7 @@ function esc(s: string): string {
   return div.innerHTML;
 }
 
-// true when the server runs with view-only (set by applyServerConfig)
+// true when the server runs with --view-only (set by applyServerConfig)
 let viewOnly = false;
 
 function renderDatasets(list: DatasetMeta[]): void {
@@ -121,7 +121,7 @@ function setupUpload(): void {
 /**
  * Apply the server configuration: show the application version (from
  * package.json via the server) and, when the server was started with
- * view-only, hide the upload panel (the dataset list then omits the Delete
+ * --view-only, hide the upload panel (the dataset list then omits the Delete
  * buttons).
  */
 async function applyServerConfig(): Promise<void> {
