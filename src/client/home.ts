@@ -26,15 +26,20 @@ function esc(s: string): string {
   return div.innerHTML;
 }
 
+// true when the server runs with view-only (set by applyServerConfig)
+let viewOnly = false;
+
 function renderDatasets(list: DatasetMeta[]): void {
   const container = document.getElementById('datasetList') as HTMLElement;
   if (list.length === 0) {
-    container.innerHTML = '<p class="hint">No datasets yet. Upload one above.</p>';
+    container.innerHTML = viewOnly
+      ? '<p class="hint">No datasets available.</p>'
+      : '<p class="hint">No datasets yet. Upload one above.</p>';
     return;
   }
   let html = '<table class="datasets"><thead><tr>'
     + '<th>Name</th><th>Created</th><th>Proteins</th><th>Proteoforms</th><th>PrSMs</th>'
-    + '<th>MS1 / MS2 scans</th><th>Open</th><th></th>'
+    + '<th>MS1 / MS2 scans</th><th>Open</th>' + (viewOnly ? '' : '<th></th>')
     + '</tr></thead><tbody>';
   for (const d of list) {
     const created = new Date(d.createdAt).toLocaleString();
@@ -62,7 +67,7 @@ function renderDatasets(list: DatasetMeta[]): void {
         <a href="d/${ds}/spectra/spectra.html">Spectra</a>
         ${d.has3d ? `<a href="d/${ds}/ms1_3d/ms1_3d.html">MS1 3D</a>` : ''}
       </td>
-      <td><button class="danger" data-id="${esc(d.id)}">Delete</button></td>
+      ${viewOnly ? '' : `<td><button class="danger" data-id="${esc(d.id)}">Delete</button></td>`}
     </tr>`;
   }
   html += '</tbody></table>';
@@ -115,8 +120,9 @@ function setupUpload(): void {
 
 /**
  * Apply the server configuration: show the application version (from
- * package.json via the server) and hide the upload panel when the server
- * was started with disable-upload.
+ * package.json via the server) and, when the server was started with
+ * view-only, hide the upload panel (the dataset list then omits the Delete
+ * buttons).
  */
 async function applyServerConfig(): Promise<void> {
   try {
@@ -125,7 +131,8 @@ async function applyServerConfig(): Promise<void> {
     const body = await res.json();
     const versionEl = document.getElementById('appVersion');
     if (versionEl && typeof body.version === 'string') versionEl.textContent = 'v' + body.version;
-    if (body.uploadEnabled === false) {
+    if (body.viewOnly === true) {
+      viewOnly = true;
       const panel = document.getElementById('uploadPanel');
       if (panel) panel.hidden = true;
     }
@@ -134,8 +141,9 @@ async function applyServerConfig(): Promise<void> {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   setupUpload();
-  applyServerConfig();
+  // the config decides whether the list shows Delete buttons: load it first
+  await applyServerConfig();
   refresh();
 });

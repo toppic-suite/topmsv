@@ -55,7 +55,7 @@ or start the local web server at a specified port (i.e., 8080) and data folder:
 
 ```
 DATA_DIR=/path/to/data PORT=8080 npm start
-npm start -- disable-upload   # hide the upload panel and refuse uploads (read-only server)
+npm start -- view-only         # view-only server: no upload panel or Delete buttons, uploads and deletions refused
 ```
 
 In the command, we set two optional environment variables: `DATA_DIR` is the

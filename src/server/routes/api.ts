@@ -14,20 +14,22 @@ import { serverConfig } from '../config';
 
 const router = express.Router();
 
-// Read by the home page: application version and whether uploads are allowed.
-router.get('/config', (req, res) => {
-  res.json({ version: APP_VERSION, uploadEnabled: serverConfig.uploadEnabled });
-});
-
-/** Refuse uploads when the server was started with disable-upload
- *  (checked before multer so no temporary file is written). */
-function requireUploadEnabled(req: express.Request, res: express.Response, next: express.NextFunction): void {
-  if (!serverConfig.uploadEnabled) {
-    res.status(403).json({ error: 'uploads are disabled on this server' });
+/** Refuse uploads and deletions when the server was started with
+ *  view-only (for uploads this runs before multer, so no temporary file is
+ *  written). */
+function rejectWhenViewOnly(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  if (serverConfig.viewOnly) {
+    res.status(403).json({ error: 'this server is view-only: uploads and deletions are disabled' });
     return;
   }
   next();
 }
+
+// Read by the home page: application version and whether the server is view-only.
+router.get('/config', (req, res) => {
+  res.json({ version: APP_VERSION, viewOnly: serverConfig.viewOnly });
+});
+
 
 const TMP_DIR = path.join(DATA_ROOT, '.tmp_uploads');
 fs.mkdirSync(TMP_DIR, { recursive: true });
@@ -45,7 +47,7 @@ router.get('/datasets', (req, res) => {
   res.json(listDatasets());
 });
 
-router.delete('/datasets/:id', (req, res) => {
+router.delete('/datasets/:id', rejectWhenViewOnly, (req, res) => {
   invalidatePrsmSource(req.params.id);
   if (deleteDataset(req.params.id)) res.json({ deleted: true });
   else res.status(404).json({ error: 'dataset not found' });
@@ -55,7 +57,7 @@ const uploadFields = upload.fields([
   { name: 'sqlite', maxCount: 1 },
 ]);
 
-router.post('/datasets', requireUploadEnabled, uploadFields, (req, res) => {
+router.post('/datasets', rejectWhenViewOnly, uploadFields, (req, res) => {
   const files = req.files as { [field: string]: Express.Multer.File[] } | undefined;
   const cleanupTmp = () => {
     for (const list of Object.values(files ?? {})) {

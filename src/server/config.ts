@@ -2,17 +2,17 @@
 // routes and reported to the home page through /api/config.
 
 export const serverConfig = {
-  /** false when started with disable-upload: the upload panel is hidden
-   *  and POST /api/datasets is refused. */
-  uploadEnabled: true,
+  /** true when started with view-only: the upload panel and the Delete
+   *  buttons are hidden, and POST/DELETE /api/datasets are refused. */
+  viewOnly: false,
 };
 
 /** Apply the recognized command-line flags; returns the unknown ones. */
 export function applyCommandLine(args: string[]): string[] {
   const unknown: string[] = [];
   for (const arg of args) {
-    if (arg === 'disable-upload') {
-      serverConfig.uploadEnabled = false;
+    if (arg === 'view-only') {
+      serverConfig.viewOnly = true;
     } else {
       unknown.push(arg);
     }
