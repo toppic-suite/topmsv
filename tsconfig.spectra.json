@@ -4,7 +4,6 @@
   // root tsconfig emits into types/lib (build order: root pass first).
   // Strictness is relaxed to match the upstream code.
   "compilerOptions": {
-    "allowJs": true,
     "alwaysStrict": true,
     "target": "es2018",
     "moduleResolution": "node",

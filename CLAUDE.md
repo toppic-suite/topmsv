@@ -177,8 +177,9 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   tsconfig.spectra.json) are the raw-spectra browser (from the reference
   Express viewer): `api.js` uses dataset-relative `api/...` URLs and
   auto-loads (no file picker); `viewer.js`'s open flow runs as an IIFE on
-  load. `src/spectra` is plain `.js` (allowJs passthrough): `viewer.js`
-  (panels), `api.js`, `views/massTableView.js`, `models/spectrumData.js`.
+  load. `src/spectra` is TypeScript: `viewer.ts` (panels), `api.ts`
+  (`window.electronAPI` + the row types of the sqlite JSON API),
+  `views/massTableView.ts`, `models/spectrumData.ts`.
   It has no sequence-matching code of its own: the MS2 panel's Inspect
   button opens `topmsv/inspect/spectrum.html?spec_id=<id>`, which loads the
   spectrum itself.
@@ -217,12 +218,16 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   `SpectrumViewParameters`: `setAnnoElementId(id)` routes hover text to an
   element instead of the default floating tooltip, `setThinEnvelopes(false)`
   draws every envelope in the window instead of thinning by display level
-  (the raw-spectra browser sets both per panel in `src/spectra/viewer.js`),
+  (the raw-spectra browser sets both per panel in `src/spectra/viewer.ts`),
   and `SpectrumView.addBaseInte()` adds the red base-intensity lines. The
   `envelopeclick` CustomEvent is dispatched on every page; only the spectra
-  browser listens. `allowJs` is on: the untyped
-  `parse_json/*.js` and `save_image/{save_image,util}.js` modules pass
-  through to the output. `util/viewer_globals.d.ts` declares the page-script
+  browser listens. Everything under `src/` is TypeScript (no `allowJs`).
+  `util/data_js_types.ts` declares the shapes of the generated data files
+  (`prsm_data` from data_js, `ms1_data`/`ms2_data` from the spectrum files)
+  that `parse_json/*.ts` read; those parsers keep TopPIC's formatted
+  e-value/FDR/mass strings as-is (`asDisplayNumber`) because the pages
+  display them verbatim. `parse_json/parse_util.ts` must be loaded before
+  any other parser script. `util/viewer_globals.d.ts` declares the page-script
   globals (SeqOfExecution etc.) that `draw_table.ts` and the viewer
   `add_shift.ts` reference.
 

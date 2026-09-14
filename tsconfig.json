@@ -3,7 +3,6 @@
   // one program for both apps; also emits the .d.ts files the page-script
   // passes typecheck against.
   "compilerOptions": {
-    "allowJs": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,

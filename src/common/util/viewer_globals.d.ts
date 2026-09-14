@@ -12,3 +12,6 @@ declare class SeqOfExecution {
 declare function setDataToSequence(...args: any[]): any;
 declare function getSequenceFromUI(...args: any[]): any;
 declare function parseSequenceMassShift(...args: any[]): any;
+
+// FileSaver.js (vendor/file-saver), loaded by the pages that export images.
+declare function saveAs(data: Blob, filename?: string): void;
