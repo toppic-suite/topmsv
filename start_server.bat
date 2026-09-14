@@ -11,10 +11,14 @@ rem   set DATA_DIR=D:\topmsv_data
 rem   start_server.bat
 rem
 rem The first run installs the dependencies and builds the browser scripts.
-rem Requires Node.js 24 or newer (https://nodejs.org).
+rem Requires Node.js 24 or newer (https://nodejs.org). A bundled copy in the
+rem "node" folder next to this script is used when present.
 
 setlocal
 cd /d "%~dp0"
+
+rem Use the bundled Node.js in the "node" folder if it exists.
+set "PATH=%~dp0node;%PATH%"
 
 where node >nul 2>nul
 if errorlevel 1 (
