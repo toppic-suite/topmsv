@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MS1 3D</title>
+  <link rel="icon" type="image/x-icon" href="../../../common/images/favicon.ico">
+  <link rel="stylesheet" href="../common/css/topmsv_nav_bar.css">
+  <link rel="stylesheet" href="../common/css/ms1_3d.css">
+  <script src="../common/js/common/topmsv_nav_bar/nav_bar.js"></script>
+  <!-- three.js ES modules, served from node_modules by src/server/vendor.ts -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../vendor/three/build/three.module.js",
+      "three/addons/": "../vendor/three/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="nav-bar"></div>
+  <main class="ms1-3d">
+    <section class="controls">
+      <div class="panel info">
+        <h3>Cursor</h3>
+        <div class="kv"><span>m/z</span><span id="cursor-mz"></span></div>
+        <div class="kv"><span>retention time (min)</span><span id="cursor-rt"></span></div>
+        <div class="kv"><span>MS1 scan</span><span id="cursor-scan"></span></div>
+        <h3>Peaks on display</h3>
+        <div class="kv"><span>highest intensity</span><span id="meta-max"></span></div>
+        <div class="kv"><span>intensity sum</span><span id="meta-sum"></span></div>
+        <div class="kv"><span>count</span><span id="meta-count"></span></div>
+        <div id="status" class="status"></div>
+      </div>
+      <div class="panel ranges">
+        <h3>Window</h3>
+        <div class="row"><label>Retention time (min)</label><input type="text" id="rt-min" size="8"><span>&ndash;</span><input type="text" id="rt-max" size="8"></div>
+        <div class="row"><label>m/z</label><input type="text" id="mz-min" size="8"><span>&ndash;</span><input type="text" id="mz-max" size="8"></div>
+        <div class="row"><label>Intensity cutoff</label><input type="text" id="cutoff" size="8" placeholder="0"></div>
+        <div class="row"><label>Peak colors</label>
+          <select id="intensity-type">
+            <option value="absolute" selected>Absolute intensity</option>
+            <option value="relative">Relative to the window</option>
+          </select>
+        </div>
+        <div class="row"><label>Intensity auto scaling</label><input type="checkbox" id="auto-scale" checked></div>
+        <div class="row"><label>Highlight scan (ctrl + click)</label><input type="checkbox" id="highlight-scan"></div>
+        <div class="row buttons">
+          <button type="button" id="request">Request</button>
+          <button type="button" id="reset">Reset</button>
+          <button type="button" id="save">Save image</button>
+          <button type="button" id="expand" title="Enlarge">+</button>
+          <button type="button" id="shrink" title="Shrink">&minus;</button>
+          <button type="button" id="fullscreen">Full screen</button>
+        </div>
+      </div>
+      <div class="panel help">
+        <h3>Mouse</h3>
+        <ul>
+          <li><b>Left drag</b>: pan the window</li>
+          <li><b>Right drag</b>: rotate; a top-down view switches to a flat 2D map</li>
+          <li><b>Wheel</b> inside the plot: zoom both axes; over the m/z or RT margin: zoom that axis</li>
+          <li><b>Ctrl + wheel</b>: scale peak heights (kept while zooming and panning; Reset restores the default)</li>
+          <li><b>Ctrl + click</b>: highlight the nearest MS1 scan</li>
+        </ul>
+        <p class="hint">Peaks are read at the resolution level matching the window; at most 4000 of the strongest peaks are shown.</p>
+      </div>
+    </section>
+    <div id="graph-container"></div>
+    <div id="tooltip"></div>
+  </main>
+  <script type="module" src="../common/js/ms1_3d/page.js"></script>
+</body>
+</html>

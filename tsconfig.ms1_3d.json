@@ -1,0 +1,17 @@
+{
+  // MS1 3D view page scripts (src/ms1_3d -> public/common/js/ms1_3d) as ES
+  // modules: three.js is imported by bare specifier and resolved in the
+  // browser by the import map in public/ms1_3d/ms1_3d.html (types from
+  // @types/three).
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "es2020",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "lib": ["es2018", "dom", "dom.iterable"],
+    "skipLibCheck": true,
+    "rootDir": "./src/ms1_3d",
+    "outDir": "./public/common/js/ms1_3d"
+  },
+  "include": ["./src/ms1_3d/*"]
+}

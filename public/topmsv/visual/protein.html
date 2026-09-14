@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+<title>Protein</title>
+<link rel="icon" type="image/x-icon" href="/common/images/favicon.ico">
+<link rel="stylesheet" type="text/css" 
+                       href="../../vendor/datatables/css/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" 
+                       href="../../vendor/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" type="text/css"
+                       href="../../common/css/topmsv_nav_bar.css"/>
+<link rel="stylesheet" type="text/css" href="css/prsm.css">
+
+<script src="../../vendor/jquery/jquery.js"></script>
+<script src="../../vendor/datatables/js/jquery.dataTables.js"></script>
+<script src="../../vendor/d3/d3.js"></script>
+<script src="../../common/js/common/topmsv_nav_bar/nav_bar.js"></script>
+
+<!--<script src="../../common/js/common/proteoform/protein_constant.js"></script>-->
+<script src="../../common/js/common/distribution_calc/amino_acid_distribution.js"></script>
+
+<script src="../../common/js/common/prsm_view/prsm_data.js"></script>
+<script src="../../common/js/common/prsm_view/prsm_para.js"></script>
+<script src="../../common/js/common/prsm_view/draw_prsm.js"></script>
+<script src="../../common/js/common/prsm_view/prsm_view.js"></script>
+
+<script src="../../common/js/common/util/types.js"></script>
+<script src="../../common/js/common/util/format_util.js"></script>
+
+<!--data classes-->
+<script src="../../common/js/common/sequence/massShift.js"></script>
+<script src="../../common/js/common/sequence/mod.js"></script>
+<script src="../../common/js/common/sequence/proteoform.js"></script>
+<script src="../../common/js/common/prsm/prsm.js"></script>
+<script src="../../common/js/common/sequence/theoMass.js"></script>
+
+<script src="js/prsm/prsm_to_html.js"></script>
+<script src="js/protein/protein.js"></script>
+<script src="js/protein/on_load_protein.js"></script>
+<script src="js/prsm/prsm_to_html.js"></script>
+
+<script src="../../common/js/common/parse_json/parse_util.js"></script>
+<script src="../../common/js/common/parse_json/parse_protein.js"></script>
+</head>
+<body>
+<div id="nav-bar"></div>
+<div class="container bodycontainer">
+	<div class="row">
+		<p style="font-size:16px;">
+		<a id="allproteinurl_1" href="proteins.html">All proteins</a>&nbsp;</p>
+		<p id = "sequence_description" style="font-size:16px;">#</p>
+	</div>
+	<div class="row">
+		<div class="proteoformcontainer">
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<p style="font-size:16px;">
+		<a id="allproteinurl_2" href="proteins.html">All proteins</a>&nbsp;
+		</p>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: #f4f6f8;
+  color: #222;
+}
+.topbar {
+  background: #2c3e50;
+  color: #fff;
+  padding: 18px 0;
+}
+/* align the heading with the centered content column below */
+.topbar h1 {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 16px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+}
+.subtitle { margin: 4px 0 0; color: #cfd8e3; font-size: 14px; }
+/* application version shown after the title */
+.topbar .version { margin-left: 10px; color: #cfd8e3; font-size: 14px; font-weight: 400; }
+main { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+.card {
+  background: #fff;
+  border: 1px solid #dde3e9;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.card h2 { margin-top: 0; font-size: 18px; }
+.hint { color: #667; font-size: 13px; }
+.req { color: #c0392b; }
+.formrow { margin: 12px 0; display: flex; align-items: center; gap: 12px; }
+.formrow label { width: 260px; font-size: 14px; }
+.formrow input[type=text] { flex: 1; padding: 6px 8px; border: 1px solid #ccd; border-radius: 4px; }
+.formrow input[type=file] { flex: 1; font-size: 13px; }
+button {
+  background: #2980b9;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+button:hover { background: #226a97; }
+button:disabled { background: #9bb3c4; cursor: default; }
+button.danger { background: #c0392b; padding: 4px 10px; font-size: 12px; }
+button.danger:hover { background: #96281b; }
+#uploadStatus { font-size: 13px; color: #556; }
+#uploadStatus.error { color: #c0392b; }
+table.datasets { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.datasets th, table.datasets td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e4e9ee;
+}
+table.datasets th { color: #556; font-weight: 600; font-size: 13px; }
+table.datasets td.num { text-align: right; }
+table.datasets td.actions { white-space: nowrap; }
+table.datasets a { color: #2980b9; text-decoration: none; margin-right: 10px; }
+table.datasets a:hover { text-decoration: underline; }

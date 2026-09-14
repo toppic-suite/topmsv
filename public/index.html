@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TopMSV</title>
+<link rel="icon" type="image/x-icon" href="/common/images/favicon.ico">
+  <link rel="stylesheet" href="common/css/home.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>TopMSV <span class="version" id="appVersion"></span></h1>
+  </header>
+
+  <main>
+    <section class="card" id="uploadPanel">
+      <h2>Upload a dataset</h2>
+      <p class="hint">
+        Select the sqlite file written by TopFD and TopPIC. It holds the
+        deconvoluted spectra and, when TopPIC was run, the identifications and
+        the search database; newer TopFD versions also add the MS1 3D peak
+        tables.
+      </p>
+      <form id="uploadForm">
+        <div class="formrow">
+          <label for="nameInput">Dataset name</label>
+          <input type="text" id="nameInput" name="name" placeholder="(defaults to the sqlite file name)">
+        </div>
+        <div class="formrow">
+          <label for="sqliteInput">TopFD / TopPIC sqlite file <span class="req">*</span></label>
+          <input type="file" id="sqliteInput" name="sqlite" accept=".sqlite,.db" required>
+        </div>
+        <div class="formrow">
+          <button type="submit" id="uploadBtn">Upload</button>
+          <span id="uploadStatus"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Datasets</h2>
+      <div id="datasetList"><p class="hint">Loading&hellip;</p></div>
+    </section>
+  </main>
+
+  <script src="common/js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>TopMSV Viewer</title>
+<link rel="icon" type="image/x-icon" href="/common/images/favicon.ico">
+<link rel="stylesheet" type="text/css" href="../vendor/bootstrap/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="../vendor/datatables/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="../common/css/common.css"/>
+<link rel="stylesheet" type="text/css" href="../common/css/inspect.css">
+<link rel="stylesheet" type="text/css" href="../common/css/topmsv_nav_bar.css">
+<script src="../common/js/common/topmsv_nav_bar/nav_bar.js"></script>
+</head>
+<script src="../vendor/jquery/jquery.js"></script>
+<script src="../vendor/jquery-ui/jquery-ui.min.js"></script>
+<script src="../vendor/bootstrap/bootstrap.min.js" ></script>
+<script src="../vendor/datatables/js/jquery.dataTables.min.js"></script>
+
+<!-- for d3 visualization -->
+<script src="../vendor/d3/d3.js"></script>
+<!-- Views -->
+<!-- Models -->
+<script src="../common/js/models/spectrumData.js"></script>
+
+
+<script src="../common/js/common/proteoform/protein_constant.js"></script>
+
+<script src="../common/js/common/spectrum_view/spectrum_view.js"></script>
+<script src="../common/js/common/spectrum_view/draw_spectrum.js"></script>
+<script src="../common/js/common/spectrum_view/spectrum_parameter.js"></script>
+<script src="../common/js/common/mass_spectrum/spectrumFunction.js"></script>
+
+
+<script src="../common/js/common/util/types.js"></script>
+<script src="../common/js/common/util/format_util.js"></script>
+<!--data classes-->
+<script src="../common/js/common/mass_spectrum/peak.js"></script>
+<script src="../common/js/common/mass_spectrum/envelope.js"></script>
+<script src="../common/js/common/prsm/matchedPeakEnvelopePair.js"></script>
+<script src="../common/js/common/mass_spectrum/spectrum.js"></script>
+</head>
+<body>
+	<div id="nav-bar"></div>
+	<div class="flex-rectangle">
+		<div class="row">
+			<div class="col-8">
+			<p>
+				<text>Dataset:&nbsp;</text>
+				<text id="msFilePathText"></text>
+			</p>
+			</div>
+			<div class="col-2">
+				<p>
+					<text>MS1 scan #:</text>
+					<text id="msOneTotalScanNumText"></text>
+				</p>
+			</div>
+			<div class="col-2">
+				<p>
+					<text>MS2 scan #:</text>
+					<text id="msTwoTotalScanNumText"></text>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div id="panelArea">
+		<!-- MS1 spectrum panel (draggable via header, resizable) -->
+		<div id="ms1Panel" class="spec-panel">
+			<div class="panel-header">
+				<span class="panel-title">MS1 Spectrum</span>
+				<span class="panel-controls">
+					<span id="ms1InfoSlot">
+						<span id="ms1ScanInfo">
+							<text>Current:</text> <text id="curMsOneOrderText"></text>
+							<text>Scan:</text> <text id="curMsOneScanText"></text>
+							<text>Peak#:</text> <text id="curMsOnePeakNumText"></text>
+							<text>Env#:</text> <text id="curMsOneEnvNumText"></text>
+							<text>RT:</text> <text id="curMsOneRTText"></text>
+						</span>
+						<text id="curMsOneAnnoText" class="panel-anno"></text>
+					</span>
+					<span class="panel-nav">
+						<text>Go to scan:</text>
+						<input type="text" size="5" id="queryMsOneScanInput">
+						<button id="msOneGoBtn" class="btn btn-primary btn-sm">Go</button>
+						<button id="msOnePrevBtn" class="btn btn-primary btn-sm">Prev</button>
+						<button id="msOneNextBtn" class="btn btn-primary btn-sm">Next</button>
+						<button id="msOneResetBtn" class="btn btn-primary btn-sm">Reset</button>
+						<button id="msHelpBtn" class="btn btn-primary btn-sm">Help</button>
+					</span>
+				</span>
+			</div>
+			<div class="panel-body">
+				<svg id="ms1_svg_graph" style="background-color:white"></svg>
+			</div>
+		</div>
+		<!-- MS2 spectrum panel (same visualization, peak list only) -->
+		<div id="ms2Panel" class="spec-panel">
+			<div class="panel-header">
+				<span class="panel-title">MS2 Spectrum</span>
+				<span class="panel-controls">
+					<span id="ms2InfoSlot">
+						<span id="ms2ScanInfo">
+							<text>Current:</text> <text id="curMsTwoOrderText"></text>
+							<text>Scan:</text> <text id="curMsTwoScanText"></text>
+							<text>Peak#:</text> <text id="curMsTwoPeakNumText"></text>
+							<text>Env#:</text> <text id="curMsTwoEnvNumText"></text>
+							<text>Prec m/z:</text> <text id="curMsTwoPrecMzText"></text>
+							<text>RT:</text> <text id="curMsTwoRTText"></text>
+						</span>
+						<text id="curMsTwoAnnoText" class="panel-anno"></text>
+					</span>
+					<span class="panel-nav">
+						<text>Go to scan:</text>
+						<input type="text" size="5" id="queryMsTwoScanInput">
+						<button id="msTwoGoBtn" class="btn btn-primary btn-sm">Go</button>
+						<button id="msTwoPrevBtn" class="btn btn-primary btn-sm">Prev</button>
+						<button id="msTwoNextBtn" class="btn btn-primary btn-sm">Next</button>
+						<button id="msTwoResetBtn" class="btn btn-primary btn-sm">Reset</button>
+						<button id="msTwoInspectBtn" class="btn btn-primary btn-sm" title="Open this MS2 spectrum in the visual inspection page">Inspect</button>
+					</span>
+				</span>
+			</div>
+			<div class="panel-body">
+				<svg id="ms2_svg_graph" style="background-color:white"></svg>
+			</div>
+		</div>
+		<!-- Mass list panel (MS1 envelopes) -->
+		<div id="mass1Panel" class="spec-panel">
+			<div class="panel-header">
+				<span class="panel-title">MS1 Mass List</span>
+			</div>
+			<div class="panel-body">
+				<table id="mass1Table">
+					<thead>
+						<tr role="row">
+							<th>Mass ID</th>
+							<th>Mono mass</th>
+							<th>Mono m/z</th>
+							<th>Ref m/z</th>
+							<th style="vertical-align:middle">Charge</th>
+							<th style="vertical-align:middle">Intensity</th>
+							<th style="vertical-align:middle">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- Mass list panel (MS2 envelopes), mirrors the MS1 mass list -->
+		<div id="mass2Panel" class="spec-panel">
+			<div class="panel-header">
+				<span class="panel-title">MS2 Mass List</span>
+			</div>
+			<div class="panel-body">
+				<table id="mass2Table">
+					<thead>
+						<tr role="row">
+							<th>Mass ID</th>
+							<th>Mono mass</th>
+							<th>Mono m/z</th>
+							<th>Ref m/z</th>
+							<th style="vertical-align:middle">Charge</th>
+							<th style="vertical-align:middle">Intensity</th>
+							<th style="vertical-align:middle">Score</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- Help popup, styled to match the panels -->
+	<div id="helpPopupWin" class="app-modal-overlay" role="dialog" aria-modal="true">
+		<div class="app-modal">
+			<div class="app-modal-header">
+				<span class="app-modal-title">Help &mdash; Spectrum navigation</span>
+				<button type="button" class="app-modal-close" id="helpPopupWinCloseBtn" aria-label="Close">&times;</button>
+			</div>
+			<div class="app-modal-body">
+				<ul>
+					<li><b>Pan:</b> press the left mouse button and drag the spectrum.</li>
+					<li><b>Zoom m/z (x-axis):</b> place the cursor <i>below</i> the x-axis and scroll the mouse wheel.</li>
+					<li><b>Zoom intensity (y-axis):</b> place the cursor <i>above</i> the x-axis and scroll the mouse wheel.</li>
+					<li><b>Reset:</b> click <b>Reset</b> to restore the default view.</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- Controller -->
+	<script src="../common/js/views/massTableView.js"></script>
+	<script src="../common/js/api.js"></script>
+	<script src="../common/js/viewer.js"></script>
+</body>
+</html>

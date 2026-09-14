@@ -1,0 +1,87 @@
+/**
+ * Styles of the shared navigation bar (self-contained: the bar is used on
+ * pages with Bootstrap 4, Bootstrap 5 and no framework at all).
+ */
+/* The bar matches the homepage header (home.css .topbar) exactly:
+   same background, same height and the same 980px content column, so the
+   "TopMSV" brand sits at the same position on every page. */
+.topmsv-nav {
+  background-color: #2c3e50;
+  padding: 18px 0;
+  /* same font as the homepage heading (home.css body) */
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+.topmsv-nav .navcontainer {
+  max-width: 980px;
+  margin: auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+}
+.topmsv-nav a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+}
+.topmsv-nav a:hover {
+  color: #fff;
+}
+/* neutralize Bootstrap 4/5 navbar spacing on pages that load a framework,
+   so the bar has the same height everywhere */
+.topmsv-nav .navbar-brand {
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+.topmsv-nav .topmsv-nav-links .nav-link {
+  padding: 0;
+}
+/* application version after the brand (same look as on the home page) */
+.topmsv-nav .navbar-brand .version {
+  margin-left: 10px;
+  color: #cfd8e3;
+  font-size: 14px;
+  font-weight: 400;
+}
+.topmsv-nav .navbar-brand h3 {
+  /* same style as the homepage heading (home.css .topbar h1) */
+  margin: 0 1rem 0 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+  color: #fff;
+}
+.topmsv-nav .topmsv-nav-links {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.topmsv-nav .topmsv-nav-links li {
+  margin: 0 7px;
+  /* a menu item never breaks across lines: with all six items the row
+     is close to the 980px column, and flex would otherwise shrink the
+     items until their text wraps */
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.topmsv-nav .navtab {
+  color: #fff;
+}
+/* a page the dataset has no data for (identifications, MS1 3D) */
+.topmsv-nav .topmsv-nav-links .nav-link.disabled,
+.topmsv-nav .topmsv-nav-links .nav-link.disabled:hover {
+  color: rgba(255, 255, 255, 0.35);
+  cursor: default;
+}
+/* the nav item for the page being shown */
+.topmsv-nav .topmsv-nav-links .nav-link.active,
+.topmsv-nav .topmsv-nav-links .nav-link.active:hover {
+  color: #ffc107;
+}
+mark {
+  background-color: aliceblue !important;
+}
+#tooltip_imagename {
+  transform: translateX(-35%) !important;
+}
