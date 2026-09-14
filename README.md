@@ -55,6 +55,11 @@ Start the local server at port 3000:
 npm start                # http://localhost:3000
 ```
 
+On Windows you can instead double-click `start_server.bat`. 
+It installs the dependencies and
+builds the browser scripts on the first run, then starts the server; set
+`PORT` and `DATA_DIR` in the terminal beforehand to change the defaults.
+
 Options are given through environment variables and one command-line flag:
 
 ```
