@@ -35,6 +35,13 @@
 .topmsv-nav .topmsv-nav-links .nav-link {
   padding: 0;
 }
+/* application version after the brand (same look as on the home page) */
+.topmsv-nav .navbar-brand .version {
+  margin-left: 10px;
+  color: #cfd8e3;
+  font-size: 14px;
+  font-weight: 400;
+}
 .topmsv-nav .navbar-brand h3 {
   /* same style as the homepage heading (home.css .topbar h1) */
   margin: 0 1rem 0 0;

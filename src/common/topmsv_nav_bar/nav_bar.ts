@@ -18,7 +18,8 @@ const drawNavBar = function(): void {
 
     let navCode: string = '<nav class="topmsv-nav" id="nav-div"><div class="navcontainer">'
       + '<span class="navbar-brand logo">'
-      + '<span class="headBlock"><h3><strong id="toppic_icon">T</strong>opMSV</h3></span></span>';
+      + '<span class="headBlock"><h3><strong id="toppic_icon">T</strong>opMSV'
+      + '<span class="version" id="navVersion"></span></h3></span></span>';
     if (dsRoot) {
       // identification: true marks the pages that need the TopPIC XMLs,
       // threeD: true the page that needs the MS1 3D peak database
@@ -44,9 +45,25 @@ const drawNavBar = function(): void {
     }
     navCode += '</div></nav>';
     container.innerHTML = navCode;
+    showVersion(container);
     if (dsRoot) {
       hideIdentificationLinks(container, dsRoot);
     }
+  };
+
+  // The application version (package.json, served by /api/config) after the
+  // brand, as on the home page; the bar renders first and the span stays
+  // empty if the request fails.
+  const showVersion = function(container: HTMLElement): void {
+    fetch("/api/config")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((config: { version?: string } | null) => {
+        const el = container.querySelector("#navVersion");
+        if (el && config && typeof config.version === "string") {
+          el.textContent = "v" + config.version;
+        }
+      })
+      .catch(() => { /* leave the brand without a version */ });
   };
 
   // A sqlite without the TopPIC identification tables has no identification
