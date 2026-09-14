@@ -20,6 +20,8 @@ body {
   line-height: 28px;
 }
 .subtitle { margin: 4px 0 0; color: #cfd8e3; font-size: 14px; }
+/* application version shown after the title */
+.topbar .version { margin-left: 10px; color: #cfd8e3; font-size: 14px; font-weight: 400; }
 main { max-width: 980px; margin: 24px auto; padding: 0 16px; }
 .card {
   background: #fff;

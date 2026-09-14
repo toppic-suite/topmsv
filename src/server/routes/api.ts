@@ -9,8 +9,13 @@ import {
   ensureIndexes, inspectSqlite, countMeta, DatasetMeta, MS_DB_FILE,
 } from '../datasets';
 import { getDatasetSource, invalidatePrsmSource } from '../prsmSource';
+import { APP_VERSION } from '../version';
 
 const router = express.Router();
+
+router.get('/version', (req, res) => {
+  res.json({ version: APP_VERSION });
+});
 
 const TMP_DIR = path.join(DATA_ROOT, '.tmp_uploads');
 fs.mkdirSync(TMP_DIR, { recursive: true });

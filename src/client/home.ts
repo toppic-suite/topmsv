@@ -113,7 +113,22 @@ function setupUpload(): void {
   });
 }
 
+/** Show the application version (from package.json via the server). */
+async function showVersion(): Promise<void> {
+  const el = document.getElementById('appVersion');
+  if (!el) return;
+  try {
+    const res = await fetch('api/version');
+    if (!res.ok) return;
+    const body = await res.json();
+    if (typeof body.version === 'string') el.textContent = 'v' + body.version;
+  } catch {
+    /* leave the title without a version */
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   setupUpload();
+  showVersion();
   refresh();
 });
