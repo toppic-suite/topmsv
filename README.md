@@ -59,12 +59,12 @@ Options are given through environment variables and one command-line flag:
 
 ```
 DATA_DIR=/path/to/data PORT=8080 npm start
-npm start -- view-only
+npm start -- --view-only
 ```
 
 `DATA_DIR` is the directory where uploaded datasets are stored (default:
 `data/` in the repository) and `PORT` is the port the server listens on
-(default: 3000); either can be set independently. `view-only` runs a
+(default: 3000); either can be set independently. `--view-only` runs a
 read-only server for sharing existing datasets: the upload panel and the
 Delete buttons are not shown and the server refuses uploads and deletions.
 The version of the tool is shown next to the title on the home page and in
@@ -77,6 +77,7 @@ dataset** form:
 
 1. Optionally enter a dataset name (it defaults to the sqlite file name).
 2. Select the sqlite file written by TopFD and TopPIC — see the next section.
+   TopFD and TopPIC are available at https://www.toppic.org.
 3. Click **Upload**. The file is checked and the dataset appears in the
    **Datasets** table with its protein, proteoform, PrSM and scan counts and
    the links to its pages: **Identifications** opens the protein list,

@@ -39,11 +39,11 @@ item is disabled otherwise.
 
 `server.ts` starts the Express app from `src/server/app.ts`. Two settings
 come from the environment (`DATA_DIR`, `PORT`) and one from the command line
-(`npm start -- view-only`, parsed in `src/server/config.ts`): in view-only
+(`npm start -- --view-only`, parsed in `src/server/config.ts`): in view-only
 mode `POST` and `DELETE /api/datasets` answer 403 and the home page hides the
-upload panel and the Delete column. The home page reads `/api/config`, which
-reports the version (from `package.json` through `src/server/version.ts`)
-and the view-only flag. Uploading (`src/server/routes/api.ts`) stores the
+upload panel and the Delete column. The home page and the shared nav bar
+read `/api/config`, which reports the version (from `package.json` through
+`src/server/version.ts`) and the `--view-only` flag. Uploading (`src/server/routes/api.ts`) stores the
 file as `ms.sqlite`, adds per-spectrum indexes and switches it to rollback
 journaling, inspects which tables it holds (`meta.hasIdentifications`,
 `hasFasta`, `has3d`), and, when identifications are present, reads and
@@ -69,8 +69,10 @@ shared static pages.
   peaks,scans}`; the resolution level is chosen from the requested window.
 
 Every page injects the shared nav bar (`src/common/topmsv_nav_bar/`), which
-reads the dataset's `api/meta` and disables the identification entries and
-the MS1 3D entry when the file lacks their tables.
+shows the application version after the "TopMSV" brand (fetched from
+`/api/config`, the same source as the home page header), reads the dataset's
+`api/meta` and disables the identification entries and the MS1 3D entry when
+the file lacks their tables.
 
 ### Envelope display in the spectrum panels
 
@@ -161,7 +163,7 @@ knowing:
 
 ```
 server.ts                    entry point (run with ts-node, no emit);
-                             parses the view-only flag
+                             parses the --view-only flag
 src/server/app.ts            Express app wiring all routes together
 src/server/config.ts         server options set from the command line
 src/server/version.ts        application version, read from package.json
