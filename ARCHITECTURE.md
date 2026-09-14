@@ -1,4 +1,4 @@
-# TopMSV Viewer — architecture
+# TopMSV — architecture
 
 ## Introduction
 

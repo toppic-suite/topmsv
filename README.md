@@ -1,4 +1,4 @@
-# TopMSV Viewer
+# TopMSV
 
 A web-based tool for visualizing the output of the spectral deconvolution tool
 **TopFD** and the database search tool **TopPIC**. A dataset is a single
@@ -99,10 +99,6 @@ tables it contains:
 | `prsm`, `prsm_mass_shift`, `proteoform` | TopPIC (results written into the TopFD file) | Protein / Spectrum Identifications pages |
 | `fasta_seq` (the search database) | TopPIC | Full protein sequences in the identification views; without it the parts of a protein outside the identified proteoform are reconstructed heuristically (an `M` for NME proteoforms, `X` placeholders otherwise) |
 | `CONFIG`, `PEAKS0` … `PEAKS<n>` (multi-resolution MS1 peaks) | recent TopFD versions | MS1 3D view |
-
-The separate TopPIC XML result files and FASTA file used by earlier
-versions of this tool are no longer accepted; TopPIC must write its results
-into the sqlite file.
 
 ## Pages
 
