@@ -122,12 +122,7 @@ whose data the file lacks is disabled):
 ## Example dataset
 
 An example archive is available at
-https://toppic.org/software/topmsv/example_data/topmsv_viewer_data.zip. Its
-`st_1.sqlite` holds the TopFD spectra only, so uploading it gives a dataset
-with the Spectra and Visual Inspection pages; the XML and FASTA files in the
-archive are from the previous workflow and are not used. A sqlite file that
-also holds the identification tables is produced by running TopPIC on the
-TopFD output with a TopPIC version that writes its results into the file.
+https://toppic.org/software/topmsv/example_data/topmsv_data.zip. 
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for an introduction of the design,
 the webpages and the project layout.
