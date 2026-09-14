@@ -113,22 +113,29 @@ function setupUpload(): void {
   });
 }
 
-/** Show the application version (from package.json via the server). */
-async function showVersion(): Promise<void> {
-  const el = document.getElementById('appVersion');
-  if (!el) return;
+/**
+ * Apply the server configuration: show the application version (from
+ * package.json via the server) and hide the upload panel when the server
+ * was started with disable-upload.
+ */
+async function applyServerConfig(): Promise<void> {
   try {
-    const res = await fetch('api/version');
+    const res = await fetch('api/config');
     if (!res.ok) return;
     const body = await res.json();
-    if (typeof body.version === 'string') el.textContent = 'v' + body.version;
+    const versionEl = document.getElementById('appVersion');
+    if (versionEl && typeof body.version === 'string') versionEl.textContent = 'v' + body.version;
+    if (body.uploadEnabled === false) {
+      const panel = document.getElementById('uploadPanel');
+      if (panel) panel.hidden = true;
+    }
   } catch {
-    /* leave the title without a version */
+    /* leave the page as it is */
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   setupUpload();
-  showVersion();
+  applyServerConfig();
   refresh();
 });

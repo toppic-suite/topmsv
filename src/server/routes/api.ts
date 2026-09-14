@@ -10,12 +10,24 @@ import {
 } from '../datasets';
 import { getDatasetSource, invalidatePrsmSource } from '../prsmSource';
 import { APP_VERSION } from '../version';
+import { serverConfig } from '../config';
 
 const router = express.Router();
 
-router.get('/version', (req, res) => {
-  res.json({ version: APP_VERSION });
+// Read by the home page: application version and whether uploads are allowed.
+router.get('/config', (req, res) => {
+  res.json({ version: APP_VERSION, uploadEnabled: serverConfig.uploadEnabled });
 });
+
+/** Refuse uploads when the server was started with disable-upload
+ *  (checked before multer so no temporary file is written). */
+function requireUploadEnabled(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  if (!serverConfig.uploadEnabled) {
+    res.status(403).json({ error: 'uploads are disabled on this server' });
+    return;
+  }
+  next();
+}
 
 const TMP_DIR = path.join(DATA_ROOT, '.tmp_uploads');
 fs.mkdirSync(TMP_DIR, { recursive: true });
@@ -43,7 +55,7 @@ const uploadFields = upload.fields([
   { name: 'sqlite', maxCount: 1 },
 ]);
 
-router.post('/datasets', uploadFields, (req, res) => {
+router.post('/datasets', requireUploadEnabled, uploadFields, (req, res) => {
   const files = req.files as { [field: string]: Express.Multer.File[] } | undefined;
   const cleanupTmp = () => {
     for (const list of Object.values(files ?? {})) {

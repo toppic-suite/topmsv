@@ -14,6 +14,7 @@ npm run build:client        # clean:client (drops types/lib + every generated js
 npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
+npm start -- disable-upload   # hide the upload panel, POST /api/datasets -> 403 (src/server/config.ts)
 npm run convert -- --sqlite f.sqlite --out outdir
 ```
 
