@@ -2,15 +2,20 @@
 
 ## Introduction
 
-The server generates the data of protein, proteoform, and spectral identifications 
-for visualization using webpages with the following functions. 
+The server generates the data of protein, proteoform, and spectral
+identifications for visualization from one sqlite file per dataset. It
 
-- reads deconvoluted MS2 peak lists from the sqlite file,
+- reads the deconvoluted MS2 peak lists and the TopPIC identification tables
+  (`prsm`, `prsm_mass_shift`, `proteoform`) and search database (`fasta_seq`)
+  from that file,
 - rebuilds theoretical B/Y ion ladders from the proteoform annotation,
   including fixed / protein-variable PTMs and unexpected/variable mass shifts,
 - matches peaks to ions with the mass tolerance model in TopPIC (10 ppm, 0.01 Da floor,
-  ±1.00235 Da isotope variants for masses above 5000 Da).
-- recomputes p-values/e-values from the stored information of PrSMs
+  ±1.00235 Da isotope variants for masses above 5000 Da),
+- serializes the result in the JSON-in-JS layout TopPIC's own HTML output
+  uses, so the vendored TopMSV viewer pages work unchanged. E-values are the
+  ones TopPIC stored; p-values are not available from the sqlite and are
+  written as "N/A".
 
 A dataset directory holds one uploaded sqlite file (`ms.sqlite`): TopFD's
 spectra and, in newer versions, the MS1 3D peak tables, plus the
@@ -30,14 +35,42 @@ dataset; the MS1 3D view needs the 3D peak tables (`has3d`) and its nav
 item is disabled otherwise.
 
 
+## Server
+
+`server.ts` starts the Express app from `src/server/app.ts`. Two settings
+come from the environment (`DATA_DIR`, `PORT`) and one from the command line
+(`npm start -- view-only`, parsed in `src/server/config.ts`): in view-only
+mode `POST` and `DELETE /api/datasets` answer 403 and the home page hides the
+upload panel and the Delete column. The home page reads `/api/config`, which
+reports the version (from `package.json` through `src/server/version.ts`)
+and the view-only flag. Uploading (`src/server/routes/api.ts`) stores the
+file as `ms.sqlite`, adds per-spectrum indexes and switches it to rollback
+journaling, inspects which tables it holds (`meta.hasIdentifications`,
+`hasFasta`, `has3d`), and, when identifications are present, reads and
+matches them once to validate the file and warm the per-dataset cache
+(`src/server/prsmSource.ts`). Everything under `/d/<dataset>/` is served by
+`src/server/routes/dataset.ts`: the sqlite JSON API, the on-the-fly TopFD
+spectrum files and `data_js` identification files, the MS1 3D API and the
+shared static pages.
+
 ## Pages
 
-- `/d/<dataset>/topmsv/...` — visualization webpages for protein list,
-  protein, proteoform, PrSM and spectrum views, visual inspection. 
+- `/` — home page: version, upload form (unless view-only) and the dataset
+  list with counts and the links each dataset supports.
+- `/d/<dataset>/topmsv/...` — the TopMSV visualization pages: protein list,
+  protein, proteoform, PrSM and spectrum views (`visual/`) and the visual
+  inspection calculator (`inspect/`).
 - `/d/<dataset>/spectra/spectra.html` — a raw-spectra browser (all MS1/MS2
   scans with peak lists and envelope annotations, linked navigation between
   MS1 and its fragmentation scans), backed by a per-dataset JSON API under
   `/d/<dataset>/api/...` that queries the sqlite file directly.
+- `/d/<dataset>/ms1_3d/ms1_3d.html` — the MS1 3D view (three.js) over the
+  multi-resolution MS1 peak tables, through `/d/<dataset>/api/3d/{config,
+  peaks,scans}`; the resolution level is chosen from the requested window.
+
+Every page injects the shared nav bar (`src/common/topmsv_nav_bar/`), which
+reads the dataset's `api/meta` and disables the identification entries and
+the MS1 3D entry when the file lacks their tables.
 
 ### Envelope display in the spectrum panels
 
@@ -127,20 +160,27 @@ knowing:
 ## Project layout
 
 ```
-server.ts                    entry point (run with ts-node, no emit)
+server.ts                    entry point (run with ts-node, no emit);
+                             parses the view-only flag
 src/server/app.ts            Express app wiring all routes together
+src/server/config.ts         server options set from the command line
+src/server/version.ts        application version, read from package.json
 src/server/datasets.ts       dataset registry (upload storage, meta.json,
-                             DATA_DIR resolution)
-src/server/routes/           dataset upload/list/delete API (api.ts) and the
-                             per-dataset /d/<id>/ routes (dataset.ts)
+                             DATA_DIR resolution, sqlite table inspection)
+src/server/routes/           config + dataset upload/list/delete API (api.ts)
+                             and the per-dataset /d/<id>/ routes (dataset.ts:
+                             sqlite JSON API, MS1 3D API, spectrum and
+                             data_js files, static pages)
 src/server/prsmSource.ts     per-dataset in-memory cache of parsed and
                              matched PrSM data; serves the data_js files
 src/server/spectrumJs.ts     per-scan topfd/ms{1,2}_json/spectrum<N>.js
                              generated straight from the sqlite file
-src/server/convert/          sqlite (spectra + TopPIC identification
-                             tables) -> data_js converter (payload builders
-                             shared by the dynamic endpoints and the
-                             npm run convert CLI, cli.ts)
+src/server/convert/          sqlite -> data_js converter: toppicSqlite.ts
+                             reads the TopPIC tables into prsmRecord.ts
+                             records, convert.ts/annotate.ts match them,
+                             builder.ts/format.ts serialize (payload
+                             builders shared by the dynamic endpoints and
+                             the npm run convert CLI, cli.ts)
 src/server/vendor.ts         serves all browser libraries (spectra browser +
                              topmsv viewer) under /vendor/* straight from
                              node_modules
@@ -171,8 +211,8 @@ public/common/               shared CSS and images; public/common/js/ holds
                              all generated browser JS (gitignored)
 data/                        uploaded datasets (gitignored; override with
                              DATA_DIR)
-tsconfig*.json               the four build:client passes (shared library,
-                             spectra pages, viewer pages, home page) +
-                             tsconfig.server.json for npm run
-                             typecheck:server
+tsconfig*.json               the five build:client passes (shared library,
+                             spectra pages, viewer pages, home page, MS1 3D
+                             view) + tsconfig.server.json for npm start and
+                             npm run typecheck:server
 ```
