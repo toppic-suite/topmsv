@@ -49,7 +49,7 @@ class ParsePrsm {
       });
       this.geneMs1Spectrum(nIons, cIons, targetMz, minMz, maxMz, (ms1Spec) => {
         callback(new Prsm(prsm.prsm_id, proteoformObj, ms1Spec, ms2Spec, breakPoints, matchedPeakEnvPair,
-          prsm.ms.ms_header.spectrum_file_name, asDisplayNumber(prsm.e_value), asDisplayNumber(prsm.fdr),
+          prsm.ms.ms_header.spectrum_file_name, prsm.e_value, prsm.fdr,
           undefined, undefined, parseInt(prsm.matched_fragment_number)));
       });
     });

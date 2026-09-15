@@ -7,16 +7,19 @@ class Prsm {
   private ms1Spec_: Spectrum | null;
   private ms2Spec_: Spectrum[] | null;
   private breakPoints_: BreakPoints[];
-  private eValue_: number;
-  private qValue_: number;
+  // e-value, FDR, feature intensity and precursor mass are the formatted
+  // strings TopPIC wrote ("1.95e-21", "N/A", "1.23e+08", "10278.5000");
+  // the pages display them verbatim. Absent values are "N/A".
+  private eValue_: string;
+  private qValue_: string;
   private fileName_: string;
-  private featureInte_: number | undefined;
-  private precMass_: number | undefined;
+  private featureInte_: string | undefined;
+  private precMass_: string | undefined;
   private fragIonCount_: number | undefined;
 
   constructor(id: string, proteoform: Proteoform, ms1Spec: Spectrum | null, ms2Spec: Spectrum[] | null, 
-    breakPoints: BreakPoints[], matchedPeakEnvelopePair: MatchedPeakEnvelopePair[] = [],  fileName: string = "", eValue: number = -1, qValue: number = -1,
-    featureInte?: number, precMass?: number, fragIonCount?: number) {
+    breakPoints: BreakPoints[], matchedPeakEnvelopePair: MatchedPeakEnvelopePair[] = [],  fileName: string = "", eValue: string = "N/A", qValue: string = "N/A",
+    featureInte?: string, precMass?: string, fragIonCount?: number) {
     this.id_ = id;
     this.proteoform_ = proteoform;
     this.ms1Spec_ = ms1Spec;
@@ -60,16 +63,16 @@ class Prsm {
     let unexpectedMod: MassShift[] = protObj.getUnknownMassShift();
     return unexpectedMod.length;
   }
-  getEValue(): number {
+  getEValue(): string {
     return this.eValue_;
   }
-  getQValue(): number {
+  getQValue(): string {
     return this.qValue_;
   }
-  getFeatureInte(): number | undefined{
+  getFeatureInte(): string | undefined {
     return this.featureInte_;
   }
-  getPrecMass(): number | undefined {
+  getPrecMass(): string | undefined {
     return this.precMass_;
   }
   getBreakPoints(): BreakPoints[] {

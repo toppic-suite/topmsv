@@ -13,17 +13,6 @@ function getJsonList<T>(item: OneOrMany<T> | null | undefined): T[] {
 }
 
 /**
- * TopPIC writes e-values, FDRs, feature intensities and precursor masses as
- * formatted strings ("2.02e-05", "N/A", "5845.8100") and the pages show them
- * verbatim through toString() / template strings, while the Prsm model types
- * them as numbers. Keep the string so the display does not change (parseFloat
- * would turn "N/A" into NaN and drop trailing zeros).
- */
-function asDisplayNumber(formatted: string): number {
-  return formatted as unknown as number;
-}
-
-/**
  * Get the cleavage positions (break points with at least one matched ion)
  * from the prsm data.
  * @param prsm - complete prsm record

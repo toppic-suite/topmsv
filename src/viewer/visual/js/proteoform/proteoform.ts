@@ -80,7 +80,7 @@ function createTableData(folderpath: string, prsm: Prsm[]) {
                     td.setAttribute("width","25%");
                 }
                 if (i === 2) {
-                    td.innerHTML = onePrsm.getEValue().toString();
+                    td.innerHTML = onePrsm.getEValue();
                     td.setAttribute("width","15%");
                 }
                 if (i === 3) {
@@ -134,7 +134,7 @@ function createTableData(folderpath: string, prsm: Prsm[]) {
                 td.innerHTML = sequence_name;
             }
             if (i === 2) {
-                td.innerHTML = prsm[0].getEValue().toString();
+                td.innerHTML = prsm[0].getEValue();
             }
             if (i === 3) {
                 td.innerHTML = All_Peak_count.toString();

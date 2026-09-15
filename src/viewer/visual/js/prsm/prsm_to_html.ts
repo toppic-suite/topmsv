@@ -80,8 +80,8 @@ function loadDatafromJson2Html(prsmObj: Prsm): void {
             protMass.innerHTML =  FormatUtil.formatFloat(proteoformObj.getMass(), "protMass");
             matchedPeak.innerHTML = prsmObj.getMatchedPeakCount().toString();
             unexpected.innerHTML = prsmObj.getUnexpectedModCount().toString();
-            eVal.innerHTML = prsmObj.getEValue().toString();
-            qVal.innerHTML = prsmObj.getQValue().toString();
+            eVal.innerHTML = prsmObj.getEValue();
+            qVal.innerHTML = prsmObj.getQValue();
             let ionCnt = prsmObj.getFragIonCount();
             if (ionCnt) {
                 matchedFrag.innerHTML = ionCnt.toString();

@@ -224,10 +224,10 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   browser listens. Everything under `src/` is TypeScript (no `allowJs`).
   `util/data_js_types.ts` declares the shapes of the generated data files
   (`prsm_data` from data_js, `ms1_data`/`ms2_data` from the spectrum files)
-  that `parse_json/*.ts` read; those parsers keep TopPIC's formatted
-  e-value/FDR/mass strings as-is (`asDisplayNumber`) because the pages
-  display them verbatim. `parse_json/parse_util.ts` must be loaded before
-  any other parser script. `util/viewer_globals.d.ts` declares the page-script
+  that `parse_json/*.ts` read; the Prsm model's e-value, FDR, feature intensity
+  and precursor mass are `string`s: TopPIC's formatted values, which the
+  pages display verbatim (parse them only where arithmetic is needed).
+  `parse_json/parse_util.ts` must be loaded before any other parser script. `util/viewer_globals.d.ts` declares the page-script
   globals (SeqOfExecution etc.) that `draw_table.ts` and the viewer
   `add_shift.ts` reference.
 

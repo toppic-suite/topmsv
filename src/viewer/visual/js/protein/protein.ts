@@ -33,7 +33,7 @@ function proteoformToHtml(prsm: Prsm, index: number, folderpath: string, prsmCnt
     div.setAttribute("id", id);
     let h2: HTMLHeadingElement = document.createElement('h3');
     let p: HTMLParagraphElement = document.createElement("p");
-    let precMass: number | undefined = prsm.getPrecMass();
+    let precMass: string | undefined = prsm.getPrecMass();
     if (prsmCnt > 1 && precMass) {
         // Forms header for a proteoform
         p = Build_BestPrSM(prsm.getEValue(), precMass, prsm.getId(), prsm.getProteoform().getId(), prsmCnt, folderpath);
@@ -71,14 +71,14 @@ function proteoformToHtml(prsm: Prsm, index: number, folderpath: string, prsmCnt
 }
 /**
  * Create HTML URL link to navigate to best prsm and to navigae to proteoform page
- * @param {Float} e_value - Contains e value of the best prsm
- * @param {Float} precursor_mass - Contains precursor mass of the best prsm
+ * @param {String} e_value - Contains e value of the best prsm
+ * @param {String} precursor_mass - Contains precursor mass of the best prsm
  * @param {Int} prsm_id - Contains the best prsm id
  * @param {Int} proteoform_id - Contains the proteoform Id
  * @param {Int} PrSM_Count - Contians numbe rof prsms for a proteoform
  * @param {String} folderpath - Contains path to the data folder
  */
-function Build_BestPrSM(e_value: number, precursor_mass: number, prsm_id: string, proteoform_id: string, PrSM_Count: number, folderpath: string) {
+function Build_BestPrSM(e_value: string, precursor_mass: string, prsm_id: string, proteoform_id: string, PrSM_Count: number, folderpath: string) {
     let p = document.createElement("p");
     p.setAttribute("style", "font-size:16px;");
     let text1 = document.createElement("text");
