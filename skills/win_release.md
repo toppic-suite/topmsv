@@ -7,10 +7,13 @@ in `TopMSV/node`, which `start_server.bat` puts on the PATH; the first run
 of the script installs the dependencies and builds the browser scripts.
 
 Needs `git`, `curl`, `unzip`, `zip` and `node` on the machine that builds
-the zip. Run these commands from a directory outside the repositories:
+the zip. Run these commands from the root of this repository; the `release`
+folder created there is listed in `.gitignore`, and the packaged tree is a
+fresh clone rather than the working copy, so uncommitted changes are not
+packaged:
 
 ```bash
-mkdir release
+mkdir -p release
 cd release
 git clone https://github.com/liuxiaowen/topmsv_private.git TopMSV
 ```
