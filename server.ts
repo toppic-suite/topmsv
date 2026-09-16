@@ -12,6 +12,6 @@ if (unknownArgs.length > 0) {
 }
 
 createApp().listen(PORT, () => {
-  console.log(`TopMSV for TopPIC ${APP_VERSION} running at http://localhost:${PORT}`
+  console.log(`TopMSV ${APP_VERSION} running at http://localhost:${PORT}`
     + (serverConfig.viewOnly ? ' (view-only)' : ''));
 });
