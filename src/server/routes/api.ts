@@ -9,7 +9,7 @@ import {
   ensureIndexes, inspectSqlite, countMeta, DatasetMeta, MS_DB_FILE,
 } from '../datasets';
 import { getDatasetSource, invalidatePrsmSource } from '../prsmSource';
-import { APP_VERSION } from '../version';
+import { APP_DISPLAY_VERSION } from '../version';
 import { serverConfig } from '../config';
 
 const router = express.Router();
@@ -27,7 +27,7 @@ function rejectWhenViewOnly(req: express.Request, res: express.Response, next: e
 
 // Read by the home page: application version and whether the server is view-only.
 router.get('/config', (req, res) => {
-  res.json({ version: APP_VERSION, viewOnly: serverConfig.viewOnly });
+  res.json({ version: APP_DISPLAY_VERSION, viewOnly: serverConfig.viewOnly });
 });
 
 
