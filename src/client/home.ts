@@ -104,7 +104,15 @@ function setupUpload(): void {
     status.textContent = 'Uploading… this may take a moment for large files.';
     try {
       const res = await fetch('api/datasets', { method: 'POST', body: data });
-      const body = await res.json();
+      // A reverse proxy in front of the app (e.g. nginx's default 1 MB
+      // client_max_body_size -> 413) answers with an HTML page, not JSON.
+      const text = await res.text();
+      let body: { name?: string; error?: string } = {};
+      try {
+        body = JSON.parse(text);
+      } catch {
+        throw new Error(`upload failed: HTTP ${res.status} ${res.statusText}`.trim());
+      }
       if (!res.ok) throw new Error(body.error || 'upload failed');
       status.textContent = `Dataset "${body.name}" is ready.`;
       form.reset();
