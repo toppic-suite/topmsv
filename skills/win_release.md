@@ -1,7 +1,7 @@
 # Build the Windows release zip
 
 Package TopMSV for Windows as `topmsv-win-<version>.zip`, where `<version>`
-is the `version` field of `package.json` (e.g. `topmsv-win-1.9.0.1.zip`).
+is the `version` field of `package.json` (e.g. `topmsv-win-1.9.0.2.zip`).
 The zip holds a `TopMSV` folder with the source tree and a bundled Node.js
 in `TopMSV/node`, which `start_server.bat` puts on the PATH; the first run
 of the script installs the dependencies and builds the browser scripts.
