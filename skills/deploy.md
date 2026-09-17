@@ -6,18 +6,62 @@ reverse proxy in front of the Node.js server. The app listens on
 The commands assume the repository is checked out in
 `/home/admin/topmsv_private` and that `nginx` is installed.
 
-## Install and start the app
+## Install the app
 
 ```bash
 cd /home/admin/topmsv_private
 git pull
 npm install
 npm run build:client
-DATA_DIR=/home/admin/topmsv_data nohup npm start > server.log 2>&1 &
 ```
 
-Re-run `npm run build:client` and restart the server after every
+Re-run `npm run build:client` and restart the service after every
 `git pull`: the browser scripts are generated and not checked in.
+
+## Run the app as a systemd service
+
+The service keeps the server running in the background, restarts it when
+it crashes and starts it at boot. Create `/etc/systemd/system/topmsv.service`:
+
+```ini
+[Unit]
+Description=TopMSV server
+After=network.target
+
+[Service]
+User=admin
+WorkingDirectory=/home/admin/topmsv_private
+Environment=PORT=3000
+Environment=DATA_DIR=/home/admin/topmsv_data
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+`ExecStart` needs the absolute path of `npm` (`which npm`); with Node.js
+installed through nvm it is under `~/.nvm/versions/node/<version>/bin/`.
+To share datasets read-only, use `ExecStart=/usr/bin/npm start -- --view-only`
+(the upload panel and Delete buttons are hidden, uploads and deletions are
+refused).
+
+Start the service now and at every boot, and check it is running:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now topmsv
+sudo systemctl status topmsv
+```
+
+Day-to-day commands:
+
+```bash
+sudo journalctl -u topmsv -f        # follow the server log
+sudo systemctl restart topmsv       # after git pull + npm run build:client
+sudo systemctl stop topmsv
+```
 
 ## Configure nginx
 
@@ -80,6 +124,3 @@ Notes:
 - Before the fix in commit 8198f95 the home page reported nginx's 413 page
   as `Unexpected token '<', "<html> <h"... is not valid JSON`; that
   message on an older build means the same thing.
-- To share datasets read-only, start the app with `npm start -- --view-only`
-  (the upload panel and Delete buttons are hidden, uploads and deletions
-  are refused).
