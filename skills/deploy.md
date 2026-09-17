@@ -33,7 +33,8 @@ User=admin
 WorkingDirectory=/home/admin/topmsv_private
 Environment=PORT=3000
 Environment=DATA_DIR=/home/admin/topmsv_data
-ExecStart=/usr/bin/npm start
+Environment=PATH=/home/admin/.nvm/versions/node/v24.21.0/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/admin/.nvm/versions/node/v24.21.0/bin/npm start
 Restart=on-failure
 RestartSec=5
 
@@ -41,11 +42,17 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-`ExecStart` needs the absolute path of `npm` (`which npm`); with Node.js
-installed through nvm it is under `~/.nvm/versions/node/<version>/bin/`.
-To share datasets read-only, use `ExecStart=/usr/bin/npm start -- --view-only`
-(the upload panel and Delete buttons are hidden, uploads and deletions are
-refused).
+systemd does not read the user's shell profile, so the Node.js `bin`
+directory must be given explicitly: `ExecStart` needs the absolute path of
+`npm`, and `PATH` must contain the same directory because `npm start` runs
+`ts-node`, whose `#!/usr/bin/env node` line looks `node` up on the PATH
+(without it the service dies at once with `/usr/bin/env: 'node': No such
+file or directory`, exit status 127). Replace
+`/home/admin/.nvm/versions/node/v24.21.0/bin` in both lines with the
+output of `dirname "$(which node)"` on the server; with Node.js installed
+from a distribution package it is `/usr/bin`. To share datasets read-only,
+append `-- --view-only` to `ExecStart` (the upload panel and Delete
+buttons are hidden, uploads and deletions are refused).
 
 Start the service now and at every boot, and check it is running:
 
