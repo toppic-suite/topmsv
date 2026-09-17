@@ -73,10 +73,11 @@
   protected defaultRadius_: number = 0.05;
   protected minRadius_: number = 2;
   protected maxRadius_: number = 5;
-  //	Colors for the envelope circles. Envelopes closer than envColorMinGap_
-  //	m/z never share a color; the list is used in order, so the first three
-  //	keep the classic look and the rest only appear in crowded regions.
-  protected envColorList_: string[] = ["red", "darkorange", "blue", "green", "purple",
+  //	Colors for the envelope circles. Consecutive envelopes in m/z order and
+  //	envelopes closer than envColorMinGap_ m/z never share a color; the list
+  //	is used in order, so isolated envelopes alternate red and blue and the
+  //	rest only appear in crowded regions.
+  protected envColorList_: string[] = ["red", "blue", "darkorange", "green", "purple",
     "deeppink", "darkcyan", "saddlebrown", "olive", "navy", "crimson", "darkviolet"];
   protected envColorMinGap_: number = 2.0;
 
@@ -529,12 +530,14 @@
    * @function addColorToEnvelopes
    * @description 
    * Add color to envelopes so that neighbors are distinguishable: two
-   * envelopes whose peaks come within envColorMinGap_ m/z of each other
-   * (their m/z ranges are less than that far apart) always get different
-   * colors. Greedy coloring in m/z order: each envelope takes the first
+   * envelopes that are consecutive in m/z order, or whose peaks come within
+   * envColorMinGap_ m/z of each other (their m/z ranges are less than that
+   * far apart), always get different colors — the first rule keeps
+   * envelopes that are far apart in m/z but adjacent on a zoomed-out view
+   * apart. Greedy coloring in m/z order: each envelope takes the first
    * palette color not used by an earlier envelope it conflicts with, so the
    * extra colors only show up where envelopes crowd together. If the palette
-   * runs out, colors are reused starting from the least recently used one.
+   * runs out, colors are cycled, still never repeating the previous one.
    */
   addColorToEnvelopes(envList: Envelope[]): void{
     if(!envList || envList.length === 0 || typeof envList[0].getPeaks() === "undefined") return;
@@ -551,17 +554,19 @@
     let colorNum: number = this.envColorList_.length;
     let colorIdx: number[] = new Array(ranges.length);
     for (let i = 0; i < ranges.length; i++) {
-      // colors already taken by earlier envelopes within the gap
+      // colors already taken by the previous envelope and by earlier
+      // envelopes within the gap
       let used: boolean[] = new Array(colorNum).fill(false);
       for (let j = i - 1; j >= 0; j--) {
-        if (ranges[j].maxMz + this.envColorMinGap_ > ranges[i].minMz) {
+        if (j === i - 1 || ranges[j].maxMz + this.envColorMinGap_ > ranges[i].minMz) {
           used[colorIdx[j]] = true;
         }
       }
       let pick: number = used.indexOf(false);
       if (pick < 0) {
-        // more overlapping envelopes than colors: fall back to cycling
-        pick = i % colorNum;
+        // more overlapping envelopes than colors: fall back to cycling,
+        // still never repeating the previous envelope's color
+        pick = (colorIdx[i - 1] + 1) % colorNum;
       }
       colorIdx[i] = pick;
       ranges[i].env.setDisplayColor(this.envColorList_[pick]);
