@@ -32,7 +32,6 @@ After=network.target
 User=admin
 WorkingDirectory=/home/admin/topmsv_private
 Environment=PORT=3000
-Environment=DATA_DIR=/home/admin/topmsv_data
 Environment=PATH=/home/admin/.nvm/versions/node/v24.21.0/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=/home/admin/.nvm/versions/node/v24.21.0/bin/npm start
 Restart=on-failure
