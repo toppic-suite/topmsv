@@ -71,13 +71,18 @@ sudo systemctl stop topmsv
 
 ## Configure nginx
 
-Create `/etc/nginx/sites-available/topmsv` (on distributions without
-`sites-available`, put the `server` block in `/etc/nginx/conf.d/topmsv.conf`):
+nginx from the nginx.org packages loads `/etc/nginx/conf.d/*.conf` and has
+no `sites-available`; create `/etc/nginx/conf.d/topmsv.conf` there (with a
+distribution package, put the same block in
+`/etc/nginx/sites-available/topmsv` and symlink it into `sites-enabled`).
+`server_name` is the host name the server is reached under (the DNS record
+for it is set up in the HTTPS section); `_` matches any name while there
+is none yet:
 
 ```nginx
 server {
     listen 80;
-    server_name _;
+    server_name topmsv.toppic.org;
 
     # Uploaded sqlite files are large. nginx's default client_max_body_size
     # is 1 MB; anything bigger is refused with "413 Request Entity Too
@@ -101,14 +106,17 @@ server {
 }
 ```
 
-Enable the site, check the configuration and reload nginx:
+Remove or rename the package's own `default.conf` in the same directory
+if it also listens on port 80 with `server_name _`, then check the
+configuration and reload nginx:
 
 ```bash
-sudo ln -sf /etc/nginx/sites-available/topmsv /etc/nginx/sites-enabled/topmsv
-sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl reload nginx
 ```
+
+To see which file holds an existing block: `sudo nginx -T` prints the
+whole configuration with `# configuration file ...` headers.
 
 Verify that a large upload is accepted by nginx (an invalid file must be
 rejected by the app with a JSON error, not by nginx with an HTML page):
@@ -130,3 +138,56 @@ Notes:
 - Before the fix in commit 8198f95 the home page reported nginx's 413 page
   as `Unexpected token '<', "<html> <h"... is not valid JSON`; that
   message on an older build means the same thing.
+
+## Enable HTTPS
+
+The certificate comes from Let's Encrypt through certbot, which needs a
+domain name that resolves to the server — it does not issue certificates
+for a bare IP address. TopMSV is reached as `topmsv.toppic.org`; the
+`toppic.org` web site is a different server (its own nginx on another
+instance) and is not touched.
+
+In the Lightsail console:
+
+- Networking: create a static IP and attach it to the instance, so the
+  address survives stop/start.
+- Instance -> Networking -> IPv4 Firewall: add HTTPS (TCP 443) next to
+  HTTP (TCP 80); port 80 stays open, certbot validates the domain over it
+  and it carries the redirect to HTTPS.
+
+Where the `toppic.org` DNS zone is managed, add an A record for
+`topmsv.toppic.org` pointing at the static IP, and wait until it resolves:
+
+```bash
+dig +short topmsv.toppic.org      # must print the static IP
+```
+
+On the server, with `server_name topmsv.toppic.org;` in the nginx block
+above, install certbot and let it obtain the certificate and rewrite that
+block (answer "redirect" when it asks whether to redirect HTTP to HTTPS):
+
+```bash
+sudo apt update
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d topmsv.toppic.org
+```
+
+certbot adds a `listen 443 ssl` server with the certificate paths to
+`/etc/nginx/conf.d/topmsv.conf` and turns the port-80 server into a
+redirect; `client_max_body_size` and the proxy settings stay in place.
+Check the result and the automatic renewal (a `certbot.timer` systemd
+unit renews the certificate before it expires):
+
+```bash
+curl -I https://topmsv.toppic.org
+sudo certbot renew --dry-run
+```
+
+Notes:
+
+- certbot matches the block to edit by `server_name`; if it reports that
+  it cannot find a matching block, the name is missing or spelled
+  differently in the nginx configuration.
+- The `toppic.org` site keeps plain HTTP; giving it a certificate would be
+  the same certbot command run on its own server.
+
