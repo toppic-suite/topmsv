@@ -30,8 +30,8 @@ export interface PrsmRec {
   spectrumNumber: number;
   oriPrecMass: number;
   adjustedPrecMass: number;
-  matchPeakNum: number;
-  matchFragNum: number;
+  matchExpFragNum: number;  // matched experimental fragment masses (sqlite matched_exp_frag_num)
+  matchTheoFragNum: number; // matched theoretical fragment masses (sqlite matched_theo_frag_num)
   fdr: number;           // -1 when unknown
   proteoformFdr: number; // -1 when unknown
   fracFeatureInte: number;

@@ -25,7 +25,7 @@ function geneProteoformObj(callback: (prsms: Prsm[]) => void): void {
     }
     let spectrum = new Spectrum("", prsm.ms.ms_header.scans, -1, peakList, [], [], [], [], -1);
     prsms.push(new Prsm(prsm.prsm_id, proteoformObj, null, [spectrum], [], matchedPairList, "",
-      prsm.e_value, undefined, undefined, undefined, parseInt(prsm.matched_fragment_number)));
+      prsm.e_value, undefined, undefined, undefined, parseInt(prsm.matched_theo_frag_num)));
   }
   callback(prsms);
 }

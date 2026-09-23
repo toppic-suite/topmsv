@@ -36,7 +36,7 @@ function bestPrsmToModel(prsm: DataJsPrsm): Prsm {
   let header: DataJsMsHeader = prsm.ms.ms_header;
   return new Prsm(prsm.prsm_id, proteoformObj, null, null, breakPoints, [], header.spectrum_file_name,
     prsm.e_value, prsm.fdr, header.feature_inte, header.precursor_mono_mass,
-    parseInt(prsm.matched_fragment_number));
+    parseInt(prsm.matched_theo_frag_num));
 }
 
 /**

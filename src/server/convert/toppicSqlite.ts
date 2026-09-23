@@ -35,6 +35,10 @@ export function dbHasFasta(db: DatabaseSync): boolean {
   return (db.prepare('SELECT COUNT(*) AS n FROM fasta_seq').get() as { n: number }).n > 0;
 }
 
+function columnNames(db: DatabaseSync, table: string): Set<string> {
+  return new Set((db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[]).map((c) => c.name));
+}
+
 function num(v: unknown, fallback: number): number {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
@@ -72,6 +76,13 @@ export function readPrsms(db: DatabaseSync, fileName: string): PrsmRec[] {
     });
   }
 
+  // TopPIC renamed the matched-count columns: matched_peak_num -> matched_exp_frag_num
+  // (matched experimental fragments) and matched_fragment_num -> matched_theo_frag_num
+  // (matched theoretical fragments). Fall back to the old names for files older TopPIC wrote.
+  const prsmCols = columnNames(db, 'prsm');
+  const expFragCol = prsmCols.has('matched_exp_frag_num') ? 'matched_exp_frag_num' : 'matched_peak_num';
+  const theoFragCol = prsmCols.has('matched_theo_frag_num') ? 'matched_theo_frag_num' : 'matched_fragment_num';
+
   const protIds = new Map<string, number>();
   const rows = db.prepare('SELECT * FROM prsm ORDER BY prsm_id').all() as any[];
   return rows.map((r): PrsmRec => {
@@ -89,8 +100,8 @@ export function readPrsms(db: DatabaseSync, fileName: string): PrsmRec[] {
       spectrumNumber: Math.max(1, scans.length),
       oriPrecMass: Number(r.precursor_mass),
       adjustedPrecMass: Number(r.adjusted_precursor_mass),
-      matchPeakNum: Number(r.matched_peak_num),
-      matchFragNum: Number(r.matched_fragment_num),
+      matchExpFragNum: Number(r[expFragCol]),
+      matchTheoFragNum: Number(r[theoFragCol]),
       fdr: r.spectrum_fdr === null ? -1 : Number(r.spectrum_fdr),
       proteoformFdr: r.proteoform_fdr === null ? -1 : Number(r.proteoform_fdr),
       fracFeatureInte: r.feature_intensity === null ? 0 : Number(r.feature_intensity),

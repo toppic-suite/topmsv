@@ -47,8 +47,8 @@ function buildPrsmHeader(d: PrsmData): { [k: string]: unknown } {
     p_value: isNaN(p.pValue) ? 'N/A' : evalueToString(p.pValue),
     e_value: isNaN(p.eValue) ? 'N/A' : evalueToString(p.eValue),
     fdr: p.fdr >= 0 ? evalueToString(p.fdr) : 'N/A',
-    matched_fragment_number: String(Math.trunc(p.matchFragNum)),
-    matched_peak_number: String(Math.trunc(p.matchPeakNum)),
+    matched_exp_frag_num: String(Math.trunc(p.matchExpFragNum)),
+    matched_theo_frag_num: String(Math.trunc(p.matchTheoFragNum)),
   };
 }
 

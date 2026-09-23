@@ -124,8 +124,8 @@ interface DataJsPrsm {
   p_value: string;
   e_value: string;
   fdr: string;
-  matched_fragment_number: string;
-  matched_peak_number: string;
+  matched_exp_frag_num: string;   // matched experimental fragment masses
+  matched_theo_frag_num: string;  // matched theoretical fragment masses
   ms: {
     ms_header: DataJsMsHeader;
     peaks?: { peak: OneOrMany<DataJsPeak> };
