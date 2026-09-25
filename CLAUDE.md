@@ -221,7 +221,13 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   (the raw-spectra browser sets both per panel in `src/spectra/viewer.ts`),
   and `SpectrumView.addBaseInte()` adds the red base-intensity lines. The
   `envelopeclick` CustomEvent is dispatched on every page; only the spectra
-  browser listens. Everything under `src/` is TypeScript (no `allowJs`).
+  browser listens. Dense MS1 spectra have up to ~70k envelope peaks, so
+  `drawPeaks`/`drawEnvelopes` draw one mark per `markCellSize_` (0.5 SVG
+  unit) cell — the tallest line of an x cell, the topmost circle of an x-y
+  cell — with shared attributes and delegated mouse listeners on the
+  `#peaks`/`#circles` groups (each element carries its data as d3 datum),
+  and zoom/drag redraws at most once per animation frame
+  (`SpectrumView.scheduleRedraw`). Everything under `src/` is TypeScript (no `allowJs`).
   `util/data_js_types.ts` declares the shapes of the generated data files
   (`prsm_data` from data_js, `ms1_data`/`ms2_data` from the spectrum files)
   that `parse_json/*.ts` read; the Prsm model's e-value, FDR, feature intensity

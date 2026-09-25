@@ -30,6 +30,8 @@ class SpectrumView {
   // spectra (raw-spectra browser); null = not drawn
   protected baseInte_: number | null = null;
   protected minRefInte_: number | null = null;
+  // a redraw is scheduled for the next animation frame (see scheduleRedraw)
+  protected redrawScheduled_: boolean = false;
 
   constructor(svgId: string, peakList: Peak[], sequenceLength: number = -1) {
     this.id_ = svgId;
@@ -160,9 +162,26 @@ class SpectrumView {
       }
   
       graph.getPara().zoom(mousePos[0], mousePos[1], ratio);
-      graph.redraw(); 
+      graph.scheduleRedraw();
     }
     
+  }
+
+  // Zoom and drag events can arrive faster than a dense spectrum redraws:
+  // apply each to the view parameters at once, but redraw at most once per
+  // animation frame, with the latest view.
+  scheduleRedraw(): void {
+    if (this.redrawScheduled_) {
+      return;
+    }
+    this.redrawScheduled_ = true;
+    requestAnimationFrame(() => {
+      this.redrawScheduled_ = false;
+      // another spectrum may have been loaded into the svg meanwhile
+      if ($("#" + this.id_).data("graph") === this) {
+        this.redraw();
+      }
+    });
   }
 
   zoom = d3.zoom()

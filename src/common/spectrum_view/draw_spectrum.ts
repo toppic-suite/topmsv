@@ -771,15 +771,32 @@ function onCircleClick(this_element: SVGCircleElement, envelope: Envelope, peak:
  * @param {Array} peakList - peaks to draw
  */
 function drawPeaks(svg: any, para: SpectrumViewParameters, peakList: Peak[]){
+  type PeakLine = {peak: Peak, x: number, cell: number};
+  // the stroke is inherited by the lines, and one pair of listeners on the
+  // group serves them all: each line carries its PeakLine as d3 datum
   let peaks = svg.append("g")
-    .attr("id", "peaks");
+    .attr("id", "peaks")
+    .attr("stroke","black")
+    .attr("stroke-width","2")
+    .on("mouseover",function(event: any){
+      let line = d3.select(event.target).datum() as PeakLine;
+      onMouseOverPeak(event.target, event, line.peak, para);
+    })
+    .on("mouseout",function(event: any){
+      onPeakMouseOut(event.target);
+    });
   var len: number = peakList.length;
   // limits provide current count of number of peaks drawn on graph per bin(range) 
   // so that we can limit tha peak count to peaksPerRange count
   let ratio: number = (para.getWinMaxMz() - para.getWinMinMz()) / (para.getDataMaxMz() - para.getDataMinMz());
   ratio = Math.min(1, ratio);
   let spectrumData = new SpectrumFunction();
+  let cellSize: number = para.getMarkCellSize();
 
+  // the peaks shown in the window, and the tallest one of each x cell: every
+  // line ends on the x axis, so it covers the other lines of its cell
+  let shown: PeakLine[] = [];
+  let tallest: Map<number, Peak> = new Map();
   for(let i =0;i<len;i++)
   {
     let peak: Peak = peakList[i];
@@ -787,32 +804,28 @@ function drawPeaks(svg: any, para: SpectrumViewParameters, peakList: Peak[]){
     if(peak.getPos() >= para.getWinMinMz() && peak.getPos()  < para.getWinMaxMz())
     {
       if (peak.getDisplayLevel() / (spectrumData.getMzLevel().length - 3)>= ratio || ratio <= 0.2){
-        peaks.append("line")
-        .attr("x1",function(){
-          return para.getPeakXPos(peak.getPos() );
-        })
-        .attr("y1",function(){
-          let y = para.getPeakYPos(peak.getIntensity());
-          if(y<=para.getPadding().head) return para.getPadding().head ;
-          else return y ;
-        })
-        .attr("x2",function(){
-          return para.getPeakXPos(peak.getPos());
-        })
-        .attr("y2",para.getSVGHeight() - para.getPadding().bottom )
-        .attr("stroke","black")
-        .attr("stroke-width","2")
-        .on("mouseover",function(event: any){
-          //@ts-ignore - allow using this to pass interacted html node
-          onMouseOverPeak(this, event, peak, para);
-        })
-        .on("mouseout",function(){
-          //@ts-ignore
-          onPeakMouseOut(this);
-        });
+        let x: number = para.getPeakXPos(peak.getPos());
+        let cell: number = Math.round(x / cellSize);
+        let cellPeak: Peak | undefined = tallest.get(cell);
+        if (cellPeak === undefined || peak.getIntensity() > cellPeak.getIntensity()) {
+          tallest.set(cell, peak);
+        }
+        shown.push({peak: peak, x: x, cell: cell});
       }
     }
   }
+  // draw them in list order
+  peaks.selectAll("line")
+    .data(shown.filter(line => tallest.get(line.cell) === line.peak))
+    .enter().append("line")
+    .attr("x1",(line: PeakLine) => line.x)
+    .attr("y1",function(line: PeakLine){
+      let y = para.getPeakYPos(line.peak.getIntensity());
+      if(y<=para.getPadding().head) return para.getPadding().head ;
+      else return y ;
+    })
+    .attr("x2",(line: PeakLine) => line.x)
+    .attr("y2",para.getSVGHeight() - para.getPadding().bottom );
 }
 
 /**
@@ -823,7 +836,26 @@ function drawPeaks(svg: any, para: SpectrumViewParameters, peakList: Peak[]){
  * @param {Array} envList - envelopes to draw
  */
 function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[]) {
-  let circles = svg.append("g").attr("id", "circles");
+  type Circle = {env: Envelope, peak: Peak, cx: number, cy: number, cell: number};
+  // fill, stroke width and cursor are inherited by the circles, and one set
+  // of listeners on the group serves them all: each circle carries its
+  // Circle as d3 datum. Presentation attributes rather than inline styles:
+  // the browser shares the computed style of circles with equal attributes.
+  let circles = svg.append("g").attr("id", "circles")
+    .attr("fill","white")
+    .attr("stroke-width","2")
+    .attr("cursor","pointer")
+    .on("mouseover",function(event: any){
+      let c = d3.select(event.target).datum() as Circle;
+      onMouseOverCircle(event.target, event, c.env, c.peak, para);
+    })
+    .on("mouseout",function(){
+      onCircleMouseOut();
+    })
+    .on("click",function(event: MouseEvent){
+      let c = d3.select(event.target as SVGCircleElement).datum() as Circle;
+      onCircleClick(event.target as SVGCircleElement, c.env, c.peak, event);
+    });
   let minPercentage: number = 0.0;
   let maxIntensity: number = para.getDataMaxInte();
   let spectrumData = new SpectrumFunction();
@@ -831,10 +863,15 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
   // so that we can limit tha peak count to circlesPerRange count
   let ratio = (para.getWinMaxMz() - para.getWinMinMz()) / (para.getDataMaxMz() - para.getDataMinMz());
   ratio = Math.min(1, ratio);
+  let cellSize: number = para.getMarkCellSize();
+  let radius: number = para.getCircleSize();
 
+  // the circles of the envelopes shown in the window, and the last one of
+  // each x-y cell: it is drawn on top of the others
+  let shownCircles: Circle[] = [];
+  let topInCell: Map<number, number> = new Map();
   envList.forEach(env => {
     let peaks = env.getPeaks(); 
-    let color = env.getDisplayColor();
     
     if(peaks[0].getPos() >= para.getWinMinMz() && peaks[0].getPos() < para.getWinMaxMz()) 
     { 
@@ -845,41 +882,28 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
         peaks.forEach(peak => {
           let percentInte = peak.getIntensity()/maxIntensity * 100 ;
           if (percentInte >= minPercentage){//Show only envelopes with minimum of 0.5%
-            circles.append("circle")
-            .attr("id","circles")
-            .attr("cx",function(){
-              return para.getPeakXPos(peak.getPos());
-            })
-            .attr("cy",function(){
-              let cy = para.getPeakYPos(peak.getIntensity());
-              if(cy < para.getPadding().head) return para.getPadding().head;
-              else return cy ;
-            })
-            .attr("r",function(){
-              return para.getCircleSize();
-            })
-            .style("fill","white")
-            .style("opacity", "0.8")
-            .style("stroke",color)
-            .style("stroke-width","2")
-            .style("cursor","pointer")
-            .on("mouseover",function(event: any){
-              //@ts-ignore
-              onMouseOverCircle(this, event, env, peak, para);
-            })
-            .on("mouseout",function(){
-              //@ts-ignore
-              onCircleMouseOut(this);
-            })
-            .on("click",function(event: MouseEvent){
-              //@ts-ignore
-              onCircleClick(this, env, peak, event);
-            });
+            let cx: number = para.getPeakXPos(peak.getPos());
+            let cy: number = para.getPeakYPos(peak.getIntensity());
+            if (cy < para.getPadding().head) {
+              cy = para.getPadding().head;
+            }
+            // cy lies within the SVG height, far below 65536 cells
+            let cell: number = Math.round(cx / cellSize) * 65536 + Math.round(cy / cellSize);
+            topInCell.set(cell, shownCircles.length);
+            shownCircles.push({env: env, peak: peak, cx: cx, cy: cy, cell: cell});
           }
         })
       }
     }
   })
+  circles.selectAll("circle")
+    .data(shownCircles.filter((c, i) => topInCell.get(c.cell) === i))
+    .enter().append("circle")
+    .attr("cx",(c: Circle) => c.cx)
+    .attr("cy",(c: Circle) => c.cy)
+    .attr("r",radius)
+    .attr("opacity", "0.8")
+    .attr("stroke",(c: Circle) => c.env.getDisplayColor());
 }
 
 /**

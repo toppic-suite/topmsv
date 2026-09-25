@@ -68,6 +68,13 @@
   //Padding for mouse over peak floatings.
   protected mouseOverPadding_: {"head": number, "middle": number} = {head:20,middle:14};
 
+  // Marks closer than this many SVG units (about a device pixel at the
+  // default panel size) are drawn once: of the peak lines in one x cell only
+  // the tallest, which covers the others, and of the envelope circles in one
+  // x-y cell only the topmost. Dense MS1 spectra have tens of thousands of
+  // envelope peaks, most of them piled up on the x axis.
+  protected markCellSize_: number = 0.5;
+
   // Envelope circle size: min and max radius	
   protected showEnvelopes_: boolean = true;
   protected defaultRadius_: number = 0.05;
@@ -216,6 +223,9 @@
   }
   getThinEnvelopes(): boolean {
     return this.thinEnvelopes_;
+  }
+  getMarkCellSize(): number {
+    return this.markCellSize_;
   }
   setThinEnvelopes(thin: boolean): void {
     this.thinEnvelopes_ = thin;
