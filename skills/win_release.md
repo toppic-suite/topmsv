@@ -29,20 +29,25 @@ mv node-v24.21.0-win-x64 TopMSV/node
 rm node-v24.21.0-win-x64.zip
 ```
 
-Remove the development-only files:
+Remove the development-only files and the `.git` directory, so the zip
+carries no repository history:
 
 ```bash
 cd TopMSV
 rm CLAUDE.md
 rm ARCHITECTURE.md
 rm -rf skills
+rm -rf .git
 cd ..
 ```
 
-Zip the folder, naming the file after the version in `package.json`:
+Zip the folder, naming the file after the version in `package.json`; a zip
+left by an earlier build is deleted first, because `zip` adds to an
+existing archive instead of replacing it:
 
 ```bash
 VERSION=$(node -p "require('./TopMSV/package.json').version")
+rm -f "topmsv-win-$VERSION.zip"
 zip -qr "topmsv-win-$VERSION.zip" TopMSV
 ls -l "topmsv-win-$VERSION.zip"
 ```
@@ -57,7 +62,5 @@ Notes:
 
 - To ship a different Node.js version, change `v24.21.0` in the download
   URL and in the folder name; TopMSV requires Node.js 24 or newer.
-- The clone keeps the `.git` directory, so the zip contains the full
-  history; run `rm -rf TopMSV/.git` before zipping to leave it out.
 - `start_server.bat` is checked out with CRLF line endings
   (`.gitattributes`), as Windows needs.
