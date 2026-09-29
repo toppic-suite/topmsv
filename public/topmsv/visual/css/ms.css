@@ -93,6 +93,10 @@
   .scan-title {
     margin-right: 10px;
   }
+  /* long annotated sequences wrap instead of overflowing the page */
+  .prsm-seq {
+    word-break: break-all;
+  }
   #title-div {
     display:flex;
   }
