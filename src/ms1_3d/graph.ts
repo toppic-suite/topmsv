@@ -78,7 +78,7 @@ export class Ms1Graph {
   /* state */
   isPerpendicular = false;       // top-down 2D view
   isHighlightingScan = false;
-  isIntensityAbsolute = true;    // color by the converter's class, else by relative intensity
+  isIntensityAbsolute = false;   // color by the converter's class, else by relative intensity
   autoScaleIntensity = true;
   isPan = false;                 // skip auto intensity scaling for a pan
   intSquish = 1;                 // auto-adjusted scale of the current window (calcIntScale)
