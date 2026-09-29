@@ -52,7 +52,7 @@ function addSearchBoxEvent(): void {
   ms2Spec.id = "ms2_" + prsm.ms.ms_header.scans;
 
   let precMass: HTMLParagraphElement = document.createElement('p');
-  precMass.innerHTML = "Precursor mass (mono): " + prsm.ms.ms_header.precursor_mono_mass;
+  precMass.innerHTML = "Precursor mass: " + prsm.ms.ms_header.precursor_mono_mass;
   precMass.classList.add("scan-title");
 
   let protName: HTMLHeadingElement = document.createElement('p');
