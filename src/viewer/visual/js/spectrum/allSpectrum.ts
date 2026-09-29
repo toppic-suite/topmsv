@@ -51,12 +51,17 @@ function addSearchBoxEvent(): void {
   ms2Spec.classList.add("scan-title");
   ms2Spec.id = "ms2_" + prsm.ms.ms_header.scans;
 
+  let precMass: HTMLParagraphElement = document.createElement('p');
+  precMass.innerHTML = "Precursor mass (mono): " + prsm.ms.ms_header.precursor_mono_mass;
+  precMass.classList.add("scan-title");
+
   let protName: HTMLHeadingElement = document.createElement('p');
   protName.innerHTML = protein.sequence_name;
   protName.classList.add("scan-title");
 
   childDiv.appendChild(ms2Spec);
   childDiv.appendChild(ms1Spec);
+  childDiv.appendChild(precMass);
   childDiv.appendChild(protName);
   div.appendChild(childDiv);
 

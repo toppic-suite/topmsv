@@ -73,10 +73,13 @@ function buildMsHeader(d: PrsmData): { [k: string]: unknown } {
   return header;
 }
 
+// precursor_mono_mass is not in TopPIC's brief header: added for the
+// spectrum identification list (ms.html).
 function buildMsHeaderBrief(d: PrsmData): { [k: string]: unknown } {
   return {
     ms1_scans: d.headers.map((h) => String(h.ms1Scan)).join(' '),
     scans: d.headers.map((h) => String(h.scan)).join(' '),
+    precursor_mono_mass: fixedToString(d.prsm.oriPrecMass, PRECISE_POINT_NUM),
   };
 }
 
