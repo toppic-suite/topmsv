@@ -4,8 +4,9 @@
 //para.getAnnoElementId() when a page sets one; envelope circles are thinned
 //by display level when para.getThinEnvelopes() is on; when
 //para.getEnvMassFilterOnClick() is on, clicking a circle keeps only the
-//circles of the envelopes with its monoisotopic mass (para.getEnvMassFilter())
-//until a click elsewhere in the graph (see SpectrumView).
+//circles of the envelopes with its monoisotopic mass until a click elsewhere
+//in the graph (see SpectrumView); a page can likewise keep only one
+//envelope (para.setEnvIdFilter()).
 
 
 /**
@@ -864,10 +865,6 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
         ($(target.ownerSVGElement).data("graph") as SpectrumView).scheduleRedraw();
       }
     });
-  // the mass whose envelopes are the only ones shown (set by a click on one
-  // of their circles); the envelopes of one mass (its charge states) carry
-  // the same mono mass up to floating-point noise
-  let massFilter: number | null = para.getEnvMassFilter();
   let minPercentage: number = 0.0;
   let maxIntensity: number = para.getDataMaxInte();
   let spectrumData = new SpectrumFunction();
@@ -883,7 +880,8 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
   let shownCircles: Circle[] = [];
   let topInCell: Map<number, number> = new Map();
   envList.forEach(env => {
-    if (massFilter !== null && Math.abs(env.getMonoMass() - massFilter) >= para.getEnvSameMassTol()) {
+    // the mass filter set by a click on a circle, or a page's envelope filter
+    if (!para.showsEnvelope(env)) {
       return;
     }
     let peaks = env.getPeaks(); 

@@ -183,8 +183,8 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   load. `src/spectra` is TypeScript: `viewer.ts` (panels), `api.ts`
   (`window.electronAPI` + the row types of the sqlite JSON API),
   `views/massTableView.ts`, `models/spectrumData.ts`.
-  The MS1 mass list has a "Group by mass" check box and an "Advanced sort"
-  popup (first + second sort column), both in `massTableView.ts` on top of
+  The MS1 mass list has a "Group by mass" check box and both mass lists an
+  "Advanced sort" popup (first + second sort column), in `massTableView.ts` on top of
   DataTables' own ordering: grouping is a fixed pre-order on a hidden last
   column (`<th>Mass group</th>` in both tables) whose sort keys come from
   the `mass-group` ordering plug-in — the rank of the row's mass group by
@@ -232,7 +232,10 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   `setEnvMassFilterOnClick(true)` makes a click on an envelope circle keep
   only the circles of the envelopes with the same mono mass (the filter,
   `envMassFilter_`, survives zoom/drag redraws) until a click elsewhere in
-  the graph
+  the graph; a page can likewise keep a single envelope with
+  `setEnvIdFilter(id)` (the spectra browser does on a click on a mass
+  list's Ref m/z link, which also centers the graph), ended by the same
+  click
   (the raw-spectra browser sets all three per panel in `src/spectra/viewer.ts`),
   and `SpectrumView.addBaseInte()` adds the red base-intensity lines.
   Circle colors (`SpectrumViewParameters.addColorToEnvelopes`) are assigned

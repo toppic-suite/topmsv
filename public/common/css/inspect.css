@@ -247,6 +247,9 @@
 #ms1InfoSlot #ms1ScanInfo, #ms2InfoSlot #ms2ScanInfo { white-space: nowrap; }
 #ms1InfoSlot .panel-anno, #ms2InfoSlot .panel-anno { position: absolute; left: 0; top: 0; white-space: nowrap; }
 .panel-nav { margin-left: auto; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+/* common.css caps .btn at 80% of its container: a button alone in its
+   .panel-nav would be capped at 80% of its own width and wrap its label */
+.panel-nav .btn { max-width: none !important; white-space: nowrap; }
 .panel-body { flex: 1 1 auto; overflow: hidden; }
 .panel-body svg { width: 100%; height: 100%; display: block; }
 

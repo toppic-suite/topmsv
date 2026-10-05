@@ -52,12 +52,12 @@ class SpectrumView {
       //@ts-ignore
       .call(this.zoom.bind(this));
     // A click that is not on an envelope circle (those stop the event, see
-    // drawEnvelopes) ends the envelope mass filter. The named listener
+    // drawEnvelopes) ends the envelope mass / id filter. The named listener
     // replaces the one of the view previously bound to this svg; the click
     // that ends a drag is suppressed by d3.zoom.
     this.svg_.on("click.envMassFilter", () => {
-      if (this.para_.getEnvMassFilter() !== null) {
-        this.para_.setEnvMassFilter(null);
+      if (this.para_.hasEnvFilter()) {
+        this.para_.clearEnvFilter();
         this.scheduleRedraw();
       }
     });

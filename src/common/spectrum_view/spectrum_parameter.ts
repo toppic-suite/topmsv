@@ -132,6 +132,10 @@
   // envMassFilter_ is that mass, null = show every envelope.
   protected envMassFilterOnClick_: boolean = false;
   protected envMassFilter_: number | null = null;
+  // A page may instead keep only the circles of one envelope, by its id
+  // (the raw-spectra browser: a click on a mass list link); it ends with
+  // the same click in the graph. Setting one filter clears the other.
+  protected envIdFilter_: number | null = null;
 
   constructor() {
   }
@@ -252,11 +256,30 @@
   setEnvMassFilterOnClick(on: boolean): void {
     this.envMassFilterOnClick_ = on;
   }
-  getEnvMassFilter(): number | null {
-    return this.envMassFilter_;
-  }
   setEnvMassFilter(mass: number | null): void {
     this.envMassFilter_ = mass;
+    this.envIdFilter_ = null;
+  }
+  setEnvIdFilter(id: number | null): void {
+    this.envIdFilter_ = id;
+    this.envMassFilter_ = null;
+  }
+  hasEnvFilter(): boolean {
+    return this.envMassFilter_ !== null || this.envIdFilter_ !== null;
+  }
+  clearEnvFilter(): void {
+    this.envMassFilter_ = null;
+    this.envIdFilter_ = null;
+  }
+  // whether the envelope passes the mass / id filter: the envelopes of one
+  // mass (its charge states) carry the same mono mass up to floating-point
+  // noise
+  showsEnvelope(env: Envelope): boolean {
+    if (this.envIdFilter_ !== null) {
+      return env.getId() === this.envIdFilter_;
+    }
+    return this.envMassFilter_ === null
+      || Math.abs(env.getMonoMass() - this.envMassFilter_) < SpectrumViewParameters.envSameMassTol;
   }
   // back to the full data range
   resetScale(): void {

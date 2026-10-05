@@ -208,6 +208,7 @@ $(document).ready(function () {
   mass_table = $('#mass1Table').DataTable(massTableConfig(true));
   mass2_table = $('#mass2Table').DataTable(massTableConfig(true));
   initMassTableSortControls(mass_table, 'mass1GroupCheck', 'mass1SortBtn');
+  document.getElementById('mass2SortBtn').addEventListener('click', () => openSortPopup(mass2_table));
 
   let sortWin: HTMLElement = document.getElementById('sortPopupWin');
   document.getElementById('sortApplyBtn').addEventListener('click', applySortPopup);

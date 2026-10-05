@@ -161,6 +161,11 @@
 		<div id="mass2Panel" class="spec-panel">
 			<div class="panel-header">
 				<span class="panel-title">MS2 Mass List</span>
+				<span class="panel-controls">
+					<span class="panel-nav">
+						<button id="mass2SortBtn" class="btn btn-primary btn-sm" title="Sort by a first and a second column">Advanced sort</button>
+					</span>
+				</span>
 			</div>
 			<div class="panel-body">
 				<table id="mass2Table">
@@ -196,7 +201,8 @@
 					<li><b>Zoom intensity (y-axis):</b> place the cursor <i>above</i> the x-axis and scroll the mouse wheel.</li>
 					<li><b>Reset:</b> click <b>Reset</b> to restore the default view.</li>
 					<li><b>Envelopes of one mass:</b> click a theoretical-peak circle to show only the circles of the envelopes with the same mass; click anywhere else in the spectrum to show all circles again.</li>
-					<li><b>MS1 mass list:</b> click a column header to sort. <b>Group by mass</b> keeps the envelopes with the same mono mass together: the groups follow the sort order of their first row. <b>Advanced sort</b> sorts by a first and a second column.</li>
+					<li><b>One envelope:</b> click a <b>Ref m/z</b> link in a mass list to center the spectrum on it and show only the circles of that envelope; click in the spectrum to show all circles again.</li>
+					<li><b>Mass lists:</b> click a column header to sort. <b>Group by mass</b> (MS1) keeps the envelopes with the same mono mass together: the groups follow the sort order of their first row. <b>Advanced sort</b> sorts by a first and a second column.</li>
 				</ul>
 			</div>
 		</div>

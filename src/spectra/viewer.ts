@@ -168,6 +168,18 @@ function addEnvelopePeaks(db_env_peak_list: EnvPeakRow[], env_obj_list: Envelope
   }
 }
 
+// A click on a ref m/z link of a mass list: center the panel's graph on
+// that m/z and show only the circles of the row's envelope, until a click
+// in the graph (which shows all circles again, or the envelopes of the
+// clicked circle's mass).
+function showRowEnvelope(table: MassTable, graph: SpectrumView, link: HTMLElement): void {
+  let row = table.row($(link).closest('tr')).data() as number[];
+  // the mass ID column holds env_id + 1
+  graph.getPara().setEnvIdFilter(row[0] - 1);
+  graph.getPara().updateMzRange(parseFloat(link.innerHTML));
+  graph.redraw();
+}
+
 async function updateMsOneById(cur_ms_one_id: number): Promise<void> {
   if (cur_ms_one_id >= 0 && cur_ms_one_id < spec_data.getMsOneScanNum()) {
     cur_ms_one_order_text.textContent = (cur_ms_one_id + 1).toString() + "/" + ms_one_scan_num.toString();
@@ -197,10 +209,7 @@ async function updateMsOneById(cur_ms_one_id: number): Promise<void> {
     ms_one_graph = $("#" + ms1_view.getSvgId()).data("graph") as SpectrumView;
     ms_one_graph.redraw();
     $("#mass1Table .row_ref_mz").on('click', function (e) {
-      // center the graph on the clicked ref m/z value
-      let monoMz: number = parseFloat(e.currentTarget.innerHTML);
-      ms_one_graph.getPara().updateMzRange(monoMz);
-      ms_one_graph.redraw();
+      showRowEnvelope(mass_table, ms_one_graph, e.currentTarget);
     });
     // keep the MS2 panel on a fragmentation scan of this MS1 spectrum
     await syncMsTwoToMsOne(cur_ms_one_id);
@@ -356,10 +365,7 @@ async function updateMsTwoById(cur_ms_two_id: number): Promise<void> {
     ms_two_graph = $("#ms2_svg_graph").data("graph") as SpectrumView;
     ms_two_graph.redraw();
     $("#mass2Table .row_ref_mz").on('click', function (e) {
-      // center the graph on the clicked ref m/z value
-      let monoMz: number = parseFloat(e.currentTarget.innerHTML);
-      ms_two_graph.getPara().updateMzRange(monoMz);
-      ms_two_graph.redraw();
+      showRowEnvelope(mass2_table, ms_two_graph, e.currentTarget);
     });
     // keep the MS1 panel on this MS2 spectrum's precursor spectrum
     await syncMsOneToMsTwo();
