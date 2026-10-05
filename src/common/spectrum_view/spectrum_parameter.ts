@@ -91,8 +91,9 @@
   protected envColorMinGap_: number = 2.0;
   //	Envelopes whose monoisotopic masses differ by less than this (Da) are
   //	the charge states of one mass: their masses agree up to floating-point
-  //	noise, while different masses are far further apart.
-  protected envSameMassTol_: number = 1e-6;
+  //	noise, while different masses are far further apart. Static: the mass
+  //	list of the raw-spectra browser groups its rows with it too.
+  static readonly envSameMassTol: number = 1e-6;
 
   // Parameters related to annoated ions
   protected showIons_: boolean = true;
@@ -243,7 +244,7 @@
     this.thinEnvelopes_ = thin;
   }
   getEnvSameMassTol(): number {
-    return this.envSameMassTol_;
+    return SpectrumViewParameters.envSameMassTol;
   }
   getEnvMassFilterOnClick(): boolean {
     return this.envMassFilterOnClick_;
@@ -599,7 +600,7 @@
     let run: number[] = new Array(byMass.length);
     for (let i = 0; i < byMass.length; i++) {
       let sameAsPrev: boolean = i > 0
-        && byMass[i].env.getMonoMass() - byMass[i - 1].env.getMonoMass() < this.envSameMassTol_;
+        && byMass[i].env.getMonoMass() - byMass[i - 1].env.getMonoMass() < SpectrumViewParameters.envSameMassTol;
       run[i] = sameAsPrev ? run[i - 1] : groupOfRun.push(-1) - 1;
     }
     byMass.forEach((range, i) => { range.group = run[i]; });

@@ -183,6 +183,14 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   load. `src/spectra` is TypeScript: `viewer.ts` (panels), `api.ts`
   (`window.electronAPI` + the row types of the sqlite JSON API),
   `views/massTableView.ts`, `models/spectrumData.ts`.
+  The MS1 mass list has a "Group by mass" check box and an "Advanced sort"
+  popup (first + second sort column), both in `massTableView.ts` on top of
+  DataTables' own ordering: grouping is a fixed pre-order on a hidden last
+  column (`<th>Mass group</th>` in both tables) whose sort keys come from
+  the `mass-group` ordering plug-in — the rank of the row's mass group by
+  first appearance in the current sort order. The tables run with
+  `autoWidth: false`: with a hidden column DataTables would pin the table
+  to a pixel width wider than its panel.
   It has no sequence-matching code of its own: the MS2 panel's Inspect
   button opens `topmsv/inspect/spectrum.html?spec_id=<id>`, which loads the
   spectrum itself.
