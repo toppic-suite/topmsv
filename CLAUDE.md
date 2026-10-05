@@ -220,8 +220,10 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   the same `spectrum_view/` scripts; page differences are options on
   `SpectrumViewParameters`: `setAnnoElementId(id)` routes hover text to an
   element instead of the default floating tooltip, `setThinEnvelopes(false)`
-  draws every envelope in the window instead of thinning by display level
-  (the raw-spectra browser sets both per panel in `src/spectra/viewer.ts`),
+  draws every envelope in the window instead of thinning by display level,
+  `setHoverSameMassEnvelopes(true)` shows, while an envelope circle is
+  hovered, only the circles of the envelopes with the same mono mass
+  (the raw-spectra browser sets all three per panel in `src/spectra/viewer.ts`),
   and `SpectrumView.addBaseInte()` adds the red base-intensity lines. The
   `envelopeclick` CustomEvent is dispatched on every page; only the spectra
   browser listens. Dense MS1 spectra have up to ~70k envelope peaks, so

@@ -2,7 +2,9 @@
 //envelopes, ions, sequence ladder, error plot, base-intensity lines).
 //Hover info goes to a floating tooltip, or to the element named by
 //para.getAnnoElementId() when a page sets one; envelope circles are thinned
-//by display level when para.getThinEnvelopes() is on.
+//by display level when para.getThinEnvelopes() is on; hovering a circle
+//hides the circles of the envelopes with another monoisotopic mass when
+//para.getHoverSameMassEnvelopes() is on.
 
 
 /**
@@ -848,9 +850,15 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
     .on("mouseover",function(event: any){
       let c = d3.select(event.target).datum() as Circle;
       onMouseOverCircle(event.target, event, c.env, c.peak, para);
+      if (para.getHoverSameMassEnvelopes()) {
+        showSameMassCircles(c.env.getMonoMass());
+      }
     })
     .on("mouseout",function(){
       onCircleMouseOut();
+      if (para.getHoverSameMassEnvelopes()) {
+        showAllCircles();
+      }
     })
     .on("click",function(event: MouseEvent){
       let c = d3.select(event.target as SVGCircleElement).datum() as Circle;
@@ -896,14 +904,53 @@ function drawEnvelopes(svg: any, para: SpectrumViewParameters,envList: Envelope[
       }
     }
   })
-  circles.selectAll("circle")
-    .data(shownCircles.filter((c, i) => topInCell.get(c.cell) === i))
-    .enter().append("circle")
-    .attr("cx",(c: Circle) => c.cx)
-    .attr("cy",(c: Circle) => c.cy)
-    .attr("r",radius)
-    .attr("opacity", "0.8")
-    .attr("stroke",(c: Circle) => c.env.getDisplayColor());
+  appendCircles(circles, shownCircles.filter((c, i) => topInCell.get(c.cell) === i));
+
+  function appendCircles(group: any, list: Circle[]): void {
+    group.selectAll("circle")
+      .data(list)
+      .enter().append("circle")
+      .attr("cx",(c: Circle) => c.cx)
+      .attr("cy",(c: Circle) => c.cy)
+      .attr("r",radius)
+      .attr("opacity", "0.8")
+      .attr("stroke",(c: Circle) => c.env.getDisplayColor());
+  }
+
+  // The envelopes of one mass (its charge states) carry the same mono mass
+  // up to floating-point noise; different masses are far further apart.
+  function hasMass(c: Circle, mass: number): boolean {
+    return Math.abs(c.env.getMonoMass() - mass) < 1e-6;
+  }
+
+  // While a circle is hovered, show only the circles of the envelopes with
+  // its mass: the group is hidden and those circles are made visible again
+  // (hidden circles receive no pointer events, the hovered one stays). Their
+  // circles left out of the DOM because a circle of another mass covers the
+  // cell are added in a temporary group that ignores the pointer.
+  function showSameMassCircles(mass: number): void {
+    showAllCircles();
+    circles.attr("visibility", "hidden");
+    circles.selectAll("circle")
+      .filter((c: Circle) => hasMass(c, mass))
+      .attr("visibility", "visible");
+    let covered: Map<number, Circle> = new Map();
+    shownCircles.forEach(c => {
+      if (hasMass(c, mass) && !hasMass(shownCircles[topInCell.get(c.cell)!], mass)) {
+        covered.set(c.cell, c);
+      }
+    });
+    let extra = circles.append("g").attr("id", "same_mass_circles")
+      .attr("visibility", "visible")
+      .attr("pointer-events", "none");
+    appendCircles(extra, Array.from(covered.values()));
+  }
+
+  function showAllCircles(): void {
+    circles.select("#same_mass_circles").remove();
+    circles.attr("visibility", null);
+    circles.selectAll("circle[visibility]").attr("visibility", null);
+  }
 }
 
 /**

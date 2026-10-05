@@ -119,6 +119,10 @@
   // Thin envelope circles by display level when zoomed out (the raw-spectra
   // browser shows every envelope in the window instead).
   protected thinEnvelopes_: boolean = true;
+  // While an envelope circle is hovered, show only the circles of the
+  // envelopes with the same monoisotopic mass (the raw-spectra browser
+  // turns this on).
+  protected hoverSameMassEnvelopes_: boolean = false;
 
   constructor() {
   }
@@ -229,6 +233,12 @@
   }
   setThinEnvelopes(thin: boolean): void {
     this.thinEnvelopes_ = thin;
+  }
+  getHoverSameMassEnvelopes(): boolean {
+    return this.hoverSameMassEnvelopes_;
+  }
+  setHoverSameMassEnvelopes(on: boolean): void {
+    this.hoverSameMassEnvelopes_ = on;
   }
   // back to the full data range
   resetScale(): void {
