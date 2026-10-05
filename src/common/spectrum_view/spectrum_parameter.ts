@@ -80,13 +80,19 @@
   protected defaultRadius_: number = 0.05;
   protected minRadius_: number = 2;
   protected maxRadius_: number = 5;
-  //	Colors for the envelope circles. Consecutive envelopes in m/z order and
-  //	envelopes closer than envColorMinGap_ m/z never share a color; the list
-  //	is used in order, so isolated envelopes alternate red and blue and the
-  //	rest only appear in crowded regions.
+  //	Colors for the envelope circles. The envelopes of one monoisotopic mass
+  //	(its charge states) share a color; consecutive envelopes in m/z order and
+  //	envelopes closer than envColorMinGap_ m/z get different colors unless
+  //	they have the same mass. The list is used in order, so isolated
+  //	envelopes alternate red and blue and the rest only appear in crowded
+  //	regions.
   protected envColorList_: string[] = ["red", "blue", "darkorange", "green", "purple",
     "deeppink", "darkcyan", "saddlebrown", "olive", "navy", "crimson", "darkviolet"];
   protected envColorMinGap_: number = 2.0;
+  //	Envelopes whose monoisotopic masses differ by less than this (Da) are
+  //	the charge states of one mass: their masses agree up to floating-point
+  //	noise, while different masses are far further apart.
+  protected envSameMassTol_: number = 1e-6;
 
   // Parameters related to annoated ions
   protected showIons_: boolean = true;
@@ -119,10 +125,12 @@
   // Thin envelope circles by display level when zoomed out (the raw-spectra
   // browser shows every envelope in the window instead).
   protected thinEnvelopes_: boolean = true;
-  // While an envelope circle is hovered, show only the circles of the
-  // envelopes with the same monoisotopic mass (the raw-spectra browser
-  // turns this on).
-  protected hoverSameMassEnvelopes_: boolean = false;
+  // A click on an envelope circle keeps only the circles of the envelopes
+  // with the same monoisotopic mass, a click elsewhere in the graph shows
+  // all of them again (the raw-spectra browser turns this on).
+  // envMassFilter_ is that mass, null = show every envelope.
+  protected envMassFilterOnClick_: boolean = false;
+  protected envMassFilter_: number | null = null;
 
   constructor() {
   }
@@ -234,11 +242,20 @@
   setThinEnvelopes(thin: boolean): void {
     this.thinEnvelopes_ = thin;
   }
-  getHoverSameMassEnvelopes(): boolean {
-    return this.hoverSameMassEnvelopes_;
+  getEnvSameMassTol(): number {
+    return this.envSameMassTol_;
   }
-  setHoverSameMassEnvelopes(on: boolean): void {
-    this.hoverSameMassEnvelopes_ = on;
+  getEnvMassFilterOnClick(): boolean {
+    return this.envMassFilterOnClick_;
+  }
+  setEnvMassFilterOnClick(on: boolean): void {
+    this.envMassFilterOnClick_ = on;
+  }
+  getEnvMassFilter(): number | null {
+    return this.envMassFilter_;
+  }
+  setEnvMassFilter(mass: number | null): void {
+    this.envMassFilter_ = mass;
   }
   // back to the full data range
   resetScale(): void {
@@ -549,50 +566,82 @@
   /**
    * @function addColorToEnvelopes
    * @description 
-   * Add color to envelopes so that neighbors are distinguishable: two
-   * envelopes that are consecutive in m/z order, or whose peaks come within
-   * envColorMinGap_ m/z of each other (their m/z ranges are less than that
-   * far apart), always get different colors — the first rule keeps
-   * envelopes that are far apart in m/z but adjacent on a zoomed-out view
-   * apart. Greedy coloring in m/z order: each envelope takes the first
-   * palette color not used by an earlier envelope it conflicts with, so the
-   * extra colors only show up where envelopes crowd together. If the palette
-   * runs out, colors are cycled, still never repeating the previous one.
+   * Add color to envelopes: the envelopes of one monoisotopic mass (its
+   * charge states, masses within envSameMassTol_) share a color, and
+   * neighbors of different masses are distinguishable. Two masses conflict
+   * when any of their envelopes are consecutive in m/z order, or have peaks
+   * within envColorMinGap_ m/z of each other (their m/z ranges are less
+   * than that far apart) — the first rule keeps envelopes that are far
+   * apart in m/z but adjacent on a zoomed-out view apart. Greedy coloring
+   * of the masses in the m/z order of their first envelope: each mass takes
+   * the first palette color not used by an already colored mass it
+   * conflicts with, so the extra colors only show up where envelopes crowd
+   * together. If the palette runs out, the mass takes the color the fewest
+   * of those masses use.
    */
   addColorToEnvelopes(envList: Envelope[]): void{
     if(!envList || envList.length === 0 || typeof envList[0].getPeaks() === "undefined") return;
-    let ranges: { env: Envelope, minMz: number, maxMz: number }[] = envList.map(env => {
+    let ranges: { env: Envelope, minMz: number, maxMz: number, group: number }[] = envList.map(env => {
       let minMz: number = Infinity;
       let maxMz: number = -Infinity;
       env.getPeaks().forEach(peak => {
         minMz = Math.min(minMz, peak.getPos());
         maxMz = Math.max(maxMz, peak.getPos());
       });
-      return { env: env, minMz: minMz, maxMz: maxMz };
+      return { env: env, minMz: minMz, maxMz: maxMz, group: -1 };
     });
     ranges.sort((x, y) => x.minMz - y.minMz);
-    let colorNum: number = this.envColorList_.length;
-    let colorIdx: number[] = new Array(ranges.length);
+    // mass groups, numbered in the m/z order of their first envelope: in
+    // mass order, an envelope continues the group of the previous one when
+    // their masses are within the tolerance
+    let byMass = ranges.slice().sort((x, y) => x.env.getMonoMass() - y.env.getMonoMass());
+    let groupOfRun: number[] = [];
+    let run: number[] = new Array(byMass.length);
+    for (let i = 0; i < byMass.length; i++) {
+      let sameAsPrev: boolean = i > 0
+        && byMass[i].env.getMonoMass() - byMass[i - 1].env.getMonoMass() < this.envSameMassTol_;
+      run[i] = sameAsPrev ? run[i - 1] : groupOfRun.push(-1) - 1;
+    }
+    byMass.forEach((range, i) => { range.group = run[i]; });
+    let groupNum: number = 0;
+    ranges.forEach(range => {
+      if (groupOfRun[range.group] < 0) {
+        groupOfRun[range.group] = groupNum++;
+      }
+      range.group = groupOfRun[range.group];
+    });
+    // conflicts[g]: the masses with an envelope next to, or within the gap
+    // of, an envelope of mass g
+    let conflicts: Set<number>[] = [];
+    for (let g = 0; g < groupNum; g++) {
+      conflicts.push(new Set<number>());
+    }
     for (let i = 0; i < ranges.length; i++) {
-      // colors already taken by the previous envelope and by earlier
-      // envelopes within the gap
-      let used: boolean[] = new Array(colorNum).fill(false);
       for (let j = i - 1; j >= 0; j--) {
-        if (j === i - 1 || ranges[j].maxMz + this.envColorMinGap_ > ranges[i].minMz) {
-          used[colorIdx[j]] = true;
+        if (ranges[j].group !== ranges[i].group
+          && (j === i - 1 || ranges[j].maxMz + this.envColorMinGap_ > ranges[i].minMz)) {
+          conflicts[ranges[i].group].add(ranges[j].group);
+          conflicts[ranges[j].group].add(ranges[i].group);
         }
       }
-      let pick: number = used.indexOf(false);
-      if (pick < 0) {
-        // more overlapping envelopes than colors: fall back to cycling,
-        // still never repeating the previous envelope's color
-        pick = (colorIdx[i - 1] + 1) % colorNum;
-      }
-      colorIdx[i] = pick;
-      ranges[i].env.setDisplayColor(this.envColorList_[pick]);
+    }
+    let colorNum: number = this.envColorList_.length;
+    let colorIdx: number[] = new Array(groupNum);
+    for (let g = 0; g < groupNum; g++) {
+      // how many of the already colored conflicting masses use each color
+      let used: number[] = new Array(colorNum).fill(0);
+      conflicts[g].forEach(other => {
+        if (other < g) {
+          used[colorIdx[other]]++;
+        }
+      });
+      // the first unused color; with more conflicting masses than colors,
+      // the least used one
+      colorIdx[g] = used.indexOf(Math.min(...used));
     }
     // keep the list itself in m/z order, as before
     for (let i = 0; i < ranges.length; i++) {
+      ranges[i].env.setDisplayColor(this.envColorList_[colorIdx[ranges[i].group]]);
       envList[i] = ranges[i].env;
     }
   }

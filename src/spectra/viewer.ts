@@ -62,13 +62,14 @@ type EnvelopeClickEvent = CustomEvent<{ envelope: Envelope; peak: Peak }>;
 
 // The MS1 / MS2 panels of this page show hover info in the panel header
 // (annoElementId), draw every envelope in the window (no thinning) and,
-// while a theoretical-peak circle is hovered, show only the circles of the
-// envelopes with the same mass; the shared SpectrumView defaults to the
-// TopMSV viewer's floating tooltips, thinned envelopes and no hover filter.
+// after a click on a theoretical-peak circle, show only the circles of the
+// envelopes with the same mass until a click elsewhere in the graph; the
+// shared SpectrumView defaults to the TopMSV viewer's floating tooltips,
+// thinned envelopes and no mass filter.
 function configurePanelView(view: SpectrumView, annoElementId: string): void {
   view.getPara().setAnnoElementId(annoElementId);
   view.getPara().setThinEnvelopes(false);
-  view.getPara().setHoverSameMassEnvelopes(true);
+  view.getPara().setEnvMassFilterOnClick(true);
 }
 
 // Show an empty spectrum in the MS2 panel (empty axes, cleared header/table).

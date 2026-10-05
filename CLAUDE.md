@@ -221,10 +221,16 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   `SpectrumViewParameters`: `setAnnoElementId(id)` routes hover text to an
   element instead of the default floating tooltip, `setThinEnvelopes(false)`
   draws every envelope in the window instead of thinning by display level,
-  `setHoverSameMassEnvelopes(true)` shows, while an envelope circle is
-  hovered, only the circles of the envelopes with the same mono mass
+  `setEnvMassFilterOnClick(true)` makes a click on an envelope circle keep
+  only the circles of the envelopes with the same mono mass (the filter,
+  `envMassFilter_`, survives zoom/drag redraws) until a click elsewhere in
+  the graph
   (the raw-spectra browser sets all three per panel in `src/spectra/viewer.ts`),
-  and `SpectrumView.addBaseInte()` adds the red base-intensity lines. The
+  and `SpectrumView.addBaseInte()` adds the red base-intensity lines.
+  Circle colors (`SpectrumViewParameters.addColorToEnvelopes`) are assigned
+  per mono mass on every page: the envelopes of one mass (its charge
+  states, masses within `envSameMassTol_`) share a color, and masses with
+  neighboring envelopes get different ones while the palette lasts. The
   `envelopeclick` CustomEvent is dispatched on every page; only the spectra
   browser listens. Dense MS1 spectra have up to ~70k envelope peaks, so
   `drawPeaks`/`drawEnvelopes` draw one mark per `markCellSize_` (0.5 SVG

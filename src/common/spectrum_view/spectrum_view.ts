@@ -1,7 +1,8 @@
 //spectrum view shared by every page: binds the SVG, zoom and drag, holds
 //the peak / envelope / ion data and draws the raw and mono-mass spectra.
 //Page-specific behavior is configured through SpectrumViewParameters
-//(hover annotation target, envelope thinning) and addBaseInte().
+//(hover annotation target, envelope thinning, envelope mass filter on
+//click) and addBaseInte().
 /**
  * @function SpectrumView
  * @description Function draws the graph, binds zoom and drag function to the graph
@@ -50,6 +51,16 @@ class SpectrumView {
       .attr("height", "100%")
       //@ts-ignore
       .call(this.zoom.bind(this));
+    // A click that is not on an envelope circle (those stop the event, see
+    // drawEnvelopes) ends the envelope mass filter. The named listener
+    // replaces the one of the view previously bound to this svg; the click
+    // that ends a drag is suppressed by d3.zoom.
+    this.svg_.on("click.envMassFilter", () => {
+      if (this.para_.getEnvMassFilter() !== null) {
+        this.para_.setEnvMassFilter(null);
+        this.scheduleRedraw();
+      }
+    });
   }
   //getter
   getPeakList(): Peak[]{
