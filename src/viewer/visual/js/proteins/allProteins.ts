@@ -30,15 +30,14 @@ function allProteins(folderName: string) {
     let h2: HTMLHeadingElement = document.createElement('h2');
     // Check to see if protein variable inside l_proteins is an array.
     // Checks for multiple proteins
+    // proteins.js keeps a one-element list as an array: decide the wording
+    // by the count, not by the shape
     if (Array.isArray(l_proteins.protein_list.proteins.protein)) {
         count = l_proteins.protein_list.proteins.protein.length;
-        document.title = count + " proteins are identified";
-        h2.innerHTML = count + " proteins are identified.";
     }
-    else {
-        document.title = count + " protein is identified";
-        h2.innerHTML = count + " protein is identified.";
-    }
+    let title: string = count === 1 ? "1 protein is identified" : count + " proteins are identified";
+    document.title = title;
+    h2.innerHTML = title + ".";
     let br: HTMLBRElement = document.createElement('br');
     // create header with protein count 
     div.appendChild(h2);

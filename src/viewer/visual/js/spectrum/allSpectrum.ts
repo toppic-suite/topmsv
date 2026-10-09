@@ -102,30 +102,17 @@ function addSearchBoxEvent(): void {
   p.innerHTML = '<a href=' + newAddress + '>Switch to Protein Identification</a>';
   //div.prepend(p);
 
-  let titleDiv: HTMLElement | null = document.getElementById('title-div');
-  let h2: HTMLElement | null = document.getElementById('id-title');
-
-  if (!h2) {
-      console.error("ERROR: Identification title header doesn't exist");
-      return;
-  }
-  if (!titleDiv) {
-    console.error("ERROR: Title div doesn't exist");
-    return;
-  }
-  // Check to see if protein variable inside l_proteins is an array.
-  // Checks for multiple proteins
+  // heading with the spectrum count, inside the content container like the
+  // protein list's (prsms.js keeps a one-element list as an array)
+  let h2: HTMLHeadingElement = document.createElement('h2');
   if (Array.isArray(l_prsms)) {
     count = l_prsms.length;
-    document.title = count + " spectra are identified";
-    h2.innerHTML = count + " spectra are identified.";
   }
-  else {
-    document.title = count + " spectrum is identified";
-    h2.innerHTML = count + " spectrum is identified.";
-  }
+  let title: string = count === 1 ? "1 spectrum is identified" : count + " spectra are identified";
+  document.title = title;
+  h2.innerHTML = title + ".";
   let br: HTMLBRElement = document.createElement('br');
-  // create header with protein count 
+  div.appendChild(h2);
   div.appendChild(br);
   // Creating ordered list
   let ol: HTMLOListElement = document.createElement('ol');
