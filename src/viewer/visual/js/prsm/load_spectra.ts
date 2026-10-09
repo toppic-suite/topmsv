@@ -6,7 +6,14 @@
 
 function loadMsOne(ms1Spec: Spectrum | null, ms1SvgId: string): void{
     if(!ms1Spec) {
-        console.error("ERROR: no ms1 spectra data");
+        // no precursor MS1 scan (ms1_ids -1 in a single-spectrum file):
+        // the precursor m/z stays plain text instead of opening the MS1 popup
+        let precMz: HTMLElement | null = document.getElementById("Precursor_mz");
+        if (precMz) {
+            precMz.removeAttribute("data-bs-toggle");
+            precMz.removeAttribute("data-bs-target");
+            precMz.title = "No MS1 spectrum for this PrSM";
+        }
         return;
     }
     let ions: MatchedIon[] = [];

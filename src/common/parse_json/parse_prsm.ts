@@ -84,9 +84,19 @@ class ParsePrsm {
       return;
     }
     let prsm: DataJsPrsm = (prsm_data as PrsmFilePayload).prsm;
-    let ms1SpecId: string = prsm.ms.ms_header.ms1_ids.split(" ")[0];
+    let ms1SpecId: string = (prsm.ms.ms_header.ms1_ids ?? "").split(" ")[0];
+    // an MS2 spectrum without a precursor MS1 scan (a single-spectrum file)
+    // has ms1_ids "-1": there is no MS1 spectrum file to load
+    if (ms1SpecId === "" || !(parseInt(ms1SpecId) >= 0)) {
+      callback(null);
+      return;
+    }
     let script: HTMLScriptElement = document.createElement('script');
     script.src = this.ms1SpecPath_ + "spectrum" + ms1SpecId + ".js";
+    script.onerror = function () {
+      console.error("failed to load MS1 spectrum file " + script.src);
+      callback(null);
+    };
     document.head.appendChild(script);
     script.onload = function () {
       // ms1_data is the global the just-loaded file assigned
