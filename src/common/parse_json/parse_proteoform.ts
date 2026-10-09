@@ -20,6 +20,7 @@ function geneProteoformObj(callback: (prsms: Prsm[]) => void): void {
       for (let matchedIon of getJsonList(peak.matched_ions?.matched_ion)) {
         let ionObj = new Ion(matchedIon.ion_type + matchedIon.ion_display_position, matchedIon.ion_type, "",
           parseFloat(matchedIon.match_shift));
+        ionObj.setPos(parseInt(matchedIon.ion_display_position));
         matchedPairList.push(new MatchedPeakEnvelopePair(parseFloat(matchedIon.theoretical_mass), peakObj, ionObj));
       }
     }

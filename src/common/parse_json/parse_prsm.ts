@@ -215,6 +215,7 @@ class ParsePrsm {
         }
         let ionObj = new Ion(ion.ion_type + ion.ion_display_position, ion.ion_type, ionTerm,
           parseFloat(ion.match_shift), parseFloat(ion.mass_error), parseFloat(ion.ppm));
+        ionObj.setPos(parseInt(ion.ion_display_position));
         if (ionTerm == "C") {
           cIons.push(ionObj);
         }
@@ -256,6 +257,7 @@ class ParsePrsm {
         }
         let matchedIonObj = new Ion(ionText, ionType, ionTerm, parseFloat(matchedIon.match_shift),
           parseFloat(matchedIon.mass_error), parseFloat(matchedIon.ppm));
+        matchedIonObj.setPos(parseInt(matchedIon.ion_display_position));
         let matchedPair = new MatchedPeakEnvelopePair(parseFloat(matchedIon.theoretical_mass), matchedPeakObj, matchedIonObj);
         matchedPair.addEnvelope(envelopes[peakId]);
         matchedPairList.push(matchedPair);

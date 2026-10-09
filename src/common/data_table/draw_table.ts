@@ -3,7 +3,24 @@
  * Provide a unique class name to the m/z values to provide on click action to xoom the
  * spectrum graph to that position
  */
- class DataTable {
+ /**
+ * Display position of a matched fragment ion (the N of b/c/y/z-N). Ions
+ * built by the parsers carry it; otherwise it is the part of the ion id
+ * after the ion name (names such as "Z˙" are longer than one character,
+ * so never strip a fixed number of characters).
+ */
+function ionDisplayPos(ion: Ion): number {
+  let pos: number | undefined = ion.getPos();
+  if (pos !== undefined && !isNaN(pos)) {
+    return pos;
+  }
+  let id: string = ion.getId();
+  let name: string = ion.getName();
+  let rest: string = id.startsWith(name) ? id.slice(name.length) : id.replace(/^\D+/, "");
+  return parseInt(rest);
+}
+
+class DataTable {
     private prsmObj_: Prsm;
     private showScanNum_: boolean;
     private ms2GraphList_: SpectrumView[];
@@ -262,7 +279,7 @@
           l_matched_peak_count++;
           //	create a name for each row
           let ion: string = matchedPeakPair.getIon().getName();
-          let ionPos: number = parseInt((matchedPeakPair.getIon().getId()).slice(1));
+          let ionPos: number = ionDisplayPos(matchedPeakPair.getIon());
           if (ion.indexOf("X") >= 0 || ion.indexOf("Y") >= 0 || ion.indexOf("Z") >= 0) {
               if (seqLen) {
                   ionPos = seqLen - (ionPos);
@@ -362,13 +379,12 @@
               td.innerHTML = FormatUtil.formatFloat(matchedPeakPair.getTheoMass().toString(), "dataTable");
             }
             if (i == 8) {
-              let ionPos: string = matchedPeakPair.getIon().getId();
-              td.innerHTML = matchedPeakPair.getIon().getName() + ionPos.slice(1);
+              td.innerHTML = matchedPeakPair.getIon().getName() + ionDisplayPos(matchedPeakPair.getIon());
             }
             if (i == 9) {
             //if c-term ion, pos = pos + 1
               let ion: string = matchedPeakPair.getIon().getName();
-              let ionPos: number = parseInt((matchedPeakPair.getIon().getId()).slice(1));
+              let ionPos: number = ionDisplayPos(matchedPeakPair.getIon());
               if (ion.indexOf("X") >= 0 || ion.indexOf("Y") >= 0 || ion.indexOf("Z") >= 0) {
                 if (seqLen){
                   td.innerHTML = (seqLen - ionPos).toString();

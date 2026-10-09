@@ -153,7 +153,11 @@ class SeqOfExecution {
                 decovPeaksList.push(peakObj);
             }
             if (peak.matchedInd == "Y") {
-                let ionObj: Ion = new Ion(peak.ion, peak.ion.slice(0, 1), "", -1, peak.massError, peak.PPMerror);
+                // peak.ion is the ion name followed by its position ("Z˙35");
+                // the name can be more than one character, so split off the
+                // trailing digits rather than one character
+                let ionObj: Ion = new Ion(peak.ion, peak.ion.replace(/\d+$/, ""), "", -1, peak.massError, peak.PPMerror);
+                ionObj.setPos(parseInt(peak.ionPos));
                 matchedPeakPairList.push(new MatchedPeakEnvelopePair(peak.thMass, peakObj, ionObj));
             }
         });
