@@ -1,6 +1,6 @@
 {
   "name": "topmsv-for-toppic",
-  "version": "2.0.0.0",
+  "version": "2.1.0",
   "description": "Web tool for visualizing TopFD spectral deconvolution and TopPIC database search results",
   "main": "server.ts",
   "scripts": {
