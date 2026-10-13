@@ -178,9 +178,12 @@ Upload compressed files as you would the originals, in any combination:
 TopFD's and TopPIC's file, both compressed or only one of them. The server
 needs the extension to read them: `ext/sqlite_zstd/` of the repository
 (`npm run fetch-sqlite-zstd`; releases for Linux, macOS and Windows on
-x86_64), or the library file named by the environment variable
-`SQLITE_ZSTD_EXTENSION`. Without it, an upload of a compressed file is
-refused with a message that says how to get the extension.
+x86_64, and for 32-bit ARM Linux), or the library file named by the
+environment variable `SQLITE_ZSTD_EXTENSION`. On Apple Silicon and 64-bit
+ARM Linux, build the extension from its source (with Rust: `cargo build
+--release --features build_extension`) and set `SQLITE_ZSTD_EXTENSION` to
+the library in `target/release/`. Without it, an upload of a compressed
+file is refused with a message that says how to get the extension.
 
 ## Pages
 

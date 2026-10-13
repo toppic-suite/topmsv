@@ -8,15 +8,19 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const VERSION = 'v0.3.5';
+// the release's binaries; none for arm64 (Apple Silicon, 64-bit ARM Linux)
 const ASSETS = {
   'linux-x64': 'x86_64-unknown-linux-gnu.tar.gz',
+  'linux-arm': 'arm-unknown-linux-gnueabihf.tar.gz',
   'darwin-x64': 'x86_64-apple-darwin.tar.gz',
   'win32-x64': 'x86_64-pc-windows-msvc.zip',
 };
 const key = `${process.platform}-${process.arch}`;
 const asset = ASSETS[key];
 if (!asset) {
-  console.error(`no sqlite-zstd ${VERSION} release for ${key}; build it from source and set SQLITE_ZSTD_EXTENSION`);
+  console.error(`sqlite-zstd ${VERSION} has no release for ${key}: build it from its source `
+    + '(https://github.com/phiresky/sqlite-zstd, with Rust: cargo build --release --features build_extension) '
+    + 'and set SQLITE_ZSTD_EXTENSION to the library in target/release/');
   process.exit(1);
 }
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
