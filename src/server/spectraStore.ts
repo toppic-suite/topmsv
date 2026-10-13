@@ -207,6 +207,16 @@ export function* spectraOf(db: DatabaseSync, schema: string, table: string, colu
   if (spec !== null) yield { specId: spec, values };
 }
 
+/**
+ * The column names of a per-spectrum table of one file of the connection
+ * (not resolved across files; none when the file lacks the table).
+ */
+export function schemaSpectrumColumns(db: DatabaseSync, schema: string, table: string): string[] {
+  const blob = schemaTableNames(db, schema).has(CODEC_TABLE) ? codecRows(db, schema, table) : [];
+  if (blob.length > 0) return blob.map((c) => c.name);
+  return (db.prepare(`PRAGMA ${schema}.table_info(${q(table)})`).all() as { name: string }[]).map((c) => c.name);
+}
+
 /** Whether a table of one file of the connection is stored as BLOB rows. */
 export function isBlobInSchema(db: DatabaseSync, schema: string, table: string): boolean {
   return schemaTableNames(db, schema).has(CODEC_TABLE) && codecRows(db, schema, table).length > 0;

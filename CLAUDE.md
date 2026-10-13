@@ -15,8 +15,7 @@ npm run typecheck:server    # tsc --project tsconfig.server.json (noEmit)
 npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
 npm start -- --view-only        # hides upload panel + Delete buttons, POST/DELETE /api/datasets -> 403 (src/server/config.ts)
-npm run convert -- --sqlite f.sqlite --out outdir
-npm run convert -- --sqlite f_toppic.sqlite --topfd-sqlite f.sqlite --out outdir   # a two-file dataset (also f_topmg.sqlite)
+npm run convert -- --sqlite f_toppic.sqlite --topfd-sqlite f.sqlite --out outdir   # TopPIC (or f_topmg.sqlite) + TopFD file
 npm run fetch-sqlite-zstd   # sqlite-zstd v0.3.5 into ext/sqlite_zstd/ (gitignored); or SQLITE_ZSTD_EXTENSION=<lib>
 npm run compress -- --sqlite f.sqlite --out f_zstd.sqlite [--level 3]   # a compressed copy TopMSV reads
 ```
@@ -33,15 +32,16 @@ validation loop below plus loading pages in a browser.
 ## What this app is
 
 A web tool for visualizing TopFD / TopDIA (spectral deconvolution) +
-TopPIC / TopMG (database search) output. A dataset is one of four kinds
+TopPIC / TopMG (database search) output. A dataset is one of four types
 (`meta.type`: `topfd`, `topfd_toppic`, `topfd_topmg`, `topdia`; upload
 fields `sqlite`, `toppic_sqlite`, `topmg_sqlite`, `topdia_sqlite`, the
-fields given name the kind). A two-file dataset is `ms.sqlite` +
+fields given name the type; the home page has the type as radio buttons,
+which name the fields). A two-file dataset is `ms.sqlite` +
 `toppic.sqlite` or `topmg.sqlite`, read through one connection with the
 TopPIC / TopMG file as main and TopFD's attached as `topfd`, so a table
 missing from the first resolves to TopFD's; `src/server/sqliteFiles.ts`,
 every open goes through `datasets.openDatasetDb`, and table lists must use
-`sqliteFiles.tableNames`, never one file's `sqlite_master`; newer TopPIC and
+`sqliteFiles.tableNames`, never one file's `sqlite_master`; TopPIC and
 TopMG write only `ms2_env` / `ms2_env_peak` and their own tables, or every
 table corrected after toppic `--mass-calib`. A TopDIA file links no MS/MS
 window to an MS1 scan (`ms1_id` -1): `src/server/diaLinks.ts` derives the
@@ -58,16 +58,27 @@ byte-identical; `tableNames` lists BLOB tables under their own names,
 compressed TopFD file attached to a compressed TopPIC/TopMG file is read
 through its own connection (`sqliteFiles.attachedFileDb`): sqlite-zstd
 looks dictionaries up with an unqualified `_zstd_dicts`, which resolves to
-the main file's. ONE sqlite file: TopFD writes the spectra
-(`ms{1,2}_*` tables) and, with `-D`, the MS1 3D view's levels (CONFIG plus
-either the tables PEAKS<n> of TopFD 2.0 - 2.1 or, newer, a LEVEL column of
-`ms1_peak` keyed (LEVEL, spec_id, peak_id): level k = LEVEL >= k, -1 = not
-in the map, RT = the spectrum's in ms truncated, COLOR computed as TopFD's
-MsSqlWriter; `src/server/ms1Peaks.ts` reads both, every ms1_peak query goes
-through it, and ensureIndexes does not index a merged ms1_peak); TopPIC
-appends (older versions) its identifications
-(`prsm`, `prsm_mass_shift`, `proteoform`, `prsm_protein_match`) and the
-search database (`fasta_seq`) to the same file. The upload inspects the
+the main file's. TopFD / TopDIA write the spectra (`ms{1,2}_*` tables,
+`ms2_spectrum.ms1_id` linking MS/MS to MS1) and the MS1 3D view's levels
+(CONFIG plus a LEVEL column of `ms1_peak` keyed (LEVEL, spec_id, peak_id):
+level k = LEVEL >= k, -1 = not in the map, RT = the spectrum's in ms
+truncated, COLOR computed as TopFD's MsSqlWriter; every ms1_peak query goes
+through `src/server/ms1Peaks.ts`, and ensureIndexes does not index
+ms1_peak); the TopPIC / TopMG file holds the identifications (`prsm`,
+`prsm_mass_shift`, `proteoform`, `prsm_protein_match`) and the search
+database (`fasta_seq`). OLD FORMATS ARE NOT SUPPORTED and the upload
+refuses them (`datasets.checkDataset`): spectra files without
+`ms1_peak.LEVEL` (TopFD 2.0 - 2.1's PEAKS<n> tables) or without
+`ms2_spectrum.ms1_id`, identification tables in a TopFD/TopDIA file alone
+(older TopPIC appended them to TopFD's file), and a TopPIC/TopMG full copy
+of such an old TopFD file. The HOME PAGE checks the selected files in the
+browser before uploading (`src/client/upload_check.ts` over
+`src/client/sqlite_reader.ts`, a read-only SQLite page reader on
+`File.slice`): the same checks as `checkDataset` (the TopPIC/TopMG file
+must belong to the TopFD file: same MS/MS spectra for a full copy, else
+TopFD's `ms2_env` rows at 64 sampled rowids, all of them only when a sample
+differs, per-spectrum envelope counts for a compressed file) — keep the two
+in step when changing either. The upload inspects the
 tables (`meta.hasIdentifications`, `meta.hasFasta`, `meta.has3d`); a nav
 item whose data the file lacks is rendered disabled, and without
 identification tables every `data_js` request 404s. The old separate
@@ -169,12 +180,15 @@ the run that actually produced the reference.
 
 ### Validation loop (use it after touching the converter)
 
-`test_data/st_1.sqlite` is the example input (gitignored); the byte-level
-ground-truth `_html` tree was removed from the repo — obtain a
-TopPIC-generated `*_html` directory for the same run to re-run this.
+The input is a current TopFD file + its TopPIC file (`test_data/st_1.sqlite`
+and `test_data/st_1_toppic.sqlite`, gitignored; regenerate them with the
+current topfd and toppic from `st_1.mzML` if the copies there are of an
+older version); the byte-level ground-truth `_html` tree was removed from
+the repo — obtain a TopPIC-generated `*_html` directory for the same run to
+re-run this.
 
-1. `npm run convert -- --sqlite test_data/st_1.sqlite --out outdir`
-   (the search database comes from the sqlite's `fasta_seq` table).
+1. `npm run convert -- --sqlite test_data/st_1_toppic.sqlite --topfd-sqlite test_data/st_1.sqlite --out outdir`
+   (the search database comes from the TopPIC file's `fasta_seq` table).
 2. `diff -rq` against the reference `data_js` trees, then a semantic
    comparator that treats peak lists as value-sets with peak ids remapped
    (and, for a reference from a different TopPIC run, masks p/e-values and
@@ -295,7 +309,8 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
 
 ## Reference material (untracked, gitignored)
 
-`test_data/st_1.sqlite` is the example input (TopFD spectra + MS1 3D
-tables + TopPIC identifications + fasta_seq) — upload it on the home page
-to try the tool. `sqlite3` CLI is not installed; inspect `.sqlite` files
+`test_data/st_1.sqlite` + `test_data/st_1_toppic.sqlite` are the example
+input (TopFD spectra + MS1 3D levels; TopPIC identifications + fasta_seq) —
+upload them on the home page to try the tool. They must be written by the
+current TopFD and TopPIC: files of older versions are refused. `sqlite3` CLI is not installed; inspect `.sqlite` files
 with `node:sqlite`.

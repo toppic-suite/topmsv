@@ -132,8 +132,8 @@ export function loadIdentifications(
 }
 
 export interface ConvertOptions {
-  sqlitePath: string;      // the TopPIC or TopMG file, or a file with every table
-  topfdSqlitePath?: string; // the TopFD file of a TopPIC file with the envelope tables only
+  sqlitePath: string;       // the TopPIC or TopMG file
+  topfdSqlitePath: string;  // the TopFD file it was searched with
   outDir: string; // dataset root; trees are written to <outDir>/<cutoff>/data_js
   parameters?: Partial<MatchingParameters>;
   onProgress?: (msg: string) => void;
@@ -142,7 +142,7 @@ export interface ConvertOptions {
 export function convertDataset(opts: ConvertOptions): void {
   const para: MatchingParameters = { ...DEFAULT_PARAMETERS, ...(opts.parameters ?? {}) };
   const progress = opts.onProgress ?? (() => undefined);
-  const db = new MsDataDb(openSqlitePair(opts.topfdSqlitePath ?? null, opts.sqlitePath));
+  const db = new MsDataDb(openSqlitePair(opts.topfdSqlitePath, opts.sqlitePath));
   try {
     progress(`reading identifications from ${path.basename(opts.sqlitePath)}`);
     const loaded = loadIdentifications(db, path.basename(opts.sqlitePath), para);

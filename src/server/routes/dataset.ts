@@ -31,12 +31,11 @@ function isTopdia(req: express.Request): boolean {
 }
 
 // ------------------------------------------------------------------ MS1 3D view
-// Newer TopFD versions write the MS1 peaks at several resolutions into the
-// same sqlite: CONFIG has one row per level with the data bounds and the
-// peak count of the level, the peaks are the tables PEAKS<level> or a merged
-// ms1_peak with a LEVEL column (src/server/ms1Peaks.ts reads both); retention
-// times are in milliseconds. The API converts them to minutes. getDb3d is
-// null (404 here) for a file without levels.
+// TopFD and TopDIA write the MS1 peaks at several resolutions into the same
+// sqlite: CONFIG has one row per level with the data bounds and the peak
+// count of the level, and ms1_peak a LEVEL column (src/server/ms1Peaks.ts);
+// retention times are in milliseconds. The API converts them to minutes.
+// getDb3d is null (404 here) for a file without levels.
 
 const RT_MS_PER_MIN = 60000;
 const MAX_3D_PEAKS = 20000;
@@ -143,7 +142,7 @@ router.get('/api/ms2-info/:id', (req, res) => {
 router.get('/api/peaks/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(ms1PeakRows(db, Number(req.params.id), false));
+  res.json(ms1PeakRows(db, Number(req.params.id)));
 });
 
 router.get('/api/ms2-peaks/:id', (req, res) => {
@@ -198,14 +197,9 @@ router.get('/api/ms2-id-by-ms1/:id', (req, res) => {
     res.json({ id: diaLinks(db).firstMs2OfMs1.get(Number(req.params.id)) ?? -1 });
     return;
   }
-  try {
-    const row = db.prepare('SELECT MIN(id) AS id FROM ms2_spectrum WHERE ms1_id = ?')
-      .get(Number(req.params.id)) as any;
-    if (row && row.id !== null) res.json({ id: row.id });
-    else res.json({ id: -1 });
-  } catch {
-    res.json(null); // file predates ms1_id linking
-  }
+  const row = db.prepare('SELECT MIN(id) AS id FROM ms2_spectrum WHERE ms1_id = ?')
+    .get(Number(req.params.id)) as { id: number | null } | undefined;
+  res.json({ id: row?.id ?? -1 });
 });
 
 // ---------------------------------------------- dynamic TopFD spectrum files

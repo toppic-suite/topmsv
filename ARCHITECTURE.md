@@ -17,21 +17,23 @@ identifications for visualization from the sqlite files of a dataset. It
   ones TopPIC stored; p-values are not available from the sqlite and are
   written as "N/A".
 
-A dataset is one of four kinds (`meta.type`, `datasets.DatasetType`): a
+A dataset is one of four types (`meta.type`, `datasets.DatasetType`): a
 TopFD file alone (`topfd`), TopFD + TopPIC (`topfd_toppic`), TopFD + TopMG
 (`topfd_topmg`), a TopDIA file alone (`topdia`). Its directory holds one or
 two uploaded sqlite files. `ms.sqlite` is TopFD's or TopDIA's file: the
-spectra and, in newer versions, the MS1
-3D view's levels (tables `PEAKS<n>`, or in the newest a `LEVEL` column of
-`ms1_peak`; `src/server/ms1Peaks.ts` reads both layouts), plus, in files of
-older TopPIC and TopMG versions, the identification tables and search
-database they appended (`src/server/convert/toppicSqlite.ts` reads them).
-`toppic.sqlite` / `topmg.sqlite` is the TopPIC / TopMG file of a two-file
-dataset: newer TopPIC and TopMG versions write `<name>_toppic.sqlite` /
-`<name>_topmg.sqlite` with the identification tables, the search database
+spectra, with the MS/MS spectra linked to their MS1 spectrum
+(`ms2_spectrum.ms1_id`) and the MS1 3D view's levels as a `LEVEL` column of
+`ms1_peak` (`src/server/ms1Peaks.ts`). `toppic.sqlite` / `topmg.sqlite` is
+the TopPIC / TopMG file of a two-file dataset: TopPIC and TopMG write
+`<name>_toppic.sqlite` / `<name>_topmg.sqlite` with the identification
+tables (read by `src/server/convert/toppicSqlite.ts`), the search database
 and TopFD's MS/MS envelope tables (`ms2_env`, `ms2_env_peak`, with the
 envelopes of TopPIC's post mass matching added), or after toppic
-`--mass-calib` every table, corrected. One connection reads both
+`--mass-calib` every table, corrected. Files of older versions are not
+supported and the upload refuses them: spectra files without
+`ms1_peak.LEVEL` (the levels as tables `PEAKS<n>`) or without
+`ms2_spectrum.ms1_id`, identification tables written into TopFD's file,
+and TopPIC files that copied every table of such a TopFD file. One connection reads both
 (`src/server/sqliteFiles.ts`): the TopPIC / TopMG file is the main database
 and the TopFD file is attached as `topfd`, so an unqualified table name
 resolves to the first file when it has the table and to the TopFD file
@@ -87,21 +89,24 @@ upload panel and the Delete column. The home page and the shared nav bar
 read `/api/config`, which reports the version (from `package.json` through
 `src/server/version.ts`) and the `--view-only` flag. Uploading (`src/server/routes/api.ts`) takes
 one form field per tool, `sqlite` (TopFD's file), `topdia_sqlite`,
-`toppic_sqlite` and `topmg_sqlite`; the fields given name the kind
+`toppic_sqlite` and `topmg_sqlite`; the fields given name the type
 (`{sqlite}`, `{sqlite, toppic_sqlite}`, `{sqlite, topmg_sqlite}`,
 `{topdia_sqlite}`; anything else is a 400 listing the four). The spectra
 file is stored as `ms.sqlite`, a TopPIC or TopMG file as `toppic.sqlite` or
 `topmg.sqlite`. Each file gets per-spectrum indexes on the tables it has
 and rollback journaling; `datasets.checkDataset` then requires the files
-to resolve every table the pages read; a TopDIA file to look like one and a
-TopFD file not to (`looksLikeTopdia`: MS1 and MS/MS spectra, none of the
-MS/MS linked to an MS1 spectrum by `ms2_spectrum.ms1_id`); and, for two
-files, the TopPIC or TopMG file to belong to the TopFD file (with every
-table: the same MS/MS spectrum ids and scans; with the envelope tables
-only: every MS/MS envelope of the TopFD file (spec_id, env_id, mono_mass)
-present, found by a rowid join or else by spectrum, and no envelope of a
-spectrum the TopFD file lacks; read spectrum by spectrum when either file
-is compressed); a TopPIC or TopMG file without spectra is
+to resolve every table the pages read; the spectra file to be in the
+current layout (`hasCurrentLayout`: `ms1_peak.LEVEL` and
+`ms2_spectrum.ms1_id`); a TopDIA file to look like one and a TopFD file not
+to (`looksLikeTopdia`: MS1 and MS/MS spectra, none of the MS/MS linked to
+an MS1 spectrum by `ms2_spectrum.ms1_id`); a file alone to hold no
+identifications; and, for two files, the TopPIC or TopMG file to hold the
+identification tables and to belong to the TopFD file (with every table:
+the current layout and the same MS/MS spectrum ids and scans; with the
+envelope tables only: every MS/MS envelope of the TopFD file (spec_id,
+env_id, mono_mass) present, found by a rowid join or else by spectrum, and
+no envelope of a spectrum the TopFD file lacks; read spectrum by spectrum
+when either file is compressed); a TopPIC or TopMG file without spectra is
 refused alone. A compressed file needs the sqlite-zstd extension: without
 it the upload is refused with the message of `loadZstdExtension`, and on a
 server started without it the requests of a compressed dataset answer 500
@@ -109,7 +114,7 @@ with that message as JSON. For a TopDIA dataset, whose `ms1_id` is -1 for every 
 `/api/ms2-info/:id` reports and `/api/ms2-id-by-ms1/:id` uses the MS1 scan of
 the window's cycle, the last MS1 scan before it by scan number
 (`src/server/diaLinks.ts`), so the spectra browser's MS1 and MS2 panels
-stay linked. The upload records the kind (`meta.type`) and the file names
+stay linked. The upload records the type (`meta.type`) and the file names
 (`meta.files`), inspects which
 tables the files hold (`meta.hasIdentifications`, `hasFasta`, `has3d`),
 and, when identifications are present, reads and
@@ -122,7 +127,25 @@ shared static pages.
 ## Pages
 
 - `/` — home page: version, upload form (unless view-only) and the dataset
-  list with counts and the links each dataset supports.
+  list with counts and the links each dataset supports. The form has the
+  dataset type as radio buttons and the file inputs of the type: the TopFD
+  or TopDIA file and, for TopFD + TopPIC or TopFD + TopMG, the TopPIC or
+  TopMG file (the type names the upload fields). Each file is checked in
+  the browser when it is selected, before anything is uploaded:
+  `src/client/sqlite_reader.ts` reads the schema and rows of an SQLite file
+  through `File.slice` (only the pages a read needs, never the whole file),
+  and `src/client/upload_check.ts` runs `checkDataset`'s checks on it. The
+  first file must be a file of the type's tool (TopFD or TopDIA, told
+  apart by `ms2_spectrum.ms1_id`) in the current layout; the second file is
+  checked once the first has passed, and must hold the identification
+  tables and belong to the TopFD file: the same MS/MS spectra for a
+  `--mass-calib` copy, else TopFD's MS/MS envelopes at 64 rowids spread
+  over TopFD's `ms2_env` (TopPIC copies them in rowid order), every
+  envelope only when one of those differs; a compressed file
+  stores the envelopes compressed, so there the number of envelopes of each
+  spectrum (`n` of the BLOB rows) is compared. A file that fails, or a
+  TopPIC or TopMG file of another run, gets a warning and Upload stays
+  disabled; the server checks the uploaded files again in full.
 - `/d/<dataset>/topmsv/...` — the TopMSV visualization pages: protein list,
   protein, proteoform, PrSM and spectrum views (`visual/`) and the visual
   inspection calculator (`inspect/`).
@@ -243,9 +266,8 @@ src/server/prsmSource.ts     per-dataset in-memory cache of parsed and
                              matched PrSM data; serves the data_js files
 src/server/spectrumJs.ts     per-scan topfd/ms{1,2}_json/spectrum<N>.js
                              generated straight from the sqlite file
-src/server/ms1Peaks.ts       the two layouts of the MS1 peaks (ms1_peak with
-                             PEAKS<n> tables, or one ms1_peak with LEVEL):
-                             a spectrum's peak query and the MS1 3D data
+src/server/ms1Peaks.ts       the MS1 peaks (ms1_peak with LEVEL): a
+                             spectrum's peak query and the MS1 3D data
 src/server/spectraStore.ts   every read of the per-spectrum tables, as rows
                              or as the BLOB rows of a compressed file
 src/server/zstd/             compressed files: the converter (compress.ts,
@@ -281,7 +303,10 @@ public/ms1_3d/ms1_3d.html    MS1 3D view page (needs the MS1 3D peak
 src/viewer/                  TopMSV viewer page scripts (compiled to
                              public/topmsv/{visual,inspect}/js)
 src/client/                  home page TypeScript (compiled to
-                             public/common/js)
+                             public/common/js): the dataset list and upload
+                             form (home.ts), the browser-side checks of the
+                             selected files (upload_check.ts) over a
+                             read-only SQLite file reader (sqlite_reader.ts)
 public/index.html            home page
 public/spectra/spectra.html  raw-spectra browser page (scripts generated)
 public/topmsv/               TopMSV viewer HTML (visual/, inspect/; all JS

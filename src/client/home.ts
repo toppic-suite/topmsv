@@ -1,4 +1,5 @@
-// Home page: dataset list + upload form. Compiled to public/js/home.js.
+// Home page: dataset list + upload form. Compiled to public/common/js/home.js
+// (after sqlite_reader.ts and upload_check.ts, whose globals it uses).
 
 type DatasetType = 'topfd' | 'topfd_toppic' | 'topfd_topmg' | 'topdia';
 
@@ -18,19 +19,17 @@ interface DatasetMeta {
   files?: string[];        // the uploaded files, the spectra file first (absent for older datasets)
 }
 
-// The four kinds of datasets (toppic_test experiment 170): the label, the
-// upload fields of the spectra file and of the search file ('' for none),
-// and the labels of the two file inputs.
-const KINDS: Record<DatasetType, { label: string; spectraField: string; searchField: string;
-  spectraLabel: string; searchLabel: string }> = {
-  topfd: { label: 'TopFD', spectraField: 'sqlite', searchField: '',
-    spectraLabel: 'TopFD sqlite file', searchLabel: '' },
-  topfd_toppic: { label: 'TopFD + TopPIC', spectraField: 'sqlite', searchField: 'toppic_sqlite',
-    spectraLabel: 'TopFD sqlite file', searchLabel: 'TopPIC sqlite file' },
-  topfd_topmg: { label: 'TopFD + TopMG', spectraField: 'sqlite', searchField: 'topmg_sqlite',
-    spectraLabel: 'TopFD sqlite file', searchLabel: 'TopMG sqlite file' },
-  topdia: { label: 'TopDIA', spectraField: 'topdia_sqlite', searchField: '',
-    spectraLabel: 'TopDIA sqlite file', searchLabel: '' },
+// The four types of datasets (toppic_test experiment 170): the name the
+// dataset list shows, the tool that wrote each file of the upload form
+// (searchTool null: the type has no second file) and the upload fields.
+const TYPES: Record<DatasetType, { label: string; spectraTool: 'TopFD' | 'TopDIA'; spectraField: string;
+  searchTool: 'TopPIC' | 'TopMG' | null; searchField: string }> = {
+  topfd: { label: 'TopFD', spectraTool: 'TopFD', spectraField: 'sqlite', searchTool: null, searchField: '' },
+  topfd_toppic: { label: 'TopFD + TopPIC', spectraTool: 'TopFD', spectraField: 'sqlite',
+    searchTool: 'TopPIC', searchField: 'toppic_sqlite' },
+  topfd_topmg: { label: 'TopFD + TopMG', spectraTool: 'TopFD', spectraField: 'sqlite',
+    searchTool: 'TopMG', searchField: 'topmg_sqlite' },
+  topdia: { label: 'TopDIA', spectraTool: 'TopDIA', spectraField: 'topdia_sqlite', searchTool: null, searchField: '' },
 };
 
 async function fetchDatasets(): Promise<DatasetMeta[]> {
@@ -74,10 +73,10 @@ function renderDatasets(list: DatasetMeta[]): void {
     const identLink = d.hasIdentifications
       ? `<a href="d/${ds}/topmsv/visual/proteins.html?data=toppic_proteoform_cutoff">Identifications</a>`
       : '';
-    const kind = KINDS[d.type] ? KINDS[d.type].label : '';
+    const type = TYPES[d.type]?.label ?? '';
     const files = d.files && d.files.length > 0
-      ? `<div class="hint files">${esc(kind)}: ${d.files.map(esc).join(' + ')}</div>`
-      : `<div class="hint files">${esc(kind)}</div>`;
+      ? `<div class="hint files">${esc(type)}: ${d.files.map(esc).join(' + ')}</div>`
+      : `<div class="hint files">${esc(type)}</div>`;
     html += `<tr>
       <td>${esc(d.name)}${note}${files}</td>
       <td>${esc(created)}</td>
@@ -115,44 +114,144 @@ async function refresh(): Promise<void> {
   }
 }
 
+// The upload form: the dataset type (radio buttons) and the files of the
+// type, the TopFD or TopDIA file and, for TopFD + TopPIC or TopFD + TopMG,
+// the TopPIC or TopMG file. Each file is checked in the browser when it is
+// selected (upload_check.ts), against the chosen type, and Upload is enabled
+// only once the files of the type pass their checks, so that a file that is
+// not what the type needs, or a TopPIC or TopMG file of another TopFD file,
+// is reported before it is uploaded (the server checks the files again).
 function setupUpload(): void {
-  const form = document.getElementById('uploadForm') as HTMLFormElement;
-  const btn = document.getElementById('uploadBtn') as HTMLButtonElement;
-  const status = document.getElementById('uploadStatus') as HTMLElement;
-  const spectraInput = document.getElementById('spectraInput') as HTMLInputElement;
-  const searchInput = document.getElementById('searchInput') as HTMLInputElement;
-  const currentKind = (): DatasetType =>
-    ((form.querySelector('input[name="kind"]:checked') as HTMLInputElement | null)?.value ?? 'topfd_toppic') as DatasetType;
-  // the file inputs of the chosen kind: their labels, and the search file's
-  // row only for a kind with a TopPIC or TopMG file
-  const showKind = () => {
-    const k = KINDS[currentKind()];
-    (document.getElementById('spectraLabel') as HTMLElement).textContent = k.spectraLabel;
-    (document.getElementById('searchLabel') as HTMLElement).textContent = k.searchLabel;
-    (document.getElementById('searchRow') as HTMLElement).hidden = k.searchField === '';
+  const el = (id: string) => document.getElementById(id) as HTMLElement;
+  const form = el('uploadForm') as HTMLFormElement;
+  const btn = el('uploadBtn') as HTMLButtonElement;
+  const status = el('uploadStatus');
+  const spectraInput = el('spectraInput') as HTMLInputElement;
+  const searchInput = el('searchInput') as HTMLInputElement;
+  let spectra: SpectraFileInfo | null = null;   // the first file, once it was read as a TopFD or TopDIA file
+  let search: SearchFileInfo | null = null;     // the second file, once it passed its check
+  // the latest check of each input: the result of an earlier one is dropped
+  let spectraCheck = 0;
+  let searchCheck = 0;
+  let uploading = false;
+
+  const show = (target: HTMLElement, text: string, state: '' | 'ok' | 'warning' | 'pending') => {
+    target.textContent = text;
+    target.className = 'filestatus' + (state ? ' ' + state : '');
   };
-  for (const radio of Array.from(form.querySelectorAll('input[name="kind"]'))) {
-    radio.addEventListener('change', showKind);
-  }
-  showKind();
-  form.addEventListener('reset', () => setTimeout(showKind, 0));
-  form.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const k = KINDS[currentKind()];
-    const spectraFile = spectraInput.files?.[0];
-    const searchFile = searchInput.files?.[0];
-    if (!spectraFile || (k.searchField !== '' && !searchFile)) {
-      status.classList.add('error');
-      status.textContent = k.searchField === ''
-        ? `Select the ${k.spectraLabel}.`
-        : `Select the ${k.spectraLabel} and the ${k.searchLabel}.`;
+  const reason = (err: unknown) => (err instanceof Error ? err.message : String(err));
+  const currentType = (): DatasetType =>
+    ((form.querySelector('input[name="type"]:checked') as HTMLInputElement | null)?.value ?? 'topfd_toppic') as DatasetType;
+  // the first file is a file of the type's tool
+  const spectraOk = () => spectra !== null && spectra.tool === TYPES[currentType()].spectraTool;
+  // the files of the type passed their checks
+  const ready = () => spectraOk() && (TYPES[currentType()].searchTool === null || search !== null);
+  const update = () => { btn.disabled = uploading || !ready(); };
+  // the file inputs of the chosen type: their labels, and the second file's
+  // row only for a type with a TopPIC or TopMG file
+  const showType = () => {
+    const t = TYPES[currentType()];
+    el('spectraLabel').textContent = `${t.spectraTool} sqlite file`;
+    el('searchRow').hidden = t.searchTool === null;
+    if (t.searchTool) el('searchLabel').textContent = `${t.searchTool} sqlite file`;
+  };
+  // the first file's status once it was read: what it is, or a warning when
+  // the type needs a file of the other tool
+  const showSpectra = () => {
+    if (!spectra) return;
+    const target = el('spectraStatus');
+    const counts = `${spectra.ms1Num.toLocaleString()} MS1 and ${spectra.ms2Scans.size.toLocaleString()} MS/MS spectra`;
+    if (spectraOk()) {
+      show(target, `${spectra.tool} file: ${counts}.`, 'ok');
+    } else if (spectra.tool === 'TopDIA') {
+      show(target, 'Warning: it is a TopDIA file (none of its MS/MS spectra is linked to an MS1 spectrum), not a '
+        + 'TopFD file: choose the dataset type TopDIA only. The file cannot be uploaded.', 'warning');
+    } else {
+      show(target, 'Warning: it is a TopFD file (its MS/MS spectra are linked to MS1 spectra), not a TopDIA file: '
+        + 'choose a TopFD dataset type. The file cannot be uploaded.', 'warning');
+    }
+  };
+
+  const checkSearch = async () => {
+    const check = ++searchCheck;
+    search = null;
+    const tool = TYPES[currentType()].searchTool;
+    const file = searchInput.files?.[0];
+    const target = el('searchStatus');
+    if (!tool || !file) {
+      show(target, '', '');
+      update();
       return;
     }
+    if (!spectra || !spectraOk()) {
+      show(target, 'Checked once the TopFD file has passed its check.', '');
+      update();
+      return;
+    }
+    show(target, 'Checking the file…', 'pending');
+    update();
+    try {
+      const info = await checkSearchFile(file, spectra, tool);
+      if (check !== searchCheck) return;
+      search = info;
+      show(target, `${info.tool} file of the TopFD file (checked: ${info.note}).`, 'ok');
+    } catch (err) {
+      if (check !== searchCheck) return;
+      show(target, `Warning: ${reason(err)}. The files cannot be uploaded.`, 'warning');
+    }
+    update();
+  };
+
+  const checkSpectra = async () => {
+    const check = ++spectraCheck;
+    spectra = null;
+    const file = spectraInput.files?.[0];
+    const target = el('spectraStatus');
+    // a TopPIC or TopMG file selected before is checked against this file once it passed
+    void checkSearch();
+    if (!file) {
+      show(target, '', '');
+      return;
+    }
+    show(target, 'Checking the file…', 'pending');
+    try {
+      const info = await inspectSpectraFile(file);
+      if (check !== spectraCheck) return;
+      spectra = info;
+      showSpectra();
+    } catch (err) {
+      if (check !== spectraCheck) return;
+      show(target, `Warning: ${reason(err)}. The file cannot be uploaded.`, 'warning');
+    }
+    await checkSearch();
+  };
+
+  for (const radio of Array.from(form.querySelectorAll('input[name="type"]'))) {
+    radio.addEventListener('change', () => {
+      showType();
+      showSpectra();
+      void checkSearch();
+    });
+  }
+  spectraInput.addEventListener('change', () => { void checkSpectra(); });
+  searchInput.addEventListener('change', () => { void checkSearch(); });
+  form.addEventListener('reset', () => setTimeout(() => { showType(); void checkSpectra(); }, 0));
+  showType();
+  // a browser that restores the inputs' files on reload
+  void checkSpectra();
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const t = TYPES[currentType()];
+    const spectraFile = spectraInput.files?.[0];
+    const searchFile = t.searchTool ? searchInput.files?.[0] : undefined;
+    if (uploading || !ready() || !spectraFile || (t.searchTool && !searchFile)) return;
     const data = new FormData();
-    data.append('name', (document.getElementById('nameInput') as HTMLInputElement).value);
-    data.append(k.spectraField, spectraFile);
-    if (k.searchField !== '' && searchFile) data.append(k.searchField, searchFile);
-    btn.disabled = true;
+    data.append('name', (el('nameInput') as HTMLInputElement).value);
+    data.append(t.spectraField, spectraFile);
+    if (searchFile) data.append(t.searchField, searchFile);
+    uploading = true;
+    update();
     status.classList.remove('error');
     status.textContent = 'Uploading… this may take a moment for large files.';
     try {
@@ -172,9 +271,10 @@ function setupUpload(): void {
       refresh();
     } catch (err) {
       status.classList.add('error');
-      status.textContent = err instanceof Error ? err.message : String(err);
+      status.textContent = reason(err);
     } finally {
-      btn.disabled = false;
+      uploading = false;
+      update();
     }
   });
 }

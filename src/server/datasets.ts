@@ -13,8 +13,8 @@ import * as path from 'path';
 import { DatabaseSync } from 'node:sqlite';
 import { dbHasIdentifications, dbHasFasta } from './convert/toppicSqlite';
 import { dbHas3d } from './ms1Peaks';
-import { isBlobInSchema, spectraOf } from './spectraStore';
-import { openSqlitePair, schemaTableNames, tableNames, TOPFD_SCHEMA } from './sqliteFiles';
+import { isBlobInSchema, schemaSpectrumColumns, spectraOf } from './spectraStore';
+import { fileTableNames, openSqlitePair, schemaTableNames, tableNames, TOPFD_SCHEMA } from './sqliteFiles';
 
 export const DATA_ROOT = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'));
 fs.mkdirSync(DATA_ROOT, { recursive: true });
@@ -38,7 +38,7 @@ export interface DatasetMeta {
   ms1Count: number;
   ms2Count: number;
   hasFasta: boolean;             // the sqlite holds the search database (fasta_seq)
-  has3d: boolean;                // the sqlite also holds the MS1 3D view's levels (CONFIG + PEAKS<n>, or ms1_peak.LEVEL)
+  has3d: boolean;                // the sqlite also holds the MS1 3D view's levels (CONFIG + ms1_peak.LEVEL)
   files?: string[];              // the names of the uploaded files, the spectra file first (absent before two-file datasets)
 }
 
@@ -132,6 +132,11 @@ export function inspectSqlite(db: DatabaseSync): { hasIdentifications: boolean; 
   return { hasIdentifications: dbHasIdentifications(db), hasFasta: dbHasFasta(db), has3d: dbHas3d(db) };
 }
 
+/** Why a spectra file of an older TopFD or TopDIA version is refused. */
+const OLD_SPECTRA_FILE = 'the spectra file was written by an older TopFD or TopDIA version (without '
+  + 'ms1_peak.LEVEL or ms2_spectrum.ms1_id), which TopMSV does not support: deconvolute the spectra again with the '
+  + 'current TopFD or TopDIA';
+
 /** The tables the pages read: every dataset resolves each of them. */
 const REQUIRED_TABLES = [
   'ms1_spectrum', 'ms2_spectrum', 'ms1_peak', 'ms2_peak',
@@ -177,15 +182,25 @@ function envelopeCheckBySpectrum(db: DatabaseSync): { lost: number; foreign: num
 }
 
 /**
+ * Whether the spectra file of a dataset is in the layout of the current
+ * TopFD and TopDIA: the MS/MS spectra linked to their MS1 spectrum
+ * (ms2_spectrum.ms1_id) and the MS1 peaks with their 3D level
+ * (ms1_peak.LEVEL, src/server/ms1Peaks.ts). Files of older versions lack
+ * one or both and are not supported. schema: the file ('main' or TOPFD_SCHEMA).
+ */
+function hasCurrentLayout(db: DatabaseSync, schema: string): boolean {
+  const ms2Cols = db.prepare(`PRAGMA ${schema}.table_info(ms2_spectrum)`).all() as { name: string }[];
+  return ms2Cols.some((c) => c.name === 'ms1_id')
+    && schemaSpectrumColumns(db, schema, 'ms1_peak').some((c) => c.toUpperCase() === 'LEVEL');
+}
+
+/**
  * Whether the spectra look like TopDIA's: MS1 spectra and MS/MS spectra,
  * none of them linked to an MS1 spectrum (TopDIA deconvolutes the DIA MS/MS
  * windows without their MS1 scan, so ms2_spectrum.ms1_id is -1; TopFD links
- * the MS/MS spectra of DDA data to their MS1 scan). null when the file has
- * no ms1_id column (TopFD and TopDIA before it), which cannot tell.
+ * the MS/MS spectra of DDA data to their MS1 scan).
  */
-function looksLikeTopdia(db: DatabaseSync): boolean | null {
-  const cols = db.prepare('PRAGMA table_info(ms2_spectrum)').all() as { name: string }[];
-  if (!cols.some((c) => c.name === 'ms1_id')) return null;
+function looksLikeTopdia(db: DatabaseSync): boolean {
   const ms1Num = count(db, 'SELECT COUNT(*) AS n FROM ms1_spectrum');
   const ms2Num = count(db, 'SELECT COUNT(*) AS n FROM ms2_spectrum');
   const linked = count(db, 'SELECT COUNT(*) AS n FROM ms2_spectrum WHERE ms1_id >= 0');
@@ -193,15 +208,20 @@ function looksLikeTopdia(db: DatabaseSync): boolean | null {
 }
 
 /**
- * Check an uploaded dataset of a kind (throws an Error naming the problem):
- * its files resolve every table the pages read; a TopDIA file looks like
- * TopDIA's and a TopFD file does not (looksLikeTopdia); and of two files,
- * the TopPIC or TopMG file belongs to the TopFD file. A search file with
- * every table (an older TopPIC's copy, or toppic --mass-calib's corrected
- * copy) has the TopFD file's MS/MS spectra (the same ids and scans); one
- * with the envelope tables only has every MS/MS envelope of the TopFD file
- * (spec_id, env_id, mono_mass) and no envelope of a spectrum the TopFD file
- * lacks. Either file may be compressed (toppic_test experiment 171).
+ * Check an uploaded dataset of a type (throws an Error naming the problem;
+ * the home page runs the same checks in the browser before the upload,
+ * src/client/upload_check.ts): its files resolve every table the pages
+ * read; the spectra file is in the current layout (hasCurrentLayout); a
+ * TopDIA file looks like TopDIA's and a TopFD file does not
+ * (looksLikeTopdia); a TopFD or TopDIA file alone holds no identifications
+ * (those of an older TopPIC or TopMG version written into TopFD's file are
+ * not supported); and of two files, the TopPIC or TopMG file holds the
+ * identifications and belongs to the TopFD file. A search file with every
+ * table (toppic --mass-calib's corrected copy) has the TopFD file's MS/MS
+ * spectra (the same ids and scans); one with the envelope tables only has
+ * every MS/MS envelope of the TopFD file (spec_id, env_id, mono_mass) and no
+ * envelope of a spectrum the TopFD file lacks. Either file may be
+ * compressed (toppic_test experiment 171).
  */
 export function checkDataset(db: DatabaseSync, type: DatasetType): void {
   const twoFiles = type === 'topfd_toppic' || type === 'topfd_topmg';
@@ -221,18 +241,33 @@ export function checkDataset(db: DatabaseSync, type: DatasetType): void {
     throw new Error(`the TopFD file has no spectra (no ms2_spectrum table): were the TopFD and the `
       + `${tool} file swapped?`);
   }
+  if (!hasCurrentLayout(db, twoFiles ? TOPFD_SCHEMA : 'main')) throw new Error(OLD_SPECTRA_FILE);
+  if (!twoFiles && dbHasIdentifications(db)) {
+    throw new Error('the sqlite file holds identifications (the tables prsm, proteoform, prsm_mass_shift): it is a '
+      + 'TopPIC or TopMG file, to be uploaded with the TopFD file it was searched with');
+  }
   const dia = looksLikeTopdia(db);
-  if (type === 'topdia' && dia === false) {
+  if (type === 'topdia' && !dia) {
     throw new Error('the file is not a TopDIA file: its MS/MS spectra are linked to MS1 spectra '
       + '(ms2_spectrum.ms1_id), as in a TopFD file; upload it as a TopFD file');
   }
-  if (type !== 'topdia' && dia === true) {
+  if (type !== 'topdia' && dia) {
     throw new Error('the file looks like a TopDIA file: none of its MS/MS spectra is linked to an MS1 '
       + 'spectrum (ms2_spectrum.ms1_id); upload it as a TopDIA file');
   }
   if (!twoFiles) return;
+  const mainTables = fileTableNames(db, 'main');
+  const noIdentifications = ['prsm', 'proteoform', 'prsm_mass_shift'].filter((t) => !mainTables.has(t));
+  if (noIdentifications.length > 0) {
+    throw new Error(`the ${tool} file lacks the identification table${noIdentifications.length > 1 ? 's' : ''} `
+      + noIdentifications.join(', '));
+  }
   const mismatch = `the ${tool} file does not belong to the TopFD file: `;
-  if (schemaTableNames(db, 'main').has('ms2_spectrum')) {
+  if (mainTables.has('ms2_spectrum')) {
+    if (!hasCurrentLayout(db, 'main')) {
+      throw new Error(`the ${tool} file was written by an older ${tool} version (a copy of every table of an `
+        + `older TopFD file), which TopMSV does not support: search the spectra again with the current ${tool}`);
+    }
     const toppicNum = count(db, 'SELECT COUNT(*) AS n FROM main.ms2_spectrum');
     const topfdNum = count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_spectrum`);
     const sameNum = count(db, `SELECT COUNT(*) AS n FROM main.ms2_spectrum m JOIN ${TOPFD_SCHEMA}.ms2_spectrum t `
@@ -241,6 +276,9 @@ export function checkDataset(db: DatabaseSync, type: DatasetType): void {
       throw new Error(mismatch + `${toppicNum} and ${topfdNum} MS/MS spectra, ${sameNum} with the same id and scan`);
     }
     return;
+  }
+  if (!mainTables.has('ms2_env')) {
+    throw new Error(`the ${tool} file lacks the MS/MS envelopes (the table ms2_env) it copies from the TopFD file`);
   }
   if (isBlobInSchema(db, 'main', 'ms2_env') || isBlobInSchema(db, TOPFD_SCHEMA, 'ms2_env')) {
     const { lost, foreign } = envelopeCheckBySpectrum(db);
@@ -271,26 +309,11 @@ export function checkDataset(db: DatabaseSync, type: DatasetType): void {
 }
 
 /**
- * Whether a TopFD sqlite also holds the MS1 3D view's levels: CONFIG with
- * PEAKS0 ... PEAKS<n> (TopFD up to 2.1.0) or with the LEVEL column of a
- * merged ms1_peak (src/server/ms1Peaks.ts). Throws when CONFIG lists more
- * levels than the file holds, i.e. the file is truncated.
- */
-export function has3dTables(sqlitePath: string): boolean {
-  const db = new DatabaseSync(sqlitePath, { readOnly: true });
-  try {
-    return dbHas3d(db);
-  } finally {
-    db.close();
-  }
-}
-
-/**
  * Add spec_id indexes so per-spectrum queries are fast (TopFD ships none),
  * to the tables the file has (a TopPIC file of a two-file dataset has the
- * MS/MS envelope tables only). A merged ms1_peak (primary key LEVEL,
- * spec_id, peak_id) needs none: its spectrum query names every level
- * (ms1Peaks.ms1PeakSql); nor do BLOB rows (a compressed file, keyed by
+ * MS/MS envelope tables only). ms1_peak (primary key LEVEL, spec_id,
+ * peak_id) needs none: its spectrum query names every level
+ * (ms1Peaks.ms1PeakRows); nor do BLOB rows (a compressed file, keyed by
  * spec_id), which schemaTableNames does not list under the tables' names.
  */
 export function ensureIndexes(sqlitePath: string): void {
@@ -302,12 +325,6 @@ export function ensureIndexes(sqlitePath: string): void {
     // over.
     db.exec('PRAGMA journal_mode = DELETE;');
     const tables = schemaTableNames(db, 'main');
-    if (tables.has('ms1_peak')) {
-      const ms1Cols = db.prepare('PRAGMA table_info(ms1_peak)').all() as { name: string }[];
-      if (!ms1Cols.some((c) => c.name.toUpperCase() === 'LEVEL')) {
-        db.exec('CREATE INDEX IF NOT EXISTS ix_ms1_peak_spec ON ms1_peak(spec_id);');
-      }
-    }
     for (const table of ['ms1_env', 'ms1_env_peak', 'ms2_peak', 'ms2_env', 'ms2_env_peak']) {
       if (tables.has(table)) db.exec(`CREATE INDEX IF NOT EXISTS ix_${table}_spec ON ${table}(spec_id);`);
     }

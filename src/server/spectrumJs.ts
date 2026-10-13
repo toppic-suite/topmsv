@@ -40,9 +40,9 @@ export function buildSpectrumJs(db: DatabaseSync, level: 1 | 2, specId: number):
     doc.c_ion_type = spec.c_ion_type ?? 'Y';
   }
 
-  // ms1_peak may be the merged layout (one key range per 3D level)
+  // ms1_peak: one key range per 3D level (src/server/ms1Peaks.ts)
   const peakRows = level === 1
-    ? ms1PeakRows(db, specId, true)
+    ? ms1PeakRows(db, specId)
     : spectrumRows(db, 'ms2_peak', specId, 'SELECT mz, intensity FROM ms2_peak WHERE spec_id = ? ORDER BY peak_id',
       { columns: ['mz', 'intensity'], orderBy: ['peak_id'] });
   doc.peaks = peakRows.map((r): JsonPeak => ({

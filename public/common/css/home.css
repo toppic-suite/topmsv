@@ -64,9 +64,26 @@ table.datasets td.num { text-align: right; }
 table.datasets td.actions { white-space: nowrap; }
 table.datasets a { color: #2980b9; text-decoration: none; margin-right: 10px; }
 table.datasets a:hover { text-decoration: underline; }
-/* the kind of a dataset: a row of radio buttons */
+/* a row the dataset type does not use (display: flex above outranks [hidden]) */
+.formrow[hidden] { display: none; }
+/* the type of a dataset: a row of radio buttons */
 .formrow .label { width: 260px; font-size: 14px; }
-.kinds { flex: 1; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; }
-.kinds label { width: auto; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+.types { flex: 1; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; }
+.types label { width: auto; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+/* a file input with the result of its check under it */
+.formrow.filerow { align-items: baseline; }
+.filefield { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.filefield input[type=file] { font-size: 13px; }
+.filestatus { font-size: 13px; color: #667; }
+.filestatus:empty { display: none; }
+.filestatus.pending { color: #556; font-style: italic; }
+.filestatus.ok { color: #1e7e34; }
+.filestatus.warning {
+  color: #8a1f11;
+  background: #fdecea;
+  border: 1px solid #f5c2bc;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
 /* the uploaded files of a dataset, under its name */
 table.datasets .files { margin-top: 2px; font-size: 12px; }

@@ -1,22 +1,17 @@
-// The MS1 peaks of a TopFD sqlite in either of its two layouts, and the MS1
-// 3D view's data over them.
-//
-// Old layout (TopFD up to 2.1.0): ms1_peak(spec_id, peak_id, mz, intensity)
-// without an index (ensureIndexes adds one on spec_id); with topfd -D also
-// the 3D levels as tables PEAKS0 ... PEAKS<n> (MZ, INTENSITY, RETENTIONTIME
-// in ms, COLOR), each indexed on (RETENTIONTIME, MZ), and CONFIG.
-//
-// Merged layout (toppic_test experiment 165): one table
+// The MS1 peaks of a TopFD or TopDIA sqlite and the MS1 3D view's data over
+// them (toppic_test experiment 165): one table
 //   ms1_peak(LEVEL, spec_id, peak_id, mz, intensity) WITHOUT ROWID,
 //   PRIMARY KEY(LEVEL, spec_id, peak_id)
 // LEVEL is -1 for a peak outside the 3D map (intensity <= 0), else the
-// highest level that keeps the peak (0 without -D); level k of the 3D map is
-// the peaks with LEVEL >= k. CONFIG is as before (row k + 1: the ranges and
-// the peak count of level k); a peak's retention time is its spectrum's in
-// ms, truncated as TopFD writes it; COLOR is computed as TopFD's
-// MsSqlWriter computes it. The layouts are told apart by the LEVEL column.
+// highest level that keeps the peak; level k of the 3D map is the peaks with
+// LEVEL >= k. CONFIG has one row per level (row k + 1: the ranges and the
+// peak count of level k); a peak's retention time is its spectrum's in ms,
+// truncated as TopFD writes it; COLOR is computed as TopFD's MsSqlWriter
+// computes it. The layout of older versions (ms1_peak without LEVEL, the
+// levels as tables PEAKS0 ... PEAKS<n>) is not supported: the upload
+// refuses such a file (datasets.checkDataset).
 //
-// Either layout may be stored as BLOB rows (a file compressed by `npm run
+// ms1_peak may be stored as BLOB rows (a file compressed by `npm run
 // compress`, toppic_test experiment 171, src/server/spectraStore.ts): the
 // LEVEL range is then the one zstd_blob_columns records, and the 3D view's
 // window decodes the spectra of its RT range.
@@ -25,95 +20,68 @@ import { DatabaseSync } from 'node:sqlite';
 import { blobTable, BlobTable, decodeBlobRow, spectrumColumns, spectrumRows } from './spectraStore';
 import { tableNames } from './sqliteFiles';
 
-/** LEVEL values of a merged ms1_peak (lowest .. highest), cached per handle. */
-const mergedLevels = new WeakMap<DatabaseSync, number[] | null>();
+/** LEVEL values of ms1_peak (lowest .. highest), cached per handle. */
+const levelCache = new WeakMap<DatabaseSync, number[]>();
 
-/** The LEVEL values of a merged ms1_peak, or null for the old layout. */
-export function mergedMs1Levels(db: DatabaseSync): number[] | null {
-  let levels = mergedLevels.get(db);
+/** Why a file of an older TopFD or TopDIA version is not read. */
+export const OLD_MS1_PEAK_LAYOUT = 'the spectra file was written by an older TopFD or TopDIA version (ms1_peak '
+  + 'has no LEVEL column), which TopMSV does not support: deconvolute the spectra again with the current TopFD '
+  + 'or TopDIA';
+
+/** Whether ms1_peak (as an unqualified name resolves) has the LEVEL column. */
+export function hasMs1Levels(db: DatabaseSync): boolean {
+  return spectrumColumns(db, 'ms1_peak').some((c) => c.toUpperCase() === 'LEVEL');
+}
+
+/** The LEVEL values of ms1_peak; throws for a file without them (an older TopFD). */
+export function ms1Levels(db: DatabaseSync): number[] {
+  let levels = levelCache.get(db);
   if (levels !== undefined) return levels;
+  if (!hasMs1Levels(db)) throw new Error(OLD_MS1_PEAK_LAYOUT);
   const bt = blobTable(db, 'ms1_peak');
-  const level = bt?.columns.find((c) => c.name.toUpperCase() === 'LEVEL');
-  if (!spectrumColumns(db, 'ms1_peak').some((c) => c.toUpperCase() === 'LEVEL')) {
-    levels = null;
-  } else if (bt) {
-    const lo = level!.min ?? 0;
-    const hi = level!.max ?? 0;
-    levels = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i);
+  let lo: number;
+  let hi: number;
+  if (bt) {
+    const level = bt.columns.find((c) => c.name.toUpperCase() === 'LEVEL')!;
+    lo = level.min ?? 0;
+    hi = level.max ?? 0;
   } else {
     // both ends of the primary key's first column: two index lookups
     const r = db.prepare('SELECT MIN(LEVEL) AS lo, MAX(LEVEL) AS hi FROM ms1_peak').get() as
       { lo: number | null, hi: number | null };
-    const lo = r.lo ?? 0;
-    const hi = r.hi ?? 0;
-    levels = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i);
+    lo = r.lo ?? 0;
+    hi = r.hi ?? 0;
   }
-  mergedLevels.set(db, levels);
+  levels = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i);
+  levelCache.set(db, levels);
   return levels;
 }
 
-/** Whether the file at sqlitePath has a merged ms1_peak. */
-export function isMergedMs1(sqlitePath: string): boolean {
-  const db = new DatabaseSync(sqlitePath, { readOnly: true });
-  try {
-    const cols = db.prepare('PRAGMA table_info(ms1_peak)').all() as { name: string }[];
-    return cols.some((c) => c.name.toUpperCase() === 'LEVEL');
-  } finally {
-    db.close();
-  }
-}
-
 /**
- * The SQL of one MS1 spectrum's peaks (m/z, intensity), its spec_id the only
- * parameter. In the merged layout a spectrum's peaks lie in one key range per
- * level, so the query names every level and sorts them back by peak_id.
- * orderByPeakId: the old layout's query sorts as well (otherwise its rows
- * come in insertion order, which is peak_id order).
+ * One MS1 spectrum's peaks (m/z, intensity) in peak_id order, as rows or as
+ * BLOB rows. A spectrum's peaks lie in one key range per level, so the
+ * query names every level and sorts them back by peak_id.
  */
-export function ms1PeakSql(db: DatabaseSync, orderByPeakId: boolean): string {
-  const levels = mergedMs1Levels(db);
-  if (levels === null) {
-    return 'SELECT mz, intensity FROM ms1_peak WHERE spec_id = ?' + (orderByPeakId ? ' ORDER BY peak_id' : '');
-  }
-  return `SELECT mz, intensity FROM ms1_peak WHERE LEVEL IN (${levels.join(', ')}) AND spec_id = ? ORDER BY peak_id`;
-}
-
-/**
- * One MS1 spectrum's peaks (m/z, intensity) in either layout, as rows or as
- * BLOB rows; orderByPeakId as for ms1PeakSql (the merged layout is always
- * in peak_id order).
- */
-export function ms1PeakRows(db: DatabaseSync, specId: number, orderByPeakId: boolean): { mz: number; intensity: number }[] {
-  const merged = mergedMs1Levels(db) !== null;
-  return spectrumRows(db, 'ms1_peak', specId, ms1PeakSql(db, orderByPeakId), {
-    columns: ['mz', 'intensity'],
-    orderBy: orderByPeakId || merged ? ['peak_id'] : [],
-  }) as { mz: number; intensity: number }[];
+export function ms1PeakRows(db: DatabaseSync, specId: number): { mz: number; intensity: number }[] {
+  const sql = `SELECT mz, intensity FROM ms1_peak WHERE LEVEL IN (${ms1Levels(db).join(', ')}) AND spec_id = ? `
+    + 'ORDER BY peak_id';
+  return spectrumRows(db, 'ms1_peak', specId, sql, { columns: ['mz', 'intensity'], orderBy: ['peak_id'] }) as
+    { mz: number; intensity: number }[];
 }
 
 /**
  * Whether the sqlite holds the MS1 3D view's data: CONFIG with one row per
- * level and, in the old layout, PEAKS0 ... PEAKS<n>; in the merged layout no
- * peak above the last level. Throws when CONFIG lists more levels than the
- * file holds, i.e. the file is truncated or inconsistent.
+ * level and no peak above the last level. Throws when CONFIG lists fewer
+ * levels than ms1_peak has, i.e. the file is truncated or inconsistent.
  */
 export function dbHas3d(db: DatabaseSync): boolean {
   const tables = new Set([...tableNames(db)].map((name) => name.toUpperCase()));
   if (!tables.has('CONFIG')) return false;
   const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
-  const merged = mergedMs1Levels(db);
-  if (merged !== null) {
-    const top = merged.length ? merged[merged.length - 1] : -1;
-    if (levels > 0 && top >= levels) {
-      throw new Error(`the sqlite file lists ${levels} MS1 3D levels in CONFIG but ms1_peak has LEVEL ${top}`);
-    }
-    return levels > 0;
-  }
-  if (!tables.has('PEAKS0')) return false;
-  for (let i = 0; i < levels; i++) {
-    if (!tables.has('PEAKS' + i)) {
-      throw new Error(`the sqlite file lists ${levels} MS1 3D levels in CONFIG but has no PEAKS${i} table`);
-    }
+  const all = ms1Levels(db);
+  const top = all.length ? all[all.length - 1] : -1;
+  if (levels > 0 && top >= levels) {
+    throw new Error(`the sqlite file lists ${levels} MS1 3D levels in CONFIG but ms1_peak has LEVEL ${top}`);
   }
   return levels > 0;
 }
@@ -141,9 +109,9 @@ class KbnSum {
  * little (the same sum for st_1 and 480_F3_02, toppic_test experiment 171).
  */
 export function totalIntensity3d(db: DatabaseSync): number {
-  const merged = mergedMs1Levels(db);
+  ms1Levels(db);
   const bt = blobTable(db, 'ms1_peak');
-  if (merged !== null && bt) {
+  if (bt) {
     const sum = new KbnSum();
     for (const row of bt.conn.prepare(`SELECT * FROM ${bt.from} ORDER BY spec_id`).iterate()) {
       const dec = decodeBlobRow(bt, row as Record<string, unknown>);
@@ -153,10 +121,8 @@ export function totalIntensity3d(db: DatabaseSync): number {
     }
     return sum.value();
   }
-  const sql = merged === null
-    ? 'SELECT SUM(INTENSITY) AS s FROM PEAKS0'
-    : 'SELECT SUM(intensity) AS s FROM ms1_peak WHERE LEVEL >= 0';
-  return (db.prepare(sql).get() as { s: number | null }).s ?? 0;
+  return (db.prepare('SELECT SUM(intensity) AS s FROM ms1_peak WHERE LEVEL >= 0').get() as
+    { s: number | null }).s ?? 0;
 }
 
 /** One peak of the 3D view; rt in ms. */
@@ -170,7 +136,7 @@ export interface Window3d {
   maxPeaks: number;
 }
 
-// merged layout: the MS1 spectra's ids and retention times in ms (id order),
+// the MS1 spectra's ids and retention times in ms (id order),
 // whether the times never decrease with the id, and the color scale
 interface MergedCache {
   ids: number[];
@@ -225,17 +191,8 @@ function lowerBound(a: number[], x: number): number {
 
 /** The maxPeaks most intense peaks of one level inside an m/z x RT window. */
 export function peaks3d(db: DatabaseSync, w: Window3d): Peak3d[] {
-  const merged = mergedMs1Levels(db);
-  if (merged === null) {
-    const rows = db.prepare(
-      `SELECT MZ, INTENSITY, RETENTIONTIME, COLOR FROM PEAKS${w.level}
-       WHERE RETENTIONTIME >= ? AND RETENTIONTIME <= ? AND MZ >= ? AND MZ <= ? AND INTENSITY > ?
-       ORDER BY INTENSITY DESC LIMIT ?`,
-    ).all(w.minRtMs, w.maxRtMs, w.minMz, w.maxMz, w.cutoff, w.maxPeaks) as any[];
-    return rows.map((r) => ({ mz: r.MZ, intensity: r.INTENSITY, rt: r.RETENTIONTIME, color: r.COLOR }));
-  }
   const c = mergedCacheOf(db);
-  const levels = merged.filter((l) => l >= w.level).join(', ');
+  const levels = ms1Levels(db).filter((l) => l >= w.level).join(', ');
   if (!levels) return [];
   // the spectra inside the RT range: one spec_id range when the retention
   // times follow the ids (TopFD numbers MS1 spectra in scan order), else a list

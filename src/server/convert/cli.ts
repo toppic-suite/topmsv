@@ -1,8 +1,7 @@
 // Command-line entry point for the converter (mainly for testing):
-//   npm run convert -- --sqlite f.sqlite --out outdir
 //   npm run convert -- --sqlite f_toppic.sqlite --topfd-sqlite f.sqlite --out outdir
-// (--topfd-sqlite: the TopFD file of a TopPIC file with the MS/MS envelope
-// tables only, src/server/sqliteFiles.ts)
+// (--sqlite: the TopPIC or TopMG file, --topfd-sqlite: the TopFD file it was
+// searched with, read together as src/server/sqliteFiles.ts describes)
 
 import { convertDataset } from './convert';
 
@@ -15,8 +14,8 @@ const sqlitePath = getArg('sqlite');
 const topfdSqlitePath = getArg('topfd-sqlite');
 const outDir = getArg('out');
 
-if (!sqlitePath || !outDir) {
-  console.error('usage: convert --sqlite <file> [--topfd-sqlite <TopFD file>] --out <dir>');
+if (!sqlitePath || !topfdSqlitePath || !outDir) {
+  console.error('usage: convert --sqlite <TopPIC or TopMG file> --topfd-sqlite <TopFD file> --out <dir>');
   process.exit(1);
 }
 

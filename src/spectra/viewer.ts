@@ -49,10 +49,8 @@ let query_ms_id: number;
 let ms_one_graph: SpectrumView | null = null;
 let ms_two_graph: SpectrumView | null = null;
 let ms_two_scan_num: number = 0;
-// ms1_id of the spectrum currently shown in the MS2 panel (-1 if none/unknown)
+// ms1_id of the spectrum currently shown in the MS2 panel (-1 if none)
 let cur_ms_two_ms1_id: number = -1;
-// false once the open file turns out to have no ms2_spectrum.ms1_id column
-let ms_two_link_active: boolean = true;
 
 // proton mass: mono m/z = mono mass / charge + PROTON_MASS
 const PROTON_MASS: number = 1.007276;
@@ -96,14 +94,9 @@ function clearMsTwoPanel(): void {
 // (ms2_spectrum.ms1_id), load the smallest-id MS2 spectrum linked to it, or
 // an empty spectrum if the MS1 spectrum has no linked MS2.
 async function syncMsTwoToMsOne(ms_one_id: number): Promise<void> {
-  if (!ms_two_link_active) return;
   if (spec_data.getCurMsTwoId() >= 0 && cur_ms_two_ms1_id === ms_one_id) return;
   let r: IdRow | null = await window.electronAPI.getMsTwoIdByMsOneId(ms_one_id);
-  if (r == null) {
-    // this data file has no ms1_id column: leave the MS2 panel independent
-    ms_two_link_active = false;
-    return;
-  }
+  if (r == null) return;
   if (r.id >= 0 && r.id < spec_data.getMsTwoScanNum()) {
     spec_data.setCurMsTwoId(r.id);
     await updateMsTwoById(r.id);
@@ -117,7 +110,7 @@ async function syncMsTwoToMsOne(ms_one_id: number): Promise<void> {
 // spectrum. The two syncs cannot recurse: each returns when the panels are
 // already linked, which is the state the other sync establishes.
 async function syncMsOneToMsTwo(): Promise<void> {
-  if (cur_ms_two_ms1_id < 0) return; // no link info (old file format)
+  if (cur_ms_two_ms1_id < 0) return; // no precursor MS1 spectrum
   if (spec_data.getCurMsOneId() === cur_ms_two_ms1_id) return;
   if (cur_ms_two_ms1_id < spec_data.getMsOneScanNum()) {
     spec_data.setCurMsOneId(cur_ms_two_ms1_id);
@@ -243,15 +236,14 @@ async function updateMsOneById(cur_ms_one_id: number): Promise<void> {
   ms_two_total_scan_num_text.textContent = String(ms_two_scan_num);
   spec_data.setCurMsTwoId(-1);
   cur_ms_two_ms1_id = -1;
-  ms_two_link_active = true;
 
   cur_ms_one_id = spec_data.getCurMsOneId();
   await updateMsOneById(cur_ms_one_id);
 
-  // Fallbacks: an MS2-only file, or a file without the ms1_id link column —
-  // show the first MS2 spectrum; with no MS2 spectra, show an empty one.
+  // Fallbacks: an MS2-only file — show the first MS2 spectrum; with no MS2
+  // spectra, show an empty one.
   if (spec_data.getCurMsTwoId() < 0) {
-    if (ms_two_scan_num > 0 && (ms_one_scan_num === 0 || !ms_two_link_active)) {
+    if (ms_two_scan_num > 0 && ms_one_scan_num === 0) {
       spec_data.setCurMsTwoId(0);
       updateMsTwoById(0);
     } else if (ms_two_scan_num === 0) {
