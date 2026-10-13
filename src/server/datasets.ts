@@ -156,8 +156,15 @@ export function checkDataset(db: DatabaseSync, twoFiles: boolean): void {
     }
     return;
   }
-  const lost = count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_env t WHERE NOT EXISTS `
-    + '(SELECT 1 FROM main.ms2_env m WHERE m.spec_id = t.spec_id AND m.env_id = t.env_id '
+  // TopPIC copies TopFD's envelope rows in rowid order, so they keep their
+  // rowids: one join on the rowid finds them (0.2 s for 480_F3_02's 701,494
+  // envelopes, toppic_test experiment 168); only when it misses some is
+  // every envelope looked for by spectrum (13 s)
+  const topfdNum = count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_env`);
+  const sameRowid = count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_env t JOIN main.ms2_env m `
+    + 'ON m.rowid = t.rowid AND m.spec_id = t.spec_id AND m.env_id = t.env_id AND m.mono_mass = t.mono_mass');
+  const lost = sameRowid === topfdNum ? 0 : count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_env t `
+    + 'WHERE NOT EXISTS (SELECT 1 FROM main.ms2_env m WHERE m.spec_id = t.spec_id AND m.env_id = t.env_id '
     + 'AND m.mono_mass = t.mono_mass)');
   if (lost > 0) {
     throw new Error(mismatch + `${lost} MS/MS envelopes of the TopFD file are not in the TopPIC file`);
