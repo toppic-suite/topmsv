@@ -16,13 +16,15 @@
     <section class="card" id="uploadPanel">
       <h2>Upload a dataset</h2>
       <p class="hint">
-        Select the sqlite files written by TopFD (<code>&lt;name&gt;.sqlite</code>:
-        the spectra, the deconvoluted masses and, with <code>-D</code>, the MS1 3D
-        peak tables) and by TopPIC (<code>&lt;name&gt;_toppic.sqlite</code>: the
-        identifications and the search database). Data that the TopPIC file
-        does not hold is read from the TopFD file. A single file also works:
-        the TopFD file alone (spectra only), or a file of an older TopPIC
-        version that holds both.
+        Choose the kind of dataset and select its sqlite files: the spectra
+        file written by TopFD or TopDIA (<code>&lt;name&gt;.sqlite</code>: the
+        spectra, the deconvoluted masses and the MS1 3D peak tables) and, for
+        identifications, the file written by TopPIC
+        (<code>&lt;name&gt;_toppic.sqlite</code>) or TopMG
+        (<code>&lt;name&gt;_topmg.sqlite</code>), which holds the identifications
+        and the search database; data it does not hold is read from the TopFD
+        file. A file of an older TopPIC or TopMG version that wrote its
+        tables into TopFD's file is uploaded as a TopFD file alone.
       </p>
       <form id="uploadForm">
         <div class="formrow">
@@ -30,12 +32,21 @@
           <input type="text" id="nameInput" name="name" placeholder="(defaults to the name of the first file)">
         </div>
         <div class="formrow">
-          <label for="sqliteInput">TopFD sqlite file</label>
-          <input type="file" id="sqliteInput" name="sqlite" accept=".sqlite,.db">
+          <span class="label">Dataset kind</span>
+          <div class="kinds" id="kindChoice">
+            <label><input type="radio" name="kind" value="topfd"> TopFD only</label>
+            <label><input type="radio" name="kind" value="topfd_toppic" checked> TopFD + TopPIC</label>
+            <label><input type="radio" name="kind" value="topfd_topmg"> TopFD + TopMG</label>
+            <label><input type="radio" name="kind" value="topdia"> TopDIA only</label>
+          </div>
         </div>
         <div class="formrow">
-          <label for="toppicSqliteInput">TopPIC sqlite file</label>
-          <input type="file" id="toppicSqliteInput" name="toppic_sqlite" accept=".sqlite,.db">
+          <label for="spectraInput" id="spectraLabel">TopFD sqlite file</label>
+          <input type="file" id="spectraInput" accept=".sqlite,.db">
+        </div>
+        <div class="formrow" id="searchRow">
+          <label for="searchInput" id="searchLabel">TopPIC sqlite file</label>
+          <input type="file" id="searchInput" accept=".sqlite,.db">
         </div>
         <div class="formrow">
           <button type="submit" id="uploadBtn">Upload</button>

@@ -132,7 +132,7 @@ export function loadIdentifications(
 }
 
 export interface ConvertOptions {
-  sqlitePath: string;      // the TopPIC file, or a file with every table
+  sqlitePath: string;      // the TopPIC or TopMG file, or a file with every table
   topfdSqlitePath?: string; // the TopFD file of a TopPIC file with the envelope tables only
   outDir: string; // dataset root; trees are written to <outDir>/<cutoff>/data_js
   parameters?: Partial<MatchingParameters>;

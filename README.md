@@ -1,14 +1,15 @@
 # TopMSV
 
 A web-based tool for visualizing the output of the spectral deconvolution tool
-**TopFD** and the database search tool **TopPIC**. A dataset is the sqlite
-files of a run: TopFD's `<name>.sqlite` holds the deconvoluted spectra and,
-with recent versions, the MS1 3D peak tables; TopPIC's `<name>_toppic.sqlite`
-holds its identifications, the search database and the deconvoluted MS/MS
-envelopes, and the server reads from TopFD's file whatever TopPIC's file
-does not hold. (Older TopPIC versions wrote everything into one file, which
-is uploaded alone.) The files are uploaded through the browser and the
-server generates everything the viewer pages need on the fly: the
+**TopFD** (or **TopDIA**) and the database search tools **TopPIC** and
+**TopMG**. A dataset is the sqlite files of a run: TopFD's or TopDIA's
+`<name>.sqlite` holds the deconvoluted spectra and, with recent versions,
+the MS1 3D peak tables; TopPIC's `<name>_toppic.sqlite` or TopMG's
+`<name>_topmg.sqlite` holds the identifications, the search database and
+the deconvoluted MS/MS envelopes, and the server reads from TopFD's file
+whatever the TopPIC or TopMG file does not hold. (Older TopPIC and TopMG
+versions wrote their tables into TopFD's file, which is uploaded alone.)
+The files are uploaded through the browser and the server generates everything the viewer pages need on the fly: the
 interactive protein, proteoform, proteoform-spectrum-match (PrSM) and
 spectrum views, a raw-spectra browser, a visual inspection calculator and an
 MS1 3D view.
@@ -86,8 +87,9 @@ dataset** form:
 
 1. Optionally enter a dataset name (it defaults to the name of the first
    file).
-2. Select the sqlite files written by TopFD and TopPIC — see the next
-   section. TopFD and TopPIC are available at https://www.toppic.org.
+2. Choose the kind of dataset and select its sqlite files — see the next
+   section. The TopPIC Suite (TopFD, TopDIA, TopPIC, TopMG) is available at
+   https://www.toppic.org.
 3. Click **Upload**. The files are checked and the dataset appears in the
    **Datasets** table with its protein, proteoform, PrSM and scan counts and
    the links to its pages: **Identifications** opens the protein list,
@@ -102,21 +104,35 @@ sqlite files.
 
 ## Input files
 
-A dataset is one or two sqlite files:
+A dataset is one of four kinds, chosen on the upload form (the upload
+fields of the API in parentheses); other combinations are refused:
 
-- **TopFD file and TopPIC file** (TopPIC versions that write
-  `<name>_toppic.sqlite` with the MS/MS envelopes only): select both. Every
-  table is read from the TopPIC file when it has it and from the TopFD file
-  otherwise: the identifications, the search database and the MS/MS
-  envelopes (TopFD's, plus those TopPIC's post mass matching added) come
-  from the TopPIC file, the spectra, peaks, MS1 envelopes and MS1 3D levels
-  from the TopFD file. After `toppic --mass-calib` the TopPIC file holds
-  every table with corrected m/z values, and the TopFD file adds nothing.
-  The upload checks that the TopPIC file belongs to the TopFD file (it has
-  the TopFD file's MS/MS envelopes, or with every table its MS/MS spectra).
-- **One file**: the TopFD file alone (spectra only), or the file of an older
-  TopPIC version, which holds every table. A TopPIC file with the MS/MS
-  envelopes only is refused alone: it needs its TopFD file.
+1. **TopFD only** (`sqlite`): TopFD's `<name>.sqlite`, spectra only — or the
+   file of an older TopPIC or TopMG version that wrote its identification
+   tables into TopFD's file.
+2. **TopFD + TopPIC** (`sqlite`, `toppic_sqlite`): TopFD's file and TopPIC's
+   `<name>_toppic.sqlite`.
+3. **TopFD + TopMG** (`sqlite`, `topmg_sqlite`): TopFD's file and TopMG's
+   `<name>_topmg.sqlite`.
+4. **TopDIA only** (`topdia_sqlite`): TopDIA's `<name>.sqlite`, spectra
+   only.
+
+For kinds 2 and 3, every table is read from the TopPIC or TopMG file when
+it has it and from the TopFD file otherwise: the identifications, the
+search database and the MS/MS envelopes (TopFD's, plus those TopPIC's post
+mass matching added) come from the TopPIC or TopMG file, the spectra,
+peaks, MS1 envelopes and MS1 3D levels from the TopFD file. After `toppic
+--mass-calib` the TopPIC file holds every table with corrected m/z values,
+and the TopFD file adds nothing. The upload checks that the TopPIC or TopMG
+file belongs to the TopFD file (it has the TopFD file's MS/MS envelopes, or
+with every table its MS/MS spectra); a TopPIC or TopMG file alone is
+refused, as it needs its TopFD file.
+
+TopDIA deconvolutes the DIA MS/MS windows without their MS1 scan, so its
+file links no MS/MS spectrum to an MS1 spectrum; for a TopDIA dataset the
+spectra browser links each window to the MS1 scan of its cycle (the last
+MS1 scan before it). The upload refuses a TopDIA file given as a TopFD
+file, and a TopFD file given as a TopDIA file (told apart by that link).
 
 What the pages can show depends on which tables the files contain:
 

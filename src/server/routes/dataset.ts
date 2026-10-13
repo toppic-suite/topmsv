@@ -9,6 +9,7 @@
 import * as express from 'express';
 import * as path from 'path';
 import { getDb, getDb3d, readMeta } from '../datasets';
+import { diaLinks } from '../diaLinks';
 import { ms1PeakSql, peaks3d, totalIntensity3d } from '../ms1Peaks';
 import { buildSpectrumJs } from '../spectrumJs';
 import { buildDataJsFile } from '../prsmSource';
@@ -20,6 +21,12 @@ const router = express.Router({ mergeParams: true });
 
 function dbOf(req: express.Request) {
   return getDb((req.params as { ds: string }).ds);
+}
+
+// whether a dataset is a TopDIA file, whose MS/MS spectra are linked to their
+// MS1 scan by scan order (src/server/diaLinks.ts)
+function isTopdia(req: express.Request): boolean {
+  return readMeta((req.params as { ds: string }).ds)?.type === 'topdia';
 }
 
 // ------------------------------------------------------------------ MS1 3D view
@@ -126,7 +133,10 @@ router.get('/api/info/:id', (req, res) => {
 router.get('/api/ms2-info/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json(null); return; }
-  res.json(db.prepare('SELECT * FROM ms2_spectrum WHERE id = ?').get(Number(req.params.id)) ?? null);
+  const row = db.prepare('SELECT * FROM ms2_spectrum WHERE id = ?').get(Number(req.params.id)) as
+    { id: number; ms1_id?: number | null } | undefined;
+  if (row && isTopdia(req)) row.ms1_id = diaLinks(db).ms1IdOfMs2.get(row.id) ?? -1;
+  res.json(row ?? null);
 });
 
 router.get('/api/peaks/:id', (req, res) => {
@@ -182,6 +192,10 @@ router.get('/api/ms2-id-by-scan/:scan', (req, res) => {
 router.get('/api/ms2-id-by-ms1/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json(null); return; }
+  if (isTopdia(req)) {
+    res.json({ id: diaLinks(db).firstMs2OfMs1.get(Number(req.params.id)) ?? -1 });
+    return;
+  }
   try {
     const row = db.prepare('SELECT MIN(id) AS id FROM ms2_spectrum WHERE ms1_id = ?')
       .get(Number(req.params.id)) as any;

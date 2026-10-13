@@ -17,20 +17,25 @@ identifications for visualization from the sqlite files of a dataset. It
   ones TopPIC stored; p-values are not available from the sqlite and are
   written as "N/A".
 
-A dataset directory holds one or two uploaded sqlite files. `ms.sqlite` is
-TopFD's file (or the only file): the spectra and, in newer versions, the MS1
+A dataset is one of four kinds (`meta.type`, `datasets.DatasetType`): a
+TopFD file alone (`topfd`), TopFD + TopPIC (`topfd_toppic`), TopFD + TopMG
+(`topfd_topmg`), a TopDIA file alone (`topdia`). Its directory holds one or
+two uploaded sqlite files. `ms.sqlite` is TopFD's or TopDIA's file: the
+spectra and, in newer versions, the MS1
 3D view's levels (tables `PEAKS<n>`, or in the newest a `LEVEL` column of
 `ms1_peak`; `src/server/ms1Peaks.ts` reads both layouts), plus, in files of
-older TopPIC versions, the identification tables and search database TopPIC
-appended (`src/server/convert/toppicSqlite.ts` reads them). `toppic.sqlite`
-is the TopPIC file of a two-file dataset: newer TopPIC versions write
-`<name>_toppic.sqlite` with the identification tables, the search database
+older TopPIC and TopMG versions, the identification tables and search
+database they appended (`src/server/convert/toppicSqlite.ts` reads them).
+`toppic.sqlite` / `topmg.sqlite` is the TopPIC / TopMG file of a two-file
+dataset: newer TopPIC and TopMG versions write `<name>_toppic.sqlite` /
+`<name>_topmg.sqlite` with the identification tables, the search database
 and TopFD's MS/MS envelope tables (`ms2_env`, `ms2_env_peak`, with the
-envelopes of TopPIC's post mass matching added), or with `--mass-calib`
-every table, corrected. One connection reads both
-(`src/server/sqliteFiles.ts`): the TopPIC file is the main database and the
-TopFD file is attached as `topfd`, so an unqualified table name resolves to
-the TopPIC file when it has the table and to the TopFD file otherwise, and
+envelopes of TopPIC's post mass matching added), or after toppic
+`--mass-calib` every table, corrected. One connection reads both
+(`src/server/sqliteFiles.ts`): the TopPIC / TopMG file is the main database
+and the TopFD file is attached as `topfd`, so an unqualified table name
+resolves to the first file when it has the table and to the TopFD file
+otherwise, and
 every query of the server stays as it was. Every open of a dataset goes
 through `datasets.openDatasetDb` (the cached handle, the identification
 loader, the upload checks), and table lists come from both files
@@ -58,16 +63,27 @@ mode `POST` and `DELETE /api/datasets` answer 403 and the home page hides the
 upload panel and the Delete column. The home page and the shared nav bar
 read `/api/config`, which reports the version (from `package.json` through
 `src/server/version.ts`) and the `--view-only` flag. Uploading (`src/server/routes/api.ts`) takes
-the form fields `sqlite` (TopFD's file) and `toppic_sqlite` (TopPIC's), at
-least one; a file given alone is stored as `ms.sqlite`, two files as
-`ms.sqlite` and `toppic.sqlite`. Each file gets per-spectrum indexes on the
-tables it has and rollback journaling; `datasets.checkDataset` then requires
-the files to resolve every table the pages read and, for two files, the
-TopPIC file to belong to the TopFD file (with every table: the same MS/MS
-spectrum ids and scans; with the envelope tables only: every MS/MS envelope
-of the TopFD file (spec_id, env_id, mono_mass) present and no envelope of a
-spectrum the TopFD file lacks); a TopPIC file without spectra is refused
-alone. The upload records the file names (`meta.files`), inspects which
+one form field per tool, `sqlite` (TopFD's file), `topdia_sqlite`,
+`toppic_sqlite` and `topmg_sqlite`; the fields given name the kind
+(`{sqlite}`, `{sqlite, toppic_sqlite}`, `{sqlite, topmg_sqlite}`,
+`{topdia_sqlite}`; anything else is a 400 listing the four). The spectra
+file is stored as `ms.sqlite`, a TopPIC or TopMG file as `toppic.sqlite` or
+`topmg.sqlite`. Each file gets per-spectrum indexes on the tables it has
+and rollback journaling; `datasets.checkDataset` then requires the files
+to resolve every table the pages read; a TopDIA file to look like one and a
+TopFD file not to (`looksLikeTopdia`: MS1 and MS/MS spectra, none of the
+MS/MS linked to an MS1 spectrum by `ms2_spectrum.ms1_id`); and, for two
+files, the TopPIC or TopMG file to belong to the TopFD file (with every
+table: the same MS/MS spectrum ids and scans; with the envelope tables
+only: every MS/MS envelope of the TopFD file (spec_id, env_id, mono_mass)
+present, found by a rowid join or else by spectrum, and no envelope of a
+spectrum the TopFD file lacks); a TopPIC or TopMG file without spectra is
+refused alone. For a TopDIA dataset, whose `ms1_id` is -1 for every window,
+`/api/ms2-info/:id` reports and `/api/ms2-id-by-ms1/:id` uses the MS1 scan of
+the window's cycle, the last MS1 scan before it by scan number
+(`src/server/diaLinks.ts`), so the spectra browser's MS1 and MS2 panels
+stay linked. The upload records the kind (`meta.type`) and the file names
+(`meta.files`), inspects which
 tables the files hold (`meta.hasIdentifications`, `hasFasta`, `has3d`),
 and, when identifications are present, reads and
 matches them once to validate the file and warm the per-dataset cache

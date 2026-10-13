@@ -7,7 +7,7 @@ import multer from 'multer';
 import {
   DATA_ROOT, datasetDir, listDatasets, readMeta, deleteDataset, sanitizeId,
   ensureIndexes, inspectSqlite, countMeta, checkDataset, openDatasetDb,
-  DatasetMeta, MS_DB_FILE, TOPPIC_DB_FILE,
+  DatasetMeta, DatasetType, MS_DB_FILE, TOPPIC_DB_FILE, TOPMG_DB_FILE,
 } from '../datasets';
 import { getDatasetSource, invalidatePrsmSource } from '../prsmSource';
 import { APP_DISPLAY_VERSION } from '../version';
@@ -54,14 +54,28 @@ router.delete('/datasets/:id', rejectWhenViewOnly, (req, res) => {
   else res.status(404).json({ error: 'dataset not found' });
 });
 
-// sqlite: TopFD's file (<name>.sqlite), or a dataset's only file;
-// toppic_sqlite: TopPIC's file (<name>_toppic.sqlite). At least one of the
-// two; a file given alone makes a single-file dataset (ms.sqlite), two files
-// a two-file dataset (ms.sqlite + toppic.sqlite, src/server/sqliteFiles.ts).
+// One field per tool: sqlite (TopFD's <name>.sqlite), topdia_sqlite (TopDIA's
+// <name>.sqlite), toppic_sqlite (TopPIC's <name>_toppic.sqlite), topmg_sqlite
+// (TopMG's <name>_topmg.sqlite). The fields given name the kind of the
+// dataset (toppic_test experiment 170); the spectra file (TopFD's or
+// TopDIA's) is stored as ms.sqlite, a TopPIC or TopMG file as toppic.sqlite or
+// topmg.sqlite next to it (read together, src/server/sqliteFiles.ts).
 const uploadFields = upload.fields([
   { name: 'sqlite', maxCount: 1 },
+  { name: 'topdia_sqlite', maxCount: 1 },
   { name: 'toppic_sqlite', maxCount: 1 },
+  { name: 'topmg_sqlite', maxCount: 1 },
 ]);
+
+const KINDS: { type: DatasetType; fields: string[] }[] = [
+  { type: 'topfd', fields: ['sqlite'] },
+  { type: 'topfd_toppic', fields: ['sqlite', 'toppic_sqlite'] },
+  { type: 'topfd_topmg', fields: ['sqlite', 'topmg_sqlite'] },
+  { type: 'topdia', fields: ['topdia_sqlite'] },
+];
+const KIND_ERROR = 'a dataset is one of: a TopFD file alone (field sqlite); a TopFD file and a TopPIC file '
+  + '(sqlite, toppic_sqlite); a TopFD file and a TopMG file (sqlite, topmg_sqlite); a TopDIA file alone '
+  + '(topdia_sqlite)';
 
 router.post('/datasets', rejectWhenViewOnly, uploadFields, (req, res) => {
   const files = req.files as { [field: string]: Express.Multer.File[] } | undefined;
@@ -71,20 +85,20 @@ router.post('/datasets', rejectWhenViewOnly, uploadFields, (req, res) => {
     }
   };
   try {
-    const topfdFile = files?.sqlite?.[0];
-    const toppicFile = files?.toppic_sqlite?.[0];
-    const uploaded = [topfdFile, toppicFile].filter((f): f is Express.Multer.File => f !== undefined);
-    if (uploaded.length === 0) {
+    const given = Object.keys(files ?? {}).filter((f) => (files?.[f]?.length ?? 0) > 0).sort();
+    const kind = KINDS.find((k) => k.fields.length === given.length && k.fields.every((f) => given.includes(f)));
+    if (!kind) {
       cleanupTmp();
-      res.status(400).json({ error: 'a sqlite file is required' });
+      res.status(400).json({ error: given.length === 0 ? 'a sqlite file is required; ' + KIND_ERROR : KIND_ERROR });
       return;
     }
+    // the spectra file first, then the search file
+    const uploaded = kind.fields.map((f) => files![f][0]);
     if (uploaded.some((f) => !/\.(sqlite|db)$/i.test(f.originalname))) {
       cleanupTmp();
       res.status(400).json({ error: 'the files must be .sqlite/.db files' });
       return;
     }
-    const twoFiles = uploaded.length === 2;
 
     const requested = String(req.body.name || '').trim() || uploaded[0].originalname;
     let id = sanitizeId(requested);
@@ -102,21 +116,22 @@ router.post('/datasets', rejectWhenViewOnly, uploadFields, (req, res) => {
       dir = datasetDir(id)!;
     }
     fs.mkdirSync(dir, { recursive: true });
-    // the first file is TopFD's (or the only one), the second TopPIC's
-    const sqlitePaths = [path.join(dir, MS_DB_FILE), path.join(dir, TOPPIC_DB_FILE)];
+    // the spectra file (TopFD's or TopDIA's), then TopPIC's or TopMG's
+    const sqlitePaths = [path.join(dir, MS_DB_FILE),
+      path.join(dir, kind.type === 'topfd_topmg' ? TOPMG_DB_FILE : TOPPIC_DB_FILE)];
     uploaded.forEach((f, i) => fs.renameSync(f.path, sqlitePaths[i]));
 
     try {
       uploaded.forEach((f, i) => ensureIndexes(sqlitePaths[i]));
-      // The identifications and the search database are in TopPIC's file
-      // (in older versions, appended to TopFD's), the spectra and the MS1 3D
-      // peak tables of newer TopFD versions in TopFD's
+      // The identifications and the search database are in TopPIC's or
+      // TopMG's file (in older versions, appended to TopFD's), the spectra and
+      // the MS1 3D peak tables of newer TopFD versions in TopFD's or TopDIA's
       const db = openDatasetDb(dir);
       if (!db) throw new Error('the sqlite files could not be opened');
       let contents: ReturnType<typeof inspectSqlite>;
       let counts: ReturnType<typeof countMeta>;
       try {
-        checkDataset(db, twoFiles);
+        checkDataset(db, kind.type);
         contents = inspectSqlite(db);
         counts = countMeta(db);
       } finally {
@@ -130,6 +145,7 @@ router.post('/datasets', rejectWhenViewOnly, uploadFields, (req, res) => {
       const all = source ? source.all : [];
       const meta: DatasetMeta = {
         id,
+        type: kind.type,
         name: requested.replace(/\.(sqlite|db)$/i, ''),
         createdAt: new Date().toISOString(),
         hasIdentifications: contents.hasIdentifications,

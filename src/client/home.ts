@@ -1,7 +1,10 @@
 // Home page: dataset list + upload form. Compiled to public/js/home.js.
 
+type DatasetType = 'topfd' | 'topfd_toppic' | 'topfd_topmg' | 'topdia';
+
 interface DatasetMeta {
   id: string;
+  type: DatasetType;
   name: string;
   createdAt: string;
   hasIdentifications: boolean;   // the sqlite holds the TopPIC identification tables
@@ -12,8 +15,23 @@ interface DatasetMeta {
   ms2Count: number;
   hasFasta: boolean;
   has3d: boolean;          // the sqlite holds the MS1 3D peak tables
-  files?: string[];        // the uploaded files, TopFD's first (absent for older datasets)
+  files?: string[];        // the uploaded files, the spectra file first (absent for older datasets)
 }
+
+// The four kinds of datasets (toppic_test experiment 170): the label, the
+// upload fields of the spectra file and of the search file ('' for none),
+// and the labels of the two file inputs.
+const KINDS: Record<DatasetType, { label: string; spectraField: string; searchField: string;
+  spectraLabel: string; searchLabel: string }> = {
+  topfd: { label: 'TopFD', spectraField: 'sqlite', searchField: '',
+    spectraLabel: 'TopFD sqlite file', searchLabel: '' },
+  topfd_toppic: { label: 'TopFD + TopPIC', spectraField: 'sqlite', searchField: 'toppic_sqlite',
+    spectraLabel: 'TopFD sqlite file', searchLabel: 'TopPIC sqlite file' },
+  topfd_topmg: { label: 'TopFD + TopMG', spectraField: 'sqlite', searchField: 'topmg_sqlite',
+    spectraLabel: 'TopFD sqlite file', searchLabel: 'TopMG sqlite file' },
+  topdia: { label: 'TopDIA', spectraField: 'topdia_sqlite', searchField: '',
+    spectraLabel: 'TopDIA sqlite file', searchLabel: '' },
+};
 
 async function fetchDatasets(): Promise<DatasetMeta[]> {
   const res = await fetch('api/datasets');
@@ -56,9 +74,10 @@ function renderDatasets(list: DatasetMeta[]): void {
     const identLink = d.hasIdentifications
       ? `<a href="d/${ds}/topmsv/visual/proteins.html?data=toppic_proteoform_cutoff">Identifications</a>`
       : '';
+    const kind = KINDS[d.type] ? KINDS[d.type].label : '';
     const files = d.files && d.files.length > 0
-      ? `<div class="hint files">${d.files.map(esc).join(' + ')}</div>`
-      : '';
+      ? `<div class="hint files">${esc(kind)}: ${d.files.map(esc).join(' + ')}</div>`
+      : `<div class="hint files">${esc(kind)}</div>`;
     html += `<tr>
       <td>${esc(d.name)}${note}${files}</td>
       <td>${esc(created)}</td>
@@ -100,16 +119,39 @@ function setupUpload(): void {
   const form = document.getElementById('uploadForm') as HTMLFormElement;
   const btn = document.getElementById('uploadBtn') as HTMLButtonElement;
   const status = document.getElementById('uploadStatus') as HTMLElement;
+  const spectraInput = document.getElementById('spectraInput') as HTMLInputElement;
+  const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+  const currentKind = (): DatasetType =>
+    ((form.querySelector('input[name="kind"]:checked') as HTMLInputElement | null)?.value ?? 'topfd_toppic') as DatasetType;
+  // the file inputs of the chosen kind: their labels, and the search file's
+  // row only for a kind with a TopPIC or TopMG file
+  const showKind = () => {
+    const k = KINDS[currentKind()];
+    (document.getElementById('spectraLabel') as HTMLElement).textContent = k.spectraLabel;
+    (document.getElementById('searchLabel') as HTMLElement).textContent = k.searchLabel;
+    (document.getElementById('searchRow') as HTMLElement).hidden = k.searchField === '';
+  };
+  for (const radio of Array.from(form.querySelectorAll('input[name="kind"]'))) {
+    radio.addEventListener('change', showKind);
+  }
+  showKind();
+  form.addEventListener('reset', () => setTimeout(showKind, 0));
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
-    const chosen = ['sqliteInput', 'toppicSqliteInput']
-      .some((id) => ((document.getElementById(id) as HTMLInputElement).files?.length ?? 0) > 0);
-    if (!chosen) {
+    const k = KINDS[currentKind()];
+    const spectraFile = spectraInput.files?.[0];
+    const searchFile = searchInput.files?.[0];
+    if (!spectraFile || (k.searchField !== '' && !searchFile)) {
       status.classList.add('error');
-      status.textContent = 'Select a TopFD sqlite file, a TopPIC sqlite file, or both.';
+      status.textContent = k.searchField === ''
+        ? `Select the ${k.spectraLabel}.`
+        : `Select the ${k.spectraLabel} and the ${k.searchLabel}.`;
       return;
     }
-    const data = new FormData(form);
+    const data = new FormData();
+    data.append('name', (document.getElementById('nameInput') as HTMLInputElement).value);
+    data.append(k.spectraField, spectraFile);
+    if (k.searchField !== '' && searchFile) data.append(k.searchField, searchFile);
     btn.disabled = true;
     status.classList.remove('error');
     status.textContent = 'Uploading… this may take a moment for large files.';

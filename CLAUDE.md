@@ -16,7 +16,7 @@ npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
 npm start -- --view-only        # hides upload panel + Delete buttons, POST/DELETE /api/datasets -> 403 (src/server/config.ts)
 npm run convert -- --sqlite f.sqlite --out outdir
-npm run convert -- --sqlite f_toppic.sqlite --topfd-sqlite f.sqlite --out outdir   # a two-file dataset
+npm run convert -- --sqlite f_toppic.sqlite --topfd-sqlite f.sqlite --out outdir   # a two-file dataset (also f_topmg.sqlite)
 ```
 
 ALL client JS is generated: `public/common/js/`, `public/topmsv/{visual,inspect}/js/`
@@ -30,15 +30,20 @@ validation loop below plus loading pages in a browser.
 
 ## What this app is
 
-A web tool for visualizing TopFD (spectral deconvolution) + TopPIC (database
-search) output. Users upload TopFD's and TopPIC's sqlite files (a two-file
-dataset: `ms.sqlite` + `toppic.sqlite`, read through one connection with
-TopPIC's file as main and TopFD's attached as `topfd`, so a table missing
-from TopPIC's file resolves to TopFD's; `src/server/sqliteFiles.ts`, every
-open goes through `datasets.openDatasetDb`, and table lists must use
-`sqliteFiles.tableNames`, never one file's `sqlite_master`; newer TopPIC
-writes only `ms2_env` / `ms2_env_peak` and its own tables, or every table
-corrected after `--mass-calib`) or ONE sqlite file: TopFD writes the spectra
+A web tool for visualizing TopFD / TopDIA (spectral deconvolution) +
+TopPIC / TopMG (database search) output. A dataset is one of four kinds
+(`meta.type`: `topfd`, `topfd_toppic`, `topfd_topmg`, `topdia`; upload
+fields `sqlite`, `toppic_sqlite`, `topmg_sqlite`, `topdia_sqlite`, the
+fields given name the kind). A two-file dataset is `ms.sqlite` +
+`toppic.sqlite` or `topmg.sqlite`, read through one connection with the
+TopPIC / TopMG file as main and TopFD's attached as `topfd`, so a table
+missing from the first resolves to TopFD's; `src/server/sqliteFiles.ts`,
+every open goes through `datasets.openDatasetDb`, and table lists must use
+`sqliteFiles.tableNames`, never one file's `sqlite_master`; newer TopPIC and
+TopMG write only `ms2_env` / `ms2_env_peak` and their own tables, or every
+table corrected after toppic `--mass-calib`. A TopDIA file links no MS/MS
+window to an MS1 scan (`ms1_id` -1): `src/server/diaLinks.ts` derives the
+link by scan order for a `topdia` dataset. ONE sqlite file: TopFD writes the spectra
 (`ms{1,2}_*` tables) and, with `-D`, the MS1 3D view's levels (CONFIG plus
 either the tables PEAKS<n> of TopFD 2.0 - 2.1 or, newer, a LEVEL column of
 `ms1_peak` keyed (LEVEL, spec_id, peak_id): level k = LEVEL >= k, -1 = not
@@ -52,14 +57,14 @@ tables (`meta.hasIdentifications`, `meta.hasFasta`, `meta.has3d`); a nav
 item whose data the file lacks is rendered disabled, and without
 identification tables every `data_js` request 404s. The old separate
 XML/FASTA uploads are not supported. Nothing derived is stored on disk: a
-dataset directory holds only `ms.sqlite` (+ `toppic.sqlite`) + `meta.json`; every data file the
+dataset directory holds only `ms.sqlite` (+ `toppic.sqlite` or `topmg.sqlite`) + `meta.json`; every data file the
 vendored TopMSV viewer consumes is generated on the fly.
 
 ### URL / data flow
 
 ```
 /                          public/index.html + public/common/js/home.js (from src/client/home.ts)
-/api/datasets              upload (multer; fields sqlite = TopFD's, toppic_sqlite = TopPIC's) -> data/<id>/
+/api/datasets              upload (multer; fields sqlite / topdia_sqlite / toppic_sqlite / topmg_sqlite) -> data/<id>/
                            -> ensureIndexes (each file) + checkDataset + getDatasetSource
                            (validates + warms the cache; no files are generated;
                            ensureIndexes also switches the sqlite copy to

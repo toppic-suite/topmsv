@@ -1,9 +1,12 @@
 // Dataset registry. Each dataset lives in data/<id>/ and holds the uploaded
 // sqlite files and meta.json:
-//   ms.sqlite       TopFD's file, or the one file of a single-file dataset
-//   toppic.sqlite   TopPIC's file of a two-file dataset (src/server/sqliteFiles.ts)
-// Without TopPIC's identification tables the dataset has no identification
-// data (only the raw-spectra pages work).
+//   ms.sqlite       TopFD's or TopDIA's file (the spectra)
+//   toppic.sqlite   TopPIC's file of a TopFD + TopPIC dataset, or
+//   topmg.sqlite    TopMG's file of a TopFD + TopMG dataset
+//                   (read with TopFD's, src/server/sqliteFiles.ts)
+// A dataset is one of four kinds (DatasetType, toppic_test experiment 170).
+// Without identification tables the dataset has no identification data
+// (only the raw-spectra pages work).
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -15,8 +18,16 @@ import { openSqlitePair, schemaTableNames, tableNames, TOPFD_SCHEMA } from './sq
 export const DATA_ROOT = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'));
 fs.mkdirSync(DATA_ROOT, { recursive: true });
 
+/**
+ * The kinds of datasets: a TopFD file alone (also a file of an older TopPIC
+ * or TopMG version that wrote its tables into TopFD's file), a TopFD file
+ * with a TopPIC or a TopMG file, or a TopDIA file alone.
+ */
+export type DatasetType = 'topfd' | 'topfd_toppic' | 'topfd_topmg' | 'topdia';
+
 export interface DatasetMeta {
   id: string;
+  type: DatasetType;
   name: string;
   createdAt: string;
   hasIdentifications: boolean;   // the sqlite holds the TopPIC identification tables
@@ -27,13 +38,15 @@ export interface DatasetMeta {
   ms2Count: number;
   hasFasta: boolean;             // the sqlite holds the search database (fasta_seq)
   has3d: boolean;                // the sqlite also holds the MS1 3D view's levels (CONFIG + PEAKS<n>, or ms1_peak.LEVEL)
-  files?: string[];              // the names of the uploaded files, TopFD's first (absent before two-file datasets)
+  files?: string[];              // the names of the uploaded files, the spectra file first (absent before two-file datasets)
 }
 
-/** The dataset's TopFD file, or its only file (TopFD output, optionally with TopPIC's tables). */
+/** The dataset's spectra file: TopFD's (optionally with an older TopPIC's tables) or TopDIA's. */
 export const MS_DB_FILE = 'ms.sqlite';
-/** TopPIC's file of a two-file dataset. */
+/** TopPIC's file of a TopFD + TopPIC dataset. */
 export const TOPPIC_DB_FILE = 'toppic.sqlite';
+/** TopMG's file of a TopFD + TopMG dataset. */
+export const TOPMG_DB_FILE = 'topmg.sqlite';
 
 export function sanitizeId(name: string): string {
   const id = name.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
@@ -47,9 +60,14 @@ export function datasetDir(id: string): string | null {
   return abs;
 }
 
-/** meta.json written before a flag existed lacks it. */
+/** meta.json written before a flag existed lacks it (a dataset without a type has one or two TopFD / TopPIC files). */
 function normalizeMeta(meta: DatasetMeta): DatasetMeta {
-  return { ...meta, hasIdentifications: meta.hasIdentifications ?? true, has3d: meta.has3d ?? false };
+  return {
+    ...meta,
+    type: meta.type ?? ((meta.files?.length ?? 1) > 1 ? 'topfd_toppic' : 'topfd'),
+    hasIdentifications: meta.hasIdentifications ?? true,
+    has3d: meta.has3d ?? false,
+  };
 }
 
 export function listDatasets(): DatasetMeta[] {
@@ -88,20 +106,24 @@ export function deleteDataset(id: string): boolean {
   return true;
 }
 
-/** The dataset's sqlite files in a dataset directory (toppic null for a single file). */
-export function datasetFiles(dir: string): { topfd: string | null; toppic: string | null } {
+/**
+ * The dataset's sqlite files in a dataset directory: the spectra file
+ * (TopFD's or TopDIA's) and the search file (TopPIC's or TopMG's; null for a
+ * single file).
+ */
+export function datasetFiles(dir: string): { spectra: string | null; search: string | null } {
   const existing = (name: string) => {
     const p = path.join(dir, name);
     return fs.existsSync(p) ? p : null;
   };
-  return { topfd: existing(MS_DB_FILE), toppic: existing(TOPPIC_DB_FILE) };
+  return { spectra: existing(MS_DB_FILE), search: existing(TOPPIC_DB_FILE) ?? existing(TOPMG_DB_FILE) };
 }
 
 /** A read-only connection to the files of a dataset directory, or null without a file. */
 export function openDatasetDb(dir: string): DatabaseSync | null {
   const files = datasetFiles(dir);
-  if (files.topfd === null && files.toppic === null) return null;
-  return openSqlitePair(files.topfd, files.toppic);
+  if (files.spectra === null && files.search === null) return null;
+  return openSqlitePair(files.spectra, files.search);
 }
 
 /** What a dataset's files hold besides the TopFD results. */
@@ -120,32 +142,61 @@ function count(db: DatabaseSync, sql: string): number {
 }
 
 /**
- * Check an uploaded dataset (throws an Error naming the problem): its files
- * resolve every table the pages read, and of two files, the TopPIC file
- * belongs to the TopFD file. A TopPIC file with every table (an older
- * TopPIC's copy, or toppic --mass-calib's corrected copy) has the TopFD
- * file's MS/MS spectra (the same ids and scans); one with the envelope tables
- * only has every MS/MS envelope of the TopFD file (spec_id, env_id,
- * mono_mass) and no envelope of a spectrum the TopFD file lacks.
+ * Whether the spectra look like TopDIA's: MS1 spectra and MS/MS spectra,
+ * none of them linked to an MS1 spectrum (TopDIA deconvolutes the DIA MS/MS
+ * windows without their MS1 scan, so ms2_spectrum.ms1_id is -1; TopFD links
+ * the MS/MS spectra of DDA data to their MS1 scan). null when the file has
+ * no ms1_id column (TopFD and TopDIA before it), which cannot tell.
  */
-export function checkDataset(db: DatabaseSync, twoFiles: boolean): void {
+function looksLikeTopdia(db: DatabaseSync): boolean | null {
+  const cols = db.prepare('PRAGMA table_info(ms2_spectrum)').all() as { name: string }[];
+  if (!cols.some((c) => c.name === 'ms1_id')) return null;
+  const ms1Num = count(db, 'SELECT COUNT(*) AS n FROM ms1_spectrum');
+  const ms2Num = count(db, 'SELECT COUNT(*) AS n FROM ms2_spectrum');
+  const linked = count(db, 'SELECT COUNT(*) AS n FROM ms2_spectrum WHERE ms1_id >= 0');
+  return ms1Num > 0 && ms2Num > 0 && linked === 0;
+}
+
+/**
+ * Check an uploaded dataset of a kind (throws an Error naming the problem):
+ * its files resolve every table the pages read; a TopDIA file looks like
+ * TopDIA's and a TopFD file does not (looksLikeTopdia); and of two files,
+ * the TopPIC or TopMG file belongs to the TopFD file. A search file with
+ * every table (an older TopPIC's copy, or toppic --mass-calib's corrected
+ * copy) has the TopFD file's MS/MS spectra (the same ids and scans); one
+ * with the envelope tables only has every MS/MS envelope of the TopFD file
+ * (spec_id, env_id, mono_mass) and no envelope of a spectrum the TopFD file
+ * lacks.
+ */
+export function checkDataset(db: DatabaseSync, type: DatasetType): void {
+  const twoFiles = type === 'topfd_toppic' || type === 'topfd_topmg';
+  const tool = type === 'topfd_topmg' ? 'TopMG' : 'TopPIC';
   const tables = tableNames(db);
   const missing = REQUIRED_TABLES.filter((t) => !tables.has(t));
   if (missing.length > 0) {
     if (!twoFiles && !tables.has('ms2_spectrum') && tables.has('ms2_env')) {
-      throw new Error('the sqlite file has no spectra: it is a TopPIC file (<name>_toppic.sqlite) '
-        + 'that holds the MS/MS envelopes and the identifications only; upload it together '
-        + 'with the TopFD file (<name>.sqlite) it was searched with');
+      throw new Error('the sqlite file has no spectra: it is a TopPIC or TopMG file (<name>_toppic.sqlite, '
+        + '<name>_topmg.sqlite) that holds the MS/MS envelopes and the identifications only; upload it '
+        + 'together with the TopFD file (<name>.sqlite) it was searched with');
     }
     throw new Error(`the sqlite file${twoFiles ? 's lack' : ' lacks'} the table${missing.length > 1 ? 's' : ''} `
       + missing.join(', '));
   }
-  if (!twoFiles) return;
-  if (!schemaTableNames(db, TOPFD_SCHEMA).has('ms2_spectrum')) {
-    throw new Error('the TopFD file has no spectra (no ms2_spectrum table): were the TopFD and the '
-      + 'TopPIC file swapped?');
+  if (twoFiles && !schemaTableNames(db, TOPFD_SCHEMA).has('ms2_spectrum')) {
+    throw new Error(`the TopFD file has no spectra (no ms2_spectrum table): were the TopFD and the `
+      + `${tool} file swapped?`);
   }
-  const mismatch = 'the TopPIC file does not belong to the TopFD file: ';
+  const dia = looksLikeTopdia(db);
+  if (type === 'topdia' && dia === false) {
+    throw new Error('the file is not a TopDIA file: its MS/MS spectra are linked to MS1 spectra '
+      + '(ms2_spectrum.ms1_id), as in a TopFD file; upload it as a TopFD file');
+  }
+  if (type !== 'topdia' && dia === true) {
+    throw new Error('the file looks like a TopDIA file: none of its MS/MS spectra is linked to an MS1 '
+      + 'spectrum (ms2_spectrum.ms1_id); upload it as a TopDIA file');
+  }
+  if (!twoFiles) return;
+  const mismatch = `the ${tool} file does not belong to the TopFD file: `;
   if (schemaTableNames(db, 'main').has('ms2_spectrum')) {
     const toppicNum = count(db, 'SELECT COUNT(*) AS n FROM main.ms2_spectrum');
     const topfdNum = count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_spectrum`);
@@ -167,12 +218,12 @@ export function checkDataset(db: DatabaseSync, twoFiles: boolean): void {
     + 'WHERE NOT EXISTS (SELECT 1 FROM main.ms2_env m WHERE m.spec_id = t.spec_id AND m.env_id = t.env_id '
     + 'AND m.mono_mass = t.mono_mass)');
   if (lost > 0) {
-    throw new Error(mismatch + `${lost} MS/MS envelopes of the TopFD file are not in the TopPIC file`);
+    throw new Error(mismatch + `${lost} MS/MS envelopes of the TopFD file are not in the ${tool} file`);
   }
   const foreign = count(db, `SELECT COUNT(*) AS n FROM main.ms2_env WHERE spec_id NOT IN `
     + `(SELECT id FROM ${TOPFD_SCHEMA}.ms2_spectrum)`);
   if (foreign > 0) {
-    throw new Error(mismatch + `${foreign} MS/MS envelopes of the TopPIC file belong to no spectrum of the TopFD file`);
+    throw new Error(mismatch + `${foreign} MS/MS envelopes of the ${tool} file belong to no spectrum of the TopFD file`);
   }
 }
 
