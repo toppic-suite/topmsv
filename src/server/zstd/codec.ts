@@ -18,6 +18,8 @@ export const SPECTRUM_TABLES = ['ms1_peak', 'ms2_peak', 'ms1_env', 'ms1_env_peak
 export const BLOB_SUFFIX = '_blob';
 /** The columns of each <table>_blob: tbl, col, pos, decl_type, codec ('key': spec_id), group_col, min_value, max_value. */
 export const CODEC_TABLE = 'zstd_blob_columns';
+/** Each <table>_blob's source CREATE statement: tbl, create_sql (toppic_test experiment 172). */
+export const TABLES_TABLE = 'zstd_blob_tables';
 
 /** Tracks one column's values over a table to choose its codec. */
 export class CodecChooser {

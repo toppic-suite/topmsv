@@ -105,7 +105,11 @@ is compressed); a TopPIC or TopMG file without spectra is
 refused alone. A compressed file needs the sqlite-zstd extension: without
 it the upload is refused with the message of `loadZstdExtension`, and on a
 server started without it the requests of a compressed dataset answer 500
-with that message as JSON. For a TopDIA dataset, whose `ms1_id` is -1 for every window,
+with that message as JSON. The upload checks each file for compression
+(`isZstdFile`: sqlite-zstd's table `_zstd_configs`) and records it per
+file as `meta.compressed` (in the order of `meta.files`;
+`datasets.fileCompression` computes it for datasets uploaded before), which
+the home page's dataset list shows. For a TopDIA dataset, whose `ms1_id` is -1 for every window,
 `/api/ms2-info/:id` reports and `/api/ms2-id-by-ms1/:id` uses the MS1 scan of
 the window's cycle, the last MS1 scan before it by scan number
 (`src/server/diaLinks.ts`), so the spectra browser's MS1 and MS2 panels

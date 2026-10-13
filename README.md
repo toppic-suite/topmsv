@@ -174,8 +174,14 @@ is the search database, which is copied as it is). The input file is not
 changed. The TopPIC Suite tools themselves do not read compressed files,
 so keep the originals if a tool will read them again.
 
+The TopPIC Suite writes the same format: its topfd, topdia, toppic and
+topmg compress their databases by default (the suite's own converter,
+`topzstd`, also compresses the files of earlier versions and with `-d`
+decompresses them).
+
 Upload compressed files as you would the originals, in any combination:
-TopFD's and TopPIC's file, both compressed or only one of them. The server
+TopFD's and TopPIC's file, both compressed or only one of them. The
+**Datasets** table marks each compressed file "(compressed)". The server
 needs the extension to read them: `ext/sqlite_zstd/` of the repository
 (`npm run fetch-sqlite-zstd`; releases for Linux, macOS and Windows on
 x86_64, and for 32-bit ARM Linux), or the library file named by the

@@ -12,6 +12,7 @@ import {
 import { getDatasetSource, invalidatePrsmSource } from '../prsmSource';
 import { APP_DISPLAY_VERSION } from '../version';
 import { serverConfig } from '../config';
+import { isZstdFile } from '../zstd/extension';
 
 const router = express.Router();
 
@@ -122,6 +123,12 @@ router.post('/datasets', rejectWhenViewOnly, uploadFields, (req, res) => {
     uploaded.forEach((f, i) => fs.renameSync(f.path, sqlitePaths[i]));
 
     try {
+      // whether each file is compressed with sqlite-zstd (TopFD, TopDIA,
+      // toppic and topmg compress their databases by default since
+      // toppic_test experiment 172; npm run compress since 171)
+      const compressed = uploaded.map((_, i) => isZstdFile(sqlitePaths[i]));
+      uploaded.forEach((f, i) => console.log(`upload ${id}: ${f.originalname} `
+        + (compressed[i] ? 'compressed with sqlite-zstd' : 'not compressed')));
       uploaded.forEach((f, i) => ensureIndexes(sqlitePaths[i]));
       // The identifications and the search database are in TopPIC's or
       // TopMG's file (in older versions, appended to TopFD's), the spectra and
@@ -157,6 +164,7 @@ router.post('/datasets', rejectWhenViewOnly, uploadFields, (req, res) => {
         hasFasta: contents.hasFasta,
         has3d: contents.has3d,
         files: uploaded.map((f) => f.originalname),
+        compressed,
       };
       fs.writeFileSync(path.join(dir, 'meta.json'), JSON.stringify(meta, null, 2));
       res.json(meta);

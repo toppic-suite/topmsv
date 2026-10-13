@@ -15,8 +15,11 @@
 // group_col, min_value, max_value) records every column of the source table
 // in its order (spec_id with the codec 'key'), so that readers rebuild the
 // source rows exactly (src/server/spectraStore.ts), and each column's range
-// (the 3D view's LEVEL range without reading the peaks). Every other table is copied as it is, with
-// its explicit indexes. Then sqlite-zstd compresses every BLOB column with a
+// (the 3D view's LEVEL range without reading the peaks); zstd_blob_tables
+// (tbl, create_sql) keeps each such table's CREATE statement (toppic_test
+// experiment 172). The spectra are stored in spec_id order (TopFD inserts
+// them in the order its threads finish), each with its rows in the source's
+// order. Every other table is copied as it is, with its explicit indexes. Then sqlite-zstd compresses every BLOB column with a
 // dictionary of its own (each <table>_blob becomes a view that decompresses
 // on read), and the file is VACUUMed. The source file is opened read only
 // (sourceUri) and not changed.
@@ -24,7 +27,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { DatabaseSync } from 'node:sqlite';
-import { BLOB_SUFFIX, CODEC_TABLE, CodecChooser, Codec, encodeColumn, SPECTRUM_TABLES } from './codec';
+import { BLOB_SUFFIX, CODEC_TABLE, CodecChooser, Codec, encodeColumn, SPECTRUM_TABLES, TABLES_TABLE } from './codec';
 import { loadZstdExtension } from './extension';
 const ID_COLUMNS = new Set(['peak_id', 'env_id']);
 // sqlite-zstd trains a dictionary of 1% of a column's data and, by default,
@@ -139,6 +142,10 @@ export function compressDatabase(srcPath: string, outPath: string, opts: Compres
     db.exec(`CREATE TABLE ${CODEC_TABLE}(tbl TEXT NOT NULL, col TEXT NOT NULL, pos INTEGER NOT NULL, `
       + 'decl_type TEXT NOT NULL, codec TEXT NOT NULL, group_col TEXT, min_value REAL, max_value REAL, '
       + 'PRIMARY KEY(tbl, col))');
+    // each per-spectrum table's own CREATE statement, so that decompression
+    // (the TopPIC Suite's topzstd -d) restores the schema exactly (toppic_test
+    // experiment 172; the suite's converter writes the same)
+    db.exec(`CREATE TABLE ${TABLES_TABLE}(tbl TEXT PRIMARY KEY, create_sql TEXT NOT NULL)`);
     db.exec('COMMIT');
 
     // 2. the per-spectrum tables as BLOB rows
@@ -169,6 +176,7 @@ export function compressDatabase(srcPath: string, outPath: string, opts: Compres
       const blob = t.name + BLOB_SUFFIX;
       db.exec(`CREATE TABLE ${q(blob)}(spec_id INTEGER PRIMARY KEY, n INTEGER NOT NULL`
         + stored.map((c) => `, ${q(c.name)} BLOB NOT NULL`).join('') + ')');
+      db.prepare(`INSERT INTO ${TABLES_TABLE} VALUES (?, ?)`).run(t.name, t.sql);
       const insCodec = db.prepare(`INSERT INTO ${CODEC_TABLE} VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
       cols.forEach((c, pos) => {
         const k = data.indexOf(c);
