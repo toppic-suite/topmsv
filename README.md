@@ -65,6 +65,11 @@ On Windows double-click `start_server.bat`, which does the same but skips
 the install and build steps once they have been done. Set `PORT` and
 `DATA_DIR` in the terminal beforehand to change the defaults.
 
+To stop the server press Ctrl+C in its terminal. On Windows you can
+instead double-click `stop_server.bat`, which stops every TopMSV server
+started from its folder, whatever the port (run it as administrator if
+the server was started as administrator).
+
 Options are given through environment variables and one command-line flag:
 
 ```

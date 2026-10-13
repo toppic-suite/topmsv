@@ -62,5 +62,5 @@ Notes:
 
 - To ship a different Node.js version, change `v24.21.0` in the download
   URL and in the folder name; TopMSV requires Node.js 24 or newer.
-- `start_server.bat` is checked out with CRLF line endings
-  (`.gitattributes`), as Windows needs.
+- `start_server.bat` and `stop_server.bat` are checked out with CRLF line
+  endings (`.gitattributes`), as Windows needs.
