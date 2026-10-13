@@ -31,8 +31,13 @@ validation loop below plus loading pages in a browser.
 
 A web tool for visualizing TopFD (spectral deconvolution) + TopPIC (database
 search) output. Users upload ONE sqlite file: TopFD writes the spectra
-(`ms{1,2}_*` tables) and, in newer versions, the MS1 3D peak tables
-(multi-resolution CONFIG + PEAKS<n>); TopPIC appends its identifications
+(`ms{1,2}_*` tables) and, with `-D`, the MS1 3D view's levels (CONFIG plus
+either the tables PEAKS<n> of TopFD 2.0 - 2.1 or, newer, a LEVEL column of
+`ms1_peak` keyed (LEVEL, spec_id, peak_id): level k = LEVEL >= k, -1 = not
+in the map, RT = the spectrum's in ms truncated, COLOR computed as TopFD's
+MsSqlWriter; `src/server/ms1Peaks.ts` reads both, every ms1_peak query goes
+through it, and ensureIndexes does not index a merged ms1_peak); TopPIC
+appends its identifications
 (`prsm`, `prsm_mass_shift`, `proteoform`, `prsm_protein_match`) and the
 search database (`fasta_seq`) to the same file. The upload inspects the
 tables (`meta.hasIdentifications`, `meta.hasFasta`, `meta.has3d`); a nav
@@ -201,8 +206,8 @@ byte-identical (`curl` each path, `cmp` against the CLI tree).
   pre-allocated line per peak, ticks as sprites, 2D top-down mode),
   `interaction.ts` pan/zoom/scan highlight, `data.ts` the `/api/3d/`
   client and the resolution-level choice, `page.ts` the controls.
-  RETENTIONTIME in the 3D tables is milliseconds; the API and the page
-  use minutes.
+  RETENTIONTIME in the 3D tables (and the spectra's RT in the merged
+  layout) is milliseconds; the API and the page use minutes.
 - ALL browser libraries (spectra.html and the topmsv viewer) are served
   under `/vendor/*` **straight from node_modules** by `src/server/vendor.ts`
   (a URL-prefix -> node_modules-dir table; nothing is copied under `public/`);

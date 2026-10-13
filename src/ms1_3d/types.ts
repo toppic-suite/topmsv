@@ -6,7 +6,7 @@ export interface LevelConfig {
   mzMin: number; mzMax: number;
   rtMin: number; rtMax: number;     // minutes
   intMin: number; intMax: number;
-  count: number;                    // rows in PEAKS<level>
+  count: number;                    // peaks of the level (rows of PEAKS<level>, or LEVEL >= level)
 }
 
 /** Config endpoint payload. */

@@ -18,7 +18,9 @@ identifications for visualization from one sqlite file per dataset. It
   written as "N/A".
 
 A dataset directory holds one uploaded sqlite file (`ms.sqlite`): TopFD's
-spectra and, in newer versions, the MS1 3D peak tables, plus the
+spectra and, in newer versions, the MS1 3D view's levels (tables
+`PEAKS<n>`, or in the newest a `LEVEL` column of `ms1_peak`;
+`src/server/ms1Peaks.ts` reads both layouts), plus the
 identification tables and search database TopPIC appends to the same file
 (`src/server/convert/toppicSqlite.ts` reads them). All data for
 visualization are generated dynamically from a per-dataset in-memory cache
@@ -31,7 +33,7 @@ request returns 404, the home page omits the identification link, the nav
 bar renders the identification items disabled, and the identification
 pages show a "no identification data" message. The raw-spectra browser and
 the visual inspection page only need the spectra, so they work for every
-dataset; the MS1 3D view needs the 3D peak tables (`has3d`) and its nav
+dataset; the MS1 3D view needs the 3D levels (`has3d`) and its nav
 item is disabled otherwise.
 
 
@@ -177,6 +179,9 @@ src/server/prsmSource.ts     per-dataset in-memory cache of parsed and
                              matched PrSM data; serves the data_js files
 src/server/spectrumJs.ts     per-scan topfd/ms{1,2}_json/spectrum<N>.js
                              generated straight from the sqlite file
+src/server/ms1Peaks.ts       the two layouts of the MS1 peaks (ms1_peak with
+                             PEAKS<n> tables, or one ms1_peak with LEVEL):
+                             a spectrum's peak query and the MS1 3D data
 src/server/convert/          sqlite -> data_js converter: toppicSqlite.ts
                              reads the TopPIC tables into prsmRecord.ts
                              records, convert.ts/annotate.ts match them,

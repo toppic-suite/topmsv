@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DatabaseSync } from 'node:sqlite';
 import { dbHasIdentifications, dbHasFasta } from './convert/toppicSqlite';
+import { dbHas3d } from './ms1Peaks';
 
 export const DATA_ROOT = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'));
 fs.mkdirSync(DATA_ROOT, { recursive: true });
@@ -23,10 +24,10 @@ export interface DatasetMeta {
   ms1Count: number;
   ms2Count: number;
   hasFasta: boolean;             // the sqlite holds the search database (fasta_seq)
-  has3d: boolean;                // the sqlite also holds the MS1 3D peak tables (CONFIG + PEAKS<n>)
+  has3d: boolean;                // the sqlite also holds the MS1 3D view's levels (CONFIG + PEAKS<n>, or ms1_peak.LEVEL)
 }
 
-/** The dataset's sqlite file (TopFD output, optionally with the MS1 3D peak tables). */
+/** The dataset's sqlite file (TopFD output, optionally with the MS1 3D view's levels). */
 export const MS_DB_FILE = 'ms.sqlite';
 
 export function sanitizeId(name: string): string {
@@ -86,43 +87,32 @@ export function deleteDataset(id: string): boolean {
 export function inspectSqlite(sqlitePath: string): { hasIdentifications: boolean; hasFasta: boolean; has3d: boolean } {
   const db = new DatabaseSync(sqlitePath, { readOnly: true });
   try {
-    return { hasIdentifications: dbHasIdentifications(db), hasFasta: dbHasFasta(db), has3d: dbHas3dTables(db) };
+    return { hasIdentifications: dbHasIdentifications(db), hasFasta: dbHasFasta(db), has3d: dbHas3d(db) };
   } finally {
     db.close();
   }
 }
 
 /**
- * Whether a TopFD sqlite also holds the MS1 3D peak tables (the
- * multi-resolution CONFIG + PEAKS<n> layout newer TopFD versions write
- * into the same file). Throws when CONFIG lists more levels than there
- * are PEAKS tables, i.e. the file is truncated.
+ * Whether a TopFD sqlite also holds the MS1 3D view's levels: CONFIG with
+ * PEAKS0 ... PEAKS<n> (TopFD up to 2.1.0) or with the LEVEL column of a
+ * merged ms1_peak (src/server/ms1Peaks.ts). Throws when CONFIG lists more
+ * levels than the file holds, i.e. the file is truncated.
  */
 export function has3dTables(sqlitePath: string): boolean {
   const db = new DatabaseSync(sqlitePath, { readOnly: true });
   try {
-    return dbHas3dTables(db);
+    return dbHas3d(db);
   } finally {
     db.close();
   }
 }
 
-function dbHas3dTables(db: DatabaseSync): boolean {
-  const tables = new Set(
-    (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[])
-      .map((r) => r.name.toUpperCase()),
-  );
-  if (!tables.has('CONFIG') || !tables.has('PEAKS0')) return false;
-  const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
-  for (let i = 0; i < levels; i++) {
-    if (!tables.has('PEAKS' + i)) {
-      throw new Error(`the sqlite file lists ${levels} MS1 3D levels in CONFIG but has no PEAKS${i} table`);
-    }
-  }
-  return levels > 0;
-}
-
-/** Add spec_id indexes so per-spectrum queries are fast (TopFD ships none). */
+/**
+ * Add spec_id indexes so per-spectrum queries are fast (TopFD ships none). A
+ * merged ms1_peak (primary key LEVEL, spec_id, peak_id) needs none: its
+ * spectrum query names every level (ms1Peaks.ms1PeakSql).
+ */
 export function ensureIndexes(sqlitePath: string): void {
   const db = new DatabaseSync(sqlitePath);
   try {
@@ -130,8 +120,11 @@ export function ensureIndexes(sqlitePath: string): void {
     // process makes later read-only opens fail (SQLITE_CANTOPEN). Rollback
     // journaling needs no shared memory, so switch our uploaded copy over.
     db.exec('PRAGMA journal_mode = DELETE;');
+    const ms1Cols = db.prepare('PRAGMA table_info(ms1_peak)').all() as { name: string }[];
+    if (!ms1Cols.some((c) => c.name.toUpperCase() === 'LEVEL')) {
+      db.exec('CREATE INDEX IF NOT EXISTS ix_ms1_peak_spec ON ms1_peak(spec_id);');
+    }
     db.exec(`
-      CREATE INDEX IF NOT EXISTS ix_ms1_peak_spec ON ms1_peak(spec_id);
       CREATE INDEX IF NOT EXISTS ix_ms1_env_spec ON ms1_env(spec_id);
       CREATE INDEX IF NOT EXISTS ix_ms1_env_peak_spec ON ms1_env_peak(spec_id);
       CREATE INDEX IF NOT EXISTS ix_ms2_peak_spec ON ms2_peak(spec_id);
@@ -175,13 +168,13 @@ export function getDb(id: string): DatabaseSync | null {
 // whether a dataset's sqlite holds the 3D tables (checked once per handle)
 const has3dCache = new Map<string, boolean>();
 
-/** The dataset's sqlite when it holds the MS1 3D peak tables, else null. */
+/** The dataset's sqlite when it holds the MS1 3D view's levels, else null. */
 export function getDb3d(id: string): DatabaseSync | null {
   const db = getDb(id);
   if (!db) return null;
   let has3d = has3dCache.get(id);
   if (has3d === undefined) {
-    has3d = dbHas3dTables(db);
+    has3d = dbHas3d(db);
     has3dCache.set(id, has3d);
   }
   return has3d ? db : null;

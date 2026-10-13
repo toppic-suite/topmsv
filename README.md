@@ -105,7 +105,15 @@ tables it contains:
 | `ms1_*`, `ms2_*` (spectra, deconvoluted envelopes) | TopFD | Spectra browser, Visual Inspection (always present) |
 | `prsm`, `prsm_mass_shift`, `proteoform` | TopPIC (results written into the TopFD file) | Protein / Spectrum Identifications pages |
 | `fasta_seq` (the search database) | TopPIC | Full protein sequences in the identification views; without it the parts of a protein outside the identified proteoform are reconstructed heuristically (an `M` for NME proteoforms, `X` placeholders otherwise) |
-| `CONFIG`, `PEAKS0` … `PEAKS<n>` (multi-resolution MS1 peaks) | recent TopFD versions | MS1 3D view |
+| `CONFIG`, `PEAKS0` … `PEAKS<n>` (multi-resolution MS1 peaks) | TopFD 2.0 - 2.1 with `-D` | MS1 3D view |
+| `CONFIG` and a `LEVEL` column in `ms1_peak` (the same levels in one MS1 peak table) | newer TopFD with `-D` | MS1 3D view |
+
+Both layouts of the MS1 3D data are read. In the newer one `ms1_peak` is
+`(LEVEL, spec_id, peak_id, mz, intensity)` with the primary key `(LEVEL,
+spec_id, peak_id)`: `LEVEL` is the highest 3D level that keeps the peak (-1
+for a peak outside the 3D map, 0 for every peak without `-D`), level k is
+the peaks with `LEVEL >= k`, and a peak's retention time is its spectrum's.
+The file is much smaller (480_F3_02 with `-D`: 2.6 GB -> 0.9 GB).
 
 ## Pages
 

@@ -5,6 +5,7 @@
 
 import { DatabaseSync } from 'node:sqlite';
 import { fixedToString, toScientificStr } from './convert/format';
+import { ms1PeakSql } from './ms1Peaks';
 
 interface JsonPeak { mz: string; intensity: string }
 interface JsonEnvPeak { mz: number; intensity: number }
@@ -38,8 +39,9 @@ export function buildSpectrumJs(db: DatabaseSync, level: 1 | 2, specId: number):
     doc.c_ion_type = spec.c_ion_type ?? 'Y';
   }
 
+  // ms1_peak may be the merged layout (one key range per 3D level)
   const peakRows = db.prepare(
-    `SELECT mz, intensity FROM ${prefix}_peak WHERE spec_id = ? ORDER BY peak_id`,
+    level === 1 ? ms1PeakSql(db, true) : `SELECT mz, intensity FROM ${prefix}_peak WHERE spec_id = ? ORDER BY peak_id`,
   ).all(specId) as any[];
   doc.peaks = peakRows.map((r): JsonPeak => ({
     mz: fixedToString(r.mz, 4),

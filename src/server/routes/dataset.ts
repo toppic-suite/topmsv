@@ -9,6 +9,7 @@
 import * as express from 'express';
 import * as path from 'path';
 import { getDb, getDb3d, readMeta } from '../datasets';
+import { ms1PeakSql, peaks3d, totalIntensity3d } from '../ms1Peaks';
 import { buildSpectrumJs } from '../spectrumJs';
 import { buildDataJsFile } from '../prsmSource';
 import vendorRouter from '../vendor';
@@ -24,9 +25,10 @@ function dbOf(req: express.Request) {
 // ------------------------------------------------------------------ MS1 3D view
 // Newer TopFD versions write the MS1 peaks at several resolutions into the
 // same sqlite: CONFIG has one row per level with the data bounds and the
-// peak count of PEAKS<level>; RETENTIONTIME is in milliseconds. The API
-// converts retention times to minutes. getDb3d is null (404 here) for a
-// file without those tables.
+// peak count of the level, the peaks are the tables PEAKS<level> or a merged
+// ms1_peak with a LEVEL column (src/server/ms1Peaks.ts reads both); retention
+// times are in milliseconds. The API converts them to minutes. getDb3d is
+// null (404 here) for a file without levels.
 
 const RT_MS_PER_MIN = 60000;
 const MAX_3D_PEAKS = 20000;
@@ -37,7 +39,7 @@ function num(v: unknown, fallback: number): number {
 }
 
 // total intensity of the full-resolution level per dataset (one scan of
-// PEAKS0, cached; the page scales weak regions relative to it)
+// level 0, cached; the page scales weak regions relative to it)
 const totalIntensityCache = new Map<string, number>();
 
 // Levels (index, m/z and RT (minutes) bounds, intensity bounds, peak count)
@@ -49,7 +51,7 @@ router.get('/api/3d/config', (req, res) => {
   const rows = db.prepare('SELECT * FROM CONFIG').all() as any[];
   let totalIntensity = totalIntensityCache.get(ds);
   if (totalIntensity === undefined) {
-    totalIntensity = (db.prepare('SELECT SUM(INTENSITY) AS s FROM PEAKS0').get() as { s: number }).s ?? 0;
+    totalIntensity = totalIntensity3d(db);
     totalIntensityCache.set(ds, totalIntensity);
   }
   res.json({
@@ -72,16 +74,14 @@ router.get('/api/3d/peaks', (req, res) => {
   const level = Math.floor(num(req.query.level, levels - 1));
   if (level < 0 || level >= levels) { res.status(400).json({ error: 'level out of range' }); return; }
   const maxPeaks = Math.min(MAX_3D_PEAKS, Math.max(1, Math.floor(num(req.query.maxPeaks, 4000))));
-  const rows = db.prepare(
-    `SELECT MZ, INTENSITY, RETENTIONTIME, COLOR FROM PEAKS${level}
-     WHERE RETENTIONTIME >= ? AND RETENTIONTIME <= ? AND MZ >= ? AND MZ <= ? AND INTENSITY > ?
-     ORDER BY INTENSITY DESC LIMIT ?`,
-  ).all(
-    num(req.query.minRt, 0) * RT_MS_PER_MIN, num(req.query.maxRt, Number.MAX_SAFE_INTEGER / RT_MS_PER_MIN) * RT_MS_PER_MIN,
-    num(req.query.minMz, 0), num(req.query.maxMz, Number.MAX_VALUE),
-    num(req.query.cutoff, 0), maxPeaks,
-  ) as any[];
-  res.json(rows.map((r) => ({ mz: r.MZ, intensity: r.INTENSITY, rt: r.RETENTIONTIME / RT_MS_PER_MIN, color: r.COLOR })));
+  const rows = peaks3d(db, {
+    level,
+    minRtMs: num(req.query.minRt, 0) * RT_MS_PER_MIN,
+    maxRtMs: num(req.query.maxRt, Number.MAX_SAFE_INTEGER / RT_MS_PER_MIN) * RT_MS_PER_MIN,
+    minMz: num(req.query.minMz, 0), maxMz: num(req.query.maxMz, Number.MAX_VALUE),
+    cutoff: num(req.query.cutoff, 0), maxPeaks,
+  });
+  res.json(rows.map((r) => ({ mz: r.mz, intensity: r.intensity, rt: r.rt / RT_MS_PER_MIN, color: r.color })));
 });
 
 // MS1 scans of the TopFD file with their retention times (minutes), for
@@ -132,7 +132,7 @@ router.get('/api/ms2-info/:id', (req, res) => {
 router.get('/api/peaks/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(db.prepare('SELECT mz, intensity FROM ms1_peak WHERE spec_id = ?').all(Number(req.params.id)));
+  res.json(db.prepare(ms1PeakSql(db, false)).all(Number(req.params.id)));
 });
 
 router.get('/api/ms2-peaks/:id', (req, res) => {
