@@ -13,6 +13,19 @@ export interface InteractionCallbacks {
   onCursor: (mz: number, rt: number, scan: ScanRow | null, event: MouseEvent) => void;
 }
 
+/** zoom per pixel of wheel scroll: one wheel notch (~100 px) zooms by ~15% */
+const ZOOM_PER_PIXEL = Math.log(1.15) / 100;
+/** cap on one event's scroll, so a single event zooms by at most ~52% */
+const MAX_WHEEL_PIXELS = 300;
+
+/** The event's vertical scroll in pixels, whatever unit the browser reports it in. */
+function wheelPixels(e: WheelEvent): number {
+  let px = e.deltaY;
+  if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) px *= 33;        // 3 lines a notch
+  else if (e.deltaMode === WheelEvent.DOM_DELTA_PAGE) px *= 800;
+  return Math.max(-MAX_WHEEL_PIXELS, Math.min(MAX_WHEEL_PIXELS, px));
+}
+
 export class Ms1Interaction {
   private graph: Ms1Graph;
   private cb: InteractionCallbacks;
@@ -92,7 +105,10 @@ export class Ms1Interaction {
     const p = g.getMousePosition(e);
     const curmz = p.x * vr.mzrange + vr.mzmin;
     const currt = p.z * vr.rtrange + vr.rtmin;
-    const scale = e.deltaY < 0 ? 0.8 : 1.2;
+    // proportional to the scroll: touchpads and smooth-scrolling wheels send
+    // many small events per gesture, a classic wheel one event a notch
+    const scale = Math.exp(wheelPixels(e) * ZOOM_PER_PIXEL);
+    if (scale === 1) return;
     const inMz = curmz >= vr.mzmin && curmz <= vr.mzmax;
     const inRt = currt >= vr.rtmin && currt <= vr.rtmax;
     let newmzrange = vr.mzrange;
