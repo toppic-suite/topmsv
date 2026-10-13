@@ -13,6 +13,7 @@ import * as path from 'path';
 import { DatabaseSync } from 'node:sqlite';
 import { dbHasIdentifications, dbHasFasta } from './convert/toppicSqlite';
 import { dbHas3d } from './ms1Peaks';
+import { isBlobInSchema, spectraOf } from './spectraStore';
 import { openSqlitePair, schemaTableNames, tableNames, TOPFD_SCHEMA } from './sqliteFiles';
 
 export const DATA_ROOT = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'));
@@ -142,6 +143,40 @@ function count(db: DatabaseSync, sql: string): number {
 }
 
 /**
+ * The envelope check of two files when either stores ms2_env as BLOB rows
+ * (a compressed file, src/server/spectraStore.ts), as the SQL of
+ * checkDataset counts them: the TopFD file's MS/MS envelopes (spec_id,
+ * env_id, mono_mass) missing from the main file, and the main file's
+ * envelopes of a spectrum the TopFD file lacks. Both files are read once in
+ * spectrum order.
+ */
+function envelopeCheckBySpectrum(db: DatabaseSync): { lost: number; foreign: number } {
+  const ms2Ids = new Set((db.prepare(`SELECT id FROM ${TOPFD_SCHEMA}.ms2_spectrum`).all() as { id: number }[])
+    .map((r) => r.id));
+  const cols = ['env_id', 'mono_mass'];
+  const main = spectraOf(db, 'main', 'ms2_env', cols);
+  let m = main.next();
+  let lost = 0;
+  let foreign = 0;
+  const skip = () => {
+    if (!m.done && !ms2Ids.has(m.value.specId)) foreign += m.value.values[0].length;
+    m = main.next();
+  };
+  for (const t of spectraOf(db, TOPFD_SCHEMA, 'ms2_env', cols)) {
+    while (!m.done && m.value.specId < t.specId) skip();
+    const keys = new Set<string>();
+    if (!m.done && m.value.specId === t.specId) {
+      const [env, mono] = m.value.values;
+      for (let i = 0; i < env.length; i++) keys.add(env[i] + ':' + mono[i]);
+    }
+    const [env, mono] = t.values;
+    for (let i = 0; i < env.length; i++) if (!keys.has(env[i] + ':' + mono[i])) lost++;
+  }
+  while (!m.done) skip();
+  return { lost, foreign };
+}
+
+/**
  * Whether the spectra look like TopDIA's: MS1 spectra and MS/MS spectra,
  * none of them linked to an MS1 spectrum (TopDIA deconvolutes the DIA MS/MS
  * windows without their MS1 scan, so ms2_spectrum.ms1_id is -1; TopFD links
@@ -166,7 +201,7 @@ function looksLikeTopdia(db: DatabaseSync): boolean | null {
  * copy) has the TopFD file's MS/MS spectra (the same ids and scans); one
  * with the envelope tables only has every MS/MS envelope of the TopFD file
  * (spec_id, env_id, mono_mass) and no envelope of a spectrum the TopFD file
- * lacks.
+ * lacks. Either file may be compressed (toppic_test experiment 171).
  */
 export function checkDataset(db: DatabaseSync, type: DatasetType): void {
   const twoFiles = type === 'topfd_toppic' || type === 'topfd_topmg';
@@ -204,6 +239,14 @@ export function checkDataset(db: DatabaseSync, type: DatasetType): void {
       + 'ON t.id = m.id AND t.scan = m.scan');
     if (toppicNum !== topfdNum || sameNum !== topfdNum) {
       throw new Error(mismatch + `${toppicNum} and ${topfdNum} MS/MS spectra, ${sameNum} with the same id and scan`);
+    }
+    return;
+  }
+  if (isBlobInSchema(db, 'main', 'ms2_env') || isBlobInSchema(db, TOPFD_SCHEMA, 'ms2_env')) {
+    const { lost, foreign } = envelopeCheckBySpectrum(db);
+    if (lost > 0) throw new Error(mismatch + `${lost} MS/MS envelopes of the TopFD file are not in the ${tool} file`);
+    if (foreign > 0) {
+      throw new Error(mismatch + `${foreign} MS/MS envelopes of the ${tool} file belong to no spectrum of the TopFD file`);
     }
     return;
   }
@@ -247,7 +290,8 @@ export function has3dTables(sqlitePath: string): boolean {
  * to the tables the file has (a TopPIC file of a two-file dataset has the
  * MS/MS envelope tables only). A merged ms1_peak (primary key LEVEL,
  * spec_id, peak_id) needs none: its spectrum query names every level
- * (ms1Peaks.ms1PeakSql).
+ * (ms1Peaks.ms1PeakSql); nor do BLOB rows (a compressed file, keyed by
+ * spec_id), which schemaTableNames does not list under the tables' names.
  */
 export function ensureIndexes(sqlitePath: string): void {
   const db = new DatabaseSync(sqlitePath);

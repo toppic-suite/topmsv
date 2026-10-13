@@ -10,7 +10,8 @@ import * as express from 'express';
 import * as path from 'path';
 import { getDb, getDb3d, readMeta } from '../datasets';
 import { diaLinks } from '../diaLinks';
-import { ms1PeakSql, peaks3d, totalIntensity3d } from '../ms1Peaks';
+import { ms1PeakRows, peaks3d, totalIntensity3d } from '../ms1Peaks';
+import { spectrumRows } from '../spectraStore';
 import { buildSpectrumJs } from '../spectrumJs';
 import { buildDataJsFile } from '../prsmSource';
 import vendorRouter from '../vendor';
@@ -142,37 +143,38 @@ router.get('/api/ms2-info/:id', (req, res) => {
 router.get('/api/peaks/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(db.prepare(ms1PeakSql(db, false)).all(Number(req.params.id)));
+  res.json(ms1PeakRows(db, Number(req.params.id), false));
 });
 
 router.get('/api/ms2-peaks/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(db.prepare('SELECT mz, intensity FROM ms2_peak WHERE spec_id = ?').all(Number(req.params.id)));
+  res.json(spectrumRows(db, 'ms2_peak', Number(req.params.id), 'SELECT mz, intensity FROM ms2_peak WHERE spec_id = ?',
+    { columns: ['mz', 'intensity'] }));
 });
 
 router.get('/api/envs/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(db.prepare('SELECT * FROM ms1_env WHERE spec_id = ?').all(Number(req.params.id)));
+  res.json(spectrumRows(db, 'ms1_env', Number(req.params.id), 'SELECT * FROM ms1_env WHERE spec_id = ?'));
 });
 
 router.get('/api/ms2-envs/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(db.prepare('SELECT * FROM ms2_env WHERE spec_id = ?').all(Number(req.params.id)));
+  res.json(spectrumRows(db, 'ms2_env', Number(req.params.id), 'SELECT * FROM ms2_env WHERE spec_id = ?'));
 });
 
 router.get('/api/env-peaks/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(db.prepare('SELECT * FROM ms1_env_peak WHERE spec_id = ?').all(Number(req.params.id)));
+  res.json(spectrumRows(db, 'ms1_env_peak', Number(req.params.id), 'SELECT * FROM ms1_env_peak WHERE spec_id = ?'));
 });
 
 router.get('/api/ms2-env-peaks/:id', (req, res) => {
   const db = dbOf(req);
   if (!db) { res.json([]); return; }
-  res.json(db.prepare('SELECT * FROM ms2_env_peak WHERE spec_id = ?').all(Number(req.params.id)));
+  res.json(spectrumRows(db, 'ms2_env_peak', Number(req.params.id), 'SELECT * FROM ms2_env_peak WHERE spec_id = ?'));
 });
 
 router.get('/api/id-by-scan/:scan', (req, res) => {
@@ -238,6 +240,13 @@ router.use('/vendor', vendorRouter);
 
 router.use((req, res, next) => {
   express.static(PUBLIC_DIR)(req, res, next);
+});
+
+// a dataset whose files cannot be opened (a compressed file on a server
+// without the sqlite-zstd extension, src/server/zstd/extension.ts): the
+// reason as JSON, not Express's page with the stack trace
+router.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
 });
 
 export default router;

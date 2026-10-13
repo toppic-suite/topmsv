@@ -151,6 +151,37 @@ for a peak outside the 3D map, 0 for every peak without `-D`), level k is
 the peaks with `LEVEL >= k`, and a peak's retention time is its spectrum's.
 The file is much smaller (480_F3_02 with `-D`: 2.6 GB -> 0.9 GB).
 
+## Compressed sqlite files
+
+The sqlite files of finished runs can be made about three times smaller
+for TopMSV, without losing anything, with the
+[sqlite-zstd](https://github.com/phiresky/sqlite-zstd) extension:
+
+```
+npm run fetch-sqlite-zstd     # downloads sqlite-zstd v0.3.5 into ext/sqlite_zstd/
+npm run compress -- --sqlite 480_F3_02.sqlite --out 480_F3_02_zstd.sqlite [--level 3]
+```
+
+`compress` rewrites a TopFD, TopDIA, TopPIC or TopMG file into a new file.
+The peak, envelope and envelope peak tables become one row per spectrum:
+each column is an array, compressed with a zstd dictionary of its own.
+Every other table is copied as it is. Every value is kept exactly: the
+m/z values and intensities that are exact 32-bit floats (TopFD's peaks)
+are stored as such, the others as 64-bit floats. For example, 480_F3_02's
+TopFD file with the MS1 3D levels goes from 843 MB to 295 MB and its
+TopPIC file from 148 MB to 85 MB (most of what remains in the TopPIC file
+is the search database, which is copied as it is). The input file is not
+changed. The TopPIC Suite tools themselves do not read compressed files,
+so keep the originals if a tool will read them again.
+
+Upload compressed files as you would the originals, in any combination:
+TopFD's and TopPIC's file, both compressed or only one of them. The server
+needs the extension to read them: `ext/sqlite_zstd/` of the repository
+(`npm run fetch-sqlite-zstd`; releases for Linux, macOS and Windows on
+x86_64), or the library file named by the environment variable
+`SQLITE_ZSTD_EXTENSION`. Without it, an upload of a compressed file is
+refused with a message that says how to get the extension.
+
 ## Pages
 
 Every dataset page carries a navigation bar with these entries (an entry

@@ -15,8 +15,14 @@
 // the peak count of level k); a peak's retention time is its spectrum's in
 // ms, truncated as TopFD writes it; COLOR is computed as TopFD's
 // MsSqlWriter computes it. The layouts are told apart by the LEVEL column.
+//
+// Either layout may be stored as BLOB rows (a file compressed by `npm run
+// compress`, toppic_test experiment 171, src/server/spectraStore.ts): the
+// LEVEL range is then the one zstd_blob_columns records, and the 3D view's
+// window decodes the spectra of its RT range.
 
 import { DatabaseSync } from 'node:sqlite';
+import { blobTable, BlobTable, decodeBlobRow, spectrumColumns, spectrumRows } from './spectraStore';
 import { tableNames } from './sqliteFiles';
 
 /** LEVEL values of a merged ms1_peak (lowest .. highest), cached per handle. */
@@ -26,9 +32,14 @@ const mergedLevels = new WeakMap<DatabaseSync, number[] | null>();
 export function mergedMs1Levels(db: DatabaseSync): number[] | null {
   let levels = mergedLevels.get(db);
   if (levels !== undefined) return levels;
-  const cols = db.prepare('PRAGMA table_info(ms1_peak)').all() as { name: string }[];
-  if (!cols.some((c) => c.name.toUpperCase() === 'LEVEL')) {
+  const bt = blobTable(db, 'ms1_peak');
+  const level = bt?.columns.find((c) => c.name.toUpperCase() === 'LEVEL');
+  if (!spectrumColumns(db, 'ms1_peak').some((c) => c.toUpperCase() === 'LEVEL')) {
     levels = null;
+  } else if (bt) {
+    const lo = level!.min ?? 0;
+    const hi = level!.max ?? 0;
+    levels = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i);
   } else {
     // both ends of the primary key's first column: two index lookups
     const r = db.prepare('SELECT MIN(LEVEL) AS lo, MAX(LEVEL) AS hi FROM ms1_peak').get() as
@@ -68,6 +79,19 @@ export function ms1PeakSql(db: DatabaseSync, orderByPeakId: boolean): string {
 }
 
 /**
+ * One MS1 spectrum's peaks (m/z, intensity) in either layout, as rows or as
+ * BLOB rows; orderByPeakId as for ms1PeakSql (the merged layout is always
+ * in peak_id order).
+ */
+export function ms1PeakRows(db: DatabaseSync, specId: number, orderByPeakId: boolean): { mz: number; intensity: number }[] {
+  const merged = mergedMs1Levels(db) !== null;
+  return spectrumRows(db, 'ms1_peak', specId, ms1PeakSql(db, orderByPeakId), {
+    columns: ['mz', 'intensity'],
+    orderBy: orderByPeakId || merged ? ['peak_id'] : [],
+  }) as { mz: number; intensity: number }[];
+}
+
+/**
  * Whether the sqlite holds the MS1 3D view's data: CONFIG with one row per
  * level and, in the old layout, PEAKS0 ... PEAKS<n>; in the merged layout no
  * peak above the last level. Throws when CONFIG lists more levels than the
@@ -94,9 +118,42 @@ export function dbHas3d(db: DatabaseSync): boolean {
   return levels > 0;
 }
 
-/** Sum of the intensities of the full-resolution level. */
+// SQLite's SUM() over REAL values: Kahan-Babuska-Neumaier summation (func.c,
+// SQLite >= 3.43), so that the sum over BLOB rows is the one SQL returns
+class KbnSum {
+  private sum = 0;
+  private err = 0;
+  add(r: number): void {
+    const t = this.sum + r;
+    if (Math.abs(this.sum) > Math.abs(r)) this.err += (this.sum - t) + r;
+    else this.err += (r - t) + this.sum;
+    this.sum = t;
+  }
+  value(): number {
+    return Number.isFinite(this.err) ? this.sum + this.err : this.sum;
+  }
+}
+
+/**
+ * Sum of the intensities of the full-resolution level. From BLOB rows the
+ * peaks are summed in spectrum and peak order, SQL reads them in key order
+ * (LEVEL, spec_id, peak_id); the compensated sum makes the order matter
+ * little (the same sum for st_1 and 480_F3_02, toppic_test experiment 171).
+ */
 export function totalIntensity3d(db: DatabaseSync): number {
-  const sql = mergedMs1Levels(db) === null
+  const merged = mergedMs1Levels(db);
+  const bt = blobTable(db, 'ms1_peak');
+  if (merged !== null && bt) {
+    const sum = new KbnSum();
+    for (const row of bt.conn.prepare(`SELECT * FROM ${bt.from} ORDER BY spec_id`).iterate()) {
+      const dec = decodeBlobRow(bt, row as Record<string, unknown>);
+      const lv = dec.values.get('LEVEL')!;
+      const inte = dec.values.get('intensity')!;
+      for (let i = 0; i < dec.n; i++) if (lv[i] >= 0) sum.add(inte[i]);
+    }
+    return sum.value();
+  }
+  const sql = merged === null
     ? 'SELECT SUM(INTENSITY) AS s FROM PEAKS0'
     : 'SELECT SUM(intensity) AS s FROM ms1_peak WHERE LEVEL >= 0';
   return (db.prepare(sql).get() as { s: number | null }).s ?? 0;
@@ -184,24 +241,62 @@ export function peaks3d(db: DatabaseSync, w: Window3d): Peak3d[] {
   // times follow the ids (TopFD numbers MS1 spectra in scan order), else a list
   let specSql: string;
   let specArgs: (number | string)[];
+  let ids: number[];
   if (c.rtSorted) {
     const first = lowerBound(c.rts, w.minRtMs);
     const last = lowerBound(c.rts, Math.floor(w.maxRtMs) + 1) - 1;
     if (last < first) return [];
     specSql = 'spec_id >= ? AND spec_id <= ?';
     specArgs = [c.ids[first], c.ids[last]];
+    ids = c.ids.slice(first, last + 1);
   } else {
-    const ids = c.ids.filter((_, i) => c.rts[i] >= w.minRtMs && c.rts[i] <= w.maxRtMs);
+    ids = c.ids.filter((_, i) => c.rts[i] >= w.minRtMs && c.rts[i] <= w.maxRtMs);
     if (!ids.length) return [];
     specSql = 'spec_id IN (SELECT value FROM json_each(?))';
     specArgs = [JSON.stringify(ids)];
   }
   const rtOf = new Map<number, number>();
   c.ids.forEach((id, i) => rtOf.set(id, c.rts[i]));
+  const bt = blobTable(db, 'ms1_peak');
+  if (bt) {
+    return blobPeaks3d(bt, ids, w)
+      .map((p) => ({ mz: p.mz, intensity: p.intensity, rt: rtOf.get(p.specId)!, color: colorOf(c, p.intensity) }));
+  }
   const rows = db.prepare(
     `SELECT spec_id, mz, intensity FROM ms1_peak
      WHERE LEVEL IN (${levels}) AND ${specSql} AND mz >= ? AND mz <= ? AND intensity > ?
      ORDER BY intensity DESC LIMIT ?`,
   ).all(...specArgs, w.minMz, w.maxMz, w.cutoff, w.maxPeaks) as any[];
   return rows.map((r) => ({ mz: r.mz, intensity: r.intensity, rt: rtOf.get(r.spec_id)!, color: colorOf(c, r.intensity) }));
+}
+
+/**
+ * peaks3d over BLOB rows: the peaks of the spectra ids at or above the
+ * level inside the window, the maxPeaks most intense. Equal intensities keep
+ * the order SQL scans the merged ms1_peak's key in (LEVEL, spec_id,
+ * peak_id), which is the order SQLite returns them in.
+ */
+function blobPeaks3d(bt: BlobTable, ids: number[], w: Window3d): { specId: number; mz: number; intensity: number }[] {
+  const lv: number[] = [];
+  const spec: number[] = [];
+  const pid: number[] = [];
+  const mz: number[] = [];
+  const inte: number[] = [];
+  for (const id of ids) {
+    const row = bt.byId.get(id) as Record<string, unknown> | undefined;
+    if (!row) continue;
+    const dec = decodeBlobRow(bt, row);
+    const l = dec.values.get('LEVEL')!;
+    const m = dec.values.get('mz')!;
+    const it = dec.values.get('intensity')!;
+    const p = dec.values.get('peak_id')!;
+    for (let i = 0; i < dec.n; i++) {
+      if (l[i] >= w.level && m[i] >= w.minMz && m[i] <= w.maxMz && it[i] > w.cutoff) {
+        lv.push(l[i]); spec.push(id); pid.push(p[i]); mz.push(m[i]); inte.push(it[i]);
+      }
+    }
+  }
+  const order = Array.from(inte.keys());
+  order.sort((a, b) => inte[b] - inte[a] || lv[a] - lv[b] || spec[a] - spec[b] || pid[a] - pid[b]);
+  return order.slice(0, w.maxPeaks).map((k) => ({ specId: spec[k], mz: mz[k], intensity: inte[k] }));
 }

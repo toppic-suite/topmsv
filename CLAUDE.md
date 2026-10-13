@@ -17,6 +17,8 @@ DATA_DIR=/path PORT=8080 npm start
 npm start -- --view-only        # hides upload panel + Delete buttons, POST/DELETE /api/datasets -> 403 (src/server/config.ts)
 npm run convert -- --sqlite f.sqlite --out outdir
 npm run convert -- --sqlite f_toppic.sqlite --topfd-sqlite f.sqlite --out outdir   # a two-file dataset (also f_topmg.sqlite)
+npm run fetch-sqlite-zstd   # sqlite-zstd v0.3.5 into ext/sqlite_zstd/ (gitignored); or SQLITE_ZSTD_EXTENSION=<lib>
+npm run compress -- --sqlite f.sqlite --out f_zstd.sqlite [--level 3]   # a compressed copy TopMSV reads
 ```
 
 ALL client JS is generated: `public/common/js/`, `public/topmsv/{visual,inspect}/js/`
@@ -43,7 +45,20 @@ every open goes through `datasets.openDatasetDb`, and table lists must use
 TopMG write only `ms2_env` / `ms2_env_peak` and their own tables, or every
 table corrected after toppic `--mass-calib`. A TopDIA file links no MS/MS
 window to an MS1 scan (`ms1_id` -1): `src/server/diaLinks.ts` derives the
-link by scan order for a `topdia` dataset. ONE sqlite file: TopFD writes the spectra
+link by scan order for a `topdia` dataset. Any file may be COMPRESSED
+(`npm run compress`, `src/server/zstd/`): the per-spectrum tables
+(`ms1_peak`, `ms2_peak`, `ms{1,2}_env`, `ms{1,2}_env_peak`) are then
+`<table>_blob` views of the sqlite-zstd extension, one row per spectrum
+with an array per column (codecs and source column order in
+`zstd_blob_columns`), and EVERY read of those tables must go through
+`src/server/spectraStore.ts` (`spectrumRows` with the row form's SQL, or
+`blobTable` + decode), which rebuilds the source rows so answers stay
+byte-identical; `tableNames` lists BLOB tables under their own names,
+`schemaTableNames` lists only what is stored (ensureIndexes uses it). A
+compressed TopFD file attached to a compressed TopPIC/TopMG file is read
+through its own connection (`sqliteFiles.attachedFileDb`): sqlite-zstd
+looks dictionaries up with an unqualified `_zstd_dicts`, which resolves to
+the main file's. ONE sqlite file: TopFD writes the spectra
 (`ms{1,2}_*` tables) and, with `-D`, the MS1 3D view's levels (CONFIG plus
 either the tables PEAKS<n> of TopFD 2.0 - 2.1 or, newer, a LEVEL column of
 `ms1_peak` keyed (LEVEL, spec_id, peak_id): level k = LEVEL >= k, -1 = not

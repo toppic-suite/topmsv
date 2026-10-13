@@ -39,7 +39,30 @@ otherwise, and
 every query of the server stays as it was. Every open of a dataset goes
 through `datasets.openDatasetDb` (the cached handle, the identification
 loader, the upload checks), and table lists come from both files
-(`sqliteFiles.tableNames`). All data for
+(`sqliteFiles.tableNames`).
+
+Any of the files may be compressed by `npm run compress`
+(`src/server/zstd/compress.ts`, the converter). It writes the per-spectrum
+tables (`ms1_peak`, `ms2_peak`, `ms1_env`, `ms1_env_peak`, `ms2_env`,
+`ms2_env_peak`) as `<table>_blob(spec_id, n, one array per column)`. The
+codec of each column (`f4` / `f8` / `i1` / `i2` / `i4`, or not stored:
+`seq` for ids 0, 1, ... per spectrum, `seqg` per envelope) and the source
+column order are in `zstd_blob_columns` (`src/server/zstd/codec.ts`).
+Every other table is copied as it is. The sqlite-zstd extension
+(`src/server/zstd/extension.ts`) then compresses each BLOB column with a
+dictionary of its own; the table becomes a view that decompresses on read.
+A connection to a compressed file loads the extension
+(`sqliteFiles.openSqlitePair`), and every read of a per-spectrum table goes
+through `src/server/spectraStore.ts`: a table resolves as an unqualified
+name does (the main file's BLOB or row table, else the TopFD file's), and
+BLOB rows are rebuilt into the source rows with the columns and the order
+the row form's SQL returns, so every answer is the same for compressed and
+uncompressed files. sqlite-zstd reads a dictionary with an unqualified
+`select dict from _zstd_dicts where id = ?`, which on one connection finds
+the main file's dictionaries only. So the BLOB tables of a compressed
+attached TopFD file are read through a connection of their own
+(`sqliteFiles.attachedFileDb`); the attached file's other tables are still
+read through the pair's connection. All data for
 visualization are generated dynamically from a per-dataset in-memory cache
 of the read and matched identifications, and the per-scan spectrum files
 come straight from the sqlite file.
@@ -77,8 +100,12 @@ files, the TopPIC or TopMG file to belong to the TopFD file (with every
 table: the same MS/MS spectrum ids and scans; with the envelope tables
 only: every MS/MS envelope of the TopFD file (spec_id, env_id, mono_mass)
 present, found by a rowid join or else by spectrum, and no envelope of a
-spectrum the TopFD file lacks); a TopPIC or TopMG file without spectra is
-refused alone. For a TopDIA dataset, whose `ms1_id` is -1 for every window,
+spectrum the TopFD file lacks; read spectrum by spectrum when either file
+is compressed); a TopPIC or TopMG file without spectra is
+refused alone. A compressed file needs the sqlite-zstd extension: without
+it the upload is refused with the message of `loadZstdExtension`, and on a
+server started without it the requests of a compressed dataset answer 500
+with that message as JSON. For a TopDIA dataset, whose `ms1_id` is -1 for every window,
 `/api/ms2-info/:id` reports and `/api/ms2-id-by-ms1/:id` uses the MS1 scan of
 the window's cycle, the last MS1 scan before it by scan number
 (`src/server/diaLinks.ts`), so the spectra browser's MS1 and MS2 panels
@@ -219,6 +246,14 @@ src/server/spectrumJs.ts     per-scan topfd/ms{1,2}_json/spectrum<N>.js
 src/server/ms1Peaks.ts       the two layouts of the MS1 peaks (ms1_peak with
                              PEAKS<n> tables, or one ms1_peak with LEVEL):
                              a spectrum's peak query and the MS1 3D data
+src/server/spectraStore.ts   every read of the per-spectrum tables, as rows
+                             or as the BLOB rows of a compressed file
+src/server/zstd/             compressed files: the converter (compress.ts,
+                             npm run compress through cli.ts), the arrays'
+                             codecs (codec.ts), loading sqlite-zstd
+                             (extension.ts)
+scripts/fetch-sqlite-zstd.mjs  npm run fetch-sqlite-zstd: downloads the
+                             extension into ext/sqlite_zstd/ (gitignored)
 src/server/convert/          sqlite -> data_js converter: toppicSqlite.ts
                              reads the TopPIC tables into prsmRecord.ts
                              records, convert.ts/annotate.ts match them,

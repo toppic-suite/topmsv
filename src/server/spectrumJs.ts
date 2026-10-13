@@ -1,11 +1,13 @@
 // Dynamic generation of the per-scan spectrum files that the TopMSV viewer
 // loads from ../../topfd/ms1_json/spectrum<id>.js and ms2_json/spectrum<id>.js.
 // Format follows toppic-suite src/ms/mzml/mzml_ms_json_writer.cpp, backed by
-// the TopFD sqlite tables instead of pre-generated files.
+// the TopFD sqlite tables instead of pre-generated files (as rows or as
+// BLOB rows of a compressed file, src/server/spectraStore.ts).
 
 import { DatabaseSync } from 'node:sqlite';
 import { fixedToString, toScientificStr } from './convert/format';
-import { ms1PeakSql } from './ms1Peaks';
+import { ms1PeakRows } from './ms1Peaks';
+import { spectrumColumns, spectrumRows } from './spectraStore';
 
 interface JsonPeak { mz: string; intensity: string }
 interface JsonEnvPeak { mz: number; intensity: number }
@@ -17,8 +19,7 @@ interface JsonEnvelope {
 
 // Whether <prefix>_env has the ref_mass column (added by newer TopFD versions).
 function hasRefMass(db: DatabaseSync, prefix: string): boolean {
-  const cols = db.prepare(`PRAGMA table_info(${prefix}_env)`).all() as { name: string }[];
-  return cols.some((c) => c.name === 'ref_mass');
+  return spectrumColumns(db, `${prefix}_env`).includes('ref_mass');
 }
 
 export function buildSpectrumJs(db: DatabaseSync, level: 1 | 2, specId: number): string | null {
@@ -40,22 +41,23 @@ export function buildSpectrumJs(db: DatabaseSync, level: 1 | 2, specId: number):
   }
 
   // ms1_peak may be the merged layout (one key range per 3D level)
-  const peakRows = db.prepare(
-    level === 1 ? ms1PeakSql(db, true) : `SELECT mz, intensity FROM ${prefix}_peak WHERE spec_id = ? ORDER BY peak_id`,
-  ).all(specId) as any[];
+  const peakRows = level === 1
+    ? ms1PeakRows(db, specId, true)
+    : spectrumRows(db, 'ms2_peak', specId, 'SELECT mz, intensity FROM ms2_peak WHERE spec_id = ? ORDER BY peak_id',
+      { columns: ['mz', 'intensity'], orderBy: ['peak_id'] });
   doc.peaks = peakRows.map((r): JsonPeak => ({
     mz: fixedToString(r.mz, 4),
     intensity: toScientificStr(r.intensity, 4),
   }));
 
   const withRefMass = hasRefMass(db, prefix);
-  const envRows = db.prepare(
-    `SELECT env_id, mono_mass, charge${withRefMass ? ', ref_mass' : ''} FROM ${prefix}_env ` +
-    'WHERE spec_id = ? ORDER BY env_id',
-  ).all(specId) as any[];
-  const envPeakRows = db.prepare(
+  const envColumns = ['env_id', 'mono_mass', 'charge', ...(withRefMass ? ['ref_mass'] : [])];
+  const envRows = spectrumRows(db, `${prefix}_env`, specId,
+    `SELECT ${envColumns.join(', ')} FROM ${prefix}_env WHERE spec_id = ? ORDER BY env_id`,
+    { columns: envColumns, orderBy: ['env_id'] }) as any[];
+  const envPeakRows = spectrumRows(db, `${prefix}_env_peak`, specId,
     `SELECT env_id, mz, intensity FROM ${prefix}_env_peak WHERE spec_id = ? ORDER BY env_id, peak_id`,
-  ).all(specId) as any[];
+    { columns: ['env_id', 'mz', 'intensity'], orderBy: ['env_id', 'peak_id'] }) as any[];
   const peaksByEnv = new Map<number, JsonEnvPeak[]>();
   for (const r of envPeakRows) {
     let list = peaksByEnv.get(r.env_id);

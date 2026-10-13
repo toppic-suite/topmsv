@@ -9,6 +9,8 @@
     "typecheck:server": "tsc --project tsconfig.server.json",
     "build:client": "npm run clean:client && tsc && tsc --project tsconfig.spectra.json && tsc --project tsconfig.viewerpages.json && tsc --project tsconfig.home.json && tsc --project tsconfig.ms1_3d.json",
     "convert": "ts-node --project tsconfig.server.json src/server/convert/cli.ts",
+    "compress": "ts-node --project tsconfig.server.json src/server/zstd/cli.ts",
+    "fetch-sqlite-zstd": "node scripts/fetch-sqlite-zstd.mjs",
     "clean:client": "node -e \"for (const d of ['types/lib','public/common/js','public/topmsv/visual/js','public/topmsv/inspect/js']) require('fs').rmSync(d,{recursive:true,force:true})\""
   },
   "keywords": [

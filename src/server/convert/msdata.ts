@@ -5,6 +5,7 @@
 // 2, so values are rounded accordingly before matching.
 
 import { DatabaseSync } from 'node:sqlite';
+import { spectrumRows } from '../spectraStore';
 import { DeconvPeak } from './annotate';
 
 export interface Ms2SpectrumRow {
@@ -50,9 +51,10 @@ export class MsDataDb {
 
   /** Deconvoluted peaks (envelopes) of one MS2 spectrum, in msalign precision. */
   getMs2DeconvPeaks(specId: number): DeconvPeak[] {
-    const rows = this.db.prepare(
+    const rows = spectrumRows(this.db, 'ms2_env', specId,
       'SELECT env_id, mono_mass, charge, intensity FROM ms2_env WHERE spec_id = ? ORDER BY env_id',
-    ).all(specId) as unknown as { env_id: number; mono_mass: number; charge: number; intensity: number }[];
+      { columns: ['env_id', 'mono_mass', 'charge', 'intensity'], orderBy: ['env_id'] },
+    ) as unknown as { env_id: number; mono_mass: number; charge: number; intensity: number }[];
     return rows.map((r) => ({
       specId,
       peakId: r.env_id,
