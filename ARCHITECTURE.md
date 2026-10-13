@@ -3,11 +3,11 @@
 ## Introduction
 
 The server generates the data of protein, proteoform, and spectral
-identifications for visualization from one sqlite file per dataset. It
+identifications for visualization from the sqlite files of a dataset. It
 
 - reads the deconvoluted MS2 peak lists and the TopPIC identification tables
   (`prsm`, `prsm_mass_shift`, `proteoform`) and search database (`fasta_seq`)
-  from that file,
+  from those files,
 - rebuilds theoretical B/Y ion ladders from the proteoform annotation,
   including fixed / protein-variable PTMs and unexpected/variable mass shifts,
 - matches peaks to ions with the mass tolerance model in TopPIC (10 ppm, 0.01 Da floor,
@@ -17,12 +17,24 @@ identifications for visualization from one sqlite file per dataset. It
   ones TopPIC stored; p-values are not available from the sqlite and are
   written as "N/A".
 
-A dataset directory holds one uploaded sqlite file (`ms.sqlite`): TopFD's
-spectra and, in newer versions, the MS1 3D view's levels (tables
-`PEAKS<n>`, or in the newest a `LEVEL` column of `ms1_peak`;
-`src/server/ms1Peaks.ts` reads both layouts), plus the
-identification tables and search database TopPIC appends to the same file
-(`src/server/convert/toppicSqlite.ts` reads them). All data for
+A dataset directory holds one or two uploaded sqlite files. `ms.sqlite` is
+TopFD's file (or the only file): the spectra and, in newer versions, the MS1
+3D view's levels (tables `PEAKS<n>`, or in the newest a `LEVEL` column of
+`ms1_peak`; `src/server/ms1Peaks.ts` reads both layouts), plus, in files of
+older TopPIC versions, the identification tables and search database TopPIC
+appended (`src/server/convert/toppicSqlite.ts` reads them). `toppic.sqlite`
+is the TopPIC file of a two-file dataset: newer TopPIC versions write
+`<name>_toppic.sqlite` with the identification tables, the search database
+and TopFD's MS/MS envelope tables (`ms2_env`, `ms2_env_peak`, with the
+envelopes of TopPIC's post mass matching added), or with `--mass-calib`
+every table, corrected. One connection reads both
+(`src/server/sqliteFiles.ts`): the TopPIC file is the main database and the
+TopFD file is attached as `topfd`, so an unqualified table name resolves to
+the TopPIC file when it has the table and to the TopFD file otherwise, and
+every query of the server stays as it was. Every open of a dataset goes
+through `datasets.openDatasetDb` (the cached handle, the identification
+loader, the upload checks), and table lists come from both files
+(`sqliteFiles.tableNames`). All data for
 visualization are generated dynamically from a per-dataset in-memory cache
 of the read and matched identifications, and the per-scan spectrum files
 come straight from the sqlite file.
@@ -45,10 +57,19 @@ come from the environment (`DATA_DIR`, `PORT`) and one from the command line
 mode `POST` and `DELETE /api/datasets` answer 403 and the home page hides the
 upload panel and the Delete column. The home page and the shared nav bar
 read `/api/config`, which reports the version (from `package.json` through
-`src/server/version.ts`) and the `--view-only` flag. Uploading (`src/server/routes/api.ts`) stores the
-file as `ms.sqlite`, adds per-spectrum indexes and switches it to rollback
-journaling, inspects which tables it holds (`meta.hasIdentifications`,
-`hasFasta`, `has3d`), and, when identifications are present, reads and
+`src/server/version.ts`) and the `--view-only` flag. Uploading (`src/server/routes/api.ts`) takes
+the form fields `sqlite` (TopFD's file) and `toppic_sqlite` (TopPIC's), at
+least one; a file given alone is stored as `ms.sqlite`, two files as
+`ms.sqlite` and `toppic.sqlite`. Each file gets per-spectrum indexes on the
+tables it has and rollback journaling; `datasets.checkDataset` then requires
+the files to resolve every table the pages read and, for two files, the
+TopPIC file to belong to the TopFD file (with every table: the same MS/MS
+spectrum ids and scans; with the envelope tables only: every MS/MS envelope
+of the TopFD file (spec_id, env_id, mono_mass) present and no envelope of a
+spectrum the TopFD file lacks); a TopPIC file without spectra is refused
+alone. The upload records the file names (`meta.files`), inspects which
+tables the files hold (`meta.hasIdentifications`, `hasFasta`, `has3d`),
+and, when identifications are present, reads and
 matches them once to validate the file and warm the per-dataset cache
 (`src/server/prsmSource.ts`). Everything under `/d/<dataset>/` is served by
 `src/server/routes/dataset.ts`: the sqlite JSON API, the on-the-fly TopFD

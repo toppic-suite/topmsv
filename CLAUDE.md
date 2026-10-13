@@ -16,6 +16,7 @@ npm start                   # ts-node server.ts -> http://localhost:3000
 DATA_DIR=/path PORT=8080 npm start
 npm start -- --view-only        # hides upload panel + Delete buttons, POST/DELETE /api/datasets -> 403 (src/server/config.ts)
 npm run convert -- --sqlite f.sqlite --out outdir
+npm run convert -- --sqlite f_toppic.sqlite --topfd-sqlite f.sqlite --out outdir   # a two-file dataset
 ```
 
 ALL client JS is generated: `public/common/js/`, `public/topmsv/{visual,inspect}/js/`
@@ -30,28 +31,36 @@ validation loop below plus loading pages in a browser.
 ## What this app is
 
 A web tool for visualizing TopFD (spectral deconvolution) + TopPIC (database
-search) output. Users upload ONE sqlite file: TopFD writes the spectra
+search) output. Users upload TopFD's and TopPIC's sqlite files (a two-file
+dataset: `ms.sqlite` + `toppic.sqlite`, read through one connection with
+TopPIC's file as main and TopFD's attached as `topfd`, so a table missing
+from TopPIC's file resolves to TopFD's; `src/server/sqliteFiles.ts`, every
+open goes through `datasets.openDatasetDb`, and table lists must use
+`sqliteFiles.tableNames`, never one file's `sqlite_master`; newer TopPIC
+writes only `ms2_env` / `ms2_env_peak` and its own tables, or every table
+corrected after `--mass-calib`) or ONE sqlite file: TopFD writes the spectra
 (`ms{1,2}_*` tables) and, with `-D`, the MS1 3D view's levels (CONFIG plus
 either the tables PEAKS<n> of TopFD 2.0 - 2.1 or, newer, a LEVEL column of
 `ms1_peak` keyed (LEVEL, spec_id, peak_id): level k = LEVEL >= k, -1 = not
 in the map, RT = the spectrum's in ms truncated, COLOR computed as TopFD's
 MsSqlWriter; `src/server/ms1Peaks.ts` reads both, every ms1_peak query goes
 through it, and ensureIndexes does not index a merged ms1_peak); TopPIC
-appends its identifications
+appends (older versions) its identifications
 (`prsm`, `prsm_mass_shift`, `proteoform`, `prsm_protein_match`) and the
 search database (`fasta_seq`) to the same file. The upload inspects the
 tables (`meta.hasIdentifications`, `meta.hasFasta`, `meta.has3d`); a nav
 item whose data the file lacks is rendered disabled, and without
 identification tables every `data_js` request 404s. The old separate
 XML/FASTA uploads are not supported. Nothing derived is stored on disk: a
-dataset directory holds only `ms.sqlite` + `meta.json`; every data file the
+dataset directory holds only `ms.sqlite` (+ `toppic.sqlite`) + `meta.json`; every data file the
 vendored TopMSV viewer consumes is generated on the fly.
 
 ### URL / data flow
 
 ```
 /                          public/index.html + public/common/js/home.js (from src/client/home.ts)
-/api/datasets              upload (multer) -> data/<id>/ -> ensureIndexes + getDatasetSource
+/api/datasets              upload (multer; fields sqlite = TopFD's, toppic_sqlite = TopPIC's) -> data/<id>/
+                           -> ensureIndexes (each file) + checkDataset + getDatasetSource
                            (validates + warms the cache; no files are generated;
                            ensureIndexes also switches the sqlite copy to
                            journal_mode=DELETE — TopFD writes WAL, and a stale

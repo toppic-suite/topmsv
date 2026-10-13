@@ -12,6 +12,7 @@ interface DatasetMeta {
   ms2Count: number;
   hasFasta: boolean;
   has3d: boolean;          // the sqlite holds the MS1 3D peak tables
+  files?: string[];        // the uploaded files, TopFD's first (absent for older datasets)
 }
 
 async function fetchDatasets(): Promise<DatasetMeta[]> {
@@ -55,8 +56,11 @@ function renderDatasets(list: DatasetMeta[]): void {
     const identLink = d.hasIdentifications
       ? `<a href="d/${ds}/topmsv/visual/proteins.html?data=toppic_proteoform_cutoff">Identifications</a>`
       : '';
+    const files = d.files && d.files.length > 0
+      ? `<div class="hint files">${d.files.map(esc).join(' + ')}</div>`
+      : '';
     html += `<tr>
-      <td>${esc(d.name)}${note}</td>
+      <td>${esc(d.name)}${note}${files}</td>
       <td>${esc(created)}</td>
       <td class="num">${count(d.proteinCount)}</td>
       <td class="num">${count(d.proteoformCount)}</td>
@@ -98,6 +102,13 @@ function setupUpload(): void {
   const status = document.getElementById('uploadStatus') as HTMLElement;
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
+    const chosen = ['sqliteInput', 'toppicSqliteInput']
+      .some((id) => ((document.getElementById(id) as HTMLInputElement).files?.length ?? 0) > 0);
+    if (!chosen) {
+      status.classList.add('error');
+      status.textContent = 'Select a TopFD sqlite file, a TopPIC sqlite file, or both.';
+      return;
+    }
     const data = new FormData(form);
     btn.disabled = true;
     status.classList.remove('error');

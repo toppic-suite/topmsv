@@ -64,3 +64,5 @@ table.datasets td.num { text-align: right; }
 table.datasets td.actions { white-space: nowrap; }
 table.datasets a { color: #2980b9; text-decoration: none; margin-right: 10px; }
 table.datasets a:hover { text-decoration: underline; }
+/* the uploaded files of a dataset, under its name */
+table.datasets .files { margin-top: 2px; font-size: 12px; }

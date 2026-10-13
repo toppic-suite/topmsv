@@ -17,6 +17,7 @@
 // MsSqlWriter computes it. The layouts are told apart by the LEVEL column.
 
 import { DatabaseSync } from 'node:sqlite';
+import { tableNames } from './sqliteFiles';
 
 /** LEVEL values of a merged ms1_peak (lowest .. highest), cached per handle. */
 const mergedLevels = new WeakMap<DatabaseSync, number[] | null>();
@@ -73,10 +74,7 @@ export function ms1PeakSql(db: DatabaseSync, orderByPeakId: boolean): string {
  * file holds, i.e. the file is truncated or inconsistent.
  */
 export function dbHas3d(db: DatabaseSync): boolean {
-  const tables = new Set(
-    (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[])
-      .map((r) => r.name.toUpperCase()),
-  );
+  const tables = new Set([...tableNames(db)].map((name) => name.toUpperCase()));
   if (!tables.has('CONFIG')) return false;
   const levels = (db.prepare('SELECT COUNT(*) AS n FROM CONFIG').get() as { n: number }).n;
   const merged = mergedMs1Levels(db);

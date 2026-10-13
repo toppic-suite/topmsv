@@ -15,6 +15,7 @@ import {
   serializeDataJs,
 } from './builder';
 import { MsDataDb } from './msdata';
+import { openSqlitePair } from '../sqliteFiles';
 
 function writeDataJs(filePath: string, payload: unknown): void {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -131,7 +132,8 @@ export function loadIdentifications(
 }
 
 export interface ConvertOptions {
-  sqlitePath: string;
+  sqlitePath: string;      // the TopPIC file, or a file with every table
+  topfdSqlitePath?: string; // the TopFD file of a TopPIC file with the envelope tables only
   outDir: string; // dataset root; trees are written to <outDir>/<cutoff>/data_js
   parameters?: Partial<MatchingParameters>;
   onProgress?: (msg: string) => void;
@@ -140,7 +142,7 @@ export interface ConvertOptions {
 export function convertDataset(opts: ConvertOptions): void {
   const para: MatchingParameters = { ...DEFAULT_PARAMETERS, ...(opts.parameters ?? {}) };
   const progress = opts.onProgress ?? (() => undefined);
-  const db = new MsDataDb(opts.sqlitePath);
+  const db = new MsDataDb(openSqlitePair(opts.topfdSqlitePath ?? null, opts.sqlitePath));
   try {
     progress(`reading identifications from ${path.basename(opts.sqlitePath)}`);
     const loaded = loadIdentifications(db, path.basename(opts.sqlitePath), para);

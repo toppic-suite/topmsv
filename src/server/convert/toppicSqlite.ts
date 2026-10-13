@@ -13,15 +13,9 @@ import { DatabaseSync } from 'node:sqlite';
 import { AlterTypeName, MassShiftRec, PrsmRec } from './prsmRecord';
 import { FastaEntry } from './fasta';
 import { fixedToString } from './format';
+import { tableNames } from '../sqliteFiles';
 
 const ALTER_TYPES: AlterTypeName[] = ['Fixed', 'Protein variable', 'Variable', 'Unexpected'];
-
-function tableNames(db: DatabaseSync): Set<string> {
-  return new Set(
-    (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all() as { name: string }[])
-      .map((r) => r.name),
-  );
-}
 
 /** Whether the sqlite holds TopPIC identifications (prsm + proteoform tables). */
 export function dbHasIdentifications(db: DatabaseSync): boolean {

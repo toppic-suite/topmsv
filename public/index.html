@@ -16,10 +16,13 @@
     <section class="card" id="uploadPanel">
       <h2>Upload a dataset</h2>
       <p class="hint">
-        Select the sqlite file written by TopFD and TopPIC. It holds the
-        deconvoluted spectra and, when TopPIC was run, the identifications and
-        the search database; newer TopFD versions also add the MS1 3D peak
-        tables.
+        Select the sqlite files written by TopFD (<code>&lt;name&gt;.sqlite</code>:
+        the spectra, the deconvoluted masses and, with <code>-D</code>, the MS1 3D
+        peak tables) and by TopPIC (<code>&lt;name&gt;_toppic.sqlite</code>: the
+        identifications and the search database). Data that the TopPIC file
+        does not hold is read from the TopFD file. A single file also works:
+        the TopFD file alone (spectra only), or a file of an older TopPIC
+        version that holds both.
       </p>
       <form id="uploadForm">
         <div class="formrow">
@@ -27,8 +30,12 @@
           <input type="text" id="nameInput" name="name" placeholder="(defaults to the sqlite file name)">
         </div>
         <div class="formrow">
-          <label for="sqliteInput">TopFD / TopPIC sqlite file <span class="req">*</span></label>
-          <input type="file" id="sqliteInput" name="sqlite" accept=".sqlite,.db" required>
+          <label for="sqliteInput">TopFD sqlite file</label>
+          <input type="file" id="sqliteInput" name="sqlite" accept=".sqlite,.db">
+        </div>
+        <div class="formrow">
+          <label for="toppicSqliteInput">TopPIC sqlite file</label>
+          <input type="file" id="toppicSqliteInput" name="toppic_sqlite" accept=".sqlite,.db">
         </div>
         <div class="formrow">
           <button type="submit" id="uploadBtn">Upload</button>

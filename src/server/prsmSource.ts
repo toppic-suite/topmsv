@@ -5,8 +5,6 @@
 // dataset); the assembled data is cached per dataset (small LRU) and each
 // file is serialized from it on demand.
 
-import * as fs from 'fs';
-import * as path from 'path';
 import { MsDataDb } from './convert/msdata';
 import { loadIdentifications } from './convert/convert';
 import {
@@ -14,7 +12,7 @@ import {
   buildProteinFilePayload, buildProteinsIndexPayload, serializeDataJs,
 } from './convert/builder';
 import { DEFAULT_PARAMETERS } from './convert/constants';
-import { datasetDir, readMeta, MS_DB_FILE } from './datasets';
+import { datasetDir, openDatasetDb, readMeta } from './datasets';
 
 export interface DatasetSource {
   all: PrsmData[];                  // every PrSM of the prsm-level cutoff, in prsm_id order
@@ -40,10 +38,10 @@ export function getDatasetSource(ds: string): DatasetSource | null {
   }
   const dir = datasetDir(ds);
   if (!dir) return null;
-  const sqlitePath = path.join(dir, MS_DB_FILE);
-  if (!fs.existsSync(sqlitePath)) return null;
+  const files = openDatasetDb(dir);
+  if (!files) return null;
   const fileName = readMeta(ds)?.name ?? ds;
-  const db = new MsDataDb(sqlitePath);
+  const db = new MsDataDb(files);
   let loaded: { all: PrsmData[]; passingClusters: Set<number> } | null;
   try {
     loaded = loadIdentifications(db, fileName, DEFAULT_PARAMETERS);

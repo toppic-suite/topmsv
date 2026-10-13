@@ -1,4 +1,5 @@
-// Read-only access to a TopFD sqlite file for the converter and the dynamic
+// Read-only access to a TopFD sqlite file (or a dataset's TopPIC and TopFD
+// files, src/server/sqliteFiles.ts) for the converter and the dynamic
 // per-scan spectrum endpoints. TopPIC read the deconvoluted peaks from the
 // msalign text file, which stores masses with 6 decimals and intensities with
 // 2, so values are rounded accordingly before matching.
@@ -22,8 +23,9 @@ export interface Ms2SpectrumRow {
 export class MsDataDb {
   private db: DatabaseSync;
 
-  constructor(path: string, readOnly = true) {
-    this.db = new DatabaseSync(path, { readOnly });
+  /** A file path, or an open connection (which close() then closes). */
+  constructor(source: string | DatabaseSync, readOnly = true) {
+    this.db = typeof source === 'string' ? new DatabaseSync(source, { readOnly }) : source;
   }
 
   close(): void {

@@ -1,14 +1,16 @@
 // Dataset registry. Each dataset lives in data/<id>/ and holds the uploaded
-// uploaded input files:
-//   ms.sqlite, [prsm.xml, proteoform.xml], [db.fasta], meta.json
-// The TopPIC XMLs come as a pair or not at all; without them the dataset
-// has no identification data (only the raw-spectra pages work).
+// sqlite files and meta.json:
+//   ms.sqlite       TopFD's file, or the one file of a single-file dataset
+//   toppic.sqlite   TopPIC's file of a two-file dataset (src/server/sqliteFiles.ts)
+// Without TopPIC's identification tables the dataset has no identification
+// data (only the raw-spectra pages work).
 
 import * as fs from 'fs';
 import * as path from 'path';
 import { DatabaseSync } from 'node:sqlite';
 import { dbHasIdentifications, dbHasFasta } from './convert/toppicSqlite';
 import { dbHas3d } from './ms1Peaks';
+import { openSqlitePair, schemaTableNames, tableNames, TOPFD_SCHEMA } from './sqliteFiles';
 
 export const DATA_ROOT = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'));
 fs.mkdirSync(DATA_ROOT, { recursive: true });
@@ -25,10 +27,13 @@ export interface DatasetMeta {
   ms2Count: number;
   hasFasta: boolean;             // the sqlite holds the search database (fasta_seq)
   has3d: boolean;                // the sqlite also holds the MS1 3D view's levels (CONFIG + PEAKS<n>, or ms1_peak.LEVEL)
+  files?: string[];              // the names of the uploaded files, TopFD's first (absent before two-file datasets)
 }
 
-/** The dataset's sqlite file (TopFD output, optionally with the MS1 3D view's levels). */
+/** The dataset's TopFD file, or its only file (TopFD output, optionally with TopPIC's tables). */
 export const MS_DB_FILE = 'ms.sqlite';
+/** TopPIC's file of a two-file dataset. */
+export const TOPPIC_DB_FILE = 'toppic.sqlite';
 
 export function sanitizeId(name: string): string {
   const id = name.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
@@ -83,13 +88,84 @@ export function deleteDataset(id: string): boolean {
   return true;
 }
 
-/** What an uploaded sqlite holds besides the TopFD results. */
-export function inspectSqlite(sqlitePath: string): { hasIdentifications: boolean; hasFasta: boolean; has3d: boolean } {
-  const db = new DatabaseSync(sqlitePath, { readOnly: true });
-  try {
-    return { hasIdentifications: dbHasIdentifications(db), hasFasta: dbHasFasta(db), has3d: dbHas3d(db) };
-  } finally {
-    db.close();
+/** The dataset's sqlite files in a dataset directory (toppic null for a single file). */
+export function datasetFiles(dir: string): { topfd: string | null; toppic: string | null } {
+  const existing = (name: string) => {
+    const p = path.join(dir, name);
+    return fs.existsSync(p) ? p : null;
+  };
+  return { topfd: existing(MS_DB_FILE), toppic: existing(TOPPIC_DB_FILE) };
+}
+
+/** A read-only connection to the files of a dataset directory, or null without a file. */
+export function openDatasetDb(dir: string): DatabaseSync | null {
+  const files = datasetFiles(dir);
+  if (files.topfd === null && files.toppic === null) return null;
+  return openSqlitePair(files.topfd, files.toppic);
+}
+
+/** What a dataset's files hold besides the TopFD results. */
+export function inspectSqlite(db: DatabaseSync): { hasIdentifications: boolean; hasFasta: boolean; has3d: boolean } {
+  return { hasIdentifications: dbHasIdentifications(db), hasFasta: dbHasFasta(db), has3d: dbHas3d(db) };
+}
+
+/** The tables the pages read: every dataset resolves each of them. */
+const REQUIRED_TABLES = [
+  'ms1_spectrum', 'ms2_spectrum', 'ms1_peak', 'ms2_peak',
+  'ms1_env', 'ms1_env_peak', 'ms2_env', 'ms2_env_peak',
+];
+
+function count(db: DatabaseSync, sql: string): number {
+  return (db.prepare(sql).get() as { n: number }).n;
+}
+
+/**
+ * Check an uploaded dataset (throws an Error naming the problem): its files
+ * resolve every table the pages read, and of two files, the TopPIC file
+ * belongs to the TopFD file. A TopPIC file with every table (an older
+ * TopPIC's copy, or toppic --mass-calib's corrected copy) has the TopFD
+ * file's MS/MS spectra (the same ids and scans); one with the envelope tables
+ * only has every MS/MS envelope of the TopFD file (spec_id, env_id,
+ * mono_mass) and no envelope of a spectrum the TopFD file lacks.
+ */
+export function checkDataset(db: DatabaseSync, twoFiles: boolean): void {
+  const tables = tableNames(db);
+  const missing = REQUIRED_TABLES.filter((t) => !tables.has(t));
+  if (missing.length > 0) {
+    if (!twoFiles && !tables.has('ms2_spectrum') && tables.has('ms2_env')) {
+      throw new Error('the sqlite file has no spectra: it is a TopPIC file (<name>_toppic.sqlite) '
+        + 'that holds the MS/MS envelopes and the identifications only; upload it together '
+        + 'with the TopFD file (<name>.sqlite) it was searched with');
+    }
+    throw new Error(`the sqlite file${twoFiles ? 's lack' : ' lacks'} the table${missing.length > 1 ? 's' : ''} `
+      + missing.join(', '));
+  }
+  if (!twoFiles) return;
+  if (!schemaTableNames(db, TOPFD_SCHEMA).has('ms2_spectrum')) {
+    throw new Error('the TopFD file has no spectra (no ms2_spectrum table): were the TopFD and the '
+      + 'TopPIC file swapped?');
+  }
+  const mismatch = 'the TopPIC file does not belong to the TopFD file: ';
+  if (schemaTableNames(db, 'main').has('ms2_spectrum')) {
+    const toppicNum = count(db, 'SELECT COUNT(*) AS n FROM main.ms2_spectrum');
+    const topfdNum = count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_spectrum`);
+    const sameNum = count(db, `SELECT COUNT(*) AS n FROM main.ms2_spectrum m JOIN ${TOPFD_SCHEMA}.ms2_spectrum t `
+      + 'ON t.id = m.id AND t.scan = m.scan');
+    if (toppicNum !== topfdNum || sameNum !== topfdNum) {
+      throw new Error(mismatch + `${toppicNum} and ${topfdNum} MS/MS spectra, ${sameNum} with the same id and scan`);
+    }
+    return;
+  }
+  const lost = count(db, `SELECT COUNT(*) AS n FROM ${TOPFD_SCHEMA}.ms2_env t WHERE NOT EXISTS `
+    + '(SELECT 1 FROM main.ms2_env m WHERE m.spec_id = t.spec_id AND m.env_id = t.env_id '
+    + 'AND m.mono_mass = t.mono_mass)');
+  if (lost > 0) {
+    throw new Error(mismatch + `${lost} MS/MS envelopes of the TopFD file are not in the TopPIC file`);
+  }
+  const foreign = count(db, `SELECT COUNT(*) AS n FROM main.ms2_env WHERE spec_id NOT IN `
+    + `(SELECT id FROM ${TOPFD_SCHEMA}.ms2_spectrum)`);
+  if (foreign > 0) {
+    throw new Error(mismatch + `${foreign} MS/MS envelopes of the TopPIC file belong to no spectrum of the TopFD file`);
   }
 }
 
@@ -109,28 +185,30 @@ export function has3dTables(sqlitePath: string): boolean {
 }
 
 /**
- * Add spec_id indexes so per-spectrum queries are fast (TopFD ships none). A
- * merged ms1_peak (primary key LEVEL, spec_id, peak_id) needs none: its
- * spectrum query names every level (ms1Peaks.ms1PeakSql).
+ * Add spec_id indexes so per-spectrum queries are fast (TopFD ships none),
+ * to the tables the file has (a TopPIC file of a two-file dataset has the
+ * MS/MS envelope tables only). A merged ms1_peak (primary key LEVEL,
+ * spec_id, peak_id) needs none: its spectrum query names every level
+ * (ms1Peaks.ms1PeakSql).
  */
 export function ensureIndexes(sqlitePath: string): void {
   const db = new DatabaseSync(sqlitePath);
   try {
-    // TopFD writes the file in WAL mode; a stale -shm left by an interrupted
-    // process makes later read-only opens fail (SQLITE_CANTOPEN). Rollback
-    // journaling needs no shared memory, so switch our uploaded copy over.
+    // TopFD and TopPIC write the file in WAL mode; a stale -shm left by an
+    // interrupted process makes later read-only opens fail (SQLITE_CANTOPEN).
+    // Rollback journaling needs no shared memory, so switch our uploaded copy
+    // over.
     db.exec('PRAGMA journal_mode = DELETE;');
-    const ms1Cols = db.prepare('PRAGMA table_info(ms1_peak)').all() as { name: string }[];
-    if (!ms1Cols.some((c) => c.name.toUpperCase() === 'LEVEL')) {
-      db.exec('CREATE INDEX IF NOT EXISTS ix_ms1_peak_spec ON ms1_peak(spec_id);');
+    const tables = schemaTableNames(db, 'main');
+    if (tables.has('ms1_peak')) {
+      const ms1Cols = db.prepare('PRAGMA table_info(ms1_peak)').all() as { name: string }[];
+      if (!ms1Cols.some((c) => c.name.toUpperCase() === 'LEVEL')) {
+        db.exec('CREATE INDEX IF NOT EXISTS ix_ms1_peak_spec ON ms1_peak(spec_id);');
+      }
     }
-    db.exec(`
-      CREATE INDEX IF NOT EXISTS ix_ms1_env_spec ON ms1_env(spec_id);
-      CREATE INDEX IF NOT EXISTS ix_ms1_env_peak_spec ON ms1_env_peak(spec_id);
-      CREATE INDEX IF NOT EXISTS ix_ms2_peak_spec ON ms2_peak(spec_id);
-      CREATE INDEX IF NOT EXISTS ix_ms2_env_spec ON ms2_env(spec_id);
-      CREATE INDEX IF NOT EXISTS ix_ms2_env_peak_spec ON ms2_env_peak(spec_id);
-    `);
+    for (const table of ['ms1_env', 'ms1_env_peak', 'ms2_peak', 'ms2_env', 'ms2_env_peak']) {
+      if (tables.has(table)) db.exec(`CREATE INDEX IF NOT EXISTS ix_${table}_spec ON ${table}(spec_id);`);
+    }
   } finally {
     db.close();
   }
@@ -141,7 +219,7 @@ export function ensureIndexes(sqlitePath: string): void {
 const openDbs = new Map<string, DatabaseSync>();
 const MAX_OPEN = 4;
 
-/** The dataset's sqlite (read-only, cached). */
+/** The dataset's sqlite files as one read-only connection (cached). */
 export function getDb(id: string): DatabaseSync | null {
   const cached = openDbs.get(id);
   if (cached) {
@@ -152,9 +230,8 @@ export function getDb(id: string): DatabaseSync | null {
   }
   const dir = datasetDir(id);
   if (!dir) return null;
-  const sqlitePath = path.join(dir, MS_DB_FILE);
-  if (!fs.existsSync(sqlitePath)) return null;
-  const db = new DatabaseSync(sqlitePath, { readOnly: true });
+  const db = openDatasetDb(dir);
+  if (!db) return null;
   openDbs.set(id, db);
   if (openDbs.size > MAX_OPEN) {
     const oldest = openDbs.keys().next().value as string;
@@ -189,13 +266,9 @@ export function closeDb(id: string): void {
   }
 }
 
-export function countMeta(sqlitePath: string): { ms1Count: number; ms2Count: number } {
-  const db = new DatabaseSync(sqlitePath, { readOnly: true });
-  try {
-    const ms1 = db.prepare('SELECT COUNT(*) AS n FROM ms1_spectrum').get() as unknown as { n: number };
-    const ms2 = db.prepare('SELECT COUNT(*) AS n FROM ms2_spectrum').get() as unknown as { n: number };
-    return { ms1Count: ms1.n, ms2Count: ms2.n };
-  } finally {
-    db.close();
-  }
+export function countMeta(db: DatabaseSync): { ms1Count: number; ms2Count: number } {
+  return {
+    ms1Count: count(db, 'SELECT COUNT(*) AS n FROM ms1_spectrum'),
+    ms2Count: count(db, 'SELECT COUNT(*) AS n FROM ms2_spectrum'),
+  };
 }

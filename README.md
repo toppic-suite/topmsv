@@ -1,11 +1,14 @@
 # TopMSV
 
 A web-based tool for visualizing the output of the spectral deconvolution tool
-**TopFD** and the database search tool **TopPIC**. A dataset is a single
-sqlite file: TopFD writes the deconvoluted spectra into it and, with recent
-versions, the MS1 3D peak tables; TopPIC appends its identifications and the
-search database to the same file. The file is uploaded through the browser
-and the server generates everything the viewer pages need on the fly: the
+**TopFD** and the database search tool **TopPIC**. A dataset is the sqlite
+files of a run: TopFD's `<name>.sqlite` holds the deconvoluted spectra and,
+with recent versions, the MS1 3D peak tables; TopPIC's `<name>_toppic.sqlite`
+holds its identifications, the search database and the deconvoluted MS/MS
+envelopes, and the server reads from TopFD's file whatever TopPIC's file
+does not hold. (Older TopPIC versions wrote everything into one file, which
+is uploaded alone.) The files are uploaded through the browser and the
+server generates everything the viewer pages need on the fly: the
 interactive protein, proteoform, proteoform-spectrum-match (PrSM) and
 spectrum views, a raw-spectra browser, a visual inspection calculator and an
 MS1 3D view.
@@ -81,29 +84,46 @@ the server's startup line.
 Open http://localhost:3000 using a web browser and fill in the **Upload a
 dataset** form:
 
-1. Optionally enter a dataset name (it defaults to the sqlite file name).
-2. Select the sqlite file written by TopFD and TopPIC — see the next section.
-   TopFD and TopPIC are available at https://www.toppic.org.
-3. Click **Upload**. The file is checked and the dataset appears in the
+1. Optionally enter a dataset name (it defaults to the name of the first
+   file).
+2. Select the sqlite files written by TopFD and TopPIC — see the next
+   section. TopFD and TopPIC are available at https://www.toppic.org.
+3. Click **Upload**. The files are checked and the dataset appears in the
    **Datasets** table with its protein, proteoform, PrSM and scan counts and
    the links to its pages: **Identifications** opens the protein list,
    **Spectra** the raw-spectra browser and **MS1 3D** the 3D view. A link is
-   shown only when the file holds the data it needs. **Delete** removes a
+   shown only when the files hold the data it needs. **Delete** removes a
    dataset permanently.
 
 Nothing is converted on disk: the dataset directory keeps the uploaded
-sqlite file and a small `meta.json`, and all viewer data is generated on
-the fly from the sqlite file.
+sqlite files (`ms.sqlite`, and `toppic.sqlite` for a TopPIC file) and a
+small `meta.json`, and all viewer data is generated on the fly from the
+sqlite files.
 
-## Input file
+## Input files
 
-One sqlite file per dataset. What the pages can show depends on which
-tables it contains:
+A dataset is one or two sqlite files:
+
+- **TopFD file and TopPIC file** (TopPIC versions that write
+  `<name>_toppic.sqlite` with the MS/MS envelopes only): select both. Every
+  table is read from the TopPIC file when it has it and from the TopFD file
+  otherwise: the identifications, the search database and the MS/MS
+  envelopes (TopFD's, plus those TopPIC's post mass matching added) come
+  from the TopPIC file, the spectra, peaks, MS1 envelopes and MS1 3D levels
+  from the TopFD file. After `toppic --mass-calib` the TopPIC file holds
+  every table with corrected m/z values, and the TopFD file adds nothing.
+  The upload checks that the TopPIC file belongs to the TopFD file (it has
+  the TopFD file's MS/MS envelopes, or with every table its MS/MS spectra).
+- **One file**: the TopFD file alone (spectra only), or the file of an older
+  TopPIC version, which holds every table. A TopPIC file with the MS/MS
+  envelopes only is refused alone: it needs its TopFD file.
+
+What the pages can show depends on which tables the files contain:
 
 | Tables | Written by | Enables |
 |---|---|---|
 | `ms1_*`, `ms2_*` (spectra, deconvoluted envelopes) | TopFD | Spectra browser, Visual Inspection (always present) |
-| `prsm`, `prsm_mass_shift`, `proteoform` | TopPIC (results written into the TopFD file) | Protein / Spectrum Identifications pages |
+| `prsm`, `prsm_mass_shift`, `proteoform` | TopPIC | Protein / Spectrum Identifications pages |
 | `fasta_seq` (the search database) | TopPIC | Full protein sequences in the identification views; without it the parts of a protein outside the identified proteoform are reconstructed heuristically (an `M` for NME proteoforms, `X` placeholders otherwise) |
 | `CONFIG`, `PEAKS0` … `PEAKS<n>` (multi-resolution MS1 peaks) | TopFD 2.0 - 2.1 with `-D` | MS1 3D view |
 | `CONFIG` and a `LEVEL` column in `ms1_peak` (the same levels in one MS1 peak table) | newer TopFD with `-D` | MS1 3D view |
