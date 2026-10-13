@@ -15,6 +15,7 @@ import { dbHasIdentifications, dbHasFasta } from './convert/toppicSqlite';
 import { dbHas3d } from './ms1Peaks';
 import { isBlobInSchema, schemaSpectrumColumns, spectraOf } from './spectraStore';
 import { fileTableNames, openSqlitePair, schemaTableNames, tableNames, TOPFD_SCHEMA } from './sqliteFiles';
+import { isZstdFile } from './zstd/extension';
 
 export const DATA_ROOT = path.resolve(process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data'));
 fs.mkdirSync(DATA_ROOT, { recursive: true });
@@ -40,6 +41,10 @@ export interface DatasetMeta {
   hasFasta: boolean;             // the sqlite holds the search database (fasta_seq)
   has3d: boolean;                // the sqlite also holds the MS1 3D view's levels (CONFIG + ms1_peak.LEVEL)
   files?: string[];              // the names of the uploaded files, the spectra file first (absent before two-file datasets)
+  // per uploaded file, in the order of files: compressed with sqlite-zstd
+  // (toppic_test experiments 171 and 172); computed from the files for
+  // datasets uploaded before the field existed
+  compressed?: boolean[];
 }
 
 /** The dataset's spectra file: TopFD's (optionally with an older TopPIC's tables) or TopDIA's. */
@@ -61,10 +66,22 @@ export function datasetDir(id: string): string | null {
   return abs;
 }
 
+/**
+ * Whether each sqlite file of a dataset directory is compressed with
+ * sqlite-zstd (it has the extension's table _zstd_configs; opened without
+ * the extension), in the order of meta.files: the spectra file, then the
+ * TopPIC or TopMG file.
+ */
+export function fileCompression(dir: string): boolean[] {
+  const files = datasetFiles(dir);
+  return [files.spectra, files.search].filter((f): f is string => f !== null).map((f) => isZstdFile(f));
+}
+
 /** meta.json written before a flag existed lacks it (a dataset without a type has one or two TopFD / TopPIC files). */
-function normalizeMeta(meta: DatasetMeta): DatasetMeta {
+function normalizeMeta(meta: DatasetMeta, dir: string): DatasetMeta {
   return {
     ...meta,
+    compressed: meta.compressed ?? fileCompression(dir),
     type: meta.type ?? ((meta.files?.length ?? 1) > 1 ? 'topfd_toppic' : 'topfd'),
     hasIdentifications: meta.hasIdentifications ?? true,
     has3d: meta.has3d ?? false,
@@ -78,7 +95,7 @@ export function listDatasets(): DatasetMeta[] {
     const metaPath = path.join(DATA_ROOT, entry.name, 'meta.json');
     if (!fs.existsSync(metaPath)) continue;
     try {
-      out.push(normalizeMeta(JSON.parse(fs.readFileSync(metaPath, 'utf8'))));
+      out.push(normalizeMeta(JSON.parse(fs.readFileSync(metaPath, 'utf8')), path.join(DATA_ROOT, entry.name)));
     } catch {
       /* ignore broken metadata */
     }
@@ -93,7 +110,7 @@ export function readMeta(id: string): DatasetMeta | null {
   const metaPath = path.join(dir, 'meta.json');
   if (!fs.existsSync(metaPath)) return null;
   try {
-    return normalizeMeta(JSON.parse(fs.readFileSync(metaPath, 'utf8')));
+    return normalizeMeta(JSON.parse(fs.readFileSync(metaPath, 'utf8')), dir);
   } catch {
     return null;
   }

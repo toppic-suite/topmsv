@@ -17,6 +17,7 @@ interface DatasetMeta {
   hasFasta: boolean;
   has3d: boolean;          // the sqlite holds the MS1 3D peak tables
   files?: string[];        // the uploaded files, the spectra file first (absent for older datasets)
+  compressed?: boolean[];  // per file: compressed with sqlite-zstd (toppic_test experiment 172)
 }
 
 // The four types of datasets (toppic_test experiment 170): the name the
@@ -74,9 +75,12 @@ function renderDatasets(list: DatasetMeta[]): void {
       ? `<a href="d/${ds}/topmsv/visual/proteins.html?data=toppic_proteoform_cutoff">Identifications</a>`
       : '';
     const type = TYPES[d.type]?.label ?? '';
+    // each file with "(compressed)" when it is compressed with sqlite-zstd
+    const fileLabel = (f: string, i: number) => esc(f) + (d.compressed?.[i]
+      ? ' <span title="compressed with sqlite-zstd">(compressed)</span>' : '');
     const files = d.files && d.files.length > 0
-      ? `<div class="hint files">${esc(type)}: ${d.files.map(esc).join(' + ')}</div>`
-      : `<div class="hint files">${esc(type)}</div>`;
+      ? `<div class="hint files">${esc(type)}: ${d.files.map(fileLabel).join(' + ')}</div>`
+      : `<div class="hint files">${esc(type)}${d.compressed?.some((c) => c) ? ' (compressed)' : ''}</div>`;
     html += `<tr>
       <td>${esc(d.name)}${note}${files}</td>
       <td>${esc(created)}</td>

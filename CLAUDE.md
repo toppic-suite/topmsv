@@ -58,7 +58,11 @@ byte-identical; `tableNames` lists BLOB tables under their own names,
 compressed TopFD file attached to a compressed TopPIC/TopMG file is read
 through its own connection (`sqliteFiles.attachedFileDb`): sqlite-zstd
 looks dictionaries up with an unqualified `_zstd_dicts`, which resolves to
-the main file's. TopFD / TopDIA write the spectra (`ms{1,2}_*` tables,
+the main file's. The TopPIC Suite's topfd/topdia/toppic/topmg write this
+format by default (toppic_test experiment 172; `zstd_blob_tables` keeps the
+CREATE statements); the upload records per file whether it is compressed
+(`meta.compressed`, `datasets.fileCompression`), shown in the dataset list.
+TopFD / TopDIA write the spectra (`ms{1,2}_*` tables,
 `ms2_spectrum.ms1_id` linking MS/MS to MS1) and the MS1 3D view's levels
 (CONFIG plus a LEVEL column of `ms1_peak` keyed (LEVEL, spec_id, peak_id):
 level k = LEVEL >= k, -1 = not in the map, RT = the spectrum's in ms
