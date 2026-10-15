@@ -224,7 +224,8 @@ The Windows release zip (`topmsv-win-<version>.zip`, 2.1.0 and later)
 already carries the extension in `ext/sqlite_zstd/`, and `start_server.bat`
 downloads it into any other copy that lacks it. Its DLL needs the
 Microsoft Visual C++ Redistributable (x64), which most Windows PCs
-already have; if an upload of a compressed file still fails, install it
+already have. When it is missing, `start_server.bat` warns at start and an
+upload of a compressed file fails with a message saying so: install it
 from https://aka.ms/vs/17/release/vc_redist.x64.exe and restart the
 server.
 

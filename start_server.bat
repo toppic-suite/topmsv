@@ -58,6 +58,14 @@ if "%SQLITE_ZSTD_EXTENSION%"=="" if not exist "ext\sqlite_zstd\sqlite_zstd.dll" 
   )
 )
 
+rem The sqlite-zstd DLL needs VCRUNTIME140.dll of the Microsoft Visual C++
+rem Redistributable (x64), which Windows does not include. Only warn: without
+rem it only compressed sqlite files cannot be read.
+if "%SQLITE_ZSTD_EXTENSION%"=="" if not exist "%SystemRoot%\System32\vcruntime140.dll" (
+  echo WARNING: the Microsoft Visual C++ Redistributable x64 is not installed, so compressed sqlite files cannot be read.
+  echo Install it from https://aka.ms/vs/17/release/vc_redist.x64.exe and start TopMSV again.
+)
+
 if "%PORT%"=="" set PORT=3000
 echo Starting TopMSV at http://localhost:%PORT% (press Ctrl+C to stop)
 call npm start -- %*

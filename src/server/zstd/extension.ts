@@ -32,6 +32,19 @@ export function zstdExtensionPath(): string | null {
   return fs.existsSync(p) ? p : null;
 }
 
+/** The installer of the Microsoft Visual C++ Redistributable (x64). */
+const VC_REDIST_URL = 'https://aka.ms/vs/17/release/vc_redist.x64.exe';
+
+/**
+ * Whether Windows has VCRUNTIME140.dll, which the release's sqlite_zstd.dll
+ * (built with MSVC) needs: it comes with the Visual C++ Redistributable,
+ * not with Windows, and Node.js links its C runtime statically. Without it
+ * the load fails with Windows' "The specified module could not be found."
+ */
+function vcRuntimeInstalled(): boolean {
+  return fs.existsSync(path.join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'vcruntime140.dll'));
+}
+
 export interface LoadOptions {
   logLevel?: string;           // SQLITE_ZSTD_LOG unless set, default warn
   need?: string;               // what needs the extension, for the error message
@@ -39,7 +52,8 @@ export interface LoadOptions {
 
 /**
  * Load the extension into a connection opened with allowExtension; throws an
- * Error that says how to get it when it is not available. The extension
+ * Error that says how to get it when it is not available, or on Windows how
+ * to get the Visual C++ runtime it needs when that is missing. The extension
  * logs at the level of the environment variable SQLITE_ZSTD_LOG, info by
  * default (a line per load); warn keeps it out of the server log unless set
  * otherwise. (The level is read once, at the first load.)
@@ -56,7 +70,17 @@ export function loadZstdExtension(db: DatabaseSync, opts: LoadOptions = {}): voi
   }
   const logLevel = opts.logLevel ?? 'warn';
   process.env.SQLITE_ZSTD_LOG ??= logLevel;
-  db.loadExtension(ext);
+  try {
+    db.loadExtension(ext);
+  } catch (err) {
+    if (process.platform === 'win32' && !vcRuntimeInstalled()) {
+      const reason = (err instanceof Error ? err.message : String(err)).trim();
+      throw new Error(`the sqlite-zstd extension (${ext}) cannot be loaded (${reason}): it needs `
+        + `VCRUNTIME140.dll of the Microsoft Visual C++ Redistributable (x64), which is not installed; `
+        + `install it from ${VC_REDIST_URL} and restart the server`);
+    }
+    throw err;
+  }
   // no further loading: an uploaded file's views or triggers must not reach
   // SQL's load_extension()
   db.enableLoadExtension(false);

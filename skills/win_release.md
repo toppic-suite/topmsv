@@ -87,6 +87,8 @@ Notes:
   downloads (`v0.3.5`). Its DLL needs `VCRUNTIME140.dll` of the Microsoft
   Visual C++ Redistributable (x64), which the bundled Node.js does not
   bring (node.exe links the C runtime statically); most Windows PCs
-  already have it, and the README says where to get it.
+  already have it. `start_server.bat` warns when it is missing, the
+  server's error names it (`src/server/zstd/extension.ts`), and the
+  README says where to get it.
 - `start_server.bat` and `stop_server.bat` are checked out with CRLF line
   endings (`.gitattributes`), as Windows needs.
