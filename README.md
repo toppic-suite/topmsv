@@ -218,6 +218,13 @@ ARM Linux, build the extension from its source (with Rust: `cargo build
 the library in `target/release/`. Without it, an upload of a compressed
 file is refused with a message that says how to get the extension.
 
+The Windows release zip (`topmsv-win-<version>.zip`, 2.1.0 and later)
+already carries the extension in `ext/sqlite_zstd/`. Its DLL needs the
+Microsoft Visual C++ Redistributable (x64), which most Windows PCs
+already have; if an upload of a compressed file still fails, install it
+from https://aka.ms/vs/17/release/vc_redist.x64.exe and restart the
+server.
+
 ## Pages
 
 Every dataset page carries a navigation bar with these entries (an entry
