@@ -10,7 +10,8 @@ rem   set PORT=8080
 rem   set DATA_DIR=D:\topmsv_data
 rem   start_server.bat
 rem
-rem The first run installs the dependencies and builds the browser scripts.
+rem The first run installs the dependencies, builds the browser scripts and
+rem downloads the sqlite-zstd extension, which reads compressed sqlite files.
 rem Requires Node.js 24 or newer (https://nodejs.org). A bundled copy in the
 rem "node" folder next to this script is used when present.
 
@@ -44,6 +45,16 @@ if not exist "public\common\js\home.js" (
     echo The build failed.
     pause
     exit /b 1
+  )
+)
+
+rem The sqlite-zstd extension (unless SQLITE_ZSTD_EXTENSION names one). A
+rem failed download only warns: uncompressed sqlite files do not need it.
+if "%SQLITE_ZSTD_EXTENSION%"=="" if not exist "ext\sqlite_zstd\sqlite_zstd.dll" (
+  echo Downloading the sqlite-zstd extension...
+  call npm run fetch-sqlite-zstd
+  if errorlevel 1 (
+    echo The sqlite-zstd extension could not be downloaded: compressed sqlite files cannot be read.
   )
 )
 

@@ -62,7 +62,9 @@ npm start                # http://localhost:3000
 On Linux / macOS you can instead run `./start_server.sh`, which installs
 the dependencies, builds the browser scripts and then starts the server.
 On Windows double-click `start_server.bat`, which does the same but skips
-the install and build steps once they have been done. Set `PORT` and
+the install and build steps once they have been done, and also downloads
+the sqlite-zstd extension for compressed sqlite files when it is missing
+(see [Compressed sqlite files](#compressed-sqlite-files)). Set `PORT` and
 `DATA_DIR` in the terminal beforehand to change the defaults.
 
 To stop the server press Ctrl+C in its terminal. On Windows you can
@@ -219,7 +221,8 @@ the library in `target/release/`. Without it, an upload of a compressed
 file is refused with a message that says how to get the extension.
 
 The Windows release zip (`topmsv-win-<version>.zip`, 2.1.0 and later)
-already carries the extension in `ext/sqlite_zstd/`. Its DLL needs the
+already carries the extension in `ext/sqlite_zstd/`, and `start_server.bat`
+downloads it into any other copy that lacks it. Its DLL needs the
 Microsoft Visual C++ Redistributable (x64), which most Windows PCs
 already have; if an upload of a compressed file still fails, install it
 from https://aka.ms/vs/17/release/vc_redist.x64.exe and restart the
